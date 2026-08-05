@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acecoach.ai/schemas/consent.schema.json",
+  "title": "AceCoach Consent Record",
+  "type": "object",
+  "required": [
+    "consent_id",
+    "player_id",
+    "granted_by_role",
+    "scope",
+    "granted_at",
+    "ontology_version_at_consent"
+  ],
+  "properties": {
+    "consent_id": { "type": "string" },
+    "player_id": { "type": "string" },
+    "granted_by_user_id": { "type": "string" },
+    "granted_by_role": { "enum": ["self_adult", "guardian"] },
+    "scope": {
+      "type": "object",
+      "required": ["video_capture_and_storage", "ai_analysis", "coach_sharing", "model_improvement_use"],
+      "properties": {
+        "video_capture_and_storage": { "type": "boolean" },
+        "ai_analysis": { "type": "boolean" },
+        "coach_sharing": { "type": "boolean" },
+        "model_improvement_use": { "type": "boolean", "default": false, "description": "Opt-in, defaults false, separate from the other scopes." }
+      }
+    },
+    "granted_at": { "type": "string", "format": "date-time" },
+    "revoked_at": { "type": ["string", "null"], "format": "date-time" },
+    "ontology_version_at_consent": { "type": "string", "description": "manifest.json version this consent was captured against; a material change requires re-consent." },
+    "coach_grants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["coach_user_id", "granted_at", "expires_at"],
+        "properties": {
+          "coach_user_id": { "type": "string" },
+          "granted_at": { "type": "string", "format": "date-time" },
+          "expires_at": { "type": "string", "format": "date-time" },
+          "revoked_at": { "type": ["string", "null"], "format": "date-time" }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

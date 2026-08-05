@@ -1,0 +1,44 @@
+{
+  "note": "This file defines product and engineering policy. It is a design input, not a legal compliance certification. Legal review is required per market — this bundle is built with India's DPDP Act 2023 (which treats anyone under 18 as a child requiring verifiable parental consent) and comparable global minor-data regimes (COPPA/UK AADC) as the baseline design constraint, since AceCoach's core users include u18 players.",
+  "minor_definition": "age_band in [u10, 10_to_12, 13_to_15, 16_to_17] from context_model.json, OR unknown age_band with no adult self-certification on file. Unknown age defaults to the minor policy (fail closed, not open).",
+  "guardian_consent": {
+    "required_before": ["first video upload", "any analysis run", "any coach-account linkage"],
+    "consent_scope_is_granular": [
+      "video capture and storage",
+      "AI analysis of the video",
+      "sharing analysis with a linked coach or academy admin",
+      "use of de-identified movement data for model improvement (opt-in, separate toggle, default OFF)"
+    ],
+    "guardian_can": ["view all analyses", "revoke consent at any time", "delete all video and derived data", "unlink a coach", "export all data"],
+    "re_consent_trigger": "material ontology or data-use change (tracked via manifest.json version bump) requires re-confirmation, not silent continuation."
+  },
+  "privacy_defaults": {
+    "default_visibility": "private_to_player_and_guardian_only",
+    "coach_access": "requires explicit guardian grant per coach_user_id, revocable, time-bounded (default 12 months, renewable)",
+    "no_public_sharing_surface_for_minors": "Export/share features that would post a minor's video or skeleton overlay to any public or semi-public surface are disabled at the account level for minor profiles, not just hidden by default.",
+    "no_leaderboards_or_cross_player_ranking_for_minors": "Longitudinal progress (longitudinal_model.json) compares a minor only to their own history and to anonymized aggregate bands, never to a named or rankable peer set."
+  },
+  "bystander_and_scene_protection": {
+    "rule": "Before any frame is shown to a human other than the uploading account (coach, academy admin) or used in any exported artifact, the pipeline runs bystander detection: faces and identifiable minors other than the primary subject in the frame are blurred by default in any shared or exported view. The unblurred original is retained only for the primary subject's own analysis, governed by the same retention rules as the source video.",
+    "background_audio": "If the source video contains audio with identifiable third-party conversation, audio is stripped from any exported/shared artifact by default."
+  },
+  "content_moderation_precheck": {
+    "purpose": "Verify the upload is plausibly tennis practice/play before it enters the analysis or storage pipeline, and block clearly unrelated or unsafe uploads early rather than after full processing.",
+    "checks": [
+      "scene classifier: tennis court / tennis practice context present at above-threshold confidence",
+      "no CSAM/NCII/graphic-content signal (standard trust-and-safety classifier, hard block, mandatory reporting per jurisdiction)",
+      "no primary subject inconsistency across a session (flag, do not silently merge two different people's data into one profile)"
+    ],
+    "failure_behavior": "status = failed with a plain, non-accusatory message ('We couldn't confirm this is tennis footage — try a clearer angle') for benign misclassification; hard block with no analysis and a safety-review queue entry for trust-and-safety hits."
+  },
+  "language_and_diagnosis_boundary": {
+    "rule": "No observation, player_message, coach_message_template, or drill may use injury/medical/diagnostic language (e.g. 'you have tennis elbow', 'your knee is unstable' as a medical claim). Faults describe movement patterns and performance consequences only. Pain, dizziness, or injury signals from self_reported_state route the player to 'stop and consult a coach or medical professional' copy, never to a diagnosis or a treatment plan.",
+    "escalation_copy_example": "If this movement causes pain, stop and check with a coach or medical professional before continuing the drill."
+  },
+  "data_retention": {
+    "default_video_retention_days": 180,
+    "player_or_guardian_can_delete_immediately": true,
+    "derived_data_deletion": "deleting source video cascades to evidence_frames references, overlay renders, and any export artifacts; aggregate model-improvement statistics (if separately opted in) are deleted or re-aggregated per that opt-in's own policy, not silently retained.",
+    "deletion_is_hard_delete_not_soft_flag": true
+  }
+}

@@ -1,0 +1,426 @@
+[
+  {
+    "fault_id": "FHV-SPLIT-01",
+    "title": "Missing or mistimed split step",
+    "domain": "Recognition",
+    "phase_origin": "V1",
+    "phase_visible_effect": "V3",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "no landing event occurs near opponent contact or feed release",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "delays reaction and preparation",
+    "player_message": "Split as your opponent hits.",
+    "coach_message_template": "Missing or mistimed split step: {evidence_summary}.",
+    "overlay_markers": [
+      "FOOT_TRAIL",
+      "TIMING_DELTA"
+    ],
+    "drill_ids": [
+      "VOLLEY_SPLIT_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "FHV-READY-01",
+    "title": "Racket held too low",
+    "domain": "Preparation",
+    "phase_origin": "V0",
+    "phase_visible_effect": "V3",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "racket head is below ready envelope",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "increases preparation distance under time pressure",
+    "player_message": "Keep the racket up and in front.",
+    "coach_message_template": "Racket held too low: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_HEAD_CENTER",
+      "TARGET_GHOST"
+    ],
+    "drill_ids": [
+      "FHV_READY_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "FHV-PREP-01",
+    "title": "Excessive backswing",
+    "domain": "Preparation",
+    "phase_origin": "V2",
+    "phase_visible_effect": "V5",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "hitting hand or racket travels behind chest/torso boundary",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "delays contact and reduces control",
+    "player_message": "Keep the volley preparation compact.",
+    "coach_message_template": "Excessive backswing: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_PATH",
+      "TRUNK_AXIS",
+      "FAULT_PIN"
+    ],
+    "drill_ids": [
+      "FHV_COMPACT_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "FHV-ELB-01",
+    "title": "Elbow behind body",
+    "domain": "Preparation",
+    "phase_origin": "V3",
+    "phase_visible_effect": "V5",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "elbow crosses rear torso plane",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "makes timely contact difficult",
+    "player_message": "Keep your elbow in front of your body.",
+    "coach_message_template": "Elbow behind body: {evidence_summary}.",
+    "overlay_markers": [
+      "ELBOW_ANGLE_L",
+      "ELBOW_ANGLE_R",
+      "TRUNK_AXIS"
+    ],
+    "drill_ids": [
+      "FHV_ELBOW_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "FHV-CON-01",
+    "title": "Late contact",
+    "domain": "Contact",
+    "phase_origin": "V3",
+    "phase_visible_effect": "V5",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "contact occurs beside or behind torso plane",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces directional control",
+    "player_message": "Catch the ball farther in front.",
+    "coach_message_template": "Late contact: {evidence_summary}.",
+    "overlay_markers": [
+      "CONTACT_POINT",
+      "CONTACT_WINDOW"
+    ],
+    "drill_ids": [
+      "FHV_CONTACT_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "FHV-WRIST-01",
+    "title": "Racket-face instability",
+    "domain": "Racket orientation",
+    "phase_origin": "V4",
+    "phase_visible_effect": "V6",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "face estimate changes abruptly near contact",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "INFERRED",
+    "performance_consequence": "reduces precision on fast balls",
+    "player_message": "Keep the racket face stable through contact.",
+    "coach_message_template": "Racket-face instability: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_FACE_ESTIMATE",
+      "CONFIDENCE_BADGE"
+    ],
+    "drill_ids": [
+      "FHV_STABLE_FACE_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "FHV-STEP-01",
+    "title": "No forward transfer when available",
+    "domain": "Loading",
+    "phase_origin": "V3",
+    "phase_visible_effect": "V6",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "COM does not move through contact in a non-reaction context",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces controlled penetration",
+    "player_message": "Step and move through the ball.",
+    "coach_message_template": "No forward transfer when available: {evidence_summary}.",
+    "overlay_markers": [
+      "COM_ESTIMATE",
+      "FOOT_TRAIL",
+      "CORRECTION_ARROW"
+    ],
+    "drill_ids": [
+      "FHV_STEP_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "FHV-SWING-01",
+    "title": "Groundstroke-like swing",
+    "domain": "Racket path",
+    "phase_origin": "V3",
+    "phase_visible_effect": "V6",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "pre/post-contact racket path exceeds compact volley family",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces timing and touch",
+    "player_message": "Punch the volley; do not take a full swing.",
+    "coach_message_template": "Groundstroke-like swing: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_PATH",
+      "PATH_CORRIDOR"
+    ],
+    "drill_ids": [
+      "FHV_PUNCH_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "FHV-BAL-01",
+    "title": "Falling away from contact",
+    "domain": "Stability",
+    "phase_origin": "V4",
+    "phase_visible_effect": "V6",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "COM retreats while contact occurs",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces pace absorption and direction",
+    "player_message": "Stay forward and balanced.",
+    "coach_message_template": "Falling away from contact: {evidence_summary}.",
+    "overlay_markers": [
+      "COM_ESTIMATE",
+      "BASE_OF_SUPPORT"
+    ],
+    "drill_ids": [
+      "FHV_BALANCE_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "FHV-RECOV-01",
+    "title": "Racket or feet fail to reset",
+    "domain": "Recovery",
+    "phase_origin": "V6",
+    "phase_visible_effect": "V7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "racket remains displaced or feet do not re-establish ready state",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces readiness for the next volley",
+    "player_message": "Reset the racket and split again.",
+    "coach_message_template": "Racket or feet fail to reset: {evidence_summary}.",
+    "overlay_markers": [
+      "RECOVERY_TARGET",
+      "RACKET_PATH",
+      "FOOT_TRAIL"
+    ],
+    "drill_ids": [
+      "FHV_RECOVERY_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  }
+]

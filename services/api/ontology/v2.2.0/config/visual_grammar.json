@@ -1,0 +1,138 @@
+{
+  "design_principle": "Color is decorative, never the sole carrier of meaning. Every semantic category below is redundantly coded by color + line-style + icon-shape, so the overlay is readable in grayscale, under any color-vision deficiency, and in bright outdoor sun-glare on a phone screen.",
+  "no_red_green_pass_fail_coding": "The grammar deliberately avoids a red=bad/green=good pairing anywhere. Fault focus uses Focus Coral (not alarm red) with a pin/magnifying-glass icon, not an X or exclamation mark. Correction/target uses Target Violet, not green. This keeps the tone diagnostic and growth-oriented rather than pass/fail, which matters most for a 13-year-old's relationship to feedback.",
+  "color_tokens": {
+    "structure_neutral": {
+      "hex": "#94A3B8",
+      "role": "Body skeleton, reference axes, base of support — always-on low-key context. Never the focus of attention.",
+      "opacity_default": 0.55,
+      "line_style": "solid",
+      "min_contrast_ratio_required": 3.0
+    },
+    "measured_fact_blue": {
+      "hex": "#38BDF8",
+      "role": "Directly measured/high-confidence current-frame facts: contact point, ball trail, racket path, angle arcs when confidence.measurement >= 0.85.",
+      "opacity_default": 0.95,
+      "line_style": "solid"
+    },
+    "cause_amber": {
+      "hex": "#F59E0B",
+      "role": "CAUSE_ARROW and the phase/joint identified as root_cause_candidate.",
+      "opacity_default": 0.95,
+      "line_style": "solid",
+      "icon": "diamond_arrowhead"
+    },
+    "correction_violet": {
+      "hex": "#8B5CF6",
+      "role": "CORRECTION_ARROW, RECOVERY_TARGET, TARGET_GHOST — where the player is moving toward, not a verdict on where they are now.",
+      "opacity_default": 0.95,
+      "line_style": "solid",
+      "icon": "flag_arrowhead"
+    },
+    "focus_coral": {
+      "hex": "#FB7185",
+      "role": "FAULT_PIN only — draws the eye to the one thing being discussed this moment. Deliberately not saturated alarm-red.",
+      "opacity_default": 0.95,
+      "icon": "pin_glyph_not_x"
+    },
+    "ghost_reference_white": {
+      "hex": "#F8FAFC",
+      "role": "TARGET_GHOST silhouette (player's own past-best or a generic reference silhouette — never a named professional's likeness).",
+      "opacity_default": 0.30,
+      "line_style": "dashed"
+    },
+    "system_chrome_slate": {
+      "hex": "#1E293B",
+      "role": "CONFIDENCE_BADGE and VISIBILITY_WARNING chip backgrounds (screen-space UI, not video-space).",
+      "opacity_default": 0.85
+    }
+  },
+  "confidence_rendering": {
+    "rule": "Confidence is rendered redundantly via opacity AND line-style AND an explicit badge — never inferred from color alone.",
+    "high": {"min_score": 0.85, "line_style": "solid", "opacity_multiplier": 1.0, "badge": "none needed unless coach mode"},
+    "medium": {"min_score": 0.65, "line_style": "dashed_6_4", "opacity_multiplier": 0.70, "badge": "'~' prefix on label, CONFIDENCE_BADGE = 'partial view'"},
+    "low_estimated": {"min_score": 0.0, "line_style": "dotted_2_3", "opacity_multiplier": 0.45, "badge": "CONFIDENCE_BADGE = 'estimated'"},
+    "not_visible_or_unsupported": {"behavior": "marker suppressed entirely from video-space; VISIBILITY_WARNING chip shown once in screen-space UI chrome, never drawn on top of the player as a broken/ghosted marker."}
+  },
+  "marker_families": {
+    "skeletal_kinematic": {
+      "members": ["BODY_SKELETON", "SHOULDER_LINE", "PELVIS_LINE", "TRUNK_AXIS", "HEAD_AXIS", "ELBOW_ANGLE_L", "ELBOW_ANGLE_R", "KNEE_ANGLE_L", "KNEE_ANGLE_R", "HIP_ANGLE_L", "HIP_ANGLE_R", "COM_ESTIMATE", "BASE_OF_SUPPORT", "FOOT_ANCHOR", "FOOT_TRAIL", "BODY_TILT", "HIP_SHOULDER_SEPARATION"],
+      "default_color": "structure_neutral",
+      "geometry": {
+        "line_width_pct_video_width": 0.35,
+        "joint_dot_radius_pct_video_diagonal": 0.6,
+        "angle_arc_label_placement": "outside the acute angle, 12px offset, always upright regardless of limb rotation"
+      },
+      "z_layer": 30,
+      "occlusion_behavior": "If a keypoint's underlying pose-estimation confidence drops mid-clip (self-occlusion, motion blur), fade that segment's line to 0 opacity over 2 frames rather than snapping to a wrong position or jittering. Do not interpolate a straight line across an occluded joint."
+    },
+    "racket": {
+      "members": ["RACKET_HANDLE", "RACKET_THROAT", "RACKET_HEAD_CENTER", "RACKET_TIP", "RACKET_AXIS", "RACKET_FACE_ESTIMATE", "RACKET_PATH", "RACKET_SPEED_RELATIVE", "RACKET_DROP_DEPTH"],
+      "default_color": "measured_fact_blue",
+      "geometry": {
+        "line_width_pct_video_width": 0.4,
+        "path_trail_frames": 8,
+        "path_trail_fade": "linear opacity ramp from 0.9 (current frame) to 0 (8 frames back)"
+      },
+      "z_layer": 40,
+      "note": "RACKET_FACE_ESTIMATE is always rendered at medium/low confidence styling (monocular video cannot reliably measure face angle without a second view) unless camera_suitability marks racket_face != conditional for the active view."
+    },
+    "ball": {
+      "members": ["BALL_CENTER", "BALL_TRAIL", "PROJECTED_BALL_PATH", "BOUNCE_POINT", "CONTACT_POINT", "CONTACT_WINDOW"],
+      "default_color": "measured_fact_blue",
+      "geometry": {
+        "ball_center_radius_pct_video_diagonal": 0.5,
+        "trail_frames": 10,
+        "contact_point_style": "filled ring, 2x radius pulse on the freeze frame only",
+        "contact_window_style": "bracket marks on the phase timeline, not drawn on the video frame"
+      },
+      "special_case_projected_ball_path": {"color": "ghost_reference_white", "line_style": "dashed", "note": "PROJECTED_BALL_PATH is a physics estimate, not a measurement — it always renders in the ghost/estimate style regardless of other confidence scores."},
+      "z_layer": 40
+    },
+    "court_and_positioning": {
+      "members": ["COURT_HOMOGRAPHY", "PLAYER_COURT_POSITION", "RECOVERY_TARGET", "TARGET_GHOST"],
+      "default_color": "structure_neutral",
+      "recovery_target_color": "correction_violet",
+      "target_ghost_color": "ghost_reference_white",
+      "geometry": {"court_line_width_pct_video_width": 0.25},
+      "z_layer": 10,
+      "note": "COURT_HOMOGRAPHY only renders when a calibration confidence threshold is met; below threshold it is suppressed rather than shown skewed."
+    },
+    "interpretive_annotation": {
+      "members": ["ANGLE_ARC", "TIMING_DELTA", "SEQUENCE_RIBBON", "STABILITY_HALO", "PATH_CORRIDOR", "FAULT_PIN", "CAUSE_ARROW", "CORRECTION_ARROW"],
+      "color_map": {"FAULT_PIN": "focus_coral", "CAUSE_ARROW": "cause_amber", "CORRECTION_ARROW": "correction_violet", "default": "measured_fact_blue"},
+      "geometry": {
+        "arrow_curvature": "quadratic bezier, control point offset perpendicular to the direct line so the arrow never crosses over the player's body or the ball",
+        "fault_pin_size_pct_video_diagonal": 1.2,
+        "max_simultaneous_annotation_arrows": 2
+      },
+      "z_layer": 50
+    },
+    "system_confidence": {
+      "members": ["CONFIDENCE_BADGE", "VISIBILITY_WARNING"],
+      "space": "screen-space UI chrome, not video-space — always upright, fixed to viewport edge, never rotates or scales with the video content",
+      "z_layer": 60
+    }
+  },
+  "z_order": [
+    {"z": 0, "layer": "source_video"},
+    {"z": 10, "layer": "court_and_positioning"},
+    {"z": 20, "layer": "trail_history (BALL_TRAIL, RACKET_PATH, FOOT_TRAIL, SEQUENCE_RIBBON, PATH_CORRIDOR)"},
+    {"z": 30, "layer": "skeletal_kinematic"},
+    {"z": 40, "layer": "racket_and_ball_current_frame"},
+    {"z": 50, "layer": "interpretive_annotation"},
+    {"z": 60, "layer": "system_confidence_ui_chrome"}
+  ],
+  "animation_timing": {
+    "marker_fade_in_ms": 180,
+    "marker_fade_out_ms": 120,
+    "easing": "ease-out-cubic",
+    "contact_freeze_hold_ms": 400,
+    "contact_freeze_zoom": 1.05,
+    "max_flashes_per_second": 3,
+    "reduced_motion_override": "see accessibility.json#/motion_and_seizure_safety/reduced_motion_mode"
+  },
+  "responsive_scaling": {
+    "rule": "All line widths, radii, and font sizes are defined as a percentage of video width/diagonal, never fixed pixels, and are additionally floored at a minimum on-screen size (line_width floor 1.5px, joint_dot floor 4px, label text floor 12px at 100% font_scale) so nothing disappears on a small phone screen regardless of source video resolution."
+  }
+}

@@ -1,0 +1,21 @@
+services:
+  analysis-api:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./services/api:/app:ro
+    environment:
+      ENVIRONMENT: development
+      PYTHONUNBUFFERED: "1"
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+      ANALYSIS_API_KEY: ${ANALYSIS_API_KEY:-}
+      VIDEO_ALLOWED_HOSTS: ${VIDEO_ALLOWED_HOSTS:-}
+      ANALYSIS_MAX_CONCURRENT_JOBS: ${ANALYSIS_MAX_CONCURRENT_JOBS:-1}
+      MAX_VIDEO_DOWNLOAD_BYTES: ${MAX_VIDEO_DOWNLOAD_BYTES:-524288000}
+      MAX_ANALYSIS_SECONDS: ${MAX_ANALYSIS_SECONDS:-30}
+      MAX_ANALYSIS_FRAMES: ${MAX_ANALYSIS_FRAMES:-3600}
+      VIDEO_DOWNLOAD_TIMEOUT_SECONDS: ${VIDEO_DOWNLOAD_TIMEOUT_SECONDS:-90}
+    restart: unless-stopped

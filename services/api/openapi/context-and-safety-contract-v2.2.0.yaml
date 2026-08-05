@@ -1,0 +1,146 @@
+openapi: 3.1.0
+info:
+  title: AceCoach Context & Safety API
+  version: 2.2.0
+  description: >
+    Companion contract to analysis-contract.yaml. v2.1.0's analysis-contract.yaml had no
+    surface for player identity, consent, moderation, or progress — analysis/run assumed a
+    profile and consent already existed with no endpoint that created either. This file adds
+    the missing surface; it does not modify analysis-contract.yaml.
+paths:
+  /v1/players:
+    post:
+      summary: Create a player profile. Required before any analysis session.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: ../schemas/player_profile.schema.json }
+      responses:
+        '201': { description: Player profile created }
+  /v1/players/{playerId}:
+    get:
+      summary: Get a player profile
+      parameters:
+        - in: path
+          name: playerId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Player profile
+          content:
+            application/json:
+              schema: { $ref: ../schemas/player_profile.schema.json }
+    patch:
+      summary: Update a player profile (age band, level, accessibility preferences, etc.)
+      parameters:
+        - in: path
+          name: playerId
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Updated profile }
+    delete:
+      summary: Delete a player profile and cascade-delete all associated video, observations, and derived data
+      parameters:
+        - in: path
+          name: playerId
+          required: true
+          schema: { type: string }
+      responses:
+        '202': { description: Deletion accepted; hard delete per safeguarding.json data_retention }
+  /v1/players/{playerId}/consent:
+    post:
+      summary: Record or update guardian/self consent scope for a player
+      parameters:
+        - in: path
+          name: playerId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: ../schemas/consent.schema.json }
+      responses:
+        '201': { description: Consent recorded }
+    delete:
+      summary: Revoke consent. Blocks all future analysis for this player until re-granted.
+      parameters:
+        - in: path
+          name: playerId
+          required: true
+          schema: { type: string }
+      responses:
+        '202': { description: Consent revoked, pending analyses cancelled }
+  /v1/players/{playerId}/coach-grants:
+    post:
+      summary: Grant a coach time-bounded access to a player's analyses (guardian- or self-authorized)
+      parameters:
+        - in: path
+          name: playerId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [coach_user_id, expires_at]
+              properties:
+                coach_user_id: { type: string }
+                expires_at: { type: string, format: date-time }
+      responses:
+        '201': { description: Grant created }
+  /v1/moderation/precheck:
+    post:
+      summary: Run the content moderation precheck on an uploaded video before it enters the analysis pipeline
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [source_video_hash]
+              properties:
+                source_video_hash: { type: string }
+      responses:
+        '200':
+          description: Precheck result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  precheck_status: { enum: [passed, failed_benign_mismatch, blocked_safety_review] }
+                  message: { type: string }
+  /v1/players/{playerId}/progress:
+    get:
+      summary: Get longitudinal progress summary (progress_trends + reassessment_links)
+      parameters:
+        - in: path
+          name: playerId
+          required: true
+          schema: { type: string }
+        - in: query
+          name: fault_id
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: Progress summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  trends:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        fault_id: { type: string }
+                        trend_status: { enum: [improving, steady, recurring, insufficient_history] }
+                        headline: { type: string }

@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acecoach.ai/schemas/observation.schema.json",
+  "title": "AceCoach Observation",
+  "type": "object",
+  "required": [
+    "observation_id",
+    "session_id",
+    "stroke_id",
+    "fault_id",
+    "status",
+    "evidence_frames",
+    "confidence",
+    "measurement_status"
+  ],
+  "properties": {
+    "observation_id": {
+      "type": "string"
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "stroke_id": {
+      "type": "string"
+    },
+    "fault_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "MEASURED",
+        "ESTIMATED",
+        "INFERRED",
+        "NOT_VISIBLE",
+        "NOT_SUPPORTED_BY_VIEW",
+        "INSUFFICIENT_SAMPLE",
+        "ACCEPTABLE_VARIATION",
+        "CONTEXT_DEPENDENT",
+        "FAULT_SUSPECTED",
+        "FAULT_CONFIRMED",
+        "COACH_OVERRIDDEN",
+        "PLAYER_CORRECTED_LABEL"
+      ]
+    },
+    "measurement_status": {
+      "type": "string"
+    },
+    "evidence_frames": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "observed_metrics": {
+      "type": "object"
+    },
+    "confidence": {
+      "type": "object",
+      "required": [
+        "detection",
+        "measurement",
+        "context",
+        "interpretation"
+      ],
+      "properties": {
+        "detection": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "measurement": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "context": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "interpretation": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "root_cause_candidate": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "causal_role": {
+      "enum": [
+        "ROOT_CAUSE",
+        "CONTRIBUTOR",
+        "SYMPTOM",
+        "UNKNOWN"
+      ]
+    },
+    "engine_versions": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

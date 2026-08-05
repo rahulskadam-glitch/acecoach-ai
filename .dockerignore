@@ -1,0 +1,16 @@
+.git
+.github
+.next
+node_modules
+.venv
+**/.venv
+**/__pycache__
+**/*.py[cod]
+.env
+.env.*
+!.env.example
+coverage
+out
+build
+*.log
+*.zip

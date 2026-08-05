@@ -1,0 +1,85 @@
+{
+  "purpose": "Context is captured once per player and confirmed per session. It is never inferred from video appearance (body size, perceived age, gender presentation). It feeds context_gates in fault definitions, sets the reading level and tone of player_message, and determines which comparison population coach_reference_ranges may draw from. Context is self-reported/coach-reported, editable, and never used to auto-detect age from imagery.",
+  "capture_points": {
+    "player_profile": "collected once at account creation, editable anytime, required before first analysis",
+    "session_context": "confirmed at upload time, defaults to last known profile values, can be overridden per session"
+  },
+  "player_profile_fields": {
+    "age_band": {
+      "values": ["u10", "10_to_12", "13_to_15", "16_to_17", "18_to_34", "35_to_54", "55_plus", "prefer_not_to_say"],
+      "required": true,
+      "notes": "u10/10_to_12/13_to_15/16_to_17 trigger the minor safeguarding profile in safeguarding.json regardless of any other setting."
+    },
+    "player_level": {
+      "values": ["new_to_tennis", "improver", "club_competitive", "junior_tournament", "adult_league", "high_performance_academy"],
+      "required": true,
+      "notes": "Drives which technique_family variations are treated as ACCEPTABLE_VARIATION vs FAULT_SUSPECTED, and the density of the default overlay recipe."
+    },
+    "dominant_hand": {
+      "values": ["right", "left", "unknown"],
+      "required": true,
+      "notes": "Required to correctly mirror all L/R overlay markers (ELBOW_ANGLE_L etc.) and phase-relevant side."
+    },
+    "backhand_style_declared": {
+      "values": ["one_handed", "two_handed", "slice_primary", "not_sure_let_engine_infer"],
+      "required": false
+    },
+    "adaptive_play": {
+      "values": ["none", "wheelchair_tennis", "visual_impairment_adapted", "other_adaptive"],
+      "required": false,
+      "notes": "When set, phase_model timing and base_of_support/recovery faults are re-baselined against adaptive norms in coach_reference_ranges rather than standing-player norms; ambulatory-only faults (e.g. split-step, landing_recovery) are suppressed, not scored as failures."
+    },
+    "coaching_relationship": {
+      "values": ["self_directed", "linked_to_coach", "linked_to_academy"],
+      "required": true
+    },
+    "guardian_linked_account": {
+      "type": "boolean",
+      "required_if": "age_band in [u10, 10_to_12, 13_to_15, 16_to_17]",
+      "notes": "See safeguarding.json for consent and access rules this gates."
+    },
+    "preferred_language": {
+      "type": "bcp47_string",
+      "default": "en-IN",
+      "notes": "Selects the localized player_message/coach_message_template string set. See VISUALIZATION_SPEC.md localization section."
+    },
+    "accessibility_preferences": {
+      "type": "object",
+      "ref": "accessibility.json#/player_preferences"
+    }
+  },
+  "session_context_fields": {
+    "session_goal": {
+      "values": ["general_technique_check", "pre_match_tuneup", "return_after_break", "specific_stroke_focus", "progress_recheck"],
+      "required": true,
+      "notes": "return_after_break softens severity_policy escalation for one session and suppresses recurrence-based escalation until minimum_comparable_strokes resets."
+    },
+    "specific_stroke_focus": {
+      "type": "array",
+      "items": "stroke codes from strokes.json",
+      "required_if": "session_goal == specific_stroke_focus"
+    },
+    "camera_setup": {
+      "device_class": ["handheld_phone", "tripod_phone", "tablet", "action_camera", "fixed_court_camera", "unknown"],
+      "view": "one of camera_suitability.json keys, confirmed by engine's view classifier not just self-report",
+      "frame_rate_fps": "type: number, gates slow-motion-dependent faults (e.g. racket-drop timing) below 50fps",
+      "stability": ["tripod_stable", "handheld_moving", "unknown"]
+    },
+    "court_surface": {
+      "values": ["hard", "clay", "grass", "carpet_indoor", "unknown"],
+      "notes": "Affects footwork/slide-recovery expectations, not stroke mechanics faults."
+    },
+    "self_reported_state": {
+      "type": "array",
+      "items": ["fatigued", "returning_from_injury", "first_session_with_new_equipment", "none"],
+      "notes": "Purely contextual flags shown to the coach and used to soften severity_policy, never used to infer or imply a medical condition."
+    }
+  },
+  "context_gate_application_rule": "A fault's context_gates (defined per-fault in config/faults/*.json) are evaluated against player_profile + session_context before a fault can move from FAULT_SUSPECTED to FAULT_CONFIRMED. A missing required context field forces measurement_status = CONTEXT_DEPENDENT and blocks scoring, per no_score_conditions in confidence_policy.json.",
+  "explicitly_excluded_from_context": [
+    "perceived age, gender, ethnicity, or body type inferred from video",
+    "precise geolocation",
+    "device advertising identifiers",
+    "any health/diagnostic classification beyond the player's own free-text self-report"
+  ]
+}

@@ -1,0 +1,426 @@
+[
+  {
+    "fault_id": "BHV-SPLIT-01",
+    "title": "Missing or mistimed split step",
+    "domain": "Recognition",
+    "phase_origin": "V1",
+    "phase_visible_effect": "V3",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "no landing event occurs near opponent contact or feed release",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "delays reaction and preparation",
+    "player_message": "Split as your opponent hits.",
+    "coach_message_template": "Missing or mistimed split step: {evidence_summary}.",
+    "overlay_markers": [
+      "FOOT_TRAIL",
+      "TIMING_DELTA"
+    ],
+    "drill_ids": [
+      "VOLLEY_SPLIT_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "BHV-PREP-01",
+    "title": "Late preparation",
+    "domain": "Preparation",
+    "phase_origin": "V2",
+    "phase_visible_effect": "V5",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "racket reaches set position after ball enters close-contact zone",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "forces rushed contact",
+    "player_message": "Set the racket earlier.",
+    "coach_message_template": "Late preparation: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_PATH",
+      "TIMING_DELTA"
+    ],
+    "drill_ids": [
+      "BHV_PREP_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "BHV-PREP-02",
+    "title": "Oversized backswing",
+    "domain": "Preparation",
+    "phase_origin": "V2",
+    "phase_visible_effect": "V5",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "racket or hand travels behind torso boundary",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces timing and control",
+    "player_message": "Keep the backhand volley compact.",
+    "coach_message_template": "Oversized backswing: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_PATH",
+      "TRUNK_AXIS"
+    ],
+    "drill_ids": [
+      "BHV_COMPACT_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "BHV-SUPPORT-01",
+    "title": "Support hand releases too early",
+    "domain": "Preparation",
+    "phase_origin": "V2",
+    "phase_visible_effect": "V4",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "non-dominant hand leaves throat before prepared position",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces racket stability during setup",
+    "player_message": "Support the racket until it is set.",
+    "coach_message_template": "Support hand releases too early: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_THROAT",
+      "BODY_SKELETON",
+      "TIMING_DELTA"
+    ],
+    "drill_ids": [
+      "BHV_SUPPORT_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "BHV-GRIP-01",
+    "title": "Suspected grip mismatch",
+    "domain": "Racket orientation",
+    "phase_origin": "V0",
+    "phase_visible_effect": "V5",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "hand-racket geometry and face orientation are inconsistent with supported volley setup",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "INFERRED",
+    "performance_consequence": "can require last-second face correction",
+    "player_message": "Use a continental volley grip.",
+    "coach_message_template": "Suspected grip mismatch: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_HANDLE",
+      "RACKET_FACE_ESTIMATE",
+      "CONFIDENCE_BADGE"
+    ],
+    "drill_ids": [
+      "BHV_GRIP_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "BHV-BAL-01",
+    "title": "Leaning backward",
+    "domain": "Stability",
+    "phase_origin": "V4",
+    "phase_visible_effect": "V6",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "trunk and COM retreat during contact",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces control and penetration",
+    "player_message": "Step in and stay balanced.",
+    "coach_message_template": "Leaning backward: {evidence_summary}.",
+    "overlay_markers": [
+      "TRUNK_AXIS",
+      "COM_ESTIMATE",
+      "CORRECTION_ARROW"
+    ],
+    "drill_ids": [
+      "BHV_FORWARD_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "BHV-CON-01",
+    "title": "Late contact",
+    "domain": "Contact",
+    "phase_origin": "V3",
+    "phase_visible_effect": "V5",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "contact occurs beside or behind torso plane",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces racket stability and control",
+    "player_message": "Meet the ball farther in front.",
+    "coach_message_template": "Late contact: {evidence_summary}.",
+    "overlay_markers": [
+      "CONTACT_POINT",
+      "CONTACT_WINDOW"
+    ],
+    "drill_ids": [
+      "BHV_CONTACT_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "BHV-ARM-01",
+    "title": "Elbow collapse",
+    "domain": "Racket path",
+    "phase_origin": "V3",
+    "phase_visible_effect": "V6",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "hitting-arm structure compresses before impact",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces stable reach and punch",
+    "player_message": "Keep the arm structure firm through contact.",
+    "coach_message_template": "Elbow collapse: {evidence_summary}.",
+    "overlay_markers": [
+      "ELBOW_ANGLE_L",
+      "ELBOW_ANGLE_R"
+    ],
+    "drill_ids": [
+      "BHV_ARM_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "BHV-WRIST-01",
+    "title": "Racket-face instability",
+    "domain": "Racket orientation",
+    "phase_origin": "V4",
+    "phase_visible_effect": "V6",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "face estimate changes abruptly around contact",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "INFERRED",
+    "performance_consequence": "reduces directional control",
+    "player_message": "Keep the wrist and racket stable.",
+    "coach_message_template": "Racket-face instability: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_FACE_ESTIMATE",
+      "CONFIDENCE_BADGE"
+    ],
+    "drill_ids": [
+      "BHV_FACE_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "BHV-RECOV-01",
+    "title": "Failure to reset",
+    "domain": "Recovery",
+    "phase_origin": "V6",
+    "phase_visible_effect": "V7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "racket and feet remain on backhand side after finish",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces readiness for the next ball",
+    "player_message": "Reset the racket and feet immediately.",
+    "coach_message_template": "Failure to reset: {evidence_summary}.",
+    "overlay_markers": [
+      "RECOVERY_TARGET",
+      "RACKET_PATH",
+      "FOOT_TRAIL"
+    ],
+    "drill_ids": [
+      "BHV_RECOVERY_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  }
+]

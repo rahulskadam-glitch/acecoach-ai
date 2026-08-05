@@ -1,0 +1,2071 @@
+You are the principal product architect, lead full-stack engineer, agentic-AI architect, UX design director, security engineer, sports-biomechanics expert, and elite multi-sport coach for AceCoach AI.
+
+Create AceCoach AI v6.0.0: a complete simplification and professional redesign of the athlete experience.
+
+The current platform contains useful capabilities, but the user journey is too complex. The new product must hide technical complexity behind a clear six-step journey:
+
+1. Select sport
+2. Sign in
+3. Upload video and provide essential information
+4. Analyze
+5. Review report
+6. Continue with a coaching conversation
+
+Do not remove reliable v5 functionality unnecessarily. Reorganize it behind this simplified journey.
+
+The user should never need to understand:
+
+- database tables,
+- analysis engines,
+- pose models,
+- job orchestration,
+- motion-twin versions,
+- technical confidence formulas,
+- agent architecture,
+- or internal processing details
+
+to complete their first analysis.
+
+The interface must feel:
+
+- premium,
+- sophisticated,
+- calm,
+- professional,
+- visually spacious,
+- easy for a first-time athlete,
+- suitable for junior athletes, parents, experienced players, and coaches.
+
+The default appearance must use a refined light background.
+
+============================================================
+1. PRIMARY PRODUCT OBJECTIVE
+============================================================
+
+Transform AceCoach into the simplest credible sports-analysis experience:
+
+SELECT SPORT
+→ SIGN IN
+→ UPLOAD AND DESCRIBE
+→ ANALYZE
+→ UNDERSTAND
+→ ASK YOUR COACH
+
+The user must always know:
+
+- where they are,
+- what is required,
+- what will happen next,
+- whether their information has been saved,
+- and how to continue.
+
+The first analysis journey must not require the user to visit a dashboard, profile page, library page, settings page, or pricing page.
+
+Those destinations may remain available through a secondary account menu after the first analysis.
+
+============================================================
+2. NON-NEGOTIABLE EXPERIENCE PRINCIPLES
+============================================================
+
+1. One screen must have one primary purpose.
+2. One screen must have one dominant call to action.
+3. Do not show information before it is needed.
+4. Do not ask for information that does not affect the analysis.
+5. Preserve the user’s selected sport throughout authentication.
+6. Preserve form and upload progress through refresh and reauthentication.
+7. Never silently guess the movement type.
+8. Movement or stroke selection is mandatory.
+9. The raw uploaded video remains owned and downloadable by the user.
+10. The analysis page must show real processing stages, not fabricated percentages.
+11. The report must prioritize one correction.
+12. Technical depth must remain available but collapsed.
+13. The coaching conversation must be grounded in the completed report.
+14. The language model must not invent measurements.
+15. Authentication-provider buttons must only appear when the provider is configured.
+16. Unsupported analysis must fail honestly.
+17. The application must work well on desktop and mobile.
+18. Do not introduce a dashboard before the user completes the first analysis.
+
+============================================================
+3. SIX-STEP APPLICATION FLOW
+============================================================
+
+Use the following canonical journey:
+
+STEP 1
+Sport selection
+
+STEP 2
+Authentication
+
+STEP 3
+Video upload and essential athlete information
+
+STEP 4
+Analysis processing
+
+STEP 5
+Analysis report
+
+STEP 6
+Coaching conversation
+
+Display a subtle progress indicator after sport selection:
+
+Sport → Sign in → Upload → Analyze → Report → Coach
+
+Do not turn the progress indicator into a large navigation component.
+
+============================================================
+4. STEP 1 — SPORT SELECTION LANDING PAGE
+============================================================
+
+Route:
+
+/
+
+The landing page has one purpose only:
+
+SELECT YOUR SPORT
+
+Do not include:
+
+- pricing tables,
+- testimonials,
+- product-feature grids,
+- long explanations,
+- report screenshots,
+- partner logos,
+- blog posts,
+- complex navigation,
+- multiple competing calls to action.
+
+Allowed content:
+
+1. AceCoach logo
+2. One concise headline
+3. One supporting sentence
+4. Sport-selection cards
+5. Minimal footer links for privacy, terms, help, and methodology
+
+Recommended headline:
+
+“Choose your sport. Start improving.”
+
+Recommended supporting sentence:
+
+“Upload one movement and receive a clear, personalized coaching plan.”
+
+Supported sport cards:
+
+- Tennis
+- Badminton
+- Squash
+- Cricket
+- Table Tennis
+
+Each card must include:
+
+- sport name,
+- high-quality icon or restrained illustration,
+- short description of supported analysis,
+- clear hover and keyboard-focus state,
+- selected state.
+
+Example:
+
+TENNIS
+Analyze strokes, movement preparation, balance, finish, and recovery.
+
+When the user selects a sport:
+
+1. Persist the selection immediately.
+2. Create or update an anonymous journey record.
+3. Navigate to authentication.
+4. Carry the selected sport through the OAuth flow.
+5. Do not ask the user to choose the sport again during upload.
+
+When the user is already authenticated:
+
+- skip the authentication page;
+- navigate directly to Step 3.
+
+Landing-page acceptance criteria:
+
+- A first-time user understands the required action within three seconds.
+- There is only one primary decision.
+- Sport cards work with keyboard and touch.
+- The page renders cleanly at 320 px width.
+- Selecting a sport survives browser refresh.
+- Selecting a sport creates no duplicate database records.
+- The page contains no pricing or product-marketing clutter.
+
+============================================================
+5. STEP 2 — AUTHENTICATION
+============================================================
+
+Route:
+
+/auth
+
+Page purpose:
+
+Allow the user to sign in or create an account with minimal friction.
+
+Authentication methods:
+
+- Continue with Google
+- Continue with Apple
+- Continue with Microsoft
+- Continue with Facebook
+- Continue with email
+
+Email options:
+
+- email and password,
+- passwordless magic link where supported,
+- forgot password,
+- create account.
+
+Do not display a provider button unless:
+
+- the provider is enabled,
+- environment configuration is valid,
+- redirect URLs are configured,
+- and the provider has passed a startup health check.
+
+Do not display inactive buttons with “coming soon” labels in the primary authentication area.
+
+Authentication layout:
+
+- centered authentication card,
+- selected sport shown subtly above the form,
+- one strong heading,
+- provider buttons,
+- simple divider,
+- email option,
+- terms and privacy disclosure.
+
+Example:
+
+Tennis selected
+
+“Create your AceCoach account”
+
+[Continue with Google]
+[Continue with Apple]
+[Continue with Microsoft]
+[Continue with Facebook]
+
+──────── or ────────
+
+[Continue with email]
+
+After successful authentication:
+
+1. Validate OAuth state.
+2. Reject open redirects.
+3. Reconcile or create the user profile.
+4. Attach the anonymous journey to the authenticated user.
+5. Preserve the selected sport.
+6. Redirect directly to Step 3.
+7. Do not redirect to a generic dashboard.
+
+Authentication failure handling:
+
+- expired link,
+- invalid credentials,
+- cancelled provider flow,
+- provider unavailable,
+- email already registered,
+- callback mismatch,
+- session expired,
+- network interruption.
+
+Each error must:
+
+- use plain language,
+- retain the selected sport,
+- retain the intended destination,
+- offer one clear recovery action.
+
+Security requirements:
+
+- use PKCE where supported;
+- validate OAuth state;
+- use a strict redirect allowlist;
+- prevent arbitrary return URLs;
+- rotate sessions appropriately;
+- do not expose provider secrets;
+- do not log access tokens;
+- protect callback routes from replay.
+
+Authentication acceptance criteria:
+
+- Google authentication works when configured.
+- Apple authentication works when configured.
+- Microsoft authentication works when configured.
+- Facebook authentication works when configured.
+- Email authentication works.
+- Disabled providers are not shown.
+- Selected sport survives the complete authentication flow.
+- No successful login redirects to the dashboard during this journey.
+- Failed authentication does not discard the user’s journey.
+
+============================================================
+6. STEP 3 — UPLOAD VIDEO AND ESSENTIAL INFORMATION
+============================================================
+
+Route:
+
+/start
+
+Alternative permitted route:
+
+/upload
+
+This page combines:
+
+- video upload,
+- essential profile information,
+- movement selection,
+- capture guidance,
+- consent.
+
+Do not send users to a separate full profile page before upload.
+
+Use a single-page form with three visually distinct blocks:
+
+A. Your video
+B. About this movement
+C. About you
+
+Do not use a long wizard unless mobile usability requires progressive disclosure.
+
+------------------------------------------------------------
+6.1 Your video
+------------------------------------------------------------
+
+Provide:
+
+- drag-and-drop upload;
+- file picker;
+- clear supported-format information;
+- maximum duration;
+- maximum file size;
+- thumbnail preview;
+- replace video;
+- remove video;
+- upload-complete confirmation;
+- visible delete action after server registration.
+
+Display simple capture guidance before selection:
+
+- keep the full body visible;
+- include both feet;
+- include the racket, bat, or equipment;
+- keep the camera stable;
+- record from the requested angle;
+- include two to five repetitions where possible.
+
+After file selection, validate:
+
+- file type,
+- file size,
+- duration,
+- resolution,
+- orientation,
+- frame-rate metadata,
+- probable blur,
+- body visibility where supported,
+- equipment visibility where supported.
+
+Show one of:
+
+GOOD TO ANALYZE
+
+USABLE WITH LIMITATIONS
+
+RECORD AGAIN FOR A RELIABLE REPORT
+
+Allow the original video to be stored even when analysis quality is inadequate, but do not produce misleading technical scores.
+
+------------------------------------------------------------
+6.2 About this movement
+------------------------------------------------------------
+
+Movement selection is mandatory.
+
+The options must change according to the selected sport.
+
+Tennis:
+
+- Forehand
+- One-handed backhand
+- Two-handed backhand
+- Serve
+- Forehand volley
+- Backhand volley
+- Slice
+- Overhead
+- Other / Not sure
+
+Badminton:
+
+- Forehand clear
+- Backhand clear
+- Smash
+- Drop shot
+- Forehand serve
+- Backhand serve
+- Net shot
+- Drive
+- Other / Not sure
+
+Squash:
+
+- Forehand drive
+- Backhand drive
+- Forehand volley
+- Backhand volley
+- Serve
+- Boast
+- Drop
+- Other / Not sure
+
+Cricket:
+
+- Front-foot batting
+- Back-foot batting
+- Defensive shot
+- Drive
+- Pull
+- Bowling
+- Wicketkeeping movement
+- Other / Not sure
+
+Table Tennis:
+
+- Forehand drive
+- Backhand drive
+- Forehand topspin
+- Backhand topspin
+- Forehand push
+- Backhand push
+- Serve
+- Smash
+- Other / Not sure
+
+Do not reduce one-handed and two-handed backhands to the same category.
+
+Required movement information:
+
+- movement or stroke,
+- dominant side,
+- camera angle where known.
+
+Optional movement information:
+
+- intended shot outcome,
+- training or match setting,
+- specific question,
+- whether the clip includes multiple movements.
+
+When “Other / Not sure” is selected:
+
+- analysis may classify the movement;
+- require user confirmation before sport-specific scoring;
+- do not silently default to forehand.
+
+------------------------------------------------------------
+6.3 About you
+------------------------------------------------------------
+
+Ask only for fields required to personalize this analysis.
+
+Required:
+
+- age band,
+- playing level,
+- dominant side,
+- analysis-processing consent.
+
+Optional:
+
+- primary goal,
+- ranking system,
+- ranking value,
+- years playing,
+- training frequency,
+- silhouette preference,
+- height range,
+- coach relationship.
+
+Use age band rather than exact birth date unless a legitimate product requirement exists.
+
+Example age bands:
+
+- Under 10
+- 10–12
+- 13–15
+- 16–18
+- 19–29
+- 30–39
+- 40–49
+- 50–59
+- 60+
+
+Playing-level options must use understandable language:
+
+- New to the sport
+- Beginner
+- Developing
+- Intermediate
+- Advanced
+- Competitive
+- Coach / professional
+
+Show recognized ranking fields only after the user indicates that they have one.
+
+Do not infer gender from the video.
+
+Silhouette preference options:
+
+- Player-matched
+- Neutral
+- Female
+- Male
+
+The preference must affect rendering only, not scoring.
+
+------------------------------------------------------------
+6.4 Primary action
+------------------------------------------------------------
+
+The page must have one dominant button:
+
+“Analyze my video”
+
+Enable it only when:
+
+- video validation is complete,
+- movement has been selected,
+- required athlete fields are complete,
+- consent is valid,
+- upload registration is complete.
+
+Do not use a generic “Continue” label.
+
+Before starting analysis:
+
+1. Save the intake information.
+2. Compute and store the video checksum.
+3. Confirm video ownership.
+4. Create an idempotent analysis job.
+5. Navigate to Step 4.
+
+Upload-page acceptance criteria:
+
+- Required fields are obvious.
+- Optional fields do not overwhelm the page.
+- Movement selection is mandatory.
+- Upload completion is visibly confirmed.
+- The user can replace or delete the video.
+- Double-clicking Analyze does not create duplicate jobs.
+- Refreshing the page restores saved fields.
+- Refreshing after local file selection clearly explains whether file reselection is required.
+- No fake resumability is claimed.
+- Mobile upload works.
+
+============================================================
+7. STEP 4 — ANALYSIS PROCESSING
+============================================================
+
+Route:
+
+/analysis/[sessionId]
+
+Page purpose:
+
+Give the user confidence that AceCoach is working without exposing internal complexity.
+
+Show four simple confirmed stages:
+
+1. Checking video quality
+2. Confirming the movement
+3. Measuring the technique
+4. Building your coaching report
+
+Use a calm animated visual.
+
+Do not show:
+
+- fabricated percentages,
+- fake countdowns,
+- random progress movement,
+- raw logs,
+- model names,
+- internal queue terminology.
+
+Show:
+
+- current confirmed stage,
+- completed stages,
+- elapsed time,
+- whether the user may leave the page,
+- notification option,
+- retry state when applicable,
+- cancel action when safe.
+
+When classification conflicts with the user’s selected movement:
+
+Display an interruption card:
+
+“You selected Forehand.
+AceCoach detected Two-handed backhand.
+Confidence: High.”
+
+Actions:
+
+- Use detected movement
+- Keep Forehand
+- Review the clip
+
+Do not continue sport-specific scoring until the conflict is resolved.
+
+When confidence is low:
+
+“We could not confirm the movement reliably.”
+
+Actions:
+
+- Choose the movement manually
+- Review the clip
+- Upload a better video
+
+When the video is unsuitable:
+
+- preserve the video;
+- explain the exact capture problem;
+- do not create a fake report;
+- provide a direct re-record action.
+
+When processing fails:
+
+- preserve the original video;
+- preserve the last successful report;
+- show a clear reason;
+- allow retry;
+- provide Report issue.
+
+When complete:
+
+- navigate automatically to the report;
+- provide a visible Open report action as a fallback.
+
+Analysis-page acceptance criteria:
+
+- Processing stages represent server-confirmed states.
+- Page refresh restores the current job.
+- Worker restart does not create a duplicate job.
+- Failure does not delete the video.
+- No-score behavior is used when reliability fails.
+- The user can leave and return.
+- The page does not expose unnecessary technical details.
+
+============================================================
+8. STEP 5 — REPORT
+============================================================
+
+Route:
+
+/report/[sessionId]
+
+The report must remain professional, highly visual, and easy to understand.
+
+Use exactly four primary sections.
+
+Do not restore a complex dashboard layout.
+
+------------------------------------------------------------
+8.1 Section 1 — Coach Summary
+------------------------------------------------------------
+
+Display:
+
+WHAT YOU DO WELL
+
+FIX THIS FIRST
+
+WHY IT MATTERS
+
+YOUR CUE
+
+HOW YOU WILL KNOW IT IMPROVED
+
+Only one primary correction appears here.
+
+Example:
+
+WHAT YOU DO WELL
+You keep your head relatively stable through the swing.
+
+FIX THIS FIRST
+Start the shoulder turn earlier.
+
+WHY IT MATTERS
+Late preparation makes the forward swing rushed and reduces control.
+
+YOUR CUE
+“Turn before the ball arrives.”
+
+HOW YOU WILL KNOW IT IMPROVED
+Your shoulder turn begins before the forward swing in at least eight of ten repetitions.
+
+Include:
+
+- Show me button,
+- Start practice button,
+- Ask AceCoach button.
+
+The summary must be understood within five seconds.
+
+------------------------------------------------------------
+8.2 Section 2 — Watch and Compare
+------------------------------------------------------------
+
+Show:
+
+YOUR MOVEMENT
+
+YOUR NEXT TARGET
+
+BEST-IN-CLASS
+
+Your Movement:
+
+- clean original video by default;
+- no skeleton;
+- no pose dots;
+- no technical overlay;
+- no annotations unless enabled.
+
+Your Next Target:
+
+- category-appropriate motion twin;
+- same handedness;
+- same movement type;
+- developmentally realistic;
+- not merely a slowed elite movement.
+
+Best-in-Class:
+
+- evidence-backed movement archetype;
+- not one copied professional athlete;
+- clearly labelled as an exemplar rather than a universal ideal.
+
+Controls:
+
+- play and pause;
+- 0.25x;
+- 0.5x;
+- 1x;
+- previous frame;
+- next frame;
+- previous phase;
+- next phase;
+- loop phase;
+- loop movement;
+- timeline scrub.
+
+Phases:
+
+- Preparation
+- Load
+- Swing
+- Contact
+- Finish
+- Recovery
+
+Allow:
+
+“Compare one difference”
+
+When enabled, show no more than three labelled guides.
+
+Never place unexplained arrows over the video.
+
+------------------------------------------------------------
+8.3 Section 3 — Your Improvements
+------------------------------------------------------------
+
+Show a maximum of three improvements.
+
+Each improvement includes:
+
+- simple title,
+- what AceCoach observed,
+- where it happened,
+- why it matters,
+- what to change,
+- coaching cue,
+- jump-to-frame action.
+
+Do not repeat the primary correction using different wording.
+
+Prioritize findings based on:
+
+- reliability,
+- expected impact,
+- coachability,
+- relevance to the athlete’s level,
+- relationship to the athlete’s goal.
+
+------------------------------------------------------------
+8.4 Section 4 — Practice Plan
+------------------------------------------------------------
+
+Display:
+
+- maximum two drills,
+- sets,
+- repetitions,
+- short instructions,
+- one cue,
+- common mistake,
+- measurable success target,
+- when to record again,
+- same-camera guidance.
+
+Primary action:
+
+“Start coaching conversation”
+
+Secondary action:
+
+“Record reassessment”
+
+------------------------------------------------------------
+8.5 Advanced analysis
+------------------------------------------------------------
+
+Place technical content inside one collapsed section:
+
+“Advanced analysis for coaches and sports scientists”
+
+It may contain:
+
+- measurements,
+- angle proxies,
+- timing,
+- confidence,
+- source frames,
+- measurement classification,
+- formulas,
+- charts,
+- engine versions,
+- evidence,
+- limitations.
+
+Every item must be labelled as one of:
+
+- measured in image plane,
+- estimated proxy,
+- inferred coaching interpretation,
+- unavailable.
+
+The report must not claim:
+
+- force,
+- muscle activation,
+- joint loading,
+- precise 3D movement,
+- exact racket-face angle,
+- exact ball contact,
+- injury diagnosis,
+- age percentile,
+- professional equivalence,
+
+unless separately validated.
+
+Report acceptance criteria:
+
+- Exactly four primary sections.
+- One primary correction.
+- No duplicate finding.
+- Clean user video by default.
+- Technical content collapsed.
+- Report understandable on mobile.
+- All cues are plain language.
+- Every correction links to visible evidence.
+- Every correction links to practice.
+- The final action naturally leads to Step 6.
+
+============================================================
+9. STEP 6 — COACHING CONVERSATION
+============================================================
+
+Route:
+
+/coach/[sessionId]
+
+This is not a generic chatbot.
+
+It is a report-grounded coaching conversation.
+
+The page must show:
+
+- concise report context,
+- active correction,
+- current drill,
+- coaching conversation,
+- suggested questions,
+- video and frame references where relevant.
+
+Recommended desktop layout:
+
+LEFT
+Compact coaching context
+
+RIGHT
+Conversation
+
+Recommended mobile layout:
+
+Conversation first, with collapsible report context.
+
+Opening message:
+
+“I’ve reviewed your report. Your first priority is starting the shoulder turn earlier. What would you like help with?”
+
+Suggested questions:
+
+- Explain my main correction more simply
+- Show me the exact moment
+- Why does this matter?
+- How should I practise this?
+- What mistake should I avoid?
+- Is this appropriate for my level?
+- Create my next practice session
+- When should I record again?
+
+The coaching agent may:
+
+- explain structured findings;
+- refer to exact phases and timestamps;
+- simplify technical language;
+- answer questions about drills;
+- adjust approved drill difficulty;
+- create a practice-session outline;
+- summarize progress;
+- prepare questions for a human coach.
+
+The coaching agent may not:
+
+- invent measurements;
+- change confidence;
+- claim a new movement observation without evidence;
+- diagnose injury;
+- create fake professional comparisons;
+- override a reliability gate;
+- imply that a proxy is directly measured;
+- recommend unsafe practice volume;
+- alter stored analysis without explicit user confirmation.
+
+Every technical answer must be grounded in:
+
+- the structured report,
+- the measurement registry,
+- the approved terminology dictionary,
+- the approved drill library,
+- the athlete’s saved context.
+
+When the user asks something unsupported:
+
+“AceCoach cannot determine that reliably from this video.”
+
+Then explain what recording or information would be required.
+
+Conversation features:
+
+- persistent thread,
+- timestamped messages,
+- suggested prompts,
+- frame-link responses,
+- drill-link responses,
+- clear new-conversation action,
+- export conversation,
+- share with coach,
+- flag incorrect advice,
+- privacy notice.
+
+Conversation acceptance criteria:
+
+- The assistant knows the active report.
+- Answers cite the relevant phase or finding.
+- Invented metric values are schema-blocked.
+- Prompt injection through filenames, notes, or comments is neutralized.
+- Conversation history remains attached to the analysis session.
+- The user can return to the report without losing the conversation.
+- Mobile keyboard behavior is reliable.
+
+============================================================
+10. NAVIGATION REDESIGN
+============================================================
+
+During the six-step flow, keep navigation minimal.
+
+Before the report:
+
+- logo,
+- progress indicator,
+- help,
+- account menu.
+
+Do not show a full application sidebar.
+
+After the report, provide a restrained account menu containing:
+
+- My videos
+- My reports
+- Practice
+- Progress
+- Profile
+- Coach access
+- Support
+- Settings
+- Sign out
+
+Do not make these destinations compete with the primary journey.
+
+Remove or consolidate duplicated navigation items.
+
+The dashboard may remain as a returning-user home, but it must not interrupt the first analysis.
+
+Returning-user dashboard should show only:
+
+- Continue current journey
+- Upload another video
+- Active coaching priority
+- Next practice
+- Reassessment due
+- Recent reports
+
+============================================================
+11. LIGHT PROFESSIONAL DESIGN SYSTEM
+============================================================
+
+Create a cohesive light design system.
+
+Visual direction:
+
+- refined warm-white or cool-white background;
+- white content surfaces;
+- charcoal primary text;
+- slate secondary text;
+- restrained borders;
+- soft shadows;
+- one accent colour;
+- generous spacing;
+- premium typography;
+- minimal animation.
+
+Recommended foundation:
+
+Page background:
+#F6F7F9 or equivalent
+
+Primary surface:
+#FFFFFF
+
+Primary text:
+#171A1F
+
+Secondary text:
+#667085
+
+Border:
+#E5E7EB
+
+Primary accent:
+deep blue, teal, or sport-adaptive accent with accessible contrast
+
+Success:
+restrained green
+
+Warning:
+restrained amber
+
+Error:
+restrained red
+
+Do not use:
+
+- black full-page backgrounds,
+- neon gradients,
+- excessive glass effects,
+- large glowing borders,
+- dense card grids,
+- unnecessary badges,
+- competing accent colours,
+- decorative motion that delays use.
+
+Typography:
+
+- Geist, Inter, or equivalent professional sans serif;
+- clear hierarchy;
+- large but restrained headings;
+- body text with comfortable line height;
+- avoid all-uppercase paragraphs.
+
+Spacing:
+
+- consistent 4/8-point scale;
+- maximum readable content width;
+- generous section gaps;
+- compact form labels;
+- clear button hierarchy.
+
+Cards:
+
+- 12–16 px radius;
+- subtle border;
+- minimal shadow;
+- consistent padding;
+- avoid nesting several cards inside one another.
+
+Buttons:
+
+Primary:
+filled accent button
+
+Secondary:
+white or subtle neutral button
+
+Tertiary:
+text action
+
+Only one primary button per screen.
+
+Motion:
+
+- 150–250 ms transitions;
+- no bounce effects;
+- respect reduced-motion preferences;
+- use animation only to explain state.
+
+============================================================
+12. RESPONSIVE DESIGN
+============================================================
+
+Design mobile-first.
+
+Breakpoints must support:
+
+- 320 px phone,
+- 375 px phone,
+- 430 px phone,
+- tablet,
+- laptop,
+- desktop,
+- wide desktop.
+
+Mobile requirements:
+
+- no horizontal scrolling;
+- minimum 44 px touch targets;
+- forms use appropriate mobile input types;
+- upload works from camera roll;
+- comparison panels stack clearly;
+- conversation composer remains visible;
+- progress indicator compresses gracefully;
+- dialogs fit the viewport;
+- video controls remain usable.
+
+Desktop requirements:
+
+- use whitespace rather than filling the screen;
+- do not stretch text across the full viewport;
+- report content has a sensible maximum width;
+- comparison area may use the full available content width.
+
+============================================================
+13. ACCESSIBILITY
+============================================================
+
+Meet WCAG 2.2 AA where practical.
+
+Required:
+
+- keyboard-accessible sport selection;
+- visible focus state;
+- semantic form labels;
+- error association;
+- screen-reader upload progress;
+- descriptive button labels;
+- sufficient contrast;
+- captions or transcript support for coaching voice;
+- reduced motion;
+- accessible dialogs;
+- no meaning communicated by colour alone;
+- logical heading order;
+- error summary for long forms.
+
+============================================================
+14. ROUTE AND FEATURE ARCHITECTURE
+============================================================
+
+Recommended routes:
+
+src/app/
+  page.tsx
+  auth/page.tsx
+  start/page.tsx
+  analysis/[sessionId]/page.tsx
+  report/[sessionId]/page.tsx
+  coach/[sessionId]/page.tsx
+
+Secondary authenticated routes:
+
+  home/page.tsx
+  videos/page.tsx
+  practice/page.tsx
+  progress/page.tsx
+  profile/page.tsx
+  support/page.tsx
+  settings/page.tsx
+
+Feature modules:
+
+src/features/
+  journey/
+  sport-selection/
+  authentication/
+  athlete-intake/
+  capture-guidance/
+  upload/
+  analysis-session/
+  movement-confirmation/
+  report/
+  motion-twin/
+  coaching-conversation/
+  practice/
+  reassessment/
+  media-library/
+  support/
+
+Platform modules:
+
+src/platform/
+  auth/
+  database/
+  storage/
+  jobs/
+  security/
+  observability/
+  configuration/
+  feature-flags/
+
+Sport modules:
+
+src/sports/
+  shared/
+  tennis/
+  badminton/
+  squash/
+  cricket/
+  table-tennis/
+
+Do not place business logic in route files.
+
+Route files may:
+
+- load the current session;
+- enforce authentication;
+- invoke a feature entry point;
+- render the feature page.
+
+============================================================
+15. JOURNEY STATE CONTRACT
+============================================================
+
+Create a versioned AthleteJourney contract.
+
+Example:
+
+{
+  "version": "athlete-journey-v1",
+  "journeyId": "",
+  "userId": null,
+  "selectedSport": "tennis",
+  "currentStep": "upload",
+  "completedSteps": ["sport", "auth"],
+  "videoId": null,
+  "analysisSessionId": null,
+  "reportId": null,
+  "conversationId": null,
+  "draftIntake": {},
+  "createdAt": "",
+  "updatedAt": ""
+}
+
+Required behavior:
+
+- anonymous creation after sport selection;
+- secure attachment after login;
+- one active first-analysis journey per user and sport;
+- resume from the last valid step;
+- prevent access to another user’s journey;
+- expire abandoned anonymous journeys;
+- do not store sensitive profile fields in unprotected browser storage.
+
+============================================================
+16. MINIMUM DATA MODEL
+============================================================
+
+Reuse existing v5 tables where reliable.
+
+Do not create duplicates merely because the user flow changed.
+
+Add or update only when required:
+
+athlete_journeys
+
+- id
+- user_id
+- anonymous_token_hash
+- selected_sport_id
+- current_step
+- video_id
+- analysis_session_id
+- report_id
+- coaching_conversation_id
+- draft_intake
+- created_at
+- updated_at
+- expires_at
+
+coaching_conversations
+
+- id
+- user_id
+- analysis_session_id
+- status
+- coaching_context_version
+- created_at
+- updated_at
+
+coaching_messages
+
+- id
+- conversation_id
+- role
+- message
+- structured_references
+- model_manifest
+- moderation_status
+- created_at
+
+oauth_provider_health
+
+Do not store provider secrets here.
+
+Store only:
+
+- provider name,
+- enabled status,
+- last configuration check,
+- public health status.
+
+All migrations must:
+
+- declare prerequisites;
+- be repeat-safe where possible;
+- include RLS;
+- include verification queries;
+- include rollback notes;
+- avoid breaking existing v5 records.
+
+============================================================
+17. AGENTIC ARCHITECTURE
+============================================================
+
+Keep the user interface simple even when the backend uses multiple agents.
+
+Recommended internal services:
+
+Journey Orchestrator
+
+Responsibilities:
+
+- determine current step;
+- validate prerequisites;
+- resume journey;
+- coordinate state transitions.
+
+Capture Quality Agent
+
+Responsibilities:
+
+- validate recording quality;
+- identify hard and soft blockers;
+- create re-recording guidance.
+
+Movement Recognition Agent
+
+Responsibilities:
+
+- classify movement;
+- provide confidence;
+- identify conflicts;
+- never silently override the user.
+
+Biomechanics Engine
+
+Responsibilities:
+
+- deterministic measurements;
+- reliability gates;
+- scoring;
+- phase extraction.
+
+Report Composition Agent
+
+Responsibilities:
+
+- organize verified findings;
+- prioritize one correction;
+- choose plain-language explanations;
+- connect findings to approved drills.
+
+Motion Twin Engine
+
+Responsibilities:
+
+- category reference;
+- best-in-class reference;
+- synchronization;
+- appearance fallback;
+- difference markers.
+
+Coaching Conversation Agent
+
+Responsibilities:
+
+- answer report-grounded questions;
+- explain findings;
+- support practice;
+- refuse unsupported conclusions.
+
+The LLM must not perform deterministic measurement.
+
+Required pipeline:
+
+Video
+→ capture quality
+→ athlete selection
+→ movement confirmation
+→ repetition and phase detection
+→ deterministic biomechanics
+→ reliability gate
+→ coaching findings
+→ report
+→ grounded conversation
+
+Every output-affecting engine and prompt version must be stored.
+
+============================================================
+18. COACHING-CONVERSATION SAFETY
+============================================================
+
+Create a structured context builder.
+
+Only send the conversation agent:
+
+- sanitized athlete context;
+- verified report findings;
+- approved measurements;
+- approved terminology;
+- approved drills;
+- limitations;
+- active phase and timestamp references.
+
+Do not send:
+
+- service-role keys;
+- signed storage URLs;
+- internal SQL;
+- other users’ data;
+- raw untrusted filenames as instructions;
+- uncontrolled database text.
+
+Validate agent output against a schema.
+
+Reject output that:
+
+- introduces a metric not present in context;
+- changes a numeric value;
+- creates a medical diagnosis;
+- creates a prohibited claim;
+- includes an unsupported professional comparison;
+- recommends unsafe volume.
+
+============================================================
+19. ANALYTICS AND OBSERVABILITY
+============================================================
+
+Track the simplified funnel:
+
+- landing viewed;
+- sport selected;
+- authentication started;
+- authentication completed;
+- upload started;
+- upload completed;
+- intake completed;
+- analysis started;
+- movement confirmation requested;
+- analysis completed;
+- report opened;
+- Show me selected;
+- practice opened;
+- coaching conversation started;
+- reassessment recorded.
+
+Primary funnel metrics:
+
+- sport-selection completion;
+- authentication completion;
+- upload completion;
+- analysis completion;
+- report-open rate;
+- coaching-conversation start rate;
+- first reassessment rate.
+
+Also track:
+
+- upload failures;
+- duplicate jobs;
+- movement conflicts;
+- no-score outcomes;
+- processing failures;
+- report exits;
+- conversation refusals;
+- support requests.
+
+Do not log raw video, chat secrets, authentication tokens, or sensitive profile fields.
+
+============================================================
+20. MIGRATION FROM V5
+============================================================
+
+Preserve:
+
+- authentication;
+- existing profiles;
+- existing videos;
+- analysis sessions;
+- reports;
+- motion-twin data;
+- practice plans;
+- progress records;
+- support records;
+- consent;
+- ownership;
+- security policies.
+
+Reorganize the user interface without deleting valid records.
+
+Create compatibility adapters where v5 report contracts differ from v6.
+
+Existing report URLs should:
+
+- continue working,
+- redirect safely,
+- or render through a compatibility layer.
+
+Do not make users re-upload videos solely because the interface changed.
+
+============================================================
+21. IMPLEMENTATION ITERATIONS
+============================================================
+
+Do not complete this as one uncontrolled rewrite.
+
+------------------------------------------------------------
+ITERATION 1 — Audit and experience map
+------------------------------------------------------------
+
+Create:
+
+docs/V600_CURRENT_STATE_AUDIT.md
+docs/V600_ROUTE_MAP.md
+docs/V600_USER_JOURNEY.md
+docs/V600_DATA_COMPATIBILITY.md
+docs/V600_CHANGE_MAP.md
+
+Audit:
+
+- every route;
+- every redirect;
+- every authentication provider;
+- upload flow;
+- profile flow;
+- report flow;
+- coaching functionality;
+- existing v5 migrations;
+- current mobile behavior;
+- duplicate pages and components.
+
+Do not modify core behavior until the audit is complete.
+
+------------------------------------------------------------
+ITERATION 2 — Design system and landing page
+------------------------------------------------------------
+
+Implement:
+
+- light design tokens;
+- typography;
+- spacing;
+- buttons;
+- inputs;
+- sport cards;
+- responsive shell;
+- accessibility states;
+- sport-selection landing page.
+
+Quality gate:
+
+- rendered desktop screenshot;
+- rendered mobile screenshot;
+- keyboard test;
+- selected sport persists.
+
+------------------------------------------------------------
+ITERATION 3 — Authentication
+------------------------------------------------------------
+
+Implement:
+
+- simplified auth page;
+- configured OAuth providers;
+- email authentication;
+- secure callback;
+- selected-sport preservation;
+- direct redirect to Step 3.
+
+Quality gate:
+
+- provider configuration tests;
+- callback security tests;
+- no dashboard redirect;
+- authentication errors preserve journey.
+
+------------------------------------------------------------
+ITERATION 4 — Upload and intake
+------------------------------------------------------------
+
+Implement:
+
+- combined upload and intake page;
+- sport-specific movement options;
+- mandatory movement;
+- upload validation;
+- upload confirmation;
+- delete;
+- replace;
+- saved draft;
+- idempotent Analyze action.
+
+Quality gate:
+
+- refresh test;
+- duplicate upload test;
+- movement required;
+- mobile upload test;
+- delete authorization test.
+
+------------------------------------------------------------
+ITERATION 5 — Analysis processing
+------------------------------------------------------------
+
+Implement:
+
+- simplified stage page;
+- durable job restoration;
+- movement-conflict workflow;
+- no-score failure flow;
+- retry and support actions.
+
+Quality gate:
+
+- worker restart;
+- refresh;
+- duplicate Analyze click;
+- low-confidence classification;
+- unsuitable video.
+
+------------------------------------------------------------
+ITERATION 6 — Report
+------------------------------------------------------------
+
+Implement:
+
+- four-section report;
+- clean video;
+- motion comparison;
+- one primary correction;
+- plain language;
+- practice plan;
+- advanced section.
+
+Quality gate:
+
+- five-second comprehension;
+- no duplicated findings;
+- mobile comparison;
+- correct phase links;
+- technical content collapsed.
+
+------------------------------------------------------------
+ITERATION 7 — Coaching conversation
+------------------------------------------------------------
+
+Implement:
+
+- grounded conversation;
+- report context;
+- suggested questions;
+- frame references;
+- drill references;
+- conversation persistence;
+- export;
+- feedback action.
+
+Quality gate:
+
+- hallucination tests;
+- prompt-injection tests;
+- unsupported-question refusal;
+- exact metric preservation;
+- mobile composer test.
+
+------------------------------------------------------------
+ITERATION 8 — Returning-user experience
+------------------------------------------------------------
+
+Implement:
+
+- restrained home page;
+- videos;
+- reports;
+- practice;
+- progress;
+- profile;
+- support;
+- account menu.
+
+Quality gate:
+
+- first-time journey remains uninterrupted;
+- returning user can resume;
+- no duplicate navigation.
+
+------------------------------------------------------------
+ITERATION 9 — Final red team
+------------------------------------------------------------
+
+Run all red-team rounds below.
+
+============================================================
+22. RED-TEAM REVIEW
+============================================================
+
+Create:
+
+docs/RED_TEAM_REVIEW_V600.md
+docs/RISK_REGISTER_V600.md
+
+------------------------------------------------------------
+RED-TEAM ROUND 1 — Flow simplification
+------------------------------------------------------------
+
+Test:
+
+- first-time user;
+- returning user;
+- authenticated user;
+- unauthenticated user;
+- abandoned journey;
+- sport change;
+- expired anonymous journey;
+- deep-linked report.
+
+Verify:
+
+- no unnecessary dashboard;
+- no repeated sport selection;
+- no dead end;
+- no unclear primary action;
+- no unnecessary form field.
+
+------------------------------------------------------------
+RED-TEAM ROUND 2 — Authentication
+------------------------------------------------------------
+
+Test:
+
+- OAuth cancellation;
+- invalid OAuth state;
+- open redirect;
+- disabled provider;
+- expired email link;
+- session expiry;
+- duplicate profile;
+- account linking;
+- browser back button.
+
+Resolve all critical and high authentication risks.
+
+------------------------------------------------------------
+RED-TEAM ROUND 3 — Upload and media ownership
+------------------------------------------------------------
+
+Test:
+
+- refresh during upload;
+- refresh after upload;
+- duplicate file;
+- same filename with different content;
+- registration failure;
+- storage failure;
+- delete another user’s video;
+- malicious filename;
+- unsupported format;
+- oversized video.
+
+Verify:
+
+- raw video is never silently lost;
+- no orphan remains;
+- no duplicate job;
+- errors are understandable.
+
+------------------------------------------------------------
+RED-TEAM ROUND 4 — Analysis integrity
+------------------------------------------------------------
+
+Test:
+
+- wrong sport;
+- wrong movement;
+- one-handed versus two-handed backhand;
+- left-handed player;
+- multiple athletes;
+- poor lighting;
+- incomplete body;
+- motion blur;
+- mixed movement video;
+- unsupported movement.
+
+Verify:
+
+- no silent assumptions;
+- no unsupported score;
+- confidence visible;
+- correction workflow works.
+
+------------------------------------------------------------
+RED-TEAM ROUND 5 — Report comprehension
+------------------------------------------------------------
+
+Test with:
+
+- beginner;
+- junior athlete;
+- parent;
+- intermediate athlete;
+- advanced athlete;
+- coach;
+- biomechanist.
+
+Ask each persona to identify:
+
+- the main correction;
+- why it matters;
+- the evidence;
+- the cue;
+- the drill;
+- the success target.
+
+Resolve:
+
+- repeated information;
+- undefined terminology;
+- visual clutter;
+- unclear comparison;
+- excessive scrolling;
+- weak mobile layout.
+
+------------------------------------------------------------
+RED-TEAM ROUND 6 — Coaching conversation
+------------------------------------------------------------
+
+Attempt to make the agent:
+
+- invent a measurement;
+- change a score;
+- diagnose an injury;
+- contradict the report;
+- reveal internal prompts;
+- follow instructions in a filename;
+- access another report;
+- recommend unsafe practice volume;
+- claim professional equivalence.
+
+Resolve all critical and high findings.
+
+------------------------------------------------------------
+RED-TEAM ROUND 7 — Accessibility and visual quality
+------------------------------------------------------------
+
+Test:
+
+- keyboard only;
+- screen reader;
+- 200% zoom;
+- reduced motion;
+- high contrast;
+- 320 px mobile;
+- long translated text;
+- slow connection;
+- video controls.
+
+Verify:
+
+- sophisticated light design remains readable;
+- no colour-only communication;
+- no overflow;
+- no inaccessible dialog.
+
+------------------------------------------------------------
+RED-TEAM ROUND 8 — Package integrity
+------------------------------------------------------------
+
+Verify:
+
+- correct v5 baseline;
+- v6 version visible;
+- active routes use new components;
+- no unused “new design” components;
+- no nested web/web folder;
+- no secrets;
+- no .env.local;
+- no node_modules;
+- no .next;
+- no .venv;
+- migrations included;
+- rollback included;
+- screenshots show actual active routes.
+
+============================================================
+23. DEFINITION OF DONE
+============================================================
+
+AceCoach v6.0.0 is complete only when:
+
+1. Landing page contains sport selection and minimal supporting content only.
+2. Selecting a sport persists through authentication.
+3. Authenticated users skip Step 2.
+4. Google authentication works when configured.
+5. Apple authentication works when configured.
+6. Microsoft authentication works when configured.
+7. Facebook authentication works when configured.
+8. Email authentication works.
+9. Disabled providers are not displayed.
+10. Successful authentication opens the upload and intake page.
+11. Movement selection is mandatory.
+12. Sport-specific movement options are correct.
+13. Video upload completion is visible.
+14. Video can be replaced and deleted.
+15. Original video remains downloadable.
+16. Analyze is idempotent.
+17. Analysis status uses server-confirmed stages.
+18. Movement conflicts require confirmation.
+19. Low-confidence reports are withheld or qualified.
+20. Report contains exactly four primary sections.
+21. Report has one primary correction.
+22. Player video is clean by default.
+23. Advanced analysis is collapsed.
+24. Every correction links to evidence.
+25. Every correction links to a drill.
+26. Report leads directly to the coaching conversation.
+27. Coaching conversation is grounded in the report.
+28. Coaching agent cannot invent measurements.
+29. Conversation persists by session.
+30. First-time users are not sent to a dashboard.
+31. Returning users can resume an incomplete journey.
+32. Desktop layout is professional and spacious.
+33. Mobile layout is complete and usable.
+34. Light-theme contrast passes accessibility checks.
+35. No critical or high security finding remains.
+36. TypeScript passes.
+37. ESLint passes.
+38. Python tests pass.
+39. Migration tests pass.
+40. Production build passes.
+41. Active routes are visually verified.
+42. Final package preserves valid v5 data.
+43. Installation and rollback instructions are included.
+44. Release notes claim only functionality visible in the active product.
+
+============================================================
+24. REQUIRED FINAL OUTPUT
+============================================================
+
+Return:
+
+1. Complete AceCoach AI v6.0.0 replacement ZIP
+2. Current-state audit
+3. Route map
+4. Six-step journey map
+5. Architecture document
+6. Data-compatibility document
+7. Database migration
+8. Migration verification queries
+9. Rollback instructions
+10. Release notes
+11. Red-team report
+12. Risk register
+13. Automated test report
+14. Screenshots for:
+    - sport selection desktop,
+    - sport selection mobile,
+    - authentication,
+    - upload and intake,
+    - analysis processing,
+    - report summary,
+    - watch and compare,
+    - practice plan,
+    - coaching conversation desktop,
+    - coaching conversation mobile,
+    - returning-user home.
+15. Installation instructions
+16. Version page
+17. SHA-256 checksum
+
+Do not claim completion until all six active routes are visibly verified:
+
+/
+→ /auth
+→ /start
+→ /analysis/[sessionId]
+→ /report/[sessionId]
+→ /coach/[sessionId]
+
+The final product must feel simple to the athlete even though the underlying system is technically sophisticated.
+
+The outcome is not a larger platform.
+
+The outcome is a clearer path from video to improvement.

@@ -1,0 +1,84 @@
+openapi: 3.1.0
+info:
+  title: AceCoach Analysis API
+  version: 2.1.0
+paths:
+  /v1/analysis/sessions/{sessionId}/run:
+    post:
+      summary: Run or resume an idempotent analysis
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [source_video_hash, requested_strokes, versions, player_id]
+              properties:
+                source_video_hash: { type: string }
+                player_id:
+                  type: string
+                  description: >
+                    Added in 2.2.0. The engine rejects a run with 403 if guardian_consent for this
+                    player_id does not have scope_ai_analysis = true, per safeguarding.json. A moderation
+                    precheck (see context-and-safety-contract.yaml) must also have passed for this
+                    source_video_hash before /run is accepted.
+                requested_strokes:
+                  type: array
+                  items: { type: string }
+                versions:
+                  type: object
+                  required: [ontology, ruleset, scoring, model, prompt]
+                  properties:
+                    ontology: { type: string, const: "2.1.0" }
+                    ruleset: { type: string }
+                    scoring: { type: string }
+                    model: { type: string }
+                    evidence: { type: string }
+                    prompt: { type: string }
+      responses:
+        '202':
+          description: Analysis accepted or resumed
+  /v1/analysis/sessions/{sessionId}:
+    get:
+      summary: Get structured analysis result
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Analysis result
+          content:
+            application/json:
+              schema:
+                $ref: ../schemas/analysis-result.schema.json
+  /v1/analysis/sessions/{sessionId}/corrections:
+    post:
+      summary: Record player correction or coach override
+      parameters:
+        - in: path
+          name: sessionId
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [actor_role, target_type, target_id, action, reason]
+              properties:
+                actor_role: { enum: [player, coach, academy_admin] }
+                target_type: { enum: [stroke, phase, observation, root_cause, drill] }
+                target_id: { type: string }
+                action: { enum: [confirm, correct, dismiss, override] }
+                replacement_value: {}
+                reason: { type: string }
+      responses:
+        '201': { description: Correction recorded and affected layers invalidated }

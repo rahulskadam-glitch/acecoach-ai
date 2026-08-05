@@ -1,0 +1,509 @@
+[
+  {
+    "fault_id": "SL-PREP-01",
+    "title": "Late preparation",
+    "domain": "Preparation",
+    "phase_origin": "G2",
+    "phase_visible_effect": "G6",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "racket is not prepared above/behind intended contact path early enough",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "creates a rushed chop and late contact",
+    "player_message": "Prepare the racket earlier and above the ball.",
+    "coach_message_template": "Late preparation: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_PATH",
+      "TIMING_DELTA"
+    ],
+    "drill_ids": [
+      "SL_PREP_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "SL-SPACE-01",
+    "title": "Late or crowded contact",
+    "domain": "Spacing",
+    "phase_origin": "G1",
+    "phase_visible_effect": "G6",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "contact occurs beside torso or inside spacing envelope",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces control and forward penetration",
+    "player_message": "Meet the ball in front with room to extend.",
+    "coach_message_template": "Late or crowded contact: {evidence_summary}.",
+    "overlay_markers": [
+      "CONTACT_POINT",
+      "CONTACT_WINDOW"
+    ],
+    "drill_ids": [
+      "SL_SPACING_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "SL-BAL-01",
+    "title": "Leaning backward",
+    "domain": "Stability",
+    "phase_origin": "G4",
+    "phase_visible_effect": "G7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "COM shifts behind support base while racket moves forward",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "causes floating contact and unstable direction",
+    "player_message": "Move your weight through the ball.",
+    "coach_message_template": "Leaning backward: {evidence_summary}.",
+    "overlay_markers": [
+      "COM_ESTIMATE",
+      "TRUNK_AXIS",
+      "CORRECTION_ARROW"
+    ],
+    "drill_ids": [
+      "SL_FORWARD_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "SL-ROT-01",
+    "title": "Excessive torso opening",
+    "domain": "Sequencing",
+    "phase_origin": "G4",
+    "phase_visible_effect": "G7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "shoulders and pelvis rotate through like a topspin drive",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces stable carving path and low trajectory",
+    "player_message": "Stay more side-on through contact.",
+    "coach_message_template": "Excessive torso opening: {evidence_summary}.",
+    "overlay_markers": [
+      "SHOULDER_LINE",
+      "PELVIS_LINE"
+    ],
+    "drill_ids": [
+      "SL_SIDEWAYS_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "SL-PATH-01",
+    "title": "Vertical chop with little penetration",
+    "domain": "Racket path",
+    "phase_origin": "G4",
+    "phase_visible_effect": "G7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "downward path is high while forward extension is short",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "creates a floating or short slice",
+    "player_message": "Drive forward as you move down through the ball.",
+    "coach_message_template": "Vertical chop with little penetration: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_PATH",
+      "PATH_CORRIDOR",
+      "CORRECTION_ARROW"
+    ],
+    "drill_ids": [
+      "SL_PATH_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "SL-PATH-02",
+    "title": "Path too flat",
+    "domain": "Racket path",
+    "phase_origin": "G4",
+    "phase_visible_effect": "G7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "high-to-low component is below context range",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces underspin and control",
+    "player_message": "Start above the ball and carve through it.",
+    "coach_message_template": "Path too flat: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_PATH",
+      "PATH_CORRIDOR"
+    ],
+    "drill_ids": [
+      "SL_PATH_02"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "SL-FACE-01",
+    "title": "Racket face excessively open",
+    "domain": "Racket orientation",
+    "phase_origin": "G5",
+    "phase_visible_effect": "G7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "estimated face normal is too open for intended trajectory",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "INFERRED",
+    "performance_consequence": "causes a high floating ball",
+    "player_message": "Keep the face slightly open, not pointing upward.",
+    "coach_message_template": "Racket face excessively open: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_FACE_ESTIMATE",
+      "CONFIDENCE_BADGE"
+    ],
+    "drill_ids": [
+      "SL_FACE_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "SL-WRIST-01",
+    "title": "Wrist-racket instability",
+    "domain": "Racket orientation",
+    "phase_origin": "G5",
+    "phase_visible_effect": "G7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "abrupt face or racket-axis changes occur around impact",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "INFERRED",
+    "performance_consequence": "reduces directional control",
+    "player_message": "Keep the wrist and racket stable through contact.",
+    "coach_message_template": "Wrist-racket instability: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_AXIS",
+      "ANGLE_ARC"
+    ],
+    "drill_ids": [
+      "SL_WRIST_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "SL-ARM-01",
+    "title": "Hitting arm collapses",
+    "domain": "Extension/finish",
+    "phase_origin": "G5",
+    "phase_visible_effect": "G8",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "arm extension decreases prematurely after contact",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces penetration and control",
+    "player_message": "Keep the hitting arm long through the finish.",
+    "coach_message_template": "Hitting arm collapses: {evidence_summary}.",
+    "overlay_markers": [
+      "ELBOW_ANGLE_L",
+      "ELBOW_ANGLE_R",
+      "TARGET_GHOST"
+    ],
+    "drill_ids": [
+      "SL_ARM_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "SL-COUNTER-01",
+    "title": "Insufficient non-dominant-arm counterbalance",
+    "domain": "Stability",
+    "phase_origin": "G5",
+    "phase_visible_effect": "G8",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "non-dominant arm follows torso instead of separating for balance",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces trunk stability",
+    "player_message": "Let the other arm reach back for balance.",
+    "coach_message_template": "Insufficient non-dominant-arm counterbalance: {evidence_summary}.",
+    "overlay_markers": [
+      "BODY_SKELETON",
+      "CAUSE_ARROW"
+    ],
+    "drill_ids": [
+      "SL_BALANCE_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "SL-FIN-01",
+    "title": "Follow-through stops immediately",
+    "domain": "Extension/finish",
+    "phase_origin": "G6",
+    "phase_visible_effect": "G8",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "racket path terminates shortly after contact",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces depth and control",
+    "player_message": "Continue the racket toward your target.",
+    "coach_message_template": "Follow-through stops immediately: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_PATH",
+      "CORRECTION_ARROW"
+    ],
+    "drill_ids": [
+      "SL_FINISH_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  },
+  {
+    "fault_id": "SL-RECOV-01",
+    "title": "Recovery delayed",
+    "domain": "Recovery",
+    "phase_origin": "G8",
+    "phase_visible_effect": "G9",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "player remains side-on or fixed after finish beyond context window",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces readiness for the next ball",
+    "player_message": "Finish, then reset your feet and racket.",
+    "coach_message_template": "Recovery delayed: {evidence_summary}.",
+    "overlay_markers": [
+      "RECOVERY_TARGET",
+      "FOOT_TRAIL"
+    ],
+    "drill_ids": [
+      "SL_RECOVERY_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ]
+  }
+]

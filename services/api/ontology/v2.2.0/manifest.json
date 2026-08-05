@@ -1,0 +1,53 @@
+{
+  "bundle_name": "AceCoach Tennis Analytics Ontology",
+  "version": "2.2.0",
+  "status": "implementation-ready",
+  "created_at": "2026-08-04T00:00:00+05:30",
+  "determinism_contract": "Identical source_video_hash plus identical versions and configuration must yield identical structured analysis outputs.",
+  "counts": {
+    "strokes": 8,
+    "faults": 109,
+    "shared_faults": 10,
+    "drills": 108,
+    "overlay_markers": 46,
+    "color_tokens": 7,
+    "marker_families": 6
+  },
+  "entrypoints": {
+    "python": "python/acecoach_ontology",
+    "typescript": "typescript/index.ts",
+    "schemas": "schemas",
+    "config": "config",
+    "api": "api/analysis-contract.yaml",
+    "api_context_and_safety": "api/context-and-safety-contract.yaml"
+  },
+  "version_dimensions": [
+    "ontology",
+    "ruleset",
+    "scoring",
+    "model",
+    "evidence",
+    "prompt",
+    "overlay"
+  ],
+  "source_basis": [
+    "User-provided Complete Tennis Stroke Technical Guide",
+    "Red-team revised AceCoach product specification (v2.1.0)",
+    "Previously validated coaching and biomechanics research summary",
+    "v2.2.0 red-team pass: context model, dual player/coach experience, longitudinal learning, accessibility, safeguarding, and visualization grammar"
+  ],
+  "new_in_2_2_0": [
+    "config/context_model.json",
+    "config/accessibility.json",
+    "config/safeguarding.json",
+    "config/longitudinal_model.json",
+    "config/visual_grammar.json",
+    "schemas/player_profile.schema.json",
+    "schemas/consent.schema.json",
+    "sql/002_context_safeguarding_longitudinal.sql",
+    "api/context-and-safety-contract.yaml",
+    "docs/VISUALIZATION_SPEC.md",
+    "docs/PRODUCT_UX_GOVERNANCE_SPEC.md",
+    "docs/RED_TEAM_V2.md"
+  ]
+}

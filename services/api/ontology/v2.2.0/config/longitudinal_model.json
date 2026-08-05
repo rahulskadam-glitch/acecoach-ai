@@ -1,0 +1,33 @@
+{
+  "purpose": "v2.1.0 scores every session in isolation. There is no concept of 'better than last time.' This is the single biggest missed opportunity for a consumer product: players (especially juniors) stay engaged through visible, honest progress, not through a fresh score every visit.",
+  "unit_of_progress": "fault_recurrence_trend",
+  "trend_metric": {
+    "definition": "For a given fault_id, the rolling recurrence rate (occurrences / comparable_strokes) across the last N sessions where that fault was scoreable (not no_score_when-excluded).",
+    "window_sessions": 5,
+    "minimum_sessions_for_trend_claim": 2,
+    "direction_language": {
+      "improving": "recurrence_rate decreased by >= 15 percentage points across the window with stable or improved outcome_correlation",
+      "steady": "change within +/-15 percentage points",
+      "recurring": "recurrence_rate increased or stayed >= 0.70 across the window"
+    }
+  },
+  "reassessment_linkage": {
+    "rule": "Every drill.reassessment (drills.json) creates a typed link between the observation that triggered the drill and the next comparable-view session's observation of the same fault_id. This is what lets AceCoach say 'you fixed this' truthfully instead of just 'here is a new score.'",
+    "reassessment_status": ["not_yet_reassessed", "improved", "unchanged", "regressed", "insufficient_comparable_evidence"]
+  },
+  "motivation_design_rules": {
+    "compare_to_self_only_by_default": "Primary progress narrative is always self-referential ('your unit-turn timing is 0.4s earlier than 6 weeks ago'). Peer or cohort comparison is opt-in, adult accounts only (context_model.player_profile.age_band not in minor set), and never framed as a ranked leaderboard.",
+    "no_streak_pressure_mechanics_for_minors": "No 'don't break your streak' loss-framed messaging for minor accounts. Consistency is shown as a calendar/heatmap of sessions completed, not a countdown-to-loss mechanic.",
+    "strength_first_is_mandatory": "Every session and every progress summary opens with a genuine, specific strength observation before any correction, consistent with scoring_profiles.json start_with_strength, extended here to apply to the longitudinal summary view as well, not just the single-session report.",
+    "effort_is_visible_independent_of_outcome": "Sessions logged and drills completed are shown as their own progress signal even in sessions where no fault trend improved, so a plateau does not read to a 13-year-old as 'I'm not getting better as a person.'",
+    "no_guilt_or_lapse_shaming_copy": "Returning after a gap never opens with a reference to the gap. Copy focuses on 'let's see where you are today,' not 'you haven't practiced in 3 weeks.'"
+  },
+  "coach_longitudinal_view": {
+    "reference_range_comparison": "coach_reference_ranges (sql: coach_reference_ranges table) can be plotted as a band behind the player's own trend line, scoped by technique_family and context_filter, never as a single-number pass/fail.",
+    "cohort_analytics_academy_admin_only": "Academy admins may view de-identified aggregate trend statistics across their roster for curriculum planning; individual player data still requires the per-player access grant defined in safeguarding.json."
+  },
+  "output_extension": {
+    "new_report_field": "progress_summary",
+    "schema_note": "See schemas/analysis-result.schema.json 'progress_summary' addition: { trend_status, compared_to_session_ids, headline (player-safe, <=12 words), reassessed_faults: [{fault_id, reassessment_status}] }"
+  }
+}

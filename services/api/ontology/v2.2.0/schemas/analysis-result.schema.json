@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acecoach.ai/schemas/analysis-result.schema.json",
+  "title": "AceCoach Analysis Result",
+  "type": "object",
+  "required": [
+    "session_id",
+    "source_video_hash",
+    "status",
+    "versions",
+    "strokes",
+    "observations",
+    "report",
+    "context"
+  ],
+  "properties": {
+    "session_id": {
+      "type": "string"
+    },
+    "source_video_hash": {
+      "type": "string"
+    },
+    "context": {
+      "type": "object",
+      "description": "Snapshot of context_model.json player_profile + session_context in effect for this analysis. Never inferred from the video; always the values on file at run time.",
+      "required": [
+        "age_band",
+        "player_level",
+        "dominant_hand",
+        "coaching_relationship",
+        "camera_view",
+        "consent_status"
+      ],
+      "properties": {
+        "age_band": { "type": "string" },
+        "player_level": { "type": "string" },
+        "dominant_hand": { "type": "string" },
+        "adaptive_play": { "type": "string" },
+        "coaching_relationship": { "type": "string" },
+        "guardian_linked_account": { "type": "boolean" },
+        "session_goal": { "type": "string" },
+        "camera_view": { "type": "string" },
+        "camera_frame_rate_fps": { "type": "number" },
+        "preferred_language": { "type": "string" },
+        "consent_status": {
+          "type": "string",
+          "enum": ["not_required_adult_self_consent", "guardian_consent_active", "guardian_consent_missing_blocked"]
+        }
+      }
+    },
+    "progress_summary": {
+      "type": ["object", "null"],
+      "description": "Longitudinal trend per longitudinal_model.json. Null when minimum_sessions_for_trend_claim has not yet been reached.",
+      "properties": {
+        "trend_status": { "enum": ["improving", "steady", "recurring", "insufficient_history"] },
+        "compared_to_session_ids": { "type": "array", "items": { "type": "string" } },
+        "headline": { "type": "string", "description": "Player-safe, <=12 words, strength-first framing." },
+        "reassessed_faults": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "fault_id": { "type": "string" },
+              "reassessment_status": {
+                "enum": ["not_yet_reassessed", "improved", "unchanged", "regressed", "insufficient_comparable_evidence"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "completed_with_limitations",
+        "failed"
+      ]
+    },
+    "versions": {
+      "type": "object",
+      "required": [
+        "ontology",
+        "ruleset",
+        "scoring",
+        "model",
+        "prompt"
+      ],
+      "properties": {
+        "ontology": {
+          "type": "string"
+        },
+        "ruleset": {
+          "type": "string"
+        },
+        "scoring": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "prompt": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "string"
+        }
+      }
+    },
+    "strokes": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "$ref": "observation.schema.json"
+      }
+    },
+    "report": {
+      "type": "object",
+      "required": [
+        "strength",
+        "primary_correction",
+        "drill",
+        "reassessment_target"
+      ],
+      "properties": {
+        "strength": {
+          "type": "object"
+        },
+        "primary_correction": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "secondary_issues": {
+          "type": "array",
+          "maxItems": 2
+        },
+        "drill": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "reassessment_target": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      }
+    }
+  },
+  "additionalProperties": true
+}

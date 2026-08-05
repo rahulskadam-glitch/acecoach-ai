@@ -1,0 +1,141 @@
+[
+  {
+    "fault_id": "X-HEAD-01",
+    "title": "Early head movement",
+    "applies_to": [
+      "forehand",
+      "two_handed_backhand",
+      "one_handed_backhand",
+      "slice_backhand",
+      "serve",
+      "forehand_volley",
+      "backhand_volley",
+      "overhead"
+    ],
+    "description": "Head rotation or translation begins before the contact-stability window ends."
+  },
+  {
+    "fault_id": "X-SEQ-01",
+    "title": "Reversed proximal-to-distal sequence",
+    "applies_to": [
+      "forehand",
+      "two_handed_backhand",
+      "one_handed_backhand",
+      "serve",
+      "overhead"
+    ],
+    "description": "Distal segment or racket acceleration begins before adequate lower-body or trunk contribution."
+  },
+  {
+    "fault_id": "X-LOAD-01",
+    "title": "Insufficient lower-body contribution",
+    "applies_to": [
+      "forehand",
+      "two_handed_backhand",
+      "one_handed_backhand",
+      "serve",
+      "overhead"
+    ],
+    "description": "Little load, COM displacement, or leg extension occurs where context supports it."
+  },
+  {
+    "fault_id": "X-SPACE-01",
+    "title": "Contact spacing outside envelope",
+    "applies_to": [
+      "forehand",
+      "two_handed_backhand",
+      "one_handed_backhand",
+      "slice_backhand",
+      "forehand_volley",
+      "backhand_volley",
+      "overhead"
+    ],
+    "description": "Ball-body relationship falls outside personalized context-specific range."
+  },
+  {
+    "fault_id": "X-CON-01",
+    "title": "Late contact",
+    "applies_to": [
+      "forehand",
+      "two_handed_backhand",
+      "one_handed_backhand",
+      "slice_backhand",
+      "forehand_volley",
+      "backhand_volley"
+    ],
+    "description": "Contact occurs behind a personalized context-specific envelope."
+  },
+  {
+    "fault_id": "X-FIN-01",
+    "title": "Blocked follow-through",
+    "applies_to": [
+      "forehand",
+      "two_handed_backhand",
+      "one_handed_backhand",
+      "slice_backhand",
+      "serve",
+      "forehand_volley",
+      "backhand_volley",
+      "overhead"
+    ],
+    "description": "Post-contact path terminates or collapses outside an appropriate family range."
+  },
+  {
+    "fault_id": "X-BAL-01",
+    "title": "Balance loss",
+    "applies_to": [
+      "forehand",
+      "two_handed_backhand",
+      "one_handed_backhand",
+      "slice_backhand",
+      "serve",
+      "forehand_volley",
+      "backhand_volley",
+      "overhead"
+    ],
+    "description": "Estimated COM exits base of support without controlled recovery."
+  },
+  {
+    "fault_id": "X-RECOV-01",
+    "title": "Delayed recovery",
+    "applies_to": [
+      "forehand",
+      "two_handed_backhand",
+      "one_handed_backhand",
+      "slice_backhand",
+      "serve",
+      "forehand_volley",
+      "backhand_volley",
+      "overhead"
+    ],
+    "description": "First purposeful return to readiness is delayed for shot context."
+  },
+  {
+    "fault_id": "X-GRIP-01",
+    "title": "Suspected grip mismatch",
+    "applies_to": [
+      "one_handed_backhand",
+      "slice_backhand",
+      "serve",
+      "forehand_volley",
+      "backhand_volley",
+      "overhead"
+    ],
+    "description": "Visible hand-racket geometry appears inconsistent with the stroke family. This remains inferential unless clearly visible."
+  },
+  {
+    "fault_id": "X-VISION-01",
+    "title": "Insufficient visual evidence",
+    "applies_to": [
+      "forehand",
+      "two_handed_backhand",
+      "one_handed_backhand",
+      "slice_backhand",
+      "serve",
+      "forehand_volley",
+      "backhand_volley",
+      "overhead"
+    ],
+    "description": "Camera angle, blur, crop, or occlusion prevents reliable assessment. Never penalize technique."
+  }
+]

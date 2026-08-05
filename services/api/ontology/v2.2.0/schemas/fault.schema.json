@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acecoach.ai/schemas/fault.schema.json",
+  "title": "AceCoach Fault Definition",
+  "type": "object",
+  "required": [
+    "fault_id",
+    "title",
+    "domain",
+    "phase_origin",
+    "phase_visible_effect",
+    "detection",
+    "player_message",
+    "overlay_markers",
+    "no_score_when"
+  ],
+  "properties": {
+    "fault_id": {
+      "type": "string",
+      "pattern": "^[A-Z0-9-]+$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "domain": {
+      "type": "string"
+    },
+    "phase_origin": {
+      "type": "string"
+    },
+    "phase_visible_effect": {
+      "type": "string"
+    },
+    "default_status": {
+      "type": "string"
+    },
+    "minimum_comparable_strokes": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "detection": {
+      "type": "string"
+    },
+    "context_gates": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "exclusions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "supported_views": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "measurement_class": {
+      "type": "string"
+    },
+    "performance_consequence": {
+      "type": "string"
+    },
+    "player_message": {
+      "type": "string"
+    },
+    "coach_message_template": {
+      "type": "string"
+    },
+    "overlay_markers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "drill_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "severity_policy": {
+      "type": "object"
+    },
+    "no_score_when": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

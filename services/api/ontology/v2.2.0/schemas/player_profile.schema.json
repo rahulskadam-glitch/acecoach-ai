@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acecoach.ai/schemas/player_profile.schema.json",
+  "title": "AceCoach Player Profile",
+  "type": "object",
+  "required": [
+    "player_id",
+    "age_band",
+    "player_level",
+    "dominant_hand",
+    "coaching_relationship",
+    "preferred_language"
+  ],
+  "properties": {
+    "player_id": { "type": "string" },
+    "age_band": {
+      "enum": ["u10", "10_to_12", "13_to_15", "16_to_17", "18_to_34", "35_to_54", "55_plus", "prefer_not_to_say"]
+    },
+    "is_minor": {
+      "type": "boolean",
+      "description": "Derived: true unless age_band in [18_to_34, 35_to_54, 55_plus] and self-certified. prefer_not_to_say and any missing value resolve to true (fail closed)."
+    },
+    "player_level": {
+      "enum": ["new_to_tennis", "improver", "club_competitive", "junior_tournament", "adult_league", "high_performance_academy"]
+    },
+    "dominant_hand": { "enum": ["right", "left", "unknown"] },
+    "backhand_style_declared": {
+      "enum": ["one_handed", "two_handed", "slice_primary", "not_sure_let_engine_infer"]
+    },
+    "adaptive_play": {
+      "enum": ["none", "wheelchair_tennis", "visual_impairment_adapted", "other_adaptive"]
+    },
+    "coaching_relationship": {
+      "enum": ["self_directed", "linked_to_coach", "linked_to_academy"]
+    },
+    "guardian_account_id": {
+      "type": ["string", "null"],
+      "description": "Required non-null when is_minor is true, per safeguarding.json guardian_consent."
+    },
+    "preferred_language": { "type": "string", "description": "BCP 47 language tag." },
+    "accessibility_preferences": {
+      "type": "object",
+      "properties": {
+        "reduce_motion": { "type": "boolean" },
+        "high_contrast_overlay": { "type": "boolean" },
+        "captions_default_on": { "type": "boolean" },
+        "font_scale": { "enum": ["100%", "125%", "150%", "200%"] },
+        "dyslexia_friendly_font": { "type": "boolean" }
+      }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

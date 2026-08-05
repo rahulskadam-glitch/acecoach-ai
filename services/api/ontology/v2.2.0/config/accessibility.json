@@ -1,0 +1,58 @@
+{
+  "standard_baseline": "WCAG 2.2 AA, adapted for video-overlay graphics (SC 1.4.11 non-text contrast) and photosensitivity (SC 2.3.1 no more than 3 flashes per second).",
+  "reading_level": {
+    "player_message": {
+      "max_grade_level": 6,
+      "max_sentence_length_words": 12,
+      "rule": "One idea, one imperative verb, no biomechanics jargon. 'Turn your shoulders sooner' not 'Initiate unit-turn earlier relative to ball-flight trigger.' The jargon lives only in coach_message_template and observed_metrics.",
+      "banned_terms_in_player_message": ["kinetic chain", "trigger", "vector", "confidence interval", "regression", "statistically", "biomechanic"]
+    },
+    "coach_message_template": {
+      "max_grade_level": 12,
+      "rule": "May use technical vocabulary and evidence_summary placeholders. Assumes a trained reader."
+    }
+  },
+  "color_and_contrast": {
+    "min_contrast_graphic_vs_video": 3.0,
+    "min_contrast_text_vs_chrome": 4.5,
+    "rule": "Every overlay marker gets a permanent dark-on-light AND light-on-dark halo/outline (1px, 40% black or white opposite the marker fill) so it reads on both light and dark court/kit backgrounds without relying on hue alone.",
+    "color_is_never_the_only_signal": "Every semantic category (measured fact, cause, correction, fault focus, confidence level) is also coded by line style (solid/dashed/dotted) and/or icon shape, per visual_grammar.json. A colorblind or grayscale-display user can read the overlay correctly.",
+    "palette_ref": "visual_grammar.json#/color_tokens"
+  },
+  "motion_and_seizure_safety": {
+    "max_flashes_per_second": 3,
+    "rule": "No strobing, blinking badges, or rapid color-alternation. Emphasis is done with a single smooth scale/opacity transition (150-300ms), not repetition.",
+    "reduced_motion_mode": {
+      "trigger": "OS-level prefers-reduced-motion, or explicit player_preferences.reduce_motion = true",
+      "behavior": "Replace animated CORRECTION_ARROW growth and pulsing STABILITY_HALO with a single static frame at full-opacity target state. Playback speed controls remain, but no auto-playing loop is used for emphasis."
+    }
+  },
+  "motor_accessibility": {
+    "min_touch_target_px": 44,
+    "rule": "All scrubber controls, phase chips, and drill CTAs are reachable one-handed in the bottom 60% of a mobile viewport and operable via switch-control/external-switch input, not gesture-only (no required pinch-zoom or long-press for core actions).",
+    "keyboard_and_switch_support": "Full overlay toggle, playback, and correction-recording workflow must be operable via sequential tab/switch focus for coach-web mode."
+  },
+  "cognitive_accessibility": {
+    "rule": "Player mode never shows more than one fault, one cause, one correction at a time (see scoring_profiles.json display_rules), consistent with the AUTHORING_GUIDE root-cause discipline. No countdown timers or time-pressured interactions in player mode.",
+    "consistent_iconography": "Each overlay_marker category keeps the same shape/icon across every stroke and every session so a returning player does not need to relearn the visual language."
+  },
+  "screen_reader_and_captions": {
+    "auto_generated_alt_text_per_observation": "template: '{stroke_name}, {phase_name}. {player_message}. {confidence.language_string}.'",
+    "video_captions": "All coach-facing narrated walkthroughs (if voice narration is added) ship with synchronized captions; no audio-only information is ever load-bearing.",
+    "chart_alt_text": "Every coach-mode trend chart (radar, sparkline, reference-range band) ships a one-sentence auto-generated text summary alongside the graphic."
+  },
+  "player_preferences": {
+    "reduce_motion": {"type": "boolean", "default": false},
+    "high_contrast_overlay": {"type": "boolean", "default": false},
+    "captions_default_on": {"type": "boolean", "default": true},
+    "font_scale": {"type": "enum", "values": ["100%", "125%", "150%", "200%"], "default": "100%"},
+    "dyslexia_friendly_font": {"type": "boolean", "default": false},
+    "preferred_language": {"ref": "context_model.json#/player_profile_fields/preferred_language"}
+  },
+  "localization_rules": {
+    "text_externalization": "Every player_message, coach_message_template, drill.cue, and confidence_policy.language string is a translation key, never hardcoded English in the ontology consumer code.",
+    "string_expansion_budget": "UI containers for player_message must tolerate 35% character expansion (Hindi/Marathi/German run longer than English) without truncation or overlap.",
+    "rtl_support": "Layout mirrors for RTL locales; overlay marker geometry (which is video-space, not UI-space) does not mirror.",
+    "initial_locales_recommended": ["en-IN", "hi-IN", "mr-IN", "es", "pt-BR", "ja"]
+  }
+}
