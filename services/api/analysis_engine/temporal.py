@@ -20,15 +20,20 @@ class RepetitionWindow:
     peak_motion: float
     mean_visibility: float
 
-    def as_dict(self, fps: float) -> dict[str, float | int]:
+    def as_dict(self, fps: float, frames: list[PoseFrame] | None = None) -> dict[str, float | int]:
+        timestamp = lambda index: (
+            float(frames[index].timestamp_seconds)
+            if frames and 0 <= index < len(frames)
+            else index / fps
+        )
         return {
             "index": self.index,
             "startFrame": self.start_frame,
             "peakFrame": self.peak_frame,
             "endFrame": self.end_frame,
-            "startSeconds": round(self.start_frame / fps, 4),
-            "peakSeconds": round(self.peak_frame / fps, 4),
-            "endSeconds": round(self.end_frame / fps, 4),
+            "startSeconds": round(timestamp(self.start_frame), 4),
+            "peakSeconds": round(timestamp(self.peak_frame), 4),
+            "endSeconds": round(timestamp(self.end_frame), 4),
             "peakMotion": round(self.peak_motion, 6),
             "meanVisibility": round(self.mean_visibility, 4),
         }
@@ -45,14 +50,17 @@ def _point(frame: PoseFrame, name: str) -> np.ndarray | None:
     return np.asarray(dimensions, dtype=np.float64)
 
 
-def _velocity(points: list[np.ndarray | None], fps: float) -> np.ndarray:
+def _velocity(points: list[np.ndarray | None], frames: list[PoseFrame], fps: float) -> np.ndarray:
     result = np.zeros(len(points), dtype=np.float64)
     for index in range(1, len(points)):
         previous = points[index - 1]
         current = points[index]
         if previous is None or current is None:
             continue
-        result[index] = float(np.linalg.norm(current - previous) * fps)
+        delta_time = frames[index].timestamp_seconds - frames[index - 1].timestamp_seconds
+        if delta_time <= 1e-6:
+            delta_time = 1.0 / max(fps, 1.0)
+        result[index] = float(np.linalg.norm(current - previous) / delta_time)
     return result
 
 
@@ -94,10 +102,10 @@ def build_motion_signal(
     other_wrist = [_point(frame, f"{other}_wrist") for frame in frames]
 
     signal = (
-        _velocity(dominant_wrist, fps) * 0.50
-        + _velocity(dominant_elbow, fps) * 0.24
-        + _velocity(dominant_shoulder, fps) * 0.16
-        + _velocity(other_wrist, fps) * 0.10
+        _velocity(dominant_wrist, frames, fps) * 0.50
+        + _velocity(dominant_elbow, frames, fps) * 0.24
+        + _velocity(dominant_shoulder, frames, fps) * 0.16
+        + _velocity(other_wrist, frames, fps) * 0.10
     )
 
     return smooth_signal(signal, fps)

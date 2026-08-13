@@ -28,6 +28,27 @@ CORE_LANDMARKS = (
 )
 
 
+def _presentation_timestamp(
+    capture: cv2.VideoCapture,
+    frame_index: int,
+    fps: float,
+    previous_timestamp: float | None,
+) -> tuple[float, str]:
+    """Return the decoder presentation time, with a monotonic nominal fallback."""
+    position_milliseconds = float(capture.get(cv2.CAP_PROP_POS_MSEC) or 0.0)
+    decoder_time = position_milliseconds / 1000.0
+    decoder_is_valid = (
+        np.isfinite(decoder_time)
+        and decoder_time >= 0.0
+        and (frame_index == 0 or previous_timestamp is None or decoder_time > previous_timestamp + 1e-6)
+    )
+    if decoder_is_valid:
+        return round(decoder_time, 6), "decoder_presentation_timestamp"
+    nominal_step = 1.0 / max(fps, 1.0)
+    fallback = frame_index * nominal_step if previous_timestamp is None else previous_timestamp + nominal_step
+    return round(fallback, 6), "nominal_frame_rate_fallback"
+
+
 def _serialize_landmark_list(landmark_list: Any | None) -> dict[str, dict[str, float]]:
     if not landmark_list:
         return {}
@@ -93,7 +114,11 @@ def _body_box(landmarks: dict[str, dict[str, float]]) -> tuple[dict[str, float] 
 
 def extract_pose_frames(metadata: VideoMetadata) -> list[PoseFrame]:
     capture = cv2.VideoCapture(str(metadata.path))
+    orientation_auto = getattr(cv2, "CAP_PROP_ORIENTATION_AUTO", None)
+    if orientation_auto is not None:
+        capture.set(orientation_auto, 1)
     frames: list[PoseFrame] = []
+    previous_timestamp: float | None = None
 
     with mp.solutions.pose.Pose(
         static_image_mode=False,
@@ -112,6 +137,11 @@ def extract_pose_frames(metadata: VideoMetadata) -> list[PoseFrame]:
             if not ok:
                 break
 
+            timestamp_seconds, timestamp_source = _presentation_timestamp(
+                capture, frame_index, metadata.fps, previous_timestamp,
+            )
+            previous_timestamp = timestamp_seconds
+
             brightness, contrast, blur_score = _image_quality(frame)
             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             rgb.flags.writeable = False
@@ -123,7 +153,7 @@ def extract_pose_frames(metadata: VideoMetadata) -> list[PoseFrame]:
             frames.append(
                 PoseFrame(
                     frame_index=frame_index,
-                    timestamp_seconds=round(frame_index / metadata.fps, 6),
+                    timestamp_seconds=timestamp_seconds,
                     landmarks=landmarks,
                     world_landmarks=world_landmarks,
                     mean_visibility=mean_visibility,
@@ -133,6 +163,9 @@ def extract_pose_frames(metadata: VideoMetadata) -> list[PoseFrame]:
                     blur_score=blur_score,
                     body_box=body_box,
                     edge_clipping=edge_clipping,
+                    timestamp_source=timestamp_source,
+                    source_width=int(frame.shape[1]),
+                    source_height=int(frame.shape[0]),
                 )
             )
             frame_index += 1

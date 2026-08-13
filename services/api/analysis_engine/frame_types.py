@@ -23,3 +23,6 @@ class PoseFrame:
     blur_score: float
     body_box: dict[str, float] | None
     edge_clipping: bool
+    timestamp_source: str = "nominal_frame_rate"
+    source_width: int | None = None
+    source_height: int | None = None

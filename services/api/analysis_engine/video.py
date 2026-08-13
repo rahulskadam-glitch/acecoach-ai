@@ -33,6 +33,8 @@ class VideoMetadata:
     width: int
     height: int
     duration_seconds: float
+    rotation_degrees: int = 0
+    mirrored: bool = False
 
 
 class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
@@ -143,6 +145,9 @@ def download_video(url: str, expected_hash: str | None = None) -> VideoMetadata:
     frame_count = int(capture.get(cv2.CAP_PROP_FRAME_COUNT) or 0)
     width = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH) or 0)
     height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT) or 0)
+    orientation_property = getattr(cv2, "CAP_PROP_ORIENTATION_META", None)
+    rotation_degrees = int(round(float(capture.get(orientation_property) or 0.0))) if orientation_property is not None else 0
+    rotation_degrees = rotation_degrees % 360 if rotation_degrees in {0, 90, 180, 270, -90, -180, -270} else 0
     capture.release()
 
     if fps <= 0 or frame_count <= 0 or width <= 0 or height <= 0:
@@ -177,4 +182,6 @@ def download_video(url: str, expected_hash: str | None = None) -> VideoMetadata:
         width=width,
         height=height,
         duration_seconds=round(duration_seconds, 4),
+        rotation_degrees=rotation_degrees,
+        mirrored=False,
     )

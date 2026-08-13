@@ -100,8 +100,8 @@ const health = await healthResponse.json();
 if (health.status !== "ok" || health.service !== "analysis-api") {
   fail("Analysis health response did not identify a ready analysis-api service.");
 }
-if (health.engine_version !== "movement-intelligence-v1.10.0") {
-  fail(`Analysis engine mismatch: expected movement-intelligence-v1.10.0, received ${health.engine_version ?? "missing"}.`);
+if (health.engine_version !== "movement-intelligence-v1.11.0") {
+  fail(`Analysis engine mismatch: expected movement-intelligence-v1.11.0, received ${health.engine_version ?? "missing"}.`);
 }
 if (health.ontology_version !== "4.1.0" || !health.ontology_manifest_hash || health.ontology_manifest_hash === "unavailable") {
   fail(`Analysis ontology is not ready: expected v4.1.0 with a loaded manifest, received ${health.ontology_version ?? "missing"}.`);

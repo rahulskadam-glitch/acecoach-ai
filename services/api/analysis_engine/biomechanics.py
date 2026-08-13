@@ -445,6 +445,9 @@ def compute_frame_metrics(frames: list[PoseFrame], fps: float, dominant_side: st
         return None if value is None or math.isnan(value) else round(float(value), 6)
 
     for index in range(1, len(frames)):
+        delta_time = frames[index].timestamp_seconds - frames[index - 1].timestamp_seconds
+        if delta_time <= 1e-6:
+            delta_time = 1.0 / max(fps, 1.0)
         previous_wrist, current_wrist = wrist_world_positions[index - 1], wrist_world_positions[index]
         previous_com_world, current_com_world = com_world_positions[index - 1], com_world_positions[index]
         previous_com_image, current_com_image = com_image_positions[index - 1], com_image_positions[index]
@@ -456,32 +459,32 @@ def compute_frame_metrics(frames: list[PoseFrame], fps: float, dominant_side: st
             speed = (
                 None
                 if previous_point is None or current_point is None or scale is None
-                else float(np.linalg.norm(current_point - previous_point) / scale * fps)
+                else float(np.linalg.norm(current_point - previous_point) / scale / delta_time)
             )
             tracked_speeds[name].append(speed)
 
         for channel, values in orientation_history.items():
             delta = _angular_distance(values[index], values[index - 1])
-            angular_speeds[channel].append(None if math.isnan(delta) else abs(delta) * fps)
+            angular_speeds[channel].append(None if math.isnan(delta) else abs(delta) / delta_time)
 
         current_wrist_speed = tracked_speeds[f"{side}_wrist"][index]
         previous_wrist_speed = tracked_speeds[f"{side}_wrist"][index - 1]
         dominant_wrist_acceleration.append(
             None
             if current_wrist_speed is None or previous_wrist_speed is None
-            else abs(current_wrist_speed - previous_wrist_speed) * fps
+            else abs(current_wrist_speed - previous_wrist_speed) / delta_time
         )
 
-        wrist_speed_world.append(0.0 if previous_wrist is None or current_wrist is None else float(np.linalg.norm(current_wrist - previous_wrist) * fps))
+        wrist_speed_world.append(0.0 if previous_wrist is None or current_wrist is None else float(np.linalg.norm(current_wrist - previous_wrist) / delta_time))
         com_speed_world_shape.append(
             0.0
             if previous_com_world is None or current_com_world is None
-            else float(np.linalg.norm(current_com_world - previous_com_world) * fps)
+            else float(np.linalg.norm(current_com_world - previous_com_world) / delta_time)
         )
         com_speed_image_scaled.append(
             0.0
             if previous_com_image is None or current_com_image is None or scale is None
-            else float(np.linalg.norm(current_com_image - previous_com_image) / scale * fps)
+            else float(np.linalg.norm(current_com_image - previous_com_image) / scale / delta_time)
         )
         frame_metrics[index]["wristSpeedWorldPerSecond"] = round(wrist_speed_world[index], 6)
         frame_metrics[index]["wristSpeedNormalizedPerSecond"] = frame_metrics[index]["motionEnergy"]
@@ -556,7 +559,7 @@ def compute_frame_metrics(frames: list[PoseFrame], fps: float, dominant_side: st
             {
                 "phase": phase,
                 "frameIndex": frame_index,
-                "timestampSeconds": round(frame_index / fps, 4),
+                "timestampSeconds": round(frames[frame_index].timestamp_seconds, 4),
             }
             for phase, frame_index in phases.items()
         ]
@@ -576,9 +579,9 @@ def compute_frame_metrics(frames: list[PoseFrame], fps: float, dominant_side: st
             for item in segment
             if item.get("headToComNormalized") is not None
         ]
-        rep_duration = (window.end_frame - window.start_frame) / fps
+        rep_duration = max(0.0, frames[window.end_frame].timestamp_seconds - frames[window.start_frame].timestamp_seconds)
         repetition_summaries.append({
-            **window.as_dict(fps),
+            **window.as_dict(fps, frames),
             "durationSeconds": round(rep_duration, 4),
             "headMovementRange": round(max(head_x) - min(head_x), 5) if head_x else None,
             "headVerticalRange": round(max(head_y) - min(head_y), 5) if head_y else None,
@@ -605,7 +608,7 @@ def compute_frame_metrics(frames: list[PoseFrame], fps: float, dominant_side: st
             {
                 "phase": phase,
                 "frameIndex": frame_index,
-                "timestampSeconds": round(frame_index / fps, 4),
+                "timestampSeconds": round(frames[frame_index].timestamp_seconds, 4),
                 "coachingFocus": focus_copy[phase],
                 "repetitionIndex": primary.index,
             }

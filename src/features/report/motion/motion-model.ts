@@ -18,6 +18,7 @@ export type JointName =
 export type Pose = Record<JointName, Point>;
 export type MotionStage = "preparation" | "loading" | "swing" | "contact" | "finish" | "recovery";
 export type MotionTier = "category" | "elite";
+export type VideoRegistrationCalibration = NonNullable<NonNullable<AnalysisReport["frameSummary"]>["videoRegistration"]>;
 
 export const MOTION_STAGES: Array<{ id: MotionStage; label: string; fraction: number }> = [
   { id: "preparation", label: "Preparation", fraction: 0 },
@@ -39,6 +40,36 @@ const PHASE_ALIASES: Record<MotionStage, string[]> = {
 
 export function clamp(value: number, min = 0, max = 1) {
   return Math.min(max, Math.max(min, value));
+}
+
+export function containRect(containerWidth: number, containerHeight: number, mediaWidth: number, mediaHeight: number) {
+  if (!mediaWidth || !mediaHeight) return { x: 0, y: 0, width: containerWidth, height: containerHeight };
+  const mediaRatio = mediaWidth / mediaHeight;
+  const containerRatio = containerWidth / containerHeight;
+  if (containerRatio > mediaRatio) {
+    const width = containerHeight * mediaRatio;
+    return { x: (containerWidth - width) / 2, y: 0, width, height: containerHeight };
+  }
+  const height = containerWidth / mediaRatio;
+  return { x: 0, y: (containerHeight - height) / 2, width: containerWidth, height };
+}
+
+/** Maps pose-input normalized coordinates into the browser's decoded display space. */
+export function calibratedNormalizedPoint(
+  point: Point,
+  registration?: Partial<VideoRegistrationCalibration>,
+) {
+  const crop = registration?.cropNormalized ?? { left: 0, top: 0, width: 1, height: 1 };
+  let x = crop.left + point.x * crop.width;
+  let y = crop.top + point.y * crop.height;
+  if (!registration?.rotationAppliedByDecoder) {
+    const rotation = ((registration?.rotationDegrees ?? 0) % 360 + 360) % 360;
+    if (rotation === 90) [x, y] = [1 - y, x];
+    else if (rotation === 180) [x, y] = [1 - x, 1 - y];
+    else if (rotation === 270) [x, y] = [y, 1 - x];
+  }
+  if (registration?.mirrored) x = 1 - x;
+  return { x: clamp(x), y: clamp(y) };
 }
 
 function basePose(): Pose {
@@ -259,7 +290,8 @@ export function nearestFrame(frames: FrameMetric[], time: number) {
 /** Selects only a pose that has already occurred on the presented video clock. */
 export function frameAtOrBefore(frames: FrameMetric[], time: number) {
   if (frames.length === 0) return undefined;
-  if (time <= frames[0].timestampSeconds) return frames[0];
+  if (time < frames[0].timestampSeconds) return undefined;
+  if (time === frames[0].timestampSeconds) return frames[0];
   let low = 0;
   let high = frames.length - 1;
   let match = frames[0];
@@ -274,4 +306,126 @@ export function frameAtOrBefore(frames: FrameMetric[], time: number) {
     }
   }
   return match;
+}
+
+const INTERPOLATED_NUMERIC_FIELDS: Array<keyof FrameMetric> = [
+  "elbowAngle", "shoulderAngle", "kneeAngle", "shoulderPelvisSeparation", "baseWidthNormalized",
+  "dominantKneeAngle", "oppositeKneeAngle", "dominantElbowAngle", "oppositeElbowAngle",
+  "dominantShoulderAngle", "oppositeShoulderAngle", "dominantHipAngle", "oppositeHipAngle",
+  "dominantAnkleAngle", "oppositeAnkleAngle", "trunkAngleDegrees", "headToComNormalized",
+  "handToTorsoNormalized", "motionEnergy",
+];
+
+function interpolateNumber(previous: unknown, next: unknown, alpha: number) {
+  return typeof previous === "number" && typeof next === "number" ? lerp(previous, next, alpha) : previous;
+}
+
+/** Interpolates measured pose samples onto the exact compositor-presented media time. */
+export function interpolatedFrameAtTime(frames: FrameMetric[], time: number) {
+  const previous = frameAtOrBefore(frames, time);
+  if (!previous) return undefined;
+  const previousIndex = frames.indexOf(previous);
+  const next = frames[previousIndex + 1];
+  if (!next || time <= previous.timestampSeconds) return previous;
+  const interval = next.timestampSeconds - previous.timestampSeconds;
+  if (interval <= 1e-6 || interval > 0.15) return previous;
+  const alpha = clamp((time - previous.timestampSeconds) / interval);
+  const previousLandmarks = previous.keyLandmarks ?? {};
+  const nextLandmarks = next.keyLandmarks ?? {};
+  const keyLandmarks: NonNullable<FrameMetric["keyLandmarks"]> = {};
+  for (const name of new Set([...Object.keys(previousLandmarks), ...Object.keys(nextLandmarks)])) {
+    const from = previousLandmarks[name];
+    const to = nextLandmarks[name];
+    if (from && to) {
+      keyLandmarks[name] = {
+        x: lerp(from.x, to.x, alpha),
+        y: lerp(from.y, to.y, alpha),
+        visibility: Math.min(from.visibility, to.visibility),
+      };
+    } else if (from) {
+      keyLandmarks[name] = { ...from };
+    }
+  }
+  const result: FrameMetric = {
+    ...previous,
+    timestampSeconds: time,
+    keyLandmarks,
+    centerOfMass: previous.centerOfMass && next.centerOfMass ? {
+      x: lerp(previous.centerOfMass.x, next.centerOfMass.x, alpha),
+      y: lerp(previous.centerOfMass.y, next.centerOfMass.y, alpha),
+    } : previous.centerOfMass,
+    interpolationAlpha: alpha,
+  };
+  const mutable = result as unknown as Record<string, unknown>;
+  for (const field of INTERPOLATED_NUMERIC_FIELDS) {
+    mutable[field] = interpolateNumber(previous[field], next[field], alpha);
+  }
+  return result;
+}
+
+type FilterState = { x: number; y: number; dx: number; dy: number; timestampSeconds: number };
+
+export const ANNOTATION_VISIBILITY_THRESHOLD = 0.58;
+
+function smoothingAlpha(cutoff: number, deltaTime: number) {
+  const tau = 1 / (2 * Math.PI * cutoff);
+  return 1 / (1 + tau / Math.max(deltaTime, 1e-4));
+}
+
+/** A causal One Euro filter: it uses current and past samples only and never predicts ahead. */
+export class CausalLandmarkStabilizer {
+  private readonly states = new Map<string, FilterState>();
+  private lastTimestamp: number | null = null;
+
+  reset() {
+    this.states.clear();
+    this.lastTimestamp = null;
+  }
+
+  update(frame: FrameMetric | undefined) {
+    if (!frame?.keyLandmarks) return frame;
+    if (this.lastTimestamp !== null && (frame.timestampSeconds <= this.lastTimestamp || frame.timestampSeconds - this.lastTimestamp > 0.35)) {
+      this.reset();
+    }
+    const leftShoulder = frame.keyLandmarks.left_shoulder;
+    const rightShoulder = frame.keyLandmarks.right_shoulder;
+    const shoulderWidth = leftShoulder && rightShoulder
+      ? Math.max(0.04, Math.hypot(rightShoulder.x - leftShoulder.x, rightShoulder.y - leftShoulder.y))
+      : 0.12;
+    const filtered: NonNullable<FrameMetric["keyLandmarks"]> = {};
+
+    for (const [name, point] of Object.entries(frame.keyLandmarks)) {
+      if (point.visibility < ANNOTATION_VISIBILITY_THRESHOLD) {
+        this.states.delete(name);
+        continue;
+      }
+      const state = this.states.get(name);
+      if (!state) {
+        this.states.set(name, { x: point.x, y: point.y, dx: 0, dy: 0, timestampSeconds: frame.timestampSeconds });
+        filtered[name] = { ...point };
+        continue;
+      }
+      const deltaTime = Math.max(1e-4, frame.timestampSeconds - state.timestampSeconds);
+      const jumpInShoulderWidths = Math.hypot(point.x - state.x, point.y - state.y) / shoulderWidth;
+      const speedAllowance = name.includes("wrist") ? 9 : name.includes("ankle") ? 7 : 5;
+      if (jumpInShoulderWidths > 0.28 + deltaTime * speedAllowance) {
+        this.states.set(name, { x: point.x, y: point.y, dx: 0, dy: 0, timestampSeconds: frame.timestampSeconds });
+        continue;
+      }
+      const rawDx = (point.x - state.x) / deltaTime;
+      const rawDy = (point.y - state.y) / deltaTime;
+      const derivativeAlpha = smoothingAlpha(1.0, deltaTime);
+      const dx = lerp(state.dx, rawDx, derivativeAlpha);
+      const dy = lerp(state.dy, rawDy, derivativeAlpha);
+      const speed = Math.hypot(dx, dy) / shoulderWidth;
+      const cutoff = (name.includes("wrist") ? 4.5 : 3.2) + (name.includes("wrist") ? 0.9 : 0.55) * speed;
+      const alpha = smoothingAlpha(cutoff, deltaTime);
+      const x = lerp(state.x, point.x, alpha);
+      const y = lerp(state.y, point.y, alpha);
+      this.states.set(name, { x, y, dx, dy, timestampSeconds: frame.timestampSeconds });
+      filtered[name] = { x, y, visibility: point.visibility };
+    }
+    this.lastTimestamp = frame.timestampSeconds;
+    return { ...frame, keyLandmarks: filtered };
+  }
 }

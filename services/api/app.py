@@ -20,7 +20,7 @@ from routes.context_safety import router as context_safety_router
 from analysis_engine.pipeline import ENGINE_VERSION
 from ontology_runtime.acecoach_ontology.loader import OntologyBundle, OntologyError
 
-API_VERSION = "1.10.0"
+API_VERSION = "1.11.0"
 ONTOLOGY_BUNDLE_PATH = Path(__file__).resolve().parent / "ontology" / "v4.1.0"
 
 

@@ -27,8 +27,8 @@ from .stroke_guide import GUIDE_EVIDENCE_ID, STROKE_GUIDE_VERSION, guide_for
 from .temporal import TEMPORAL_MODEL_VERSION, RepetitionWindow
 from .video import download_video
 
-ENGINE_VERSION = "movement-intelligence-v1.10.0"
-REPORT_VERSION = "6.7.0-ontology-complete-stroke-report"
+ENGINE_VERSION = "movement-intelligence-v1.11.0"
+REPORT_VERSION = "6.8.0-video-pose-registration"
 ONTOLOGY_VERSION = "4.1.0"
 ONTOLOGY_REASONER_VERSION = "4.1.1-complete-chain"
 MAX_REPORT_FRAMES = 1200
@@ -1620,6 +1620,31 @@ class AnalysisPipeline:
                     int(repetition["endFrame"]),
                 })
             report_frames, display_stride = _sample_frame_metrics(biomechanics.frame_metrics, important_frames)
+            pose_timestamps = np.asarray([frame.timestamp_seconds for frame in pose_frames], dtype=np.float64)
+            timestamp_deltas = np.diff(pose_timestamps)
+            positive_timestamp_deltas = timestamp_deltas[timestamp_deltas > 1e-6]
+            median_frame_interval = (
+                float(np.median(positive_timestamp_deltas))
+                if len(positive_timestamp_deltas) else 1.0 / max(metadata.fps, 1.0)
+            )
+            timestamp_variability = (
+                float(np.std(positive_timestamp_deltas) / max(np.mean(positive_timestamp_deltas), 1e-6))
+                if len(positive_timestamp_deltas) > 1 else 0.0
+            )
+            decoder_timestamp_count = sum(
+                frame.timestamp_source == "decoder_presentation_timestamp" for frame in pose_frames
+            )
+            timestamp_source = (
+                "decoder_presentation_timestamp"
+                if decoder_timestamp_count == len(pose_frames)
+                else "decoder_with_nominal_fallback"
+            )
+            decoded_width = pose_frames[0].source_width if pose_frames else metadata.width
+            decoded_height = pose_frames[0].source_height if pose_frames else metadata.height
+            presentation_duration = (
+                float(pose_timestamps[-1] + median_frame_interval)
+                if len(pose_timestamps) else metadata.duration_seconds
+            )
 
             frame_summary = {
                 "fps": metadata.fps,
@@ -1630,7 +1655,29 @@ class AnalysisPipeline:
                 "processedEveryFrame": True,
                 "width": metadata.width,
                 "height": metadata.height,
-                "durationSeconds": metadata.duration_seconds,
+                "durationSeconds": round(presentation_duration, 6),
+                "videoRegistration": {
+                    "version": "acecoach-video-registration-v1.0.0",
+                    "timestampSource": timestamp_source,
+                    "decoderTimestampCoverage": round(decoder_timestamp_count / max(len(pose_frames), 1), 6),
+                    "medianFrameIntervalSeconds": round(median_frame_interval, 6),
+                    "presentationDurationSeconds": round(presentation_duration, 6),
+                    "variableFrameRateDetected": timestamp_variability > 0.02,
+                    "frameIntervalVariation": round(timestamp_variability, 6),
+                    "encodedSize": {"width": metadata.width, "height": metadata.height},
+                    "decodedDisplaySize": {"width": decoded_width, "height": decoded_height},
+                    "rotationDegrees": metadata.rotation_degrees,
+                    "rotationAppliedByDecoder": metadata.rotation_degrees != 0,
+                    "mirrored": metadata.mirrored,
+                    "cropNormalized": {"left": 0.0, "top": 0.0, "width": 1.0, "height": 1.0},
+                    "poseInput": {
+                        "width": decoded_width,
+                        "height": decoded_height,
+                        "resizeMode": "mediapipe_internal_full_frame",
+                    },
+                    "videoFit": "contain",
+                    "landmarkSpace": "decoded_display_normalized",
+                },
                 "poseCoverage": biomechanics.pose_coverage,
                 "aggregateMetrics": biomechanics.aggregate_metrics,
                 "frameMetrics": report_frames,

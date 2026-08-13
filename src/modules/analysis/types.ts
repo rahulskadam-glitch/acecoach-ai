@@ -170,6 +170,7 @@ export type FrameMetric = {
   phase?: string | null;
   centerOfMass?: { x: number; y: number } | null;
   keyLandmarks?: Record<string, { x: number; y: number; visibility: number }>;
+  interpolationAlpha?: number;
 };
 
 export type RepetitionSummary = {
@@ -481,6 +482,24 @@ export type AnalysisReport = {
       heightCm: number | null;
       uses: string[];
       limitation: string;
+    };
+    videoRegistration?: {
+      version: string;
+      timestampSource: string;
+      decoderTimestampCoverage: number;
+      medianFrameIntervalSeconds: number;
+      presentationDurationSeconds: number;
+      variableFrameRateDetected: boolean;
+      frameIntervalVariation: number;
+      encodedSize: { width: number; height: number };
+      decodedDisplaySize: { width: number | null; height: number | null };
+      rotationDegrees: number;
+      rotationAppliedByDecoder: boolean;
+      mirrored: boolean;
+      cropNormalized: { left: number; top: number; width: number; height: number };
+      poseInput: { width: number | null; height: number | null; resizeMode: string };
+      videoFit: "contain";
+      landmarkSpace: "decoded_display_normalized";
     };
     bodyRegionReview?: Array<{
       id: string;

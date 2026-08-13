@@ -8,7 +8,7 @@ import { createAdminClient, requireUser } from "@/lib/supabase/server";
 import type { AnalysisReport, EngineManifest } from "@/modules/analysis/types";
 
 const ANALYSIS_API_URL = process.env.ANALYSIS_API_URL ?? "http://127.0.0.1:8000";
-const ENGINE_VERSION = "movement-intelligence-v1.10.0";
+const ENGINE_VERSION = "movement-intelligence-v1.11.0";
 const ANALYSIS_API_KEY = process.env.ANALYSIS_API_KEY;
 const MAX_ANALYSIS_RESPONSE_BYTES = 15 * 1024 * 1024;
 const CONTEXT_PERSISTENCE_DEBUG = process.env.CONTEXT_PERSISTENCE_DEBUG === "1";

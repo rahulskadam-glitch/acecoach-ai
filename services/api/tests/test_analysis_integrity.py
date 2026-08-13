@@ -4,6 +4,7 @@ import math
 import sys
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
@@ -18,6 +19,7 @@ from analysis_engine.classifier import classify_movement
 from analysis_engine.frame_types import PoseFrame
 from analysis_engine.experience import coaching_playbook, repetition_insights
 from analysis_engine.pipeline import AnalysisPipeline, ENGINE_VERSION, _stroke_technical_audit, _two_handed_backhand_audit, _two_handed_backhand_framework
+from analysis_engine.pose import _presentation_timestamp
 from analysis_engine.sport_rules import build_coaching
 from analysis_engine.signal_analytics import robust_outlier_indices, smooth_signal
 from analysis_engine.temporal import RepetitionWindow, detect_repetitions
@@ -72,6 +74,9 @@ def synthetic_frame(index: int, fps: float = 30.0) -> PoseFrame:
         blur_score=180.0,
         body_box={"left": 0.38, "top": 0.18, "right": 0.70, "bottom": 0.94, "width": 0.32, "height": 0.76},
         edge_clipping=False,
+        timestamp_source="decoder_presentation_timestamp",
+        source_width=1280,
+        source_height=720,
     )
 
 
@@ -85,6 +90,27 @@ class AnalysisIntegrityTests(unittest.TestCase):
         second_signal, second_windows = detect_repetitions(self.frames, self.fps, "right")
         self.assertEqual(first_signal.tolist(), second_signal.tolist())
         self.assertEqual(first_windows, second_windows)
+
+    def test_decoder_presentation_timestamp_uses_monotonic_fallback(self) -> None:
+        capture = SimpleNamespace(get=lambda _property: 42.0)
+        timestamp, source = _presentation_timestamp(capture, 1, 30.0, 0.0)
+        self.assertEqual(timestamp, 0.042)
+        self.assertEqual(source, "decoder_presentation_timestamp")
+
+        stalled_capture = SimpleNamespace(get=lambda _property: 42.0)
+        timestamp, source = _presentation_timestamp(stalled_capture, 2, 30.0, timestamp)
+        self.assertAlmostEqual(timestamp, 0.042 + 1 / 30.0, places=6)
+        self.assertEqual(source, "nominal_frame_rate_fallback")
+
+    def test_biomechanics_uses_irregular_presentation_timestamps(self) -> None:
+        irregular = [
+            replace(frame, timestamp_seconds=round(index * 0.033 + (0.012 if index % 3 == 2 else 0), 6))
+            for index, frame in enumerate(self.frames)
+        ]
+        result = compute_frame_metrics(irregular, self.fps, "right")
+        self.assertEqual(result.frame_metrics[2]["timestampSeconds"], irregular[2].timestamp_seconds)
+        for event in result.timeline:
+            self.assertEqual(event["timestampSeconds"], round(irregular[event["frameIndex"]].timestamp_seconds, 4))
 
     def test_unconfirmed_movement_never_receives_a_score(self) -> None:
         result = compute_frame_metrics(self.frames, self.fps, "right")
@@ -147,6 +173,11 @@ class AnalysisIntegrityTests(unittest.TestCase):
         self.assertEqual(result["frame_summary"]["analysisContext"]["source"], "athlete_supplied")
         self.assertEqual(result["frame_summary"]["athleteCalibration"]["heightCm"], 178.0)
         self.assertEqual(result["frame_summary"]["athleteCalibration"]["status"], "height_aware")
+        registration = result["frame_summary"]["videoRegistration"]
+        self.assertEqual(registration["timestampSource"], "decoder_presentation_timestamp")
+        self.assertEqual(registration["decoderTimestampCoverage"], 1.0)
+        self.assertEqual(registration["decodedDisplaySize"], {"width": 1280, "height": 720})
+        self.assertEqual(registration["landmarkSpace"], "decoded_display_normalized")
         self.assertEqual(len(result["frame_summary"]["bodyRegionReview"]), 8)
         self.assertEqual(result["frame_summary"]["bodyRegionReview"][2]["status"], "needs_confirmation")
         self.assertEqual(len(result["coach_summary"]["executiveBullets"]), 4)

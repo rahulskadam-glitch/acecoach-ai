@@ -15,6 +15,7 @@
     "verify:runtime": "node scripts/verify-runtime-readiness.mjs",
     "verify:visual-benchmark": "node scripts/verify-visual-benchmark.mjs",
     "verify:motion-twins": "node scripts/verify-motion-twins.mjs",
+    "verify:overlay-registration": "node --experimental-strip-types scripts/verify-overlay-registration.mjs",
     "verify:human-report": "node scripts/verify-human-report.mjs",
     "verify:v5": "node scripts/verify-v500.mjs",
     "verify:v6": "node scripts/verify-v600.mjs"

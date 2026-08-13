@@ -26,8 +26,12 @@ import type { AthleteReferenceContext } from "@/lib/reference/registry";
 import type { AnalysisReport, BiomechanicalLinkage, BiomechanicalMetric } from "@/modules/analysis/types";
 import { plainLanguage } from "../model/plain-language";
 import {
+  ANNOTATION_VISIBILITY_THRESHOLD,
+  CausalLandmarkStabilizer,
   MOTION_STAGES,
-  frameAtOrBefore,
+  calibratedNormalizedPoint,
+  containRect,
+  interpolatedFrameAtTime,
   stageAnchors,
   stageForTime,
   type JointName,
@@ -54,7 +58,7 @@ const BODY_CONNECTIONS: Array<[string, string]> = [
 ];
 
 const MODE_OPTIONS: Array<{ id: OverlayMode; label: string; description: string }> = [
-  { id: "coach", label: "Corrections", description: "Red change · green working · gray confirm" },
+  { id: "coach", label: "Corrections", description: "Red change · green working · uncertain hidden" },
   { id: "body", label: "Body links", description: "Light full-body linkage map" },
   { id: "chain", label: "Power chain", description: "Green connected · red needs work" },
   { id: "clean", label: "Clean video", description: "Original footage only" },
@@ -66,12 +70,12 @@ const BACKHAND_FOUR_STAGES: Array<{
   shortLabel: string;
   motionStage: MotionStage;
   correction: string;
-  visualChecks: [{ id: string; label: string }, { id: string; label: string }];
+  visualChecks: Array<{ id: string; label: string }>;
 }> = [
   { number: 1, label: "Preparation", shortLabel: "Prepare", motionStage: "preparation", correction: "Turn the shoulders early and keep both hands organized together in front of the body. Racket position remains a separate video-confirmation item.", visualChecks: [{ id: "early-coil", label: "Back shoulder turns before the swing" }, { id: "two-hands-together", label: "Both hands stay organized together" }] },
   { number: 2, label: "Power position & drop", shortLabel: "Load & drop", motionStage: "loading", correction: "Load the outside leg and preserve visible space between the hands and torso before accelerating.", visualChecks: [{ id: "outside-leg-load", label: "Outside leg creates the load" }, { id: "arm-space", label: "Hands stay away from the torso" }] },
   { number: 3, label: "Contact", shortLabel: "Contact", motionStage: "contact", correction: "Keep the head inside the steady ring and meet the likely strike window with visible space from the torso.", visualChecks: [{ id: "quiet-contact", label: "Head stays quiet through the strike window" }, { id: "contact-in-front", label: "Hands meet in front with body space" }] },
-  { number: 4, label: "Finish & recovery", shortLabel: "Finish & recover", motionStage: "finish", correction: "Swing through first, let the lead elbow finish above the nose line, then recover in balance.", visualChecks: [{ id: "lead-elbow-above-nose", label: "Lead elbow finishes above the nose line" }, { id: "recover", label: "First recovery step regains balance" }] },
+  { number: 4, label: "Finish & recovery", shortLabel: "Finish & recover", motionStage: "finish", correction: "Swing through first, let the lead elbow finish above the nose line, then recover in balance.", visualChecks: [{ id: "lead-elbow-above-nose", label: "Lead elbow finishes above the nose line" }, { id: "recover", label: "First recovery step regains balance" }, { id: "swing-through", label: "Hands travel through before finishing" }] },
 ];
 
 function backhandGuideForMotionStage(stage: MotionStage) {
@@ -122,20 +126,6 @@ function phaseTitle(stage: MotionStage) {
   return MOTION_STAGES.find((item) => item.id === stage)?.label ?? stage;
 }
 
-function contentRect(video: HTMLVideoElement) {
-  const width = video.clientWidth;
-  const height = video.clientHeight;
-  if (!video.videoWidth || !video.videoHeight) return { x: 0, y: 0, width, height };
-  const videoRatio = video.videoWidth / video.videoHeight;
-  const elementRatio = width / height;
-  if (elementRatio > videoRatio) {
-    const contentWidth = height * videoRatio;
-    return { x: (width - contentWidth) / 2, y: 0, width: contentWidth, height };
-  }
-  const contentHeight = width / videoRatio;
-  return { x: 0, y: (height - contentHeight) / 2, width, height: contentHeight };
-}
-
 function midpoint(a?: Landmark, b?: Landmark): Landmark | null {
   if (!a || !b) return null;
   return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, visibility: Math.min(a.visibility, b.visibility) };
@@ -184,6 +174,8 @@ export default function CoachVisionStudio({
   const initialTime = typeof priorityTime === "number" ? Math.max(start, Math.min(end, priorityTime)) : start;
   const anchors = useMemo(() => stageAnchors(report, start, end), [end, report, start]);
   const frames = useMemo(() => report.frameSummary?.frameMetrics ?? [], [report.frameSummary?.frameMetrics]);
+  const stabilizerRef = useRef(new CausalLandmarkStabilizer());
+  const labelPlacementRef = useRef(new Map<string, { candidateIndex: number; left: number; top: number }>());
   const profile = report.frameSummary?.biomechanicalProfile;
   const analysisContext = report.frameSummary?.analysisContext;
   const isTwoHandedBackhand = actionType.toLowerCase().replaceAll("-", "_").includes("two_handed_backhand");
@@ -198,7 +190,7 @@ export default function CoachVisionStudio({
   const [correctionError, setCorrectionError] = useState<string | null>(null);
   const [storyCaption, setStoryCaption] = useState<string | null>(null);
   const [seeking, setSeeking] = useState(false);
-  const currentFrame = useMemo(() => frameAtOrBefore(frames, time), [frames, time]);
+  const [currentFrame, setCurrentFrame] = useState(() => stabilizerRef.current.update(interpolatedFrameAtTime(frames, initialTime)));
   const profilePhase = STAGE_TO_PROFILE_PHASE[stage];
   const phaseSummary = profile?.phases.find((item) => item.id === profilePhase);
   const phaseMetrics = profile?.metrics.filter((item) => item.phase === profilePhase && item.status === "available") ?? [];
@@ -215,6 +207,8 @@ export default function CoachVisionStudio({
   })) ?? [], [activeBackhandGuide, activeFrameworkStage]);
   const chainLinks = useMemo(() => profile?.linkages ?? [], [profile?.linkages]);
   const chainProgress = Math.max(0, Math.min(1, (time - anchors.loading) / Math.max(anchors.contact - anchors.loading, 0.1)));
+  const presentationStep = report.frameSummary?.videoRegistration?.medianFrameIntervalSeconds
+    ?? 1 / Math.max(report.frameSummary?.fps ?? 30, 1);
 
   const drawOverlay = useCallback(() => {
     const video = videoRef.current;
@@ -234,8 +228,14 @@ export default function CoachVisionStudio({
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     context.clearRect(0, 0, cssWidth, cssHeight);
     if (seeking || mode === "clean" || !currentFrame?.keyLandmarks) return;
-    const rect = video ? contentRect(video) : { x: 0, y: 0, width: cssWidth, height: cssHeight };
-    const toCanvas = (point: { x: number; y: number }) => ({ x: rect.x + point.x * rect.width, y: rect.y + point.y * rect.height });
+    const registration = report.frameSummary?.videoRegistration;
+    const rect = video
+      ? containRect(video.clientWidth, video.clientHeight, video.videoWidth, video.videoHeight)
+      : { x: 0, y: 0, width: cssWidth, height: cssHeight };
+    const toCanvas = (point: { x: number; y: number }) => {
+      const calibrated = calibratedNormalizedPoint(point, registration);
+      return { x: rect.x + calibrated.x * rect.width, y: rect.y + calibrated.y * rect.height };
+    };
     const landmarks = currentFrame.keyLandmarks;
 
     const drawBody = (
@@ -337,14 +337,38 @@ export default function CoachVisionStudio({
         left: Math.max(5, Math.min(cssWidth - width - 5, item.left)),
         top: Math.max(5, Math.min(cssHeight - height - 5, item.top)),
       }));
-      const position = candidates.find((candidate) => !placedLabels.some((placed) => (
-        candidate.left < placed.right + 5
-        && candidate.left + width > placed.left - 5
-        && candidate.top < placed.bottom + 5
-        && candidate.top + height > placed.top - 5
-      )));
-      if (!position) return;
+      const prior = labelPlacementRef.current.get(text);
+      const candidateOrder = prior
+        ? [prior.candidateIndex, ...candidates.map((_, index) => index).filter((index) => index !== prior.candidateIndex)]
+        : candidates.map((_, index) => index);
+      let selectedIndex = -1;
+      let position: { left: number; top: number } | undefined;
+      for (const candidateIndex of candidateOrder) {
+        const desired = candidates[candidateIndex];
+        const proposed = prior && candidateIndex === prior.candidateIndex
+          ? {
+              left: prior.left + (desired.left - prior.left) * 0.3,
+              top: prior.top + (desired.top - prior.top) * 0.3,
+            }
+          : desired;
+        const collides = placedLabels.some((placed) => (
+          proposed.left < placed.right + 5
+          && proposed.left + width > placed.left - 5
+          && proposed.top < placed.bottom + 5
+          && proposed.top + height > placed.top - 5
+        ));
+        if (!collides) {
+          selectedIndex = candidateIndex;
+          position = proposed;
+          break;
+        }
+      }
+      if (!position) {
+        labelPlacementRef.current.delete(text);
+        return;
+      }
       const { left, top } = position;
+      labelPlacementRef.current.set(text, { candidateIndex: selectedIndex, left, top });
       placedLabels.push({ left, top, right: left + width, bottom: top + height });
       context.fillStyle = "rgba(2,6,23,.84)";
       context.beginPath();
@@ -392,8 +416,7 @@ export default function CoachVisionStudio({
       drawLine(landmarks[startName], landmarks[endName], color, width, [2, 5]);
     }
 
-    const frameIndex = frames.findIndex((frame) => frame.frameIndex === currentFrame.frameIndex);
-    const pointEntries = Object.entries(landmarks).filter(([, point]) => point.visibility >= 0.35);
+    const pointEntries = Object.entries(landmarks).filter(([, point]) => point.visibility >= ANNOTATION_VISIBILITY_THRESHOLD);
     for (const [name, point] of pointEntries) {
       const mapped = toCanvas(point);
       const isHitJoint = name.startsWith(hit) && (name.includes("shoulder") || name.includes("elbow") || name.includes("wrist"));
@@ -403,18 +426,23 @@ export default function CoachVisionStudio({
       context.fill();
     }
 
-    if (mode === "coach" && activeBackhandGuide) {
+    const cameraSupportsMeasurement = !["unsupported", "not_visible"].includes(analysisContext?.cameraAngle ?? "");
+    if (mode === "coach" && activeBackhandGuide && cameraSupportsMeasurement && currentFrame.visibility >= ANNOTATION_VISIBILITY_THRESHOLD) {
       type CanvasPoint = { x: number; y: number };
-      const handCenter = midpoint(landmarks.left_wrist, landmarks.right_wrist);
-      const shoulderCenter = midpoint(landmarks.left_shoulder, landmarks.right_shoulder);
-      const ankleCenter = midpoint(landmarks.left_ankle, landmarks.right_ankle);
-      const torsoCenter = midpoint(landmarks.left_hip, landmarks.right_hip) ?? shoulderCenter;
-      const nose = landmarks.nose;
-      const leadElbow = landmarks[`${support}_elbow`];
-      const leadWrist = landmarks[`${support}_wrist`];
-      const previousFinishLandmarks = frameIndex > 0
-        ? frames[Math.max(0, frameIndex - 4)]?.keyLandmarks
-        : undefined;
+      const visible = (name: string) => {
+        const point = landmarks[name];
+        return point && point.visibility >= ANNOTATION_VISIBILITY_THRESHOLD ? point : undefined;
+      };
+      const visibleMidpoint = (first: string, second: string) => midpoint(visible(first), visible(second));
+      const handCenter = visibleMidpoint("left_wrist", "right_wrist");
+      const shoulderCenter = visibleMidpoint("left_shoulder", "right_shoulder");
+      const ankleCenter = visibleMidpoint("left_ankle", "right_ankle");
+      const hipCenter = visibleMidpoint("left_hip", "right_hip");
+      const torsoCenter = hipCenter && shoulderCenter ? midpoint(hipCenter, shoulderCenter) : hipCenter ?? shoulderCenter;
+      const nose = visible("nose");
+      const leadElbow = visible(`${support}_elbow`);
+      const leadWrist = visible(`${support}_wrist`);
+      const previousFinishLandmarks = interpolatedFrameAtTime(frames, Math.max(start, time - 0.1))?.keyLandmarks;
       const mappedLeftShoulder = landmarks.left_shoulder ? toCanvas(landmarks.left_shoulder) : null;
       const mappedRightShoulder = landmarks.right_shoulder ? toCanvas(landmarks.right_shoulder) : null;
       const shoulderWidth = mappedLeftShoulder && mappedRightShoulder
@@ -422,7 +450,10 @@ export default function CoachVisionStudio({
         : 80;
       const markerRadius = Math.max(4, Math.min(6, shoulderWidth * 0.055));
 
-      const markerColor = (index: number) => VISUAL_STATUS[activeVisualChecks[index]?.status ?? "confirm"].color;
+      const markerColor = (index: number) => {
+        const status = activeVisualChecks[index]?.status ?? "confirm";
+        return status === "confirm" ? null : VISUAL_STATUS[status].color;
+      };
       const drawShortArrow = (from: CanvasPoint, to: CanvasPoint, color: string) => {
         const dx = to.x - from.x;
         const dy = to.y - from.y;
@@ -488,81 +519,105 @@ export default function CoachVisionStudio({
         if (shoulderCenter && mappedLeftShoulder && mappedRightShoulder) {
           const shoulder = toCanvas(shoulderCenter);
           const color = markerColor(0);
-          drawShortArrow(mappedLeftShoulder, mappedRightShoulder, color);
-          drawCompactMarker(shoulder, color);
-          label("1A · TURN EARLY", shoulder.x + 11, shoulder.y + 9, color);
+          if (color) {
+            drawShortArrow(mappedLeftShoulder, mappedRightShoulder, color);
+            drawCompactMarker(shoulder, color);
+            label("1A · TURN EARLY", shoulder.x + 11, shoulder.y + 9, color);
+          }
         }
-        if (handCenter && landmarks[`${side}_wrist`]) {
+        const hittingWrist = visible(`${side}_wrist`);
+        if (handCenter && hittingWrist) {
           const hands = toCanvas(handCenter);
-          const wrist = toCanvas(landmarks[`${side}_wrist`]);
+          const wrist = toCanvas(hittingWrist);
           const color = markerColor(1);
-          drawShortArrow(wrist, hands, color);
-          drawCompactMarker(hands, color);
-          label("1B · HANDS TOGETHER", hands.x + 11, hands.y - 19, color);
+          if (color) {
+            drawShortArrow(wrist, hands, color);
+            drawCompactMarker(hands, color);
+            label("1B · HANDS TOGETHER", hands.x + 11, hands.y - 19, color);
+          }
         }
       } else if (activeBackhandGuide.number === 2) {
-        const outsideKnee = landmarks[`${side}_knee`];
-        const outsideHip = landmarks[`${side}_hip`];
-        if (outsideKnee && outsideHip) {
+        const outsideKnee = visible(`${side}_knee`);
+        const outsideHip = visible(`${side}_hip`);
+        const outsideAnkle = visible(`${side}_ankle`);
+        if (outsideKnee && outsideHip && outsideAnkle) {
           const knee = toCanvas(outsideKnee);
           const hip = toCanvas(outsideHip);
+          const ankle = toCanvas(outsideAnkle);
           const color = markerColor(0);
-          drawShortArrow(hip, knee, color);
-          drawCompactMarker(knee, color);
-          label("2A · LOAD LEG", knee.x + 11, knee.y + 7, color);
+          if (color) {
+            drawShortArrow(hip, knee, color);
+            drawShortArrow(knee, ankle, color);
+            drawCompactMarker(knee, color);
+            label("2A · LOAD HIP → KNEE → ANKLE", knee.x + 11, knee.y + 7, color);
+          }
         }
         if (handCenter && torsoCenter) {
           const hands = toCanvas(handCenter);
           const torso = toCanvas(torsoCenter);
           const color = markerColor(1);
-          drawShortArrow(torso, hands, color);
-          drawCompactMarker(hands, color);
-          label("2B · CREATE SPACE", hands.x + 11, hands.y + 7, color);
+          if (color) {
+            drawShortArrow(torso, hands, color);
+            drawCompactMarker(hands, color);
+            label("2B · CREATE SPACE", hands.x + 11, hands.y + 7, color);
+          }
         }
       } else if (activeBackhandGuide.number === 3) {
-        if (nose) {
+        if (nose && shoulderCenter) {
           const head = toCanvas(nose);
+          const headSegment = toCanvas(midpoint(nose, shoulderCenter)!);
           const color = markerColor(0);
-          drawCompactMarker(head, color);
-          label("3A · HEAD QUIET", head.x + 11, head.y - 18, color);
+          if (color) {
+            drawShortArrow(headSegment, head, color);
+            drawCompactMarker(head, color);
+            label("3A · HEAD QUIET", headSegment.x + 11, headSegment.y - 18, color);
+          }
         }
         if (handCenter && torsoCenter) {
           const hands = toCanvas(handCenter);
           const torso = toCanvas(torsoCenter);
           const color = markerColor(1);
-          drawShortArrow(torso, hands, color);
-          drawCompactMarker(hands, color);
-          label("3B · BODY SPACE", hands.x + 11, hands.y + 7, color);
+          if (color) {
+            drawShortArrow(torso, hands, color);
+            drawCompactMarker(hands, color);
+            label("3B · BODY SPACE", hands.x + 11, hands.y + 7, color);
+          }
         }
       } else if (activeBackhandGuide.number === 4) {
         if (nose && leadElbow) {
           const head = toCanvas(nose);
           const elbow = toCanvas(leadElbow);
-          const leadShoulder = landmarks[`${support}_shoulder`];
+          const leadShoulder = visible(`${support}_shoulder`);
           drawReferenceLine({ x: head.x - shoulderWidth * 0.55, y: head.y }, { x: head.x + shoulderWidth * 0.55, y: head.y });
           const color = markerColor(0);
-          if (leadShoulder) drawShortArrow(toCanvas(leadShoulder), elbow, color);
-          drawCompactMarker(elbow, color);
-          label("4A · ELBOW HIGH", elbow.x + 11, elbow.y - 18, color);
+          if (color && leadShoulder) {
+            drawShortArrow(toCanvas(leadShoulder), elbow, color);
+            drawCompactMarker(elbow, color);
+            label("4A · ELBOW HIGH", elbow.x + 11, elbow.y - 18, color);
+          }
         }
         if (ankleCenter && torsoCenter) {
           const base = toCanvas(ankleCenter);
           const torso = toCanvas(torsoCenter);
           const color = markerColor(1);
-          drawShortArrow(torso, base, color);
-          drawCompactMarker(base, color);
-          label("4B · RECOVER", base.x + 11, base.y - 18, color);
+          if (color) {
+            drawShortArrow(torso, base, color);
+            drawCompactMarker(base, color);
+            label("4B · RECOVER", base.x + 11, base.y - 18, color);
+          }
         }
         if (leadWrist && previousFinishLandmarks) {
           const previousWrist = previousFinishLandmarks[`${support}_wrist`];
-          if (previousWrist && previousWrist.visibility >= 0.35) {
+          if (previousWrist && previousWrist.visibility >= ANNOTATION_VISIBILITY_THRESHOLD) {
             const wrist = toCanvas(leadWrist);
             const prior = toCanvas(previousWrist);
             if (Math.hypot(wrist.x - prior.x, wrist.y - prior.y) > 2) {
-              const color = markerColor(0);
-              drawShortArrow(prior, wrist, color);
-              drawCompactMarker(wrist, color);
-              label("4C · SWING THROUGH", wrist.x + 11, wrist.y + 7, color);
+              const color = markerColor(2);
+              if (color) {
+                drawShortArrow(prior, wrist, color);
+                drawCompactMarker(wrist, color);
+                label("4C · SWING THROUGH", wrist.x + 11, wrist.y + 7, color);
+              }
             }
           }
         }
@@ -637,13 +692,23 @@ export default function CoachVisionStudio({
         }
       }
     }
-  }, [activeBackhandGuide, activeVisualChecks, area, chainLinks, chainProgress, currentFrame, frames, mode, seeking, side, stage]);
+  }, [activeBackhandGuide, activeVisualChecks, analysisContext?.cameraAngle, area, chainLinks, chainProgress, currentFrame, frames, mode, report.frameSummary?.videoRegistration, seeking, side, stage, start, time]);
 
   useEffect(() => {
     drawOverlay();
     window.addEventListener("resize", drawOverlay);
     return () => window.removeEventListener("resize", drawOverlay);
   }, [drawOverlay]);
+
+  useEffect(() => {
+    stabilizerRef.current.reset();
+    labelPlacementRef.current.clear();
+    setCurrentFrame(stabilizerRef.current.update(interpolatedFrameAtTime(frames, initialTime)));
+  }, [frames, initialTime]);
+
+  useEffect(() => {
+    labelPlacementRef.current.clear();
+  }, [mode, stage]);
 
   useEffect(() => () => {
     if (animationRef.current) cancelAnimationFrame(animationRef.current);
@@ -687,8 +752,14 @@ export default function CoachVisionStudio({
     };
   });
 
-  function applyPresentedTime(next: number) {
+  function applyPresentedTime(next: number, resetRegistration = false) {
     const value = Math.max(start, Math.min(end, next));
+    if (resetRegistration) {
+      stabilizerRef.current.reset();
+      labelPlacementRef.current.clear();
+    }
+    const measuredFrame = interpolatedFrameAtTime(frames, value);
+    setCurrentFrame(stabilizerRef.current.update(measuredFrame));
     setTime(value);
     setStage(stageForTime(value, anchors));
   }
@@ -713,8 +784,7 @@ export default function CoachVisionStudio({
       video.currentTime = start;
       return;
     }
-    const oneFrameSafety = 1 / Math.max(report.frameSummary?.fps ?? 30, 1);
-    applyPresentedTime(Math.max(start, video.currentTime - oneFrameSafety));
+    applyPresentedTime(video.currentTime);
     if (!video.paused) animationRef.current = requestAnimationFrame(updateFromAnimationClock);
   }
 
@@ -745,14 +815,14 @@ export default function CoachVisionStudio({
       video.currentTime = value;
       return;
     }
-    applyPresentedTime(value);
+    applyPresentedTime(value, true);
   }
 
   function handleSeeked() {
     const video = videoRef.current;
     if (!video) return;
     setSeeking(false);
-    applyPresentedTime(video.currentTime);
+    applyPresentedTime(video.currentTime, true);
   }
 
   async function toggle() {
@@ -803,7 +873,7 @@ export default function CoachVisionStudio({
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-800"><ScanLine className="h-4 w-4" />2 · See it in your video</div>
             <h2 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl">Watch where the pattern begins</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-600">Use the same stage-and-letter references as the summary above. Green means the measured body check is working, red means change it, and gray means the camera cannot confirm it. The light dotted body map stays neutral.</p>
+            <p className="mt-3 text-sm leading-7 text-slate-600">Use the same stage-and-letter references as the summary above. Green means the measured body check is working and red means change it. Confirmation-only or low-confidence joints stay in the checklist but are not drawn on the athlete. The light dotted body map stays neutral.</p>
           </div>
           <div className="min-w-64 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
             <div className="flex items-center justify-between gap-3"><span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Detected movement</span><span className="rounded-full bg-emerald-50 px-2 py-1 text-[0.68rem] font-semibold text-emerald-800">{classificationConfidence}% confidence</span></div>
@@ -825,19 +895,19 @@ export default function CoachVisionStudio({
           </div>
 
           <div ref={mediaSurfaceRef} className="relative mt-4 aspect-video overflow-hidden rounded-2xl border border-white/10 bg-black">
-            {previewOnly ? <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_32%,rgba(30,64,175,.25),transparent_34%),linear-gradient(145deg,#020617,#0f172a)]" aria-label="Visual QA movement preview"><div className="absolute inset-x-0 bottom-16 text-center text-[0.65rem] font-medium uppercase tracking-[0.16em] text-slate-500">Visual QA movement preview</div></div> : <video ref={videoRef} src={videoUrl} muted playsInline preload="metadata" className="h-full w-full object-contain" onLoadedMetadata={() => seek(initialTime)} onSeeked={handleSeeked} onPlay={() => setPlaying(true)} onPause={() => { setPlaying(false); cancelFrameSync(); }} />}
+            {previewOnly ? <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_32%,rgba(30,64,175,.25),transparent_34%),linear-gradient(145deg,#020617,#0f172a)]" aria-label="Visual QA movement preview"><div className="absolute inset-x-0 bottom-16 text-center text-[0.65rem] font-medium uppercase tracking-[0.16em] text-slate-500">Visual QA movement preview</div></div> : <video ref={videoRef} src={videoUrl} muted playsInline preload="metadata" className="h-full w-full object-contain" style={{ transform: report.frameSummary?.videoRegistration?.mirrored ? "scaleX(-1)" : undefined }} onLoadedMetadata={() => seek(initialTime)} onSeeked={handleSeeked} onPlay={() => setPlaying(true)} onPause={() => { setPlaying(false); cancelFrameSync(); }} />}
             <canvas ref={canvasRef} className="pointer-events-none absolute inset-0" aria-hidden="true" />
             {storyCaption ? <div className="pointer-events-none absolute inset-x-3 bottom-3 flex justify-center"><p className="max-w-xl rounded-2xl border border-white/15 bg-slate-950/88 px-4 py-3 text-center text-sm font-semibold leading-6 text-white shadow-xl backdrop-blur">{storyCaption}</p></div> : null}
             <div data-testid="video-stage-reference" className="absolute left-3 top-3 rounded-xl border border-white/10 bg-slate-950/90 px-3 py-2 backdrop-blur"><p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white">{activeBackhandGuide ? `Stage ${activeBackhandGuide.number} · ${activeBackhandGuide.label}` : phaseTitle(stage)} · {time.toFixed(2)}s</p><p className="mt-1 text-[0.65rem] text-slate-300">{phaseTitle(stage)} frame {currentFrame?.frameIndex ?? "—"} · {mode === "clean" ? "original video" : MODE_OPTIONS.find((item) => item.id === mode)?.label}</p></div>
-            {mode !== "clean" ? <div data-testid="correction-overlay-key" className="absolute bottom-3 left-3 flex flex-wrap gap-2 text-[0.62rem]"><span className="rounded-full bg-slate-950/88 px-2 py-1 text-slate-100">light dots = {BODY_CONNECTIONS.length} body links</span>{mode === "coach" ? <><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = change</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = working</span><span className="rounded-full bg-slate-800/90 px-2 py-1 text-slate-100">gray = confirm</span></> : null}{mode === "chain" ? <><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = connected</span><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = timing issue</span></> : null}</div> : null}
+            {mode !== "clean" ? <div data-testid="correction-overlay-key" className="absolute bottom-3 left-3 flex flex-wrap gap-2 text-[0.62rem]"><span className="rounded-full bg-slate-950/88 px-2 py-1 text-slate-100">light dots = {BODY_CONNECTIONS.length} body links</span>{mode === "coach" ? <><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = change</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = working</span><span className="rounded-full bg-slate-800/90 px-2 py-1 text-slate-100">uncertain = hidden</span></> : null}{mode === "chain" ? <><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = connected</span><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = timing issue</span></> : null}</div> : null}
           </div>
 
-          <input type="range" min={start} max={end} step={1 / Math.max(report.frameSummary?.fps ?? 30, 1)} value={Math.max(start, Math.min(end, time))} onChange={(event) => seek(Number(event.target.value))} className="mt-4 w-full accent-blue-900" aria-label="Biomechanical video timeline" />
+          <input type="range" min={start} max={end} step={presentationStep} value={Math.max(start, Math.min(end, time))} onChange={(event) => seek(Number(event.target.value))} className="mt-4 w-full accent-blue-900" aria-label="Biomechanical video timeline" />
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <button type="button" onClick={() => seek(start)} className="rounded-full border border-slate-200 bg-white p-3 text-slate-600 hover:bg-slate-50" aria-label="Restart movement"><RefreshCw className="h-4 w-4" /></button>
-            <button type="button" onClick={() => seek(time - 1 / Math.max(report.frameSummary?.fps ?? 30, 1))} className="rounded-full border border-slate-200 bg-white p-3 text-slate-600 hover:bg-slate-50" aria-label="Previous frame"><ChevronLeft className="h-4 w-4" /></button>
+            <button type="button" onClick={() => seek(time - presentationStep)} className="rounded-full border border-slate-200 bg-white p-3 text-slate-600 hover:bg-slate-50" aria-label="Previous frame"><ChevronLeft className="h-4 w-4" /></button>
             <button type="button" onClick={() => void toggle()} disabled={previewOnly} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#173F6A] px-5 font-semibold text-white hover:bg-[#103554] disabled:cursor-not-allowed disabled:opacity-50">{playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}{previewOnly ? "Preview frames" : playing ? "Pause" : "Play at half speed"}</button>
-            <button type="button" onClick={() => seek(time + 1 / Math.max(report.frameSummary?.fps ?? 30, 1))} className="rounded-full border border-slate-200 bg-white p-3 text-slate-600 hover:bg-slate-50" aria-label="Next frame"><ChevronRight className="h-4 w-4" /></button>
+            <button type="button" onClick={() => seek(time + presentationStep)} className="rounded-full border border-slate-200 bg-white p-3 text-slate-600 hover:bg-slate-50" aria-label="Next frame"><ChevronRight className="h-4 w-4" /></button>
             {[0.1, 0.25, 0.5, 1].map((value) => <button key={value} type="button" data-testid={`playback-rate-${value}`} onClick={() => { setRate(value); if (videoRef.current) videoRef.current.playbackRate = value; }} className={`rounded-full border px-3 py-2 text-xs font-semibold ${rate === value ? "border-blue-900 bg-blue-50 text-blue-950" : "border-slate-200 text-slate-500"}`}>{value}×</button>)}
             <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-slate-500">{mode === "clean" ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}Original video preserved</span>
           </div>
@@ -848,7 +918,7 @@ export default function CoachVisionStudio({
         </div>
 
         <aside className="flex flex-col bg-slate-50/70 p-5 sm:p-7">
-          {activeBackhandGuide ? <div data-testid="active-four-stage-correction" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-start gap-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-950 text-xl font-bold text-white ring-4 ring-blue-100">{activeBackhandGuide.number}</span><div><p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-blue-800">Matches stage {activeBackhandGuide.number} above</p><h3 className="mt-1 text-xl font-semibold text-slate-950">{activeBackhandGuide.label}</h3><p className="mt-2 text-sm leading-6 text-slate-700">{activeBackhandGuide.correction}</p></div></div><div className="mt-4 grid gap-2" aria-label={`Stage ${activeBackhandGuide.number} correction checklist`}>{activeVisualChecks.map((check, index) => { const style = VISUAL_STATUS[check.status]; return <div key={check.id} className={`flex items-start gap-2 rounded-xl border px-3 py-2.5 ${style.classes}`}><span className="flex h-6 w-8 shrink-0 items-center justify-center rounded-full text-[0.65rem] font-bold text-white" style={{ backgroundColor: style.color }}>{activeBackhandGuide.number}{index === 0 ? "A" : "B"}</span><div><p className="text-xs font-semibold leading-5">{check.label}</p><p className="mt-0.5 text-[0.62rem] font-semibold uppercase tracking-wide opacity-70">{style.label}</p></div></div>; })}</div>{activeBackhandGuide.number === 1 || activeBackhandGuide.number === 2 ? <p className="mt-3 rounded-xl bg-slate-100 px-3 py-2 text-[0.68rem] leading-5 text-slate-700"><span className="font-semibold">Camera-honest view:</span> racket checkpoints remain in the written report as Confirm; no synthetic racket is drawn on the video.</p> : null}</div> : null}
+          {activeBackhandGuide ? <div data-testid="active-four-stage-correction" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-start gap-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-950 text-xl font-bold text-white ring-4 ring-blue-100">{activeBackhandGuide.number}</span><div><p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-blue-800">Matches stage {activeBackhandGuide.number} above</p><h3 className="mt-1 text-xl font-semibold text-slate-950">{activeBackhandGuide.label}</h3><p className="mt-2 text-sm leading-6 text-slate-700">{activeBackhandGuide.correction}</p></div></div><div className="mt-4 grid gap-2" aria-label={`Stage ${activeBackhandGuide.number} correction checklist`}>{activeVisualChecks.map((check, index) => { const style = VISUAL_STATUS[check.status]; return <div key={check.id} className={`flex items-start gap-2 rounded-xl border px-3 py-2.5 ${style.classes}`}><span className="flex h-6 w-8 shrink-0 items-center justify-center rounded-full text-[0.65rem] font-bold text-white" style={{ backgroundColor: style.color }}>{activeBackhandGuide.number}{String.fromCharCode(65 + index)}</span><div><p className="text-xs font-semibold leading-5">{check.label}</p><p className="mt-0.5 text-[0.62rem] font-semibold uppercase tracking-wide opacity-70">{style.label}</p></div></div>; })}</div>{activeBackhandGuide.number === 1 || activeBackhandGuide.number === 2 ? <p className="mt-3 rounded-xl bg-slate-100 px-3 py-2 text-[0.68rem] leading-5 text-slate-700"><span className="font-semibold">Camera-honest view:</span> racket checkpoints remain in the written report as Confirm; no synthetic racket is drawn on the video.</p> : null}</div> : null}
           <div className={`${activeBackhandGuide ? "mt-6" : ""} flex items-start justify-between gap-4`}><div><p className="text-xs font-semibold uppercase tracking-[0.17em] text-violet-800">Coach’s eye · {activeBackhandGuide ? `Stage ${activeBackhandGuide.number}` : phaseTitle(stage)}</p><h3 className="mt-2 text-2xl font-semibold tracking-[-0.025em] text-slate-950">{copy.question}</h3></div><span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-500">{phaseSummary?.availableMetricCount ?? 0}/{phaseSummary?.metricCount ?? 0} visible</span></div>
 
           <div className="mt-5 space-y-3">
@@ -871,7 +941,7 @@ export default function CoachVisionStudio({
             </div>
           </details>
 
-          <div className="mt-auto pt-6"><div className="flex items-start gap-2 rounded-xl border border-slate-200 bg-white p-3 text-[0.68rem] leading-5 text-slate-500"><CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" /><p>The light dotted body links use pose evidence. Green marks measured strengths, red marks corrections, and gray marks confirmation-only details. No simulated racket is drawn. This remains a 2D coaching view—not force data, racket-face measurement, or an exact 3D reconstruction.</p></div></div>
+          <div className="mt-auto pt-6"><div className="flex items-start gap-2 rounded-xl border border-slate-200 bg-white p-3 text-[0.68rem] leading-5 text-slate-500"><CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" /><p>The light dotted body links use pose evidence. Green marks measured strengths and red marks corrections. Confirmation-only, occluded, or low-confidence joints are withheld instead of guessing. No simulated racket is drawn. This remains a 2D coaching view—not force data, racket-face measurement, or an exact 3D reconstruction.</p></div></div>
         </aside>
       </div>
 
