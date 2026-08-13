@@ -34,7 +34,6 @@ import {
   interpolatedFrameAtTime,
   stageAnchors,
   stageForTime,
-  type JointName,
   type MotionStage,
   type Point,
 } from "../motion/motion-model";
@@ -44,23 +43,20 @@ type Landmark = { x: number; y: number; visibility: number };
 type VisualCheckStatus = "good" | "correction" | "confirm";
 
 const BODY_CONNECTIONS: Array<[string, string]> = [
-  ["nose", "left_shoulder"], ["nose", "right_shoulder"],
-  ["left_shoulder", "right_shoulder"],
+  ["nose", "neck_center"],
+  ["neck_center", "left_shoulder"], ["neck_center", "right_shoulder"],
   ["left_shoulder", "left_elbow"], ["left_elbow", "left_wrist"],
   ["right_shoulder", "right_elbow"], ["right_elbow", "right_wrist"],
-  ["left_shoulder", "left_hip"], ["right_shoulder", "right_hip"],
-  ["left_shoulder", "right_hip"], ["right_shoulder", "left_hip"],
-  ["left_hip", "right_hip"],
+  ["neck_center", "pelvis_center"],
+  ["pelvis_center", "left_hip"], ["pelvis_center", "right_hip"],
   ["left_hip", "left_knee"], ["left_knee", "left_ankle"],
   ["right_hip", "right_knee"], ["right_knee", "right_ankle"],
-  ["left_wrist", "right_wrist"], ["left_knee", "right_knee"],
-  ["left_ankle", "right_ankle"],
 ];
 
 const MODE_OPTIONS: Array<{ id: OverlayMode; label: string; description: string }> = [
   { id: "coach", label: "Corrections", description: "Red change · green working · uncertain hidden" },
-  { id: "body", label: "Body links", description: "Light full-body linkage map" },
-  { id: "chain", label: "Power chain", description: "Green connected · red needs work" },
+  { id: "body", label: "Body links", description: "Joint-to-joint anatomical segments" },
+  { id: "chain", label: "Power chain", description: "Base → knee → hip → hand" },
   { id: "clean", label: "Clean video", description: "Original footage only" },
 ];
 
@@ -237,90 +233,27 @@ export default function CoachVisionStudio({
       return { x: rect.x + calibrated.x * rect.width, y: rect.y + calibrated.y * rect.height };
     };
     const landmarks = currentFrame.keyLandmarks;
-
-    const drawBody = (
-      points: Record<string, Landmark | Point | undefined> | Partial<Record<JointName, Point>>,
-      palette: { body: string; edge: string; joint: string },
-      opacity = 1,
-    ) => {
-      const leftShoulder = points.left_shoulder;
-      const rightShoulder = points.right_shoulder;
-      const leftHip = points.left_hip;
-      const rightHip = points.right_hip;
-      if (!leftShoulder || !rightShoulder || !leftHip || !rightHip) return;
-      const ls = toCanvas(leftShoulder); const rs = toCanvas(rightShoulder);
-      const lh = toCanvas(leftHip); const rh = toCanvas(rightHip);
-      const shoulderSpan = Math.max(18, Math.hypot(rs.x - ls.x, rs.y - ls.y));
-      context.save();
-      context.globalAlpha = opacity;
-      context.lineCap = "round";
-      context.lineJoin = "round";
-
-      context.beginPath();
-      context.moveTo(ls.x, ls.y);
-      context.lineTo(rs.x, rs.y);
-      context.lineTo(rh.x, rh.y);
-      context.lineTo(lh.x, lh.y);
-      context.closePath();
-      context.fillStyle = palette.body;
-      context.fill();
-      context.strokeStyle = palette.edge;
-      context.lineWidth = Math.max(1.5, shoulderSpan * 0.035);
-      context.stroke();
-
-      const capsules: Array<[string, string, number]> = [
-        ["left_shoulder", "left_elbow", 0.14], ["left_elbow", "left_wrist", 0.12],
-        ["right_shoulder", "right_elbow", 0.14], ["right_elbow", "right_wrist", 0.12],
-        ["left_hip", "left_knee", 0.19], ["left_knee", "left_ankle", 0.15],
-        ["right_hip", "right_knee", 0.19], ["right_knee", "right_ankle", 0.15],
-      ];
-      capsules.forEach(([fromName, toName, width]) => {
-        const from = points[fromName as JointName]; const to = points[toName as JointName];
-        if (!from || !to) return;
-        const a = toCanvas(from); const b = toCanvas(to);
-        context.beginPath();
-        context.moveTo(a.x, a.y);
-        context.lineTo(b.x, b.y);
-        context.strokeStyle = palette.edge;
-        context.lineWidth = shoulderSpan * width + 3;
-        context.stroke();
-        context.beginPath();
-        context.moveTo(a.x, a.y);
-        context.lineTo(b.x, b.y);
-        context.strokeStyle = palette.body;
-        context.lineWidth = shoulderSpan * width;
-        context.stroke();
-      });
-
-      const namedPoints = points as Record<string, Landmark | Point | undefined>;
-      const head = namedPoints.head ?? namedPoints.nose;
-      if (head) {
-        const h = toCanvas(head);
-        context.beginPath();
-        context.ellipse(h.x, h.y, shoulderSpan * 0.18, shoulderSpan * 0.23, 0, 0, Math.PI * 2);
-        context.fillStyle = palette.body;
-        context.fill();
-        context.strokeStyle = palette.edge;
-        context.lineWidth = Math.max(1.5, shoulderSpan * 0.035);
-        context.stroke();
-      }
-      for (const jointName of ["left_shoulder", "right_shoulder", "left_elbow", "right_elbow", "left_wrist", "right_wrist", "left_hip", "right_hip", "left_knee", "right_knee", "left_ankle", "right_ankle"]) {
-        const point = points[jointName as JointName];
-        if (!point) continue;
-        const p = toCanvas(point);
-        context.beginPath();
-        context.arc(p.x, p.y, shoulderSpan * 0.055, 0, Math.PI * 2);
-        context.fillStyle = palette.joint;
-        context.fill();
-      }
-      context.restore();
+    const neckCenter = midpoint(landmarks.left_shoulder, landmarks.right_shoulder);
+    const pelvisCenter = midpoint(landmarks.left_hip, landmarks.right_hip);
+    const torsoCenter = neckCenter && pelvisCenter ? midpoint(neckCenter, pelvisCenter) : null;
+    const alignedLandmarks: Record<string, Landmark | undefined> = {
+      ...landmarks,
+      neck_center: neckCenter ?? undefined,
+      pelvis_center: pelvisCenter ?? undefined,
+      torso_center: torsoCenter ?? undefined,
     };
-
-    if (mode === "body") drawBody(landmarks, {
-      body: "rgba(186,230,253,.30)",
-      edge: "rgba(56,189,248,.76)",
-      joint: "rgba(248,250,252,.94)",
-    }, 0.72);
+    const leftShoulderCanvas = landmarks.left_shoulder ? toCanvas(landmarks.left_shoulder) : null;
+    const rightShoulderCanvas = landmarks.right_shoulder ? toCanvas(landmarks.right_shoulder) : null;
+    const leftHipCanvas = landmarks.left_hip ? toCanvas(landmarks.left_hip) : null;
+    const rightHipCanvas = landmarks.right_hip ? toCanvas(landmarks.right_hip) : null;
+    const neckCanvas = neckCenter ? toCanvas(neckCenter) : null;
+    const pelvisCanvas = pelvisCenter ? toCanvas(pelvisCenter) : null;
+    const bodyScalePixels = Math.max(
+      18,
+      leftShoulderCanvas && rightShoulderCanvas ? Math.hypot(rightShoulderCanvas.x - leftShoulderCanvas.x, rightShoulderCanvas.y - leftShoulderCanvas.y) : 0,
+      leftHipCanvas && rightHipCanvas ? Math.hypot(rightHipCanvas.x - leftHipCanvas.x, rightHipCanvas.y - leftHipCanvas.y) * 1.15 : 0,
+      neckCanvas && pelvisCanvas ? Math.hypot(pelvisCanvas.x - neckCanvas.x, pelvisCanvas.y - neckCanvas.y) * 0.45 : 0,
+    );
 
     const placedLabels: Array<{ left: number; top: number; right: number; bottom: number }> = [];
     const label = (text: string, x: number, y: number, color = "#e2e8f0") => {
@@ -378,52 +311,57 @@ export default function CoachVisionStudio({
       context.fillText(text, left + 6, top + 12.5, width - 12);
     };
 
-    const drawLine = (a: Landmark | Point | undefined, b: Landmark | Point | undefined, color: string, width: number, dash: number[] = []) => {
+    const drawLine = (
+      a: Landmark | Point | undefined,
+      b: Landmark | Point | undefined,
+      color: string,
+      width: number,
+      dash: number[] = [],
+      maximumShoulderSpans = 3.4,
+    ) => {
       if (!a || !b) return;
       const startPoint = toCanvas(a);
       const endPoint = toCanvas(b);
+      if (Math.hypot(endPoint.x - startPoint.x, endPoint.y - startPoint.y) > bodyScalePixels * maximumShoulderSpans) return;
+      context.save();
       context.beginPath();
       context.setLineDash(dash);
+      context.lineCap = "round";
+      context.lineJoin = "round";
       context.moveTo(startPoint.x, startPoint.y);
       context.lineTo(endPoint.x, endPoint.y);
       context.strokeStyle = color;
       context.lineWidth = width;
-      context.shadowBlur = 0;
       context.stroke();
-      context.setLineDash([]);
-      context.shadowBlur = 0;
+      context.restore();
     };
 
     const linkColor = (index: number) => STATUS_STYLE[chainLinks[index]?.status ?? "unavailable"].color;
     const hit = side;
     const support = side === "right" ? "left" : "right";
-    const bodyColor = "rgba(241,245,249,.72)";
     const assessmentColor = area?.status === "strength" ? VISUAL_STATUS.good.color : area ? VISUAL_STATUS.correction.color : VISUAL_STATUS.confirm.color;
 
-    for (const [startName, endName] of BODY_CONNECTIONS) {
-      let color = bodyColor;
-      let width = mode === "chain" ? 1.8 : 1.15;
-      if (mode === "chain") {
-        if (startName.includes("ankle") || endName.includes("ankle")) color = linkColor(0);
-        else if (startName.includes("knee") || endName.includes("knee")) color = linkColor(1);
-        else if (startName.includes("hip") && endName.includes("hip")) color = linkColor(2);
-        else if (startName.includes("shoulder") && endName.includes("shoulder")) color = linkColor(3);
-        else if (startName === `${hit}_shoulder` && endName === `${hit}_elbow`) color = linkColor(4);
-        else if (startName === `${hit}_elbow` && endName === `${hit}_wrist`) color = linkColor(5);
-        else if (startName.includes(support)) color = "rgba(148,163,184,.45)";
-        width = 1.9;
+    if (mode === "body" || mode === "chain") {
+      for (const [startName, endName] of BODY_CONNECTIONS) {
+        drawLine(
+          alignedLandmarks[startName],
+          alignedLandmarks[endName],
+          mode === "body" ? "rgba(125,211,252,.92)" : "rgba(203,213,225,.34)",
+          mode === "body" ? 2.1 : 1.25,
+        );
       }
-      drawLine(landmarks[startName], landmarks[endName], color, width, [2, 5]);
     }
 
-    const pointEntries = Object.entries(landmarks).filter(([, point]) => point.visibility >= ANNOTATION_VISIBILITY_THRESHOLD);
-    for (const [name, point] of pointEntries) {
-      const mapped = toCanvas(point);
-      const isHitJoint = name.startsWith(hit) && (name.includes("shoulder") || name.includes("elbow") || name.includes("wrist"));
-      context.beginPath();
-      context.arc(mapped.x, mapped.y, isHitJoint ? 4.2 : 3.1, 0, Math.PI * 2);
-      context.fillStyle = isHitJoint ? "#f8fafc" : "rgba(226,232,240,.82)";
-      context.fill();
+    if (mode === "body" || mode === "chain") {
+      const pointEntries = Object.entries(landmarks).filter(([, point]) => point.visibility >= ANNOTATION_VISIBILITY_THRESHOLD);
+      for (const [name, point] of pointEntries) {
+        const mapped = toCanvas(point);
+        const isHitJoint = name.startsWith(hit) && (name.includes("shoulder") || name.includes("elbow") || name.includes("wrist"));
+        context.beginPath();
+        context.arc(mapped.x, mapped.y, isHitJoint ? 3.8 : 2.8, 0, Math.PI * 2);
+        context.fillStyle = isHitJoint ? "#f8fafc" : "rgba(226,232,240,.82)";
+        context.fill();
+      }
     }
 
     const cameraSupportsMeasurement = !["unsupported", "not_visible"].includes(analysisContext?.cameraAngle ?? "");
@@ -624,31 +562,45 @@ export default function CoachVisionStudio({
       }
     }
 
-    if (mode === "chain" && chainLinks.length > 0) {
-      const nodes = [
-        midpoint(landmarks.left_ankle, landmarks.right_ankle),
-        midpoint(landmarks.left_knee, landmarks.right_knee),
-        midpoint(landmarks.left_hip, landmarks.right_hip),
-        midpoint(landmarks.left_hip, landmarks.right_hip),
-        midpoint(landmarks.left_shoulder, landmarks.right_shoulder),
-        landmarks[`${side}_elbow`],
-        landmarks[`${side}_wrist`],
+    if (mode === "chain") {
+      const nodes: Array<{ name: string; point: Landmark | undefined }> = [
+        { name: "BASE", point: alignedLandmarks[`${side}_ankle`] },
+        { name: "KNEE", point: alignedLandmarks[`${side}_knee`] },
+        { name: "HIP", point: alignedLandmarks[`${side}_hip`] },
+        { name: "CORE", point: alignedLandmarks.torso_center },
+        { name: "SHOULDER", point: alignedLandmarks[`${side}_shoulder`] },
+        { name: "ELBOW", point: alignedLandmarks[`${side}_elbow`] },
+        { name: "HAND", point: alignedLandmarks[`${side}_wrist`] },
       ];
-      const activeIndex = Math.min(6, Math.floor(chainProgress * 7));
-      const names = ["BASE", "KNEES", "HIPS", "TURN", "SHOULDERS", "ELBOW", "HAND"];
+      const activeSegment = Math.min(5, Math.floor(chainProgress * 6));
+      for (let index = 0; index < nodes.length - 1; index += 1) {
+        const from = nodes[index].point;
+        const to = nodes[index + 1].point;
+        if (!from || !to) continue;
+        const color = linkColor(index);
+        const active = index === activeSegment;
+        if (active) drawLine(from, to, `${color}55`, 7);
+        drawLine(from, to, color, active ? 3.4 : 2.35);
+      }
       nodes.forEach((node, index) => {
-        if (!node) return;
-        const mapped = toCanvas(node);
-        const active = index === activeIndex;
+        if (!node.point) return;
+        const mapped = toCanvas(node.point);
+        const active = index === activeSegment || index === activeSegment + 1;
+        const color = linkColor(Math.max(0, Math.min(index - 1, 5)));
         context.beginPath();
-        context.arc(mapped.x, mapped.y, active ? 8 : 5, 0, Math.PI * 2);
-        context.fillStyle = active ? "rgba(248,250,252,.22)" : "rgba(15,23,42,.64)";
+        context.arc(mapped.x, mapped.y, active ? 5.8 : 3.8, 0, Math.PI * 2);
+        context.fillStyle = "rgba(2,6,23,.8)";
         context.fill();
-        context.strokeStyle = index === 0 ? linkColor(0) : linkColor(Math.min(index - 1, 5));
-        context.lineWidth = active ? 3.5 : 2;
+        context.strokeStyle = color;
+        context.lineWidth = active ? 2.5 : 1.6;
         context.stroke();
-        if (mode === "chain") label(names[index], mapped.x + 9, mapped.y - 22, active ? (index === 0 ? linkColor(0) : linkColor(Math.min(index - 1, 5))) : "#e2e8f0");
       });
+      const activeFrom = nodes[activeSegment];
+      const activeTo = nodes[activeSegment + 1];
+      if (activeFrom?.point && activeTo?.point) {
+        const anchor = toCanvas(midpoint(activeFrom.point, activeTo.point)!);
+        label(`${activeFrom.name} → ${activeTo.name}`, anchor.x + 9, anchor.y - 22, linkColor(activeSegment));
+      }
     }
 
     if (currentFrame.centerOfMass && mode !== "coach") {
@@ -873,7 +825,7 @@ export default function CoachVisionStudio({
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-800"><ScanLine className="h-4 w-4" />2 · See it in your video</div>
             <h2 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl">Watch where the pattern begins</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-600">Use the same stage-and-letter references as the summary above. Green means the measured body check is working and red means change it. Confirmation-only or low-confidence joints stay in the checklist but are not drawn on the athlete. The light dotted body map stays neutral.</p>
+            <p className="mt-3 text-sm leading-7 text-slate-600">Use the same stage-and-letter references as the summary above. Green means the measured body check is working and red means change it. Confirmation-only or low-confidence joints stay in the checklist but are not drawn on the athlete. Body links and the power chain each follow their own measured anatomical segments.</p>
           </div>
           <div className="min-w-64 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
             <div className="flex items-center justify-between gap-3"><span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Detected movement</span><span className="rounded-full bg-emerald-50 px-2 py-1 text-[0.68rem] font-semibold text-emerald-800">{classificationConfidence}% confidence</span></div>
@@ -899,7 +851,7 @@ export default function CoachVisionStudio({
             <canvas ref={canvasRef} className="pointer-events-none absolute inset-0" aria-hidden="true" />
             {storyCaption ? <div className="pointer-events-none absolute inset-x-3 bottom-3 flex justify-center"><p className="max-w-xl rounded-2xl border border-white/15 bg-slate-950/88 px-4 py-3 text-center text-sm font-semibold leading-6 text-white shadow-xl backdrop-blur">{storyCaption}</p></div> : null}
             <div data-testid="video-stage-reference" className="absolute left-3 top-3 rounded-xl border border-white/10 bg-slate-950/90 px-3 py-2 backdrop-blur"><p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white">{activeBackhandGuide ? `Stage ${activeBackhandGuide.number} · ${activeBackhandGuide.label}` : phaseTitle(stage)} · {time.toFixed(2)}s</p><p className="mt-1 text-[0.65rem] text-slate-300">{phaseTitle(stage)} frame {currentFrame?.frameIndex ?? "—"} · {mode === "clean" ? "original video" : MODE_OPTIONS.find((item) => item.id === mode)?.label}</p></div>
-            {mode !== "clean" ? <div data-testid="correction-overlay-key" className="absolute bottom-3 left-3 flex flex-wrap gap-2 text-[0.62rem]"><span className="rounded-full bg-slate-950/88 px-2 py-1 text-slate-100">light dots = {BODY_CONNECTIONS.length} body links</span>{mode === "coach" ? <><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = change</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = working</span><span className="rounded-full bg-slate-800/90 px-2 py-1 text-slate-100">uncertain = hidden</span></> : null}{mode === "chain" ? <><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = connected</span><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = timing issue</span></> : null}</div> : null}
+            {mode !== "clean" ? <div data-testid="correction-overlay-key" className="absolute bottom-3 left-3 flex flex-wrap gap-2 text-[0.62rem]">{mode === "body" ? <span className="rounded-full bg-sky-950/90 px-2 py-1 text-sky-100">{BODY_CONNECTIONS.length} anatomical segments</span> : null}{mode === "coach" ? <><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = change</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = working</span><span className="rounded-full bg-slate-800/90 px-2 py-1 text-slate-100">uncertain = hidden</span></> : null}{mode === "chain" ? <><span className="rounded-full bg-slate-950/88 px-2 py-1 text-slate-100">base → knee → hip → core → shoulder → elbow → hand</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = connected</span><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = timing issue</span></> : null}</div> : null}
           </div>
 
           <input type="range" min={start} max={end} step={presentationStep} value={Math.max(start, Math.min(end, time))} onChange={(event) => seek(Number(event.target.value))} className="mt-4 w-full accent-blue-900" aria-label="Biomechanical video timeline" />
@@ -941,7 +893,7 @@ export default function CoachVisionStudio({
             </div>
           </details>
 
-          <div className="mt-auto pt-6"><div className="flex items-start gap-2 rounded-xl border border-slate-200 bg-white p-3 text-[0.68rem] leading-5 text-slate-500"><CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" /><p>The light dotted body links use pose evidence. Green marks measured strengths and red marks corrections. Confirmation-only, occluded, or low-confidence joints are withheld instead of guessing. No simulated racket is drawn. This remains a 2D coaching view—not force data, racket-face measurement, or an exact 3D reconstruction.</p></div></div>
+          <div className="mt-auto pt-6"><div className="flex items-start gap-2 rounded-xl border border-slate-200 bg-white p-3 text-[0.68rem] leading-5 text-slate-500"><CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" /><p>Body links connect only measured anatomical neighbours; no cross-body or hand-to-hand lines are invented. The power chain follows the measured hitting-side path from base to hand. Confirmation-only, occluded, implausible, or low-confidence joints are withheld instead of guessing. This remains a 2D coaching view—not force data, racket-face measurement, or an exact 3D reconstruction.</p></div></div>
         </aside>
       </div>
 

@@ -16,7 +16,7 @@ const checks = [
   ["seeks wait for decoded video frame", studio.includes("onSeeked={handleSeeked}") && studio.includes("if (seeking")],
   ["clean original-video lens exists", studio.includes('mode === "clean"') && studio.includes("Original video preserved")],
   ["level-aware target pose model exists", model.includes("poseAtProgress") && model.includes("playingLevel")],
-  ["active overlay is grounded in pose evidence", studio.includes("use pose evidence") && studio.includes("not force data")],
+  ["active overlay is grounded in pose evidence", studio.includes("measured anatomical neighbours") && studio.includes("not force data")],
   ["six phases exist", ["preparation", "loading", "swing", "contact", "finish", "recovery"].every((value) => model.includes(`\"${value}\"`))],
   ["phase synchronization uses measured anchors", studio.includes("stageAnchors") && studio.includes("stageForTime")],
   ["frame stepping exists", studio.includes("Previous frame") && studio.includes("Next frame")],

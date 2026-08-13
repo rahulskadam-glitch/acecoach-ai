@@ -42,7 +42,7 @@ const checks = [
   ["106-point player explorer", "src/features/report/components/BiomechanicalExplorer.tsx", "Your 106-point movement map"],
   ["camera-honest analytics boundary", "src/features/report/components/BiomechanicalExplorer.tsx", "not 106 sensors"],
   ["CoachVision explicit correction markers", "src/features/report/components/CoachVisionStudio.tsx", "red = change"],
-  ["CoachVision dotted body linkages", "src/features/report/components/CoachVisionStudio.tsx", "light dots ="],
+  ["CoachVision anatomical body linkages", "src/features/report/components/CoachVisionStudio.tsx", "anatomical segments"],
   ["CoachVision clean original control", "src/features/report/components/CoachVisionStudio.tsx", "Original footage only"],
   ["CoachVision full-body linkage view", "src/features/report/components/CoachVisionStudio.tsx", "Full-body linkage map"],
   ["Safari-safe visual QA media preview", "src/app/report/[id]/page.tsx", "videoUrl=\"/file.svg\" previewOnly"],

@@ -82,6 +82,9 @@ for (const required of [
   "interpolatedFrameAtTime",
   "CausalLandmarkStabilizer",
   "labelPlacementRef",
+  "neck_center",
+  "pelvis_center",
+  "torso_center",
   "ANNOTATION_VISIBILITY_THRESHOLD",
   "4A · ELBOW HIGH",
   "4C · SWING THROUGH",
@@ -89,6 +92,9 @@ for (const required of [
   "[0.1, 0.25, 0.5, 1]",
   "onSeeked={handleSeeked}",
 ]) assert(source.includes(required), `overlay renderer is missing ${required}`);
+
+assert(!source.includes('["left_shoulder", "right_hip"]'), "body renderer must not invent a cross-body shoulder-to-hip segment");
+assert(!source.includes('["left_wrist", "right_wrist"]'), "body renderer must not connect independent hands as an anatomical segment");
 
 for (const required of ["decoderTimestampCoverage", "variableFrameRateDetected", "rotationAppliedByDecoder", "poseInput", "cropNormalized"]) {
   assert(pipeline.includes(required), `analysis registration contract is missing ${required}`);
