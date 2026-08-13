@@ -85,6 +85,7 @@ for (const required of [
   "neck_center",
   "pelvis_center",
   "torso_center",
+  "navel_center",
   "ANNOTATION_VISIBILITY_THRESHOLD",
   "4A · ELBOW HIGH",
   "4C · SWING THROUGH",

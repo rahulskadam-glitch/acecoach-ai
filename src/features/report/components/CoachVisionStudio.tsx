@@ -236,11 +236,17 @@ export default function CoachVisionStudio({
     const neckCenter = midpoint(landmarks.left_shoulder, landmarks.right_shoulder);
     const pelvisCenter = midpoint(landmarks.left_hip, landmarks.right_hip);
     const torsoCenter = neckCenter && pelvisCenter ? midpoint(neckCenter, pelvisCenter) : null;
+    const navelCenter = neckCenter && pelvisCenter ? {
+      x: neckCenter.x + (pelvisCenter.x - neckCenter.x) * 0.72,
+      y: neckCenter.y + (pelvisCenter.y - neckCenter.y) * 0.72,
+      visibility: Math.min(neckCenter.visibility, pelvisCenter.visibility),
+    } : null;
     const alignedLandmarks: Record<string, Landmark | undefined> = {
       ...landmarks,
       neck_center: neckCenter ?? undefined,
       pelvis_center: pelvisCenter ?? undefined,
       torso_center: torsoCenter ?? undefined,
+      navel_center: navelCenter ?? undefined,
     };
     const leftShoulderCanvas = landmarks.left_shoulder ? toCanvas(landmarks.left_shoulder) : null;
     const rightShoulderCanvas = landmarks.right_shoulder ? toCanvas(landmarks.right_shoulder) : null;
@@ -603,8 +609,9 @@ export default function CoachVisionStudio({
       }
     }
 
-    if (currentFrame.centerOfMass && mode !== "coach") {
-      const com = toCanvas(currentFrame.centerOfMass);
+    const balancePoint = navelCenter ?? currentFrame.centerOfMass;
+    if (balancePoint && mode !== "coach") {
+      const com = toCanvas(balancePoint);
       context.strokeStyle = assessmentColor;
       context.lineWidth = 1.75;
       context.beginPath();
