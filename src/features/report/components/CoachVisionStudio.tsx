@@ -53,6 +53,11 @@ const BODY_CONNECTIONS: Array<[string, string]> = [
   ["right_hip", "right_knee"], ["right_knee", "right_ankle"],
 ];
 
+const BODY_AXES: Array<[string, string]> = [
+  ["left_shoulder", "right_shoulder"],
+  ["left_hip", "right_hip"],
+];
+
 const MODE_OPTIONS: Array<{ id: OverlayMode; label: string; description: string }> = [
   { id: "coach", label: "Corrections", description: "Red change · green working · uncertain hidden" },
   { id: "body", label: "Body links", description: "Joint-to-joint anatomical segments" },
@@ -347,25 +352,35 @@ export default function CoachVisionStudio({
     const support = side === "right" ? "left" : "right";
     const assessmentColor = area?.status === "strength" ? VISUAL_STATUS.good.color : area ? VISUAL_STATUS.correction.color : VISUAL_STATUS.confirm.color;
 
-    if (mode === "body" || mode === "chain") {
+    {
       for (const [startName, endName] of BODY_CONNECTIONS) {
         drawLine(
           alignedLandmarks[startName],
           alignedLandmarks[endName],
-          mode === "body" ? "rgba(125,211,252,.92)" : "rgba(203,213,225,.34)",
-          mode === "body" ? 2.1 : 1.25,
+          mode === "body" ? "rgba(125,211,252,.92)" : mode === "coach" ? "rgba(226,232,240,.58)" : "rgba(203,213,225,.34)",
+          mode === "body" ? 2.1 : mode === "coach" ? 1.35 : 1.25,
+        );
+      }
+      for (const [startName, endName] of BODY_AXES) {
+        drawLine(
+          alignedLandmarks[startName],
+          alignedLandmarks[endName],
+          mode === "body" ? "rgba(186,230,253,.86)" : "rgba(226,232,240,.52)",
+          mode === "body" ? 1.8 : 1.15,
+          [3, 4],
         );
       }
     }
 
-    if (mode === "body" || mode === "chain") {
+    {
       const pointEntries = Object.entries(landmarks).filter(([, point]) => point.visibility >= ANNOTATION_VISIBILITY_THRESHOLD);
       for (const [name, point] of pointEntries) {
         const mapped = toCanvas(point);
         const isHitJoint = name.startsWith(hit) && (name.includes("shoulder") || name.includes("elbow") || name.includes("wrist"));
         context.beginPath();
-        context.arc(mapped.x, mapped.y, isHitJoint ? 3.8 : 2.8, 0, Math.PI * 2);
-        context.fillStyle = isHitJoint ? "#f8fafc" : "rgba(226,232,240,.82)";
+        const jointRadius = mode === "coach" ? (isHitJoint ? 2.8 : 2.1) : (isHitJoint ? 3.8 : 2.8);
+        context.arc(mapped.x, mapped.y, jointRadius, 0, Math.PI * 2);
+        context.fillStyle = mode === "coach" ? "rgba(241,245,249,.72)" : isHitJoint ? "#f8fafc" : "rgba(226,232,240,.82)";
         context.fill();
       }
     }
@@ -858,7 +873,7 @@ export default function CoachVisionStudio({
             <canvas ref={canvasRef} className="pointer-events-none absolute inset-0" aria-hidden="true" />
             {storyCaption ? <div className="pointer-events-none absolute inset-x-3 bottom-3 flex justify-center"><p className="max-w-xl rounded-2xl border border-white/15 bg-slate-950/88 px-4 py-3 text-center text-sm font-semibold leading-6 text-white shadow-xl backdrop-blur">{storyCaption}</p></div> : null}
             <div data-testid="video-stage-reference" className="absolute left-3 top-3 rounded-xl border border-white/10 bg-slate-950/90 px-3 py-2 backdrop-blur"><p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white">{activeBackhandGuide ? `Stage ${activeBackhandGuide.number} · ${activeBackhandGuide.label}` : phaseTitle(stage)} · {time.toFixed(2)}s</p><p className="mt-1 text-[0.65rem] text-slate-300">{phaseTitle(stage)} frame {currentFrame?.frameIndex ?? "—"} · {mode === "clean" ? "original video" : MODE_OPTIONS.find((item) => item.id === mode)?.label}</p></div>
-            {mode !== "clean" ? <div data-testid="correction-overlay-key" className="absolute bottom-3 left-3 flex flex-wrap gap-2 text-[0.62rem]">{mode === "body" ? <span className="rounded-full bg-sky-950/90 px-2 py-1 text-sky-100">{BODY_CONNECTIONS.length} anatomical segments</span> : null}{mode === "coach" ? <><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = change</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = working</span><span className="rounded-full bg-slate-800/90 px-2 py-1 text-slate-100">uncertain = hidden</span></> : null}{mode === "chain" ? <><span className="rounded-full bg-slate-950/88 px-2 py-1 text-slate-100">base → knee → hip → core → shoulder → elbow → hand</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = connected</span><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = timing issue</span></> : null}</div> : null}
+            {mode !== "clean" ? <div data-testid="correction-overlay-key" className="absolute bottom-3 left-3 flex flex-wrap gap-2 text-[0.62rem]">{mode === "body" ? <span className="rounded-full bg-sky-950/90 px-2 py-1 text-sky-100">{BODY_CONNECTIONS.length} anatomical segments</span> : null}{mode === "coach" ? <><span className="rounded-full bg-slate-950/88 px-2 py-1 text-slate-100">light map = body links + shoulder/hip axes</span><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = change</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = working</span><span className="rounded-full bg-slate-800/90 px-2 py-1 text-slate-100">uncertain = hidden</span></> : null}{mode === "chain" ? <><span className="rounded-full bg-slate-950/88 px-2 py-1 text-slate-100">base → knee → hip → core → shoulder → elbow → hand</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = connected</span><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = timing issue</span></> : null}</div> : null}
           </div>
 
           <input type="range" min={start} max={end} step={presentationStep} value={Math.max(start, Math.min(end, time))} onChange={(event) => seek(Number(event.target.value))} className="mt-4 w-full accent-blue-900" aria-label="Biomechanical video timeline" />
