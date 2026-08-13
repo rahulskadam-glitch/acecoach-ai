@@ -5,8 +5,8 @@ import { fileURLToPath } from "node:url";
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.resolve(scriptDir, "..");
 const envCandidates = [
-  path.resolve(projectRoot, "secrets/.env.local"),
   path.resolve(projectRoot, "../secrets/.env.local"),
+  path.resolve(projectRoot, "secrets/.env.local"),
 ];
 const envPath = envCandidates.find((candidate) => fs.existsSync(candidate)) ?? envCandidates[0];
 
@@ -100,9 +100,15 @@ const health = await healthResponse.json();
 if (health.status !== "ok" || health.service !== "analysis-api") {
   fail("Analysis health response did not identify a ready analysis-api service.");
 }
+if (health.engine_version !== "movement-intelligence-v1.10.0") {
+  fail(`Analysis engine mismatch: expected movement-intelligence-v1.10.0, received ${health.engine_version ?? "missing"}.`);
+}
+if (health.ontology_version !== "4.1.0" || !health.ontology_manifest_hash || health.ontology_manifest_hash === "unavailable") {
+  fail(`Analysis ontology is not ready: expected v4.1.0 with a loaded manifest, received ${health.ontology_version ?? "missing"}.`);
+}
 
 console.log(`PASS Supabase core schema (${Object.keys(requiredColumns).length} tables)`);
 console.log(`PASS coaching persistence (${coachingSchemaReady ? "dedicated tables" : "report-backed compatibility mode"})`);
 console.log(`PASS video storage allowlist (${supabaseUrl.hostname})`);
-console.log(`PASS analysis service ${health.version ?? "unknown"} (${analysisUrl.origin})`);
+console.log(`PASS analysis service ${health.version ?? "unknown"} · ${health.engine_version} · ontology ${health.ontology_version} (${analysisUrl.origin})`);
 console.log("\nAceCoach runtime is ready for upload, analysis, and report persistence.");

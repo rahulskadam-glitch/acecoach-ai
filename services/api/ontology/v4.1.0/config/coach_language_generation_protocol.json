@@ -1,0 +1,205 @@
+{
+  "version": "4.1.0",
+  "purpose": "Turn a fixed evidence-grounded coaching insight into natural player language without allowing the language model to invent new tennis facts.",
+  "pipeline": [
+    {
+      "stage": 1,
+      "id": "LOCK_COACHING_TRUTH",
+      "input": "ranked primary insight + evidence graph",
+      "output": "immutable semantic truth object",
+      "rules": [
+        "Freeze root cause, causal role, evidence IDs, comparison basis, selected correction and strength-to-protect before language generation.",
+        "The language model may not change the selected correction."
+      ]
+    },
+    {
+      "stage": 2,
+      "id": "BUILD_SEMANTIC_SLOTS",
+      "input": "immutable coaching truth",
+      "output": "language slots",
+      "required_slots": [
+        "stroke_family",
+        "context_phrase",
+        "coach_read_fact",
+        "change_fact",
+        "why_movement_fact",
+        "why_ball_fact",
+        "feel_cue",
+        "visual_anchor",
+        "practice_constraint",
+        "success_signal",
+        "evidence_ids"
+      ],
+      "optional_slots": [
+        "not_problem_fact",
+        "strength_fact",
+        "self_best_fact",
+        "uncertainty_fact"
+      ]
+    },
+    {
+      "stage": 3,
+      "id": "LOAD_STROKE_REGISTER",
+      "input": "stroke_family + player level",
+      "output": "allowed tennis vocabulary",
+      "rules": [
+        "Load config/stroke_coach_lexicon.json.",
+        "Prefer stroke-native vocabulary over generic anatomy.",
+        "Use technical terms only if the selected player register allows them."
+      ]
+    },
+    {
+      "stage": 4,
+      "id": "CHOOSE_RHETORICAL_MOVE",
+      "input": "insight archetype + slots",
+      "output": "one narrative spine",
+      "choices": [
+        "contrast",
+        "self_best",
+        "conditional",
+        "cause_effect",
+        "protect_strength",
+        "choice"
+      ],
+      "rule": "Use one dominant rhetorical move for the main card. Do not pile multiple storytelling devices into one paragraph."
+    },
+    {
+      "stage": 5,
+      "id": "DRAFT_PLAYER_COACH",
+      "input": "slots + stroke register + rhetoric",
+      "output": "Coach's read / Keep / Change / Why / Feel / Watch / Train / Success",
+      "rules": [
+        "Address the player as you.",
+        "Lead with tennis meaning, not evidence numbers.",
+        "Use contractions naturally.",
+        "Do not add facts.",
+        "Do not mention source coaches.",
+        "Do not reveal model/system vocabulary."
+      ]
+    },
+    {
+      "stage": 6,
+      "id": "DRAFT_VISUAL_LANGUAGE",
+      "input": "same slots + compiled visual beats",
+      "output": "caption and optional narration for each beat",
+      "rules": [
+        "Each caption must point to something visible in that beat.",
+        "Maximum eight words per player caption.",
+        "Captions progress observation -> cause -> consequence -> correction.",
+        "End with the active cue on clean replay."
+      ]
+    },
+    {
+      "stage": 7,
+      "id": "NATURALNESS_QA",
+      "input": "draft player + visual language",
+      "output": "pass/rewrite/reject",
+      "rules": [
+        "Run config/natural_language_quality_gates.json.",
+        "Reject generic AI prose, false precision, fake praise, multiple cues and visual-language mismatch.",
+        "If rewriting, preserve semantic slots exactly."
+      ]
+    },
+    {
+      "stage": 8,
+      "id": "BUILD_DEEP_DIVE",
+      "input": "same insight + evidence",
+      "output": "COACH_ANALYST surface",
+      "rules": [
+        "May reveal counts, distributions, measurements, uncertainty and research provenance.",
+        "Must not contradict PLAYER_COACH."
+      ]
+    }
+  ],
+  "semantic_truth_contract": {
+    "immutable_after_stage_1": [
+      "insight_id",
+      "stroke_family",
+      "archetype",
+      "root_event",
+      "root_cause",
+      "causal_role",
+      "evidence_ids",
+      "comparison_basis",
+      "strength_to_protect",
+      "primary_correction",
+      "practice_constraint",
+      "success_signal"
+    ],
+    "language_model_can_vary": [
+      "sentence rhythm",
+      "choice among approved stroke-native synonyms",
+      "rhetorical opener",
+      "contraction use",
+      "order of WHY movement vs ball consequence when meaning is preserved"
+    ],
+    "language_model_cannot_vary": [
+      "diagnosis",
+      "causal direction",
+      "measurement value",
+      "confidence level",
+      "number of active corrections",
+      "stroke classification",
+      "context classification"
+    ]
+  },
+  "player_registers": {
+    "junior_simple": {
+      "target": "young player or low technical literacy",
+      "rules": [
+        "Use concrete tennis words and one physical image.",
+        "Avoid anatomy terminology unless necessary.",
+        "Cue <= 6 words.",
+        "Never sound childish or patronizing."
+      ]
+    },
+    "beginner": {
+      "target": "beginner",
+      "rules": [
+        "Use contact, space, turn, step, reach, target, height and depth.",
+        "Explain one cause and one effect.",
+        "No advanced sequencing vocabulary by default."
+      ]
+    },
+    "intermediate": {
+      "target": "intermediate",
+      "rules": [
+        "Use cause-and-effect tennis vocabulary.",
+        "Terms like unit turn, racquet path and split-step are acceptable when they help.",
+        "Keep metrics in deep dive."
+      ]
+    },
+    "advanced": {
+      "target": "advanced competitor",
+      "rules": [
+        "Allow precise technique-family language, timing and sequence concepts.",
+        "Still lead with the coaching meaning before technical detail."
+      ]
+    },
+    "coach": {
+      "target": "coach/pro analyst",
+      "rules": [
+        "Allow measurement names, timing intervals, uncertainty and causal hypotheses.",
+        "Preserve the player translation beside technical evidence."
+      ]
+    }
+  },
+  "special_cases": {
+    "no_major_correction": {
+      "coach_read_shape": "This stroke is holding up well. The main thing I'd protect is {strength}.",
+      "rule": "Do not manufacture a fault to fill the report."
+    },
+    "medium_confidence": {
+      "rule": "Use natural uncertainty: 'It looks like...' or 'The pattern suggests...' and show what evidence would confirm it."
+    },
+    "low_confidence": {
+      "rule": "Do not prescribe. Explain the camera/evidence limitation and request the view needed to evaluate the question."
+    },
+    "conflicting_evidence": {
+      "rule": "Say the pattern is mixed, show the context split, and avoid a universal correction."
+    },
+    "player_already_has_solution": {
+      "rule": "Prefer self-best language: 'Your best reps already show it' over a professional comparison."
+    }
+  }
+}

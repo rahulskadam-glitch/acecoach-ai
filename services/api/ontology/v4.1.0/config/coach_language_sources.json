@@ -1,0 +1,402 @@
+{
+  "version": "4.1.0",
+  "purpose": "Ground AceCoach player-facing language in the teaching patterns of credentialed tennis coaches and high-quality instructional channels while preserving evidence traceability and avoiding transcript imitation.",
+  "methodology": {
+    "review_scope": "Public YouTube lesson titles, descriptions, chapter structures, visible teaching progressions, and official coach/channel credentials reviewed on 2026-08-12.",
+    "copyright_rule": "Store only bibliographic metadata and abstracted teaching/language patterns. Do not store or reproduce transcripts, extended quotations, signature catchphrases, or distinctive passages.",
+    "style_rule": "Synthesize common elite-coaching communication behaviors; never instruct the model to impersonate a named living coach.",
+    "source_acceptance": [
+      "Clear instructional purpose rather than entertainment-only content",
+      "Coach/channel has professional coaching, performance-coaching, governing-body, ATP/WTA/ITF, or substantial established instructional credentials",
+      "Lesson is specific enough to connect language to a stroke, phase, context, or correction",
+      "Advice is compatible with AceCoach biomechanics/context guardrails or is explicitly tagged as a coaching cue rather than a universal biomechanical law"
+    ]
+  },
+  "coach_profiles": {
+    "patrick_mouratoglou": {
+      "display_name": "Patrick Mouratoglou",
+      "authority_tier": "A",
+      "credential_basis": "World-renowned professional coach and academy founder with long-term Grand Slam coaching experience.",
+      "credential_url": "https://www.mouratoglou.com/en/academy/patrick-mouratoglou/",
+      "abstracted_language_patterns": [
+        "Start with the player's real problem rather than reciting textbook positions",
+        "Explain what the stroke is trying to achieve and when the technique is useful",
+        "Use contrast: what the player is doing now versus the simpler/better option",
+        "Reduce the lesson to a small number of high-value keys",
+        "Tie technique to tactical consequence and confidence",
+        "Use direct, conversational instruction with short corrections during live hitting"
+      ]
+    },
+    "rick_macci": {
+      "display_name": "Rick Macci",
+      "authority_tier": "A",
+      "credential_basis": "USPTA/RSPA Master Professional, Hall of Fame coach, and long-time developer of elite players.",
+      "credential_url": "https://rickmacci.com/about-rick/",
+      "abstracted_language_patterns": [
+        "Turn complicated mechanics into a compact movement idea",
+        "Use memorable images and action words rather than long anatomy explanations",
+        "Correct one movement priority while keeping energy and belief high",
+        "Demonstrate the difference physically and immediately ask for another rep",
+        "Use rhythm, range-of-motion, contact and acceleration language players can feel"
+      ]
+    },
+    "nikola_aracic": {
+      "display_name": "Nikola Aracic / Intuitive Tennis",
+      "authority_tier": "B_PLUS",
+      "credential_basis": "Former NCAA Division I player and long-time tennis coach; established instructional platform focused on automatic strokes.",
+      "credential_url": "https://www.intuitivetennis.com/",
+      "abstracted_language_patterns": [
+        "Prefer straightforward explanation over excessive mechanical detail",
+        "Build strokes through progressions from simple to live-ball execution",
+        "Explain what should become automatic and what the player should actually pay attention to",
+        "Use level-appropriate language and demonstrations",
+        "Separate beginner fundamentals from advanced situational variations"
+      ]
+    },
+    "simon_konov": {
+      "display_name": "Simon Konov / Top Tennis Training",
+      "authority_tier": "B_PLUS",
+      "credential_basis": "Senior performance coach with ITF Futures playing experience and coaching experience through ATP/WTA level.",
+      "credential_url": "https://www.top-tennis-training.com/our-pros/simon-konov/",
+      "abstracted_language_patterns": [
+        "Organize instruction into a few clear steps or checkpoints",
+        "Explain why a technique is used before detailing how to execute it",
+        "Use visible progressions and drills that isolate one problem",
+        "Connect grip, preparation, contact and finish to the intended ball",
+        "Give concrete practice tasks instead of ending with diagnosis"
+      ]
+    }
+  },
+  "videos": [
+    {
+      "source_id": "LANG-PM-FOREHAND-01",
+      "coach_id": "patrick_mouratoglou",
+      "title": "How to unlock the full potential of your forehand",
+      "youtube_url": "https://www.youtube.com/watch?v=6uswibxRz1A",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "live_diagnosis",
+        "body_positioning",
+        "hand_control",
+        "consistency",
+        "contrast"
+      ]
+    },
+    {
+      "source_id": "LANG-PM-FOREHAND-02",
+      "coach_id": "patrick_mouratoglou",
+      "title": "Full forehand lesson - timing, power, spin and control",
+      "youtube_url": "https://www.youtube.com/watch?v=LTgTLvvn7jQ",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "timing",
+        "power",
+        "spin",
+        "breathing",
+        "short_preparation"
+      ]
+    },
+    {
+      "source_id": "LANG-RM-FOREHAND-01",
+      "coach_id": "rick_macci",
+      "title": "On Court with RSPA: Improved Forehand Technique with Rick Macci",
+      "youtube_url": "https://www.youtube.com/watch?v=5MHugAF2DiQ",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "range_of_motion",
+        "explosiveness",
+        "simple_key",
+        "demonstration"
+      ]
+    },
+    {
+      "source_id": "LANG-IT-2HBH-01",
+      "coach_id": "nikola_aracic",
+      "title": "Beginner Tennis Lesson | Forehand & Two-Handed Backhand",
+      "youtube_url": "https://www.youtube.com/watch?v=kbmsyOGR6Cc",
+      "stroke_families": [
+        "forehand",
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "beginner_progression",
+        "simple_language",
+        "live_correction"
+      ]
+    },
+    {
+      "source_id": "LANG-TTT-2HBH-01",
+      "coach_id": "simon_konov",
+      "title": "Perfect Two Handed Backhand in 3 Steps",
+      "youtube_url": "https://www.youtube.com/watch?v=i1k8MLOsOwI",
+      "stroke_families": [
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "preparation",
+        "power_position",
+        "contact_finish",
+        "three_step_progression"
+      ]
+    },
+    {
+      "source_id": "LANG-PM-1HBH-01",
+      "coach_id": "patrick_mouratoglou",
+      "title": "The one-handed backhand: Tennis Masterclass, Episode 5",
+      "youtube_url": "https://www.youtube.com/watch?v=5ahFrtq9g3I",
+      "stroke_families": [
+        "one_handed_backhand"
+      ],
+      "pattern_tags": [
+        "preparation",
+        "contact_point",
+        "foot_position",
+        "follow_through",
+        "masterclass"
+      ]
+    },
+    {
+      "source_id": "LANG-PM-SLICE-01",
+      "coach_id": "patrick_mouratoglou",
+      "title": "The slice backhand: Tennis Masterclass, Episode 4",
+      "youtube_url": "https://www.youtube.com/watch?v=Z21B4XH9ICc",
+      "stroke_families": [
+        "slice_backhand"
+      ],
+      "pattern_tags": [
+        "purpose_first",
+        "variation",
+        "contact",
+        "trajectory",
+        "tactical_use"
+      ]
+    },
+    {
+      "source_id": "LANG-TTT-SLICE-01",
+      "coach_id": "simon_konov",
+      "title": "Perfect Backhand Slice in 3 Steps",
+      "youtube_url": "https://www.youtube.com/watch?v=D59s1GT1HEE",
+      "stroke_families": [
+        "slice_backhand"
+      ],
+      "pattern_tags": [
+        "grip",
+        "preparation",
+        "power_position",
+        "contact_finish",
+        "three_step_progression"
+      ]
+    },
+    {
+      "source_id": "LANG-PM-SERVE-01",
+      "coach_id": "patrick_mouratoglou",
+      "title": "9 Tips to Serve Like a Pro",
+      "youtube_url": "https://www.youtube.com/watch?v=mOlf4pcvUxM",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "rhythm",
+        "simple_keys",
+        "serve_progression",
+        "reach",
+        "coordination"
+      ]
+    },
+    {
+      "source_id": "LANG-RM-SERVE-01",
+      "coach_id": "rick_macci",
+      "title": "Master Your Serve: Lesson with Rick Macci - Part 1",
+      "youtube_url": "https://www.youtube.com/watch?v=6C4YqK021uo",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "speed",
+        "accuracy",
+        "spin",
+        "actionable_keys",
+        "live_lesson"
+      ]
+    },
+    {
+      "source_id": "LANG-PM-RETURN-01",
+      "coach_id": "patrick_mouratoglou",
+      "title": "The return of serve: TENNIS MASTERCLASS",
+      "youtube_url": "https://www.youtube.com/watch?v=vPtNtNi8_NI",
+      "stroke_families": [
+        "return_of_serve"
+      ],
+      "pattern_tags": [
+        "anticipation",
+        "first_serve",
+        "second_serve",
+        "kick_serve",
+        "surface_context",
+        "aggressive_return"
+      ]
+    },
+    {
+      "source_id": "LANG-RM-RETURN-01",
+      "coach_id": "rick_macci",
+      "title": "World class return of serve technique by Coach Rick Macci",
+      "youtube_url": "https://www.youtube.com/watch?v=OS3jm8NM-pU",
+      "stroke_families": [
+        "return_of_serve"
+      ],
+      "pattern_tags": [
+        "compact_response",
+        "first_move",
+        "timing",
+        "simple_key"
+      ]
+    },
+    {
+      "source_id": "LANG-IT-VOLLEY-01",
+      "coach_id": "nikola_aracic",
+      "title": "Beginner Tennis Lesson | Forehand Volley, Backhand Volley & Overhead",
+      "youtube_url": "https://www.youtube.com/watch?v=_5ZRb-DyTzI",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley",
+        "overhead"
+      ],
+      "pattern_tags": [
+        "beginner_progression",
+        "compactness",
+        "contact",
+        "demonstration"
+      ]
+    },
+    {
+      "source_id": "LANG-TTT-VOLLEY-01",
+      "coach_id": "simon_konov",
+      "title": "Perfect Volleys in 3 Steps - Perfect Tennis",
+      "youtube_url": "https://www.youtube.com/watch?v=xhSk2q2FR28",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "compactness",
+        "contact",
+        "footwork",
+        "three_step_progression"
+      ]
+    },
+    {
+      "source_id": "LANG-PM-SMASH-01",
+      "coach_id": "patrick_mouratoglou",
+      "title": "The Smash: TENNIS MASTERCLASS",
+      "youtube_url": "https://www.youtube.com/watch?v=SUancsyW1HI",
+      "stroke_families": [
+        "overhead"
+      ],
+      "pattern_tags": [
+        "positioning",
+        "recognition",
+        "contact",
+        "confidence",
+        "tactical_use"
+      ]
+    },
+    {
+      "source_id": "LANG-TTT-HALFVOLLEY-01",
+      "coach_id": "simon_konov",
+      "title": "How To Deal with High Balls in Tennis - 6 Ways",
+      "youtube_url": "https://www.youtube.com/watch?v=_wllQO6jFu4",
+      "stroke_families": [
+        "half_volley",
+        "forehand",
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "situational_choice",
+        "half_volley",
+        "drive_volley",
+        "context_first"
+      ]
+    },
+    {
+      "source_id": "LANG-TTT-RETURN-01",
+      "coach_id": "simon_konov",
+      "title": "Perfect Returns in 3 Steps - Perfect Tennis",
+      "youtube_url": "https://www.youtube.com/watch?v=M0fs5W7rIrk",
+      "stroke_families": [
+        "return_of_serve"
+      ],
+      "pattern_tags": [
+        "load",
+        "compactness",
+        "contact",
+        "three_step_progression"
+      ]
+    },
+    {
+      "source_id": "LANG-PM-FOOTWORK-01",
+      "coach_id": "patrick_mouratoglou",
+      "title": "Seven keys to improve your footwork",
+      "youtube_url": "https://www.youtube.com/watch?v=BoXkdu9ozJM",
+      "stroke_families": [
+        "forehand",
+        "two_handed_backhand",
+        "one_handed_backhand",
+        "slice_backhand",
+        "return_of_serve",
+        "forehand_volley",
+        "backhand_volley",
+        "overhead"
+      ],
+      "pattern_tags": [
+        "posture",
+        "balance",
+        "court_position",
+        "move_to_ball",
+        "recovery",
+        "footwork"
+      ]
+    },
+    {
+      "source_id": "LANG-IT-1HBH-01",
+      "coach_id": "nikola_aracic",
+      "title": "How to Hit the One-Handed Backhand | Tennis Technique",
+      "youtube_url": "https://www.youtube.com/watch?v=YnW0LXfMOXI",
+      "stroke_families": [
+        "one_handed_backhand"
+      ],
+      "pattern_tags": [
+        "fundamentals",
+        "grip",
+        "preparation",
+        "contact",
+        "progression"
+      ]
+    },
+    {
+      "source_id": "LANG-PM-HALFVOLLEY-01",
+      "coach_id": "patrick_mouratoglou",
+      "title": "Here Are Some Key Steps To Handle Half Volleys Effectively",
+      "youtube_url": "https://www.youtube.com/watch?v=TZj5Ur5TMvo",
+      "stroke_families": [
+        "half_volley"
+      ],
+      "pattern_tags": [
+        "situational_skill",
+        "compactness",
+        "bounce_timing",
+        "simple_keys"
+      ]
+    }
+  ],
+  "coverage_requirement": {
+    "minimum_independent_sources_per_stroke_family": 2,
+    "exceptions": {},
+    "required_source_mix": "Where available, combine at least one elite/professional-coach source and one structured instructional source."
+  }
+}

@@ -1,0 +1,363 @@
+{
+  "forehand": {
+    "stroke_id": "forehand",
+    "canonical_goal": "Create a repeatable contact window and racket-head speed while preserving balance and recovery options.",
+    "variants": [
+      "topspin_rally",
+      "flat_drive",
+      "heavy_topspin",
+      "defensive_forehand",
+      "short_ball_attack",
+      "approach_forehand",
+      "inside_out",
+      "inside_in",
+      "running_forehand",
+      "forehand_lob",
+      "forehand_drop_shot"
+    ],
+    "valid_stances": [
+      "neutral",
+      "closed",
+      "semi_open",
+      "open",
+      "running_open"
+    ],
+    "non_negotiables": [
+      "early_ball_recognition",
+      "usable_spacing",
+      "contact compatible with intended direction",
+      "sequenced acceleration rather than arm-only hit",
+      "balanced recovery appropriate to court position"
+    ],
+    "phase_focus": {
+      "G1": [
+        "read bounce, depth, pace and side early"
+      ],
+      "G2": [
+        "organize torso and racket without freezing the feet"
+      ],
+      "G3": [
+        "arrive with enough space; technique family may differ"
+      ],
+      "G4": [
+        "load appropriate to stance and time pressure"
+      ],
+      "G5": [
+        "transfer/rotate/extend in a coordinated sequence"
+      ],
+      "G6": [
+        "meet ball in a repeatable strike zone compatible with intent"
+      ],
+      "G7": [
+        "continue racket path through intended shape"
+      ],
+      "G8": [
+        "finish is an outcome of swing shape, not a pose to copy"
+      ],
+      "G9": [
+        "recover based on opponent and court geometry"
+      ]
+    },
+    "source_ids": [
+      "SCI-ELLIOTT-2006",
+      "SCI-REID-2013",
+      "SCI-LANDLINGER-2010",
+      "ORG-USTA-INSTRUCTION",
+      "VID-MOURATOGLOU-FOREHAND"
+    ]
+  },
+  "two_handed_backhand": {
+    "stroke_id": "two_handed_backhand",
+    "canonical_goal": "Use the trunk and both arms as a coordinated system to create stable spacing, racket speed and directional control.",
+    "variants": [
+      "topspin_rally",
+      "flat_drive",
+      "defensive_backhand",
+      "short_ball_attack",
+      "approach_backhand",
+      "running_backhand",
+      "backhand_lob"
+    ],
+    "valid_stances": [
+      "neutral",
+      "closed",
+      "semi_open",
+      "open",
+      "running"
+    ],
+    "non_negotiables": [
+      "early shoulder organization",
+      "space for both arms to work",
+      "top/non-dominant arm contribution appropriate to technique family",
+      "trunk contribution without losing head control",
+      "contact window matched to direction"
+    ],
+    "phase_focus": {
+      "G1": [
+        "recognize early enough to organize two hands"
+      ],
+      "G2": [
+        "turn with hands connected to torso while feet keep adjusting"
+      ],
+      "G3": [
+        "complete preparation with usable spacing"
+      ],
+      "G4": [
+        "load through legs/trunk according to stance"
+      ],
+      "G5": [
+        "initiate coordinated forward sequence; avoid isolated dominant-arm pull"
+      ],
+      "G6": [
+        "contact in front/alongside according to grip and direction"
+      ],
+      "G7": [
+        "extend through intended ball path before wrapping"
+      ],
+      "G8": [
+        "allow family-specific finish"
+      ],
+      "G9": [
+        "recover efficiently"
+      ]
+    },
+    "source_ids": [
+      "SCI-ELLIOTT-2006",
+      "SCI-REID-BH-2002",
+      "SCI-GENEVOIS-2015",
+      "SCI-STEPien-2011",
+      "ORG-USTA-INSTRUCTION"
+    ]
+  },
+  "one_handed_backhand": {
+    "stroke_id": "one_handed_backhand",
+    "canonical_goal": "Create time and space for a long hitting radius, stable trunk and well-timed extension through contact.",
+    "variants": [
+      "topspin_rally",
+      "flat_drive",
+      "approach_drive",
+      "running_backhand",
+      "one_hand_lob"
+    ],
+    "valid_stances": [
+      "closed",
+      "neutral",
+      "semi_open_emergency"
+    ],
+    "non_negotiables": [
+      "early preparation",
+      "adequate lateral spacing",
+      "contact sufficiently forward for technique family",
+      "stable hitting structure through impact",
+      "continued extension"
+    ],
+    "source_ids": [
+      "SCI-REID-BH-2002",
+      "SCI-GENEVOIS-2015",
+      "SCI-STEPien-2011",
+      "ORG-USTA-INSTRUCTION"
+    ]
+  },
+  "slice_backhand": {
+    "stroke_id": "slice_backhand",
+    "canonical_goal": "Control racket-face/path and body momentum to produce a low, penetrating or intentionally soft ball with reliable depth/height.",
+    "variants": [
+      "neutral_slice",
+      "defensive_slice",
+      "approach_slice",
+      "chip_return",
+      "drop_slice",
+      "stretch_slice"
+    ],
+    "non_negotiables": [
+      "organized shoulder turn",
+      "spacing",
+      "stable racket face through contact window",
+      "forward component appropriate to intended depth",
+      "balanced recovery"
+    ],
+    "source_ids": [
+      "SCI-ELLIOTT-2006",
+      "ORG-USTA-INSTRUCTION"
+    ]
+  },
+  "serve": {
+    "stroke_id": "serve",
+    "canonical_goal": "Convert ground force and coordinated segment rotations into upward/forward racket-head speed with repeatable toss-contact geometry and safe deceleration.",
+    "variants": [
+      "flat_first",
+      "slice_first",
+      "kick_second",
+      "slice_second",
+      "body_serve",
+      "wide_serve",
+      "t_serve"
+    ],
+    "valid_stances": [
+      "platform",
+      "pinpoint",
+      "hybrid"
+    ],
+    "non_negotiables": [
+      "repeatable starting organization",
+      "toss compatible with intended serve",
+      "leg/trunk/shoulder/racket sequence",
+      "upward reach to contact",
+      "balanced landing/deceleration"
+    ],
+    "phase_focus": {
+      "S0": [
+        "stable repeatable ritual and grip"
+      ],
+      "S1": [
+        "coordinate toss and loading rhythm"
+      ],
+      "S2": [
+        "release without unnecessary toss-arm disturbance"
+      ],
+      "S3": [
+        "organize trophy without forcing a static pose"
+      ],
+      "S4": [
+        "load compatible with stance and mobility"
+      ],
+      "S5": [
+        "racket drop emerges from sequence; do not chase depth alone"
+      ],
+      "S6": [
+        "accelerate upward with proximal-to-distal contribution"
+      ],
+      "S7": [
+        "contact geometry matches spin/placement intent"
+      ],
+      "S8": [
+        "allow pronation/internal rotation and deceleration pattern"
+      ],
+      "S9": [
+        "land under control"
+      ],
+      "S10": [
+        "recover to first-ball position"
+      ]
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION",
+      "VID-MOURATOGLOU-SERVE"
+    ]
+  },
+  "forehand_volley": {
+    "stroke_id": "forehand_volley",
+    "canonical_goal": "Use a compact, stable racket structure and body movement to redirect pace with precision.",
+    "variants": [
+      "standard_block",
+      "punch",
+      "drive_volley",
+      "drop_volley",
+      "stretch_volley",
+      "reflex_volley"
+    ],
+    "non_negotiables": [
+      "split/recognition",
+      "compact preparation",
+      "racket stability",
+      "contact in front of body line when possible",
+      "recovery to net position"
+    ],
+    "source_ids": [
+      "SCI-ELLIOTT-2006",
+      "SCI-FURUYA-2021",
+      "SCI-CHOW-2007",
+      "ORG-USTA-INSTRUCTION"
+    ]
+  },
+  "backhand_volley": {
+    "stroke_id": "backhand_volley",
+    "canonical_goal": "Use a compact, supported racket structure and body movement to redirect pace with precision.",
+    "variants": [
+      "standard_block",
+      "punch",
+      "drive_volley",
+      "drop_volley",
+      "stretch_volley",
+      "reflex_volley"
+    ],
+    "non_negotiables": [
+      "split/recognition",
+      "compact preparation",
+      "stable shoulder/racket structure",
+      "contact ahead when possible",
+      "recovery to net position"
+    ],
+    "source_ids": [
+      "SCI-ELLIOTT-2006",
+      "SCI-FURUYA-2021",
+      "SCI-CHOW-2007",
+      "ORG-USTA-INSTRUCTION"
+    ]
+  },
+  "overhead": {
+    "stroke_id": "overhead",
+    "canonical_goal": "Move behind the lob early, organize an overhead throwing pattern, contact high and recover safely.",
+    "variants": [
+      "stationary_smash",
+      "moving_backward",
+      "scissor_kick",
+      "bounce_smash"
+    ],
+    "non_negotiables": [
+      "early recognition",
+      "safe repositioning",
+      "side-on organization",
+      "high contact",
+      "controlled landing"
+    ],
+    "source_ids": [
+      "SCI-ELLIOTT-2006",
+      "ORG-USTA-INSTRUCTION"
+    ]
+  },
+  "return_of_serve": {
+    "stroke_id": "return_of_serve",
+    "canonical_goal": "Read serve cues, time the split step, create a compact strike solution and neutralize or attack without over-swinging.",
+    "variants": [
+      "forehand_block",
+      "backhand_block",
+      "forehand_drive",
+      "backhand_drive",
+      "chip_return",
+      "attack_second_serve",
+      "stretch_return"
+    ],
+    "non_negotiables": [
+      "anticipation_without_guessing",
+      "split_timed_to_server_contact",
+      "compact preparation under time pressure",
+      "stable contact",
+      "first recovery step"
+    ],
+    "source_ids": [
+      "ORG-USTA-INSTRUCTION"
+    ]
+  },
+  "half_volley": {
+    "stroke_id": "half_volley",
+    "canonical_goal": "Stabilize the racket and posture to absorb/redirect a ball immediately after the bounce while continuing transition movement.",
+    "variants": [
+      "forehand_half_volley",
+      "backhand_half_volley"
+    ],
+    "non_negotiables": [
+      "early recognition",
+      "low center of mass",
+      "compact racket path",
+      "quiet face through contact",
+      "continue recovery/transition"
+    ],
+    "source_ids": [
+      "SCI-ELLIOTT-2006"
+    ]
+  }
+}

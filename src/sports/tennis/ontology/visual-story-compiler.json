@@ -1,0 +1,249 @@
+{
+  "version": "4.1.0",
+  "north_star": "A player should understand the coaching thesis with the sound off in one replay, and the captions should sound like a coach talking over the shoulder—not a data dashboard.",
+  "render_layers_bottom_to_top": [
+    "RAW_VIDEO",
+    "CONTEXT_GEOMETRY",
+    "EVIDENCE_TRACKS",
+    "COMPARISON_REFERENCE",
+    "COACHING_GUIDANCE",
+    "CAPTION"
+  ],
+  "semantic_encoding": {
+    "actual": "solid high-contrast geometry anchored to measured video objects",
+    "self_best": "translucent ghost or corridor aligned by event; never imply universal ideal",
+    "target_window": "bounded corridor/zone, not a single forced pose",
+    "uncertain": "dashed/soft edge + explicit estimated badge",
+    "causal_link": "animated time-directed connector from earlier event to later effect",
+    "strength": "positive badge + repeatability trace; never color-only",
+    "suppressed_detail": "available in tap/coach mode, not player replay"
+  },
+  "player_mode_limits": {
+    "active_coaching_concepts": 1,
+    "simultaneous_labels": 2,
+    "simultaneous_numeric_metrics": 1,
+    "simultaneous_paths": 2,
+    "raw_joint_angles_default": "off",
+    "full_skeleton_default": "off",
+    "rule": "If an overlay requires a legend to understand, it is probably coach-mode."
+  },
+  "story_archetypes": {
+    "CAUSE_TO_EFFECT": {
+      "use_for": [
+        "HIDDEN_CAUSE",
+        "COMPENSATION",
+        "TIMING_BOTTLENECK"
+      ],
+      "beats": [
+        {
+          "id": "B1_ORIENT",
+          "duration_ms": 800,
+          "action": "Play at near full speed into the causal window; dim irrelevant region slightly.",
+          "caption": "Watch the setup before the hit."
+        },
+        {
+          "id": "B2_CAUSE",
+          "duration_ms": 1200,
+          "action": "Freeze/slow at earliest divergence. Draw only the evidence that proves the cause.",
+          "overlays": [
+            "EVENT_BEACON",
+            "EVIDENCE_HIGHLIGHT",
+            "SELF_BEST_GHOST"
+          ],
+          "caption": "This is where it starts."
+        },
+        {
+          "id": "B3_LINK",
+          "duration_ms": 1200,
+          "action": "Animate the causal connector forward in time while video advances toward contact.",
+          "overlays": [
+            "CAUSAL_TIME_LINK",
+            "SPACING_CORRIDOR"
+          ],
+          "caption": "Now the next option gets smaller."
+        },
+        {
+          "id": "B4_EFFECT",
+          "duration_ms": 1000,
+          "action": "At contact show actual vs self-best consequence, then immediately remove auxiliary overlays.",
+          "overlays": [
+            "CONTACT_CLOUD",
+            "DEVIATION_VECTOR",
+            "OUTCOME_TRAJECTORY"
+          ],
+          "caption": "Here is the contact consequence."
+        },
+        {
+          "id": "B5_CORRECTION",
+          "duration_ms": 1300,
+          "action": "Replay the same window with one target corridor and one short cue.",
+          "overlays": [
+            "TARGET_MOVEMENT_CORRIDOR",
+            "CUE_CARD"
+          ],
+          "caption": "Give yourself the better window."
+        },
+        {
+          "id": "B6_CLEAN",
+          "duration_ms": 1800,
+          "action": "Clean replay with only a tiny cue tag; no skeleton.",
+          "overlays": [
+            "CLEAN_REPLAY_LABEL"
+          ],
+          "caption": "Now watch it with the cue."
+        }
+      ]
+    },
+    "SELF_BEST_MORPH": {
+      "use_for": [
+        "SELF_BEST_BLUEPRINT",
+        "CONSISTENCY_LEAK"
+      ],
+      "beats": [
+        {
+          "id": "SYNC",
+          "action": "Synchronize current and best rep to bounce/contact."
+        },
+        {
+          "id": "DIVERGE",
+          "action": "Overlay only until the first meaningful divergence; stop ghosting after the comparison stops being valid."
+        },
+        {
+          "id": "MORPH",
+          "action": "Show the difference as a corridor or motion trail, not a complete pro skeleton."
+        },
+        {
+          "id": "PROVE",
+          "action": "Show resulting contact/outcome difference."
+        },
+        {
+          "id": "CUE",
+          "action": "End on one player-owned cue: 'This is already in your game.'"
+        }
+      ]
+    },
+    "TIMING_TUNNEL": {
+      "use_for": [
+        "TIMING_BOTTLENECK"
+      ],
+      "beats": [
+        {
+          "id": "EVENT_STRIP",
+          "action": "Show a compact timeline: bounce | turn complete | forward swing | contact."
+        },
+        {
+          "id": "RESERVE",
+          "action": "Highlight the shrinking or expanding time reserve against player's successful band."
+        },
+        {
+          "id": "VIDEO_LINK",
+          "action": "As timeline cursor moves, highlight only the matching movement in video."
+        },
+        {
+          "id": "CUE",
+          "action": "Replace milliseconds with a feel cue for player mode; keep numbers for advanced/coach."
+        }
+      ]
+    },
+    "CONTEXT_SPLIT": {
+      "use_for": [
+        "CONDITIONAL_LEAK",
+        "TACTICAL_MECHANICAL_MISMATCH"
+      ],
+      "beats": [
+        {
+          "id": "GOOD_CONTEXT",
+          "action": "Show 2-3 reps where pattern works."
+        },
+        {
+          "id": "FAIL_CONTEXT",
+          "action": "Show 2-3 matched reps from the context that exposes the issue."
+        },
+        {
+          "id": "DIFFERENCE",
+          "action": "Highlight one changing variable and the earliest movement response."
+        },
+        {
+          "id": "RULE",
+          "action": "State the conditional coaching rule: 'On deep balls, keep adjusting longer.'"
+        }
+      ]
+    },
+    "STRENGTH_LOCK": {
+      "use_for": [
+        "STRENGTH_ANCHOR"
+      ],
+      "beats": [
+        {
+          "id": "REPEAT",
+          "action": "Rapidly show three successful reps with the same stable feature."
+        },
+        {
+          "id": "LOCK",
+          "action": "Mark the feature 'KEEP THIS' while introducing the separate correction."
+        }
+      ]
+    }
+  },
+  "overlay_primitives_to_add": [
+    "EVENT_BEACON",
+    "EVIDENCE_HIGHLIGHT",
+    "SELF_BEST_GHOST",
+    "CAUSAL_TIME_LINK",
+    "SPACING_CORRIDOR",
+    "CONTACT_CLOUD",
+    "OUTCOME_TRAJECTORY",
+    "TARGET_MOVEMENT_CORRIDOR",
+    "CUE_CARD",
+    "TIME_RESERVE_BAR",
+    "CONTEXT_CHIP",
+    "KEEP_THIS_BADGE",
+    "REP_MOSAIC",
+    "UNCERTAINTY_DASH",
+    "TRACK_GAP_WARNING",
+    "EARLIEST_DIVERGENCE_MARKER"
+  ],
+  "camera_alignment_rules": [
+    "Use ghost overlays only when body/court alignment error is acceptable.",
+    "If camera/player scale differs too much, use synchronized side-by-side rather than silhouette overlay.",
+    "If court calibration is unavailable, keep comparisons body-normalized and avoid world-coordinate arrows."
+  ],
+  "accessibility": [
+    "Every color distinction also uses label/shape/line style.",
+    "Provide text alternative describing each visual beat.",
+    "Never flash high-frequency overlays around contact."
+  ],
+  "narration_rule": "Narration may explain the thesis, but the geometry must still make sense without narration.",
+  "caption_language_contract": {
+    "max_words": 8,
+    "preferred_shapes": [
+      "observation",
+      "contrast",
+      "cause",
+      "consequence",
+      "cue"
+    ],
+    "sequence_rule": "Each beat must advance the coaching sentence; do not restate the same diagnosis in different words.",
+    "player_vocabulary": "Use the stroke_coach_lexicon for the active stroke.",
+    "numbers": "No raw measurements in captions unless the number itself is the teaching point.",
+    "confidence": "If a visual is estimated, mark it visually; do not clutter the caption with model-confidence language.",
+    "bad_examples": [
+      "Measurement deviates from benchmark",
+      "Kinematic sequence is suboptimal",
+      "Fault detected at contact"
+    ],
+    "good_shape_examples": [
+      "Your turn is ready.",
+      "Space disappears here.",
+      "Now contact gets crowded.",
+      "Make room before you swing."
+    ]
+  },
+  "narration_contract": {
+    "default": "optional",
+    "style": "short spoken coach phrases synchronized to the visual beat",
+    "rule": "Narration must not introduce a new diagnosis that the current beat does not show.",
+    "max_primary_story_seconds": 22,
+    "clean_replay_end": "Always end the primary correction story with a clean or nearly clean replay and the single active cue."
+  }
+}

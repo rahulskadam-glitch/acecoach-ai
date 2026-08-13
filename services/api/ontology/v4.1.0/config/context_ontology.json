@@ -1,0 +1,124 @@
+{
+  "incoming_ball": {
+    "height": [
+      "low",
+      "mid",
+      "high",
+      "shoulder_plus"
+    ],
+    "pace": [
+      "slow",
+      "medium",
+      "fast",
+      "unknown"
+    ],
+    "spin": [
+      "topspin",
+      "slice",
+      "flat",
+      "unknown"
+    ],
+    "depth": [
+      "short",
+      "neutral",
+      "deep",
+      "unknown"
+    ],
+    "lateral_pressure": [
+      "balanced",
+      "moderate_stretch",
+      "full_stretch"
+    ]
+  },
+  "player_state": {
+    "court_zone": [
+      "behind_baseline",
+      "baseline",
+      "inside_baseline",
+      "transition",
+      "net"
+    ],
+    "movement": [
+      "stationary",
+      "moving_forward",
+      "moving_backward",
+      "moving_lateral",
+      "recovering"
+    ],
+    "time_pressure": [
+      "low",
+      "medium",
+      "high"
+    ],
+    "fatigue": [
+      "unknown",
+      "fresh",
+      "moderate",
+      "high"
+    ]
+  },
+  "intent": {
+    "groundstroke": [
+      "neutral_rally",
+      "heavy_topspin",
+      "flat_drive",
+      "defensive_height",
+      "attack_short_ball",
+      "approach",
+      "inside_out",
+      "inside_in",
+      "change_direction",
+      "passing_shot",
+      "lob",
+      "drop_shot"
+    ],
+    "serve": [
+      "first_flat",
+      "first_slice",
+      "body",
+      "wide",
+      "t",
+      "second_kick",
+      "second_slice",
+      "safety"
+    ],
+    "volley": [
+      "block",
+      "punch",
+      "drive",
+      "drop",
+      "stretch",
+      "reflex"
+    ],
+    "return": [
+      "block",
+      "compact_drive",
+      "chip",
+      "attack_second_serve",
+      "defensive_return"
+    ]
+  },
+  "profile_modifiers": {
+    "age_band": [
+      "u8",
+      "u10",
+      "u12",
+      "u14",
+      "u16",
+      "adult",
+      "masters"
+    ],
+    "level": [
+      "beginner",
+      "developing",
+      "intermediate",
+      "advanced",
+      "elite"
+    ],
+    "handedness": [
+      "right",
+      "left"
+    ],
+    "injury_constraints": "Do not infer injury. Only use constraints explicitly supplied by the player/coach."
+  }
+}

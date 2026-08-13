@@ -1,0 +1,113 @@
+{
+  "principle": "Every diagnosis must be traceable to observable evidence. Never let an LLM invent a metric.",
+  "families": {
+    "temporal": {
+      "metrics": [
+        "reaction_latency_ms",
+        "phase_duration_ms",
+        "prep_completion_relative_to_bounce",
+        "contact_timing_relative_to_apex",
+        "recovery_latency_ms",
+        "segment_peak_order"
+      ],
+      "camera_requirements": [
+        "ball_track_preferred",
+        "fps>=30"
+      ]
+    },
+    "spatial": {
+      "metrics": [
+        "contact_offset_body_widths",
+        "contact_height_body_ratio",
+        "lateral_spacing_body_widths",
+        "court_position_m",
+        "recovery_displacement_m"
+      ],
+      "normalization": "Prefer body-scale or court-calibrated units over raw pixels."
+    },
+    "posture": {
+      "metrics": [
+        "trunk_tilt_deg",
+        "head_axis_change_deg",
+        "knee_flexion_deg",
+        "base_width_hip_widths",
+        "center_of_mass_proxy"
+      ],
+      "caution": "2D estimates are view-dependent."
+    },
+    "rotation_sequence": {
+      "metrics": [
+        "pelvis_orientation_deg",
+        "shoulder_orientation_deg",
+        "hip_shoulder_separation_deg",
+        "pelvis_peak_time",
+        "trunk_peak_time",
+        "arm_peak_time",
+        "racket_peak_time"
+      ],
+      "interpretation": "Sequence is more important than a single absolute angle."
+    },
+    "racket": {
+      "metrics": [
+        "racket_head_path_2d",
+        "racket_axis_deg",
+        "racket_face_proxy_deg",
+        "racket_drop_body_ratio",
+        "racket_speed_relative",
+        "low_to_high_path_deg",
+        "post_contact_extension_body_ratio"
+      ],
+      "caution": "Face angle from monocular video is often low-confidence."
+    },
+    "ball": {
+      "metrics": [
+        "incoming_ball_speed_relative",
+        "bounce_location",
+        "contact_point",
+        "outgoing_launch_angle",
+        "outgoing_speed_relative",
+        "trajectory_curvature_proxy",
+        "net_clearance_proxy",
+        "depth_proxy"
+      ],
+      "caution": "Spin should be inferred only when evidence supports it."
+    },
+    "footwork": {
+      "metrics": [
+        "split_step_timing_ms",
+        "first_step_direction",
+        "stance_family",
+        "foot_contact_sequence",
+        "load_side",
+        "recovery_step_pattern",
+        "distance_to_ball_at_contact"
+      ],
+      "context_required": [
+        "incoming_ball_direction",
+        "court_position",
+        "time_pressure"
+      ]
+    },
+    "stability": {
+      "metrics": [
+        "head_displacement_body_ratio",
+        "trunk_sway_body_ratio",
+        "support_polygon_change",
+        "post_contact_balance_proxy"
+      ],
+      "interpretation": "Stability is task-dependent; dynamic balance is not immobility."
+    },
+    "outcome": {
+      "metrics": [
+        "in_out_unknown",
+        "net_error",
+        "long_error",
+        "wide_error",
+        "target_deviation_proxy",
+        "depth_zone",
+        "pace_proxy"
+      ],
+      "use": "Outcome correlation increases coaching priority but does not alone prove cause."
+    }
+  }
+}

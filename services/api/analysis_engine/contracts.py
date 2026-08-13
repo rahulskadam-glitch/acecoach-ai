@@ -84,3 +84,5 @@ class AnalysisResponse(BaseModel):
     coaching_areas: list[dict[str, Any]]
     reference_comparison: dict[str, Any]
     quality_gate: dict[str, Any]
+    next_generation_story: dict[str, Any] | None = None
+    ontology_reasoning: dict[str, Any] | None = None

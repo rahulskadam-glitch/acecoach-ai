@@ -1,0 +1,392 @@
+[
+  {
+    "source_id": "SCI-ELLIOTT-2006",
+    "type": "peer_reviewed_review",
+    "authority_tier": "A",
+    "title": "Biomechanics and tennis",
+    "authors": [
+      "Bruce Elliott"
+    ],
+    "year": 2006,
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2577481/",
+    "supports": [
+      "kinetic_chain",
+      "segment_coordination",
+      "serve",
+      "groundstrokes",
+      "volley",
+      "injury_load"
+    ],
+    "use_policy": "mechanism_and_principles",
+    "notes": "Foundational tennis biomechanics review; distinguishes multi-segment power strokes from more unit-like precision strokes."
+  },
+  {
+    "source_id": "SCI-KOVACS-2011",
+    "type": "peer_reviewed_clinical_review",
+    "authority_tier": "A",
+    "title": "An 8-Stage Model for Evaluating the Tennis Serve",
+    "authors": [
+      "Mark Kovacs",
+      "Todd Ellenbecker"
+    ],
+    "year": 2011,
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3445225/",
+    "supports": [
+      "serve_phase_model",
+      "serve_kinetic_chain",
+      "serve_screening"
+    ],
+    "use_policy": "serve_phase_and_screening"
+  },
+  {
+    "source_id": "SCI-REID-2013",
+    "type": "peer_reviewed_review",
+    "authority_tier": "A",
+    "title": "Mechanics and Learning Practices Associated with the Tennis Forehand",
+    "authors": [
+      "Machar Reid",
+      "Bruce Elliott",
+      "Miguel Crespo"
+    ],
+    "year": 2013,
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3761830/",
+    "supports": [
+      "forehand",
+      "learning",
+      "youth_scaling",
+      "technical_variability"
+    ],
+    "use_policy": "forehand_mechanics_and_learning"
+  },
+  {
+    "source_id": "SCI-LANDLINGER-2010",
+    "type": "peer_reviewed_study",
+    "authority_tier": "A",
+    "title": "Key Factors and Timing Patterns in the Tennis Forehand of Different Skill Levels",
+    "authors": [
+      "Johannes Landlinger et al."
+    ],
+    "year": 2010,
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3761808/",
+    "supports": [
+      "forehand_timing",
+      "skill_level_comparison",
+      "kinematics"
+    ],
+    "use_policy": "benchmark_pattern_not_universal_threshold"
+  },
+  {
+    "source_id": "SCI-REID-BH-2002",
+    "type": "peer_reviewed_study",
+    "authority_tier": "A",
+    "title": "The one- and two-handed backhands in tennis",
+    "authors": [
+      "Machar Reid",
+      "Bruce Elliott"
+    ],
+    "year": 2002,
+    "url": "https://pubmed.ncbi.nlm.nih.gov/14658135/",
+    "supports": [
+      "one_handed_backhand",
+      "two_handed_backhand",
+      "technique_family_differences"
+    ],
+    "use_policy": "backhand_family_comparison"
+  },
+  {
+    "source_id": "SCI-GENEVOIS-2015",
+    "type": "peer_reviewed_review",
+    "authority_tier": "A",
+    "title": "Performance Factors Related to the Different Tennis Backhand Groundstrokes",
+    "authors": [
+      "Cyril Genevois et al."
+    ],
+    "year": 2015,
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4306773/",
+    "supports": [
+      "backhand",
+      "trunk_rotation",
+      "coordination",
+      "performance"
+    ],
+    "use_policy": "backhand_mechanism"
+  },
+  {
+    "source_id": "SCI-STEPien-2011",
+    "type": "peer_reviewed_study",
+    "authority_tier": "A",
+    "title": "The Kinematics of Trunk and Upper Extremities in One-Handed and Two-Handed Backhand Stroke",
+    "authors": [
+      "Agnieszka Stępień et al."
+    ],
+    "year": 2011,
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC3588639/",
+    "supports": [
+      "backhand_kinematics",
+      "trunk",
+      "upper_extremity"
+    ],
+    "use_policy": "backhand_observables"
+  },
+  {
+    "source_id": "SCI-FURUYA-2021",
+    "type": "peer_reviewed_study",
+    "authority_tier": "A",
+    "title": "Difference in racket head trajectory and muscle activity between the standard volley and the drop volley",
+    "authors": [
+      "Ryo Furuya et al."
+    ],
+    "year": 2021,
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8439447/",
+    "supports": [
+      "volley",
+      "drop_volley",
+      "racket_path",
+      "touch"
+    ],
+    "use_policy": "volley_variant_differences"
+  },
+  {
+    "source_id": "SCI-CHOW-2007",
+    "type": "peer_reviewed_study",
+    "authority_tier": "A",
+    "title": "Pre- and post-impact muscle activation in the tennis volley",
+    "authors": [
+      "John W. Chow et al."
+    ],
+    "year": 2007,
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC2465297/",
+    "supports": [
+      "volley",
+      "impact",
+      "stability"
+    ],
+    "use_policy": "volley_mechanism"
+  },
+  {
+    "source_id": "SCI-BRITO-2024",
+    "type": "peer_reviewed_study",
+    "authority_tier": "A",
+    "title": "The Influence of Kinematics on Tennis Serve Speed",
+    "authors": [
+      "A. V. Brito et al."
+    ],
+    "year": 2024,
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11504545/",
+    "supports": [
+      "serve_speed",
+      "serve_kinematics",
+      "performance"
+    ],
+    "use_policy": "serve_performance_association_not_prescriptive_threshold"
+  },
+  {
+    "source_id": "ORG-ITF-TECH",
+    "type": "governing_body",
+    "authority_tier": "A",
+    "title": "ITF Tennis Technology and Research",
+    "organization": "International Tennis Federation",
+    "url": "https://www.itftennis.com/en/about-us/tennis-tech/",
+    "supports": [
+      "tennis_science",
+      "technical_research"
+    ],
+    "use_policy": "authority_context"
+  },
+  {
+    "source_id": "ORG-USTA-INSTRUCTION",
+    "type": "governing_body_coaching",
+    "authority_tier": "A",
+    "title": "USTA Tips and Instruction",
+    "organization": "United States Tennis Association",
+    "url": "https://www.usta.com/en/home/improve/tips-and-instruction.html",
+    "supports": [
+      "forehand",
+      "backhand",
+      "serve",
+      "return",
+      "volley",
+      "overhead",
+      "beginner_progressions",
+      "drills"
+    ],
+    "use_policy": "player_friendly_coaching_and_drills"
+  },
+  {
+    "source_id": "VID-MOURATOGLOU-SERVE",
+    "type": "expert_coaching_video",
+    "authority_tier": "B",
+    "title": "Serve Lesson at the Mouratoglou Academy",
+    "creator": "Patrick Mouratoglou",
+    "platform": "YouTube",
+    "url": "https://www.youtube.com/watch?v=KuUzLBYMz6g",
+    "supports": [
+      "serve",
+      "toss",
+      "slice_serve",
+      "positioning"
+    ],
+    "use_policy": "coaching_language_and_cue_examples"
+  },
+  {
+    "source_id": "VID-MOURATOGLOU-FOREHAND",
+    "type": "expert_coaching_video",
+    "authority_tier": "B",
+    "title": "How to unlock the full potential of your forehand",
+    "creator": "Patrick Mouratoglou",
+    "platform": "YouTube",
+    "url": "https://www.youtube.com/watch?v=6uswibxRz1A",
+    "supports": [
+      "forehand",
+      "body_position",
+      "hand_control",
+      "consistency"
+    ],
+    "use_policy": "coaching_language_and_visual_explanation"
+  },
+  {
+    "source_id": "VID-MOURATOGLOU-FOOTWORK",
+    "type": "expert_coaching_video",
+    "authority_tier": "B",
+    "title": "Seven keys to improve your footwork",
+    "creator": "Patrick Mouratoglou",
+    "platform": "YouTube",
+    "url": "https://www.youtube.com/watch?v=BoXkdu9ozJM",
+    "supports": [
+      "footwork",
+      "posture",
+      "balance",
+      "court_position",
+      "recovery"
+    ],
+    "use_policy": "coaching_language_and_drill_ideas"
+  },
+  {
+    "source_id": "VID-INTUITIVE-BEGINNER",
+    "type": "expert_coaching_video",
+    "authority_tier": "B",
+    "title": "Beginner Tennis Lesson | Forehand, Backhand & Serve",
+    "creator": "Intuitive Tennis",
+    "platform": "YouTube",
+    "url": "https://www.youtube.com/watch?v=YqgcykDGB2A",
+    "supports": [
+      "beginner_forehand",
+      "beginner_backhand",
+      "beginner_serve",
+      "progressions"
+    ],
+    "use_policy": "beginner_cue_examples"
+  },
+  {
+    "source_id": "SCI-CHUA-2021-EXTERNAL-FOCUS",
+    "type": "peer_reviewed_meta_analysis",
+    "authority_tier": "A",
+    "title": "Superiority of external attentional focus for motor performance and learning: systematic reviews and meta-analyses",
+    "authors": [
+      "L. K. Chua et al."
+    ],
+    "year": 2021,
+    "url": "https://pubmed.ncbi.nlm.nih.gov/34843301/",
+    "supports": [
+      "motor_learning",
+      "external_focus",
+      "cue_design"
+    ],
+    "use_policy": "prefer_effect_oriented_player_cues_when_they_fit_the_correction",
+    "notes": "Used for coaching-language design; not a claim that internal-focus cues are never useful."
+  },
+  {
+    "source_id": "SCI-SIGRIST-2013-FEEDBACK",
+    "type": "peer_reviewed_review",
+    "authority_tier": "A",
+    "title": "Augmented visual, auditory, haptic, and multimodal feedback in motor learning: a review",
+    "authors": [
+      "R. Sigrist et al."
+    ],
+    "year": 2013,
+    "url": "https://pubmed.ncbi.nlm.nih.gov/23132605/",
+    "supports": [
+      "augmented_feedback",
+      "visual_feedback",
+      "motor_learning",
+      "feedback_design"
+    ],
+    "use_policy": "design_feedback_to_be_task_relevant_and_avoid_unnecessary_information_density"
+  },
+  {
+    "source_id": "SCI-YEUNG-2025-ATHLETEPOSE3D",
+    "type": "computer_vision_benchmark_paper",
+    "authority_tier": "A",
+    "title": "AthletePose3D: A Benchmark Dataset for 3D Human Pose Estimation and Kinematic Validation in Athletic Movements",
+    "authors": [
+      "Calvin Yeung et al."
+    ],
+    "year": 2025,
+    "url": "https://arxiv.org/abs/2503.07499",
+    "supports": [
+      "pose_estimation",
+      "athletic_motion",
+      "kinematic_validation",
+      "uncertainty",
+      "velocity_limitations"
+    ],
+    "use_policy": "quality_gates_for_monocular_pose_and_velocity_claims",
+    "notes": "Sports motion is harder than everyday-pose benchmarks; use conservative uncertainty gates for high-speed movement."
+  },
+  {
+    "source_id": "SCI-FILIPCIC-2017-SPLITSTEP",
+    "type": "peer_reviewed_study",
+    "authority_tier": "A",
+    "title": "Split-Step Timing of Professional and Junior Tennis Players",
+    "authors": [
+      "A. Filipčič et al."
+    ],
+    "year": 2017,
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5304278/",
+    "supports": [
+      "split_step",
+      "footwork_timing",
+      "stroke_context",
+      "skill_level"
+    ],
+    "use_policy": "timing_pattern_reference_not_universal_threshold"
+  },
+  {
+    "source_id": "SCI-HE-2022-FOREHAND-LOWER-LIMB",
+    "type": "peer_reviewed_systematic_review",
+    "authority_tier": "A",
+    "title": "Lower Limb Biomechanics during the Topspin Forehand in Tennis: A Systematic Review",
+    "authors": [
+      "Y. He et al."
+    ],
+    "year": 2022,
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC9330838/",
+    "supports": [
+      "forehand",
+      "lower_limb",
+      "kinetic_chain",
+      "stance",
+      "racket_speed"
+    ],
+    "use_policy": "lower_body_mechanism_and_contextual_patterns"
+  },
+  {
+    "source_id": "SCI-ZHANG-2024-RETURN",
+    "type": "peer_reviewed_study",
+    "authority_tier": "A",
+    "title": "Kinematic differences in forehand serve-receiving between advanced and intermediate tennis players at different serve speeds",
+    "authors": [
+      "Y. Zhang et al."
+    ],
+    "year": 2024,
+    "url": "https://pubmed.ncbi.nlm.nih.gov/39496757/",
+    "supports": [
+      "return_of_serve",
+      "skill_level",
+      "racket_speed",
+      "ball_speed",
+      "context"
+    ],
+    "use_policy": "return_context_and_skill_pattern_not_prescriptive_threshold"
+  }
+]

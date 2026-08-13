@@ -1,0 +1,133 @@
+{
+  "version": "4.1.0",
+  "north_star": "The player should feel that an excellent coach watched their stroke, understood the real problem, protected what is already good, and gave them one thing they can take to the court immediately.",
+  "player_story_sequence": [
+    {
+      "slot": "COACH_READ",
+      "purpose": "One-sentence diagnosis in natural tennis language.",
+      "max_sentences": 2,
+      "example_shape": "Your turn isn't late. The space disappears after it."
+    },
+    {
+      "slot": "PROOF",
+      "purpose": "Point the player to the exact visible moment or repeated pattern.",
+      "max_sentences": 2,
+      "example_shape": "Watch the last adjustment step on the deep balls."
+    },
+    {
+      "slot": "WHY",
+      "purpose": "Explain cause -> effect -> ball consequence without anatomy-first jargon.",
+      "max_sentences": 2,
+      "example_shape": "That closes your hitting space, so the swing has to rescue contact."
+    },
+    {
+      "slot": "KEEP",
+      "purpose": "Protect one real strength when relevant.",
+      "max_sentences": 1,
+      "example_shape": "Keep the early shoulder turn—that part is working."
+    },
+    {
+      "slot": "FEEL",
+      "purpose": "One memorable cue the player can carry into the next rep.",
+      "max_words": 9,
+      "example_shape": "Make room, then swing."
+    },
+    {
+      "slot": "TRAIN",
+      "purpose": "One constraint/drill framed like an on-court task.",
+      "max_sentences": 2,
+      "example_shape": "For the next 10 balls, forget pace. Grade only the space you create before the swing."
+    },
+    {
+      "slot": "SUCCESS",
+      "purpose": "Tell the player what improvement should look or feel like.",
+      "max_sentences": 1,
+      "example_shape": "You're there when contact feels away from your body without a late hand adjustment."
+    }
+  ],
+  "rhetorical_moves": {
+    "contrast": {
+      "pattern": "not_X_but_Y",
+      "use": "Correct a misleading symptom diagnosis without sounding argumentative."
+    },
+    "self_best": {
+      "pattern": "your_best_reps_already_show_it",
+      "use": "Build belief and personalization by showing the player's own successful solution."
+    },
+    "conditional": {
+      "pattern": "works_here_leaks_there",
+      "use": "Explain context-dependent technique rather than declaring a global fault."
+    },
+    "cause_effect": {
+      "pattern": "because_X_now_Y",
+      "use": "Make the correction intellectually satisfying and visually traceable."
+    },
+    "protect_strength": {
+      "pattern": "keep_X_change_Y",
+      "use": "Avoid destroying a good pattern while correcting another."
+    },
+    "choice": {
+      "pattern": "for_this_ball_choose_X",
+      "use": "Separate tactical selection from mechanical execution."
+    }
+  },
+  "naturalness_rules": [
+    "Use contractions naturally in player mode: you're, isn't, don't, that's, we'll when grammatically appropriate.",
+    "Prefer short spoken sentences mixed with one explanatory sentence; avoid seven sentences of identical length.",
+    "Address the player as 'you' rather than 'the player' in player-facing surfaces.",
+    "Lead with the tennis problem or opportunity, not the measurement.",
+    "Use numbers only when they strengthen trust; move detailed values into DEEP_DIVE.",
+    "Never open multiple cards with the same template phrase.",
+    "Avoid fake enthusiasm. Praise only an evidenced strength.",
+    "Use one vivid but non-gimmicky image when it improves feel; do not stack metaphors.",
+    "Prefer 'make room', 'meet it', 'reach up', 'stay through it', 'turn smaller' over isolated body-angle commands.",
+    "When uncertainty is meaningful, sound like a coach reviewing video: 'From this angle, it looks like...' rather than exposing model confidence jargon."
+  ],
+  "archetype_openers": {
+    "HIDDEN_CAUSE": [
+      "The thing that looks wrong isn't where the problem starts.",
+      "The swing is reacting to something that happens earlier.",
+      "This starts before contact, not at contact."
+    ],
+    "TIMING_BOTTLENECK": [
+      "You have enough speed; you're running out of time earlier in the stroke.",
+      "The issue isn't how fast you swing. It's when the usable time disappears.",
+      "Your timing leak shows up before the forward swing."
+    ],
+    "COMPENSATION": [
+      "This movement looks unusual, but right now it's helping you survive an earlier problem.",
+      "Don't fix this part first—it's compensating for what happened before it.",
+      "The visible rescue is a symptom, not the first move to change."
+    ],
+    "SELF_BEST_BLUEPRINT": [
+      "Your best reps already contain the answer.",
+      "You don't need a new stroke; your good reps already show the better pattern.",
+      "The useful comparison is you versus you."
+    ],
+    "CONSISTENCY_LEAK": [
+      "Your average stroke is fine; the leak is in the misses around it.",
+      "This isn't an every-ball problem. It appears when the setup changes.",
+      "The issue is repeatability, not the basic shape of the stroke."
+    ],
+    "CONDITIONAL_LEAK": [
+      "This works on the neutral ball and breaks under this specific pressure.",
+      "The stroke is sound until this ball takes away your normal setup.",
+      "This is a context problem, not a global technique problem."
+    ],
+    "TACTICAL_MECHANICAL_MISMATCH": [
+      "The movement isn't necessarily wrong—the shot choice and movement solution don't match.",
+      "You're using the mechanics of one ball for a different tactical job.",
+      "For this ball, the technique needs a different solution."
+    ],
+    "STRENGTH_ANCHOR": [
+      "Keep this. It's giving the rest of the stroke a stable base.",
+      "This part is working and we don't want the correction to disturb it.",
+      "There's a real strength here—protect it while you change the next piece."
+    ]
+  },
+  "uncertainty_translation": {
+    "high": "State the finding directly but never as an absolute law.",
+    "medium": "Use 'it looks like', 'the pattern suggests', or 'this is probably contributing'.",
+    "low": "Do not give a technique correction. Say what the camera cannot establish and what view would help."
+  }
+}

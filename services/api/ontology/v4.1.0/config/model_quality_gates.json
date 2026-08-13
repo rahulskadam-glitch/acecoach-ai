@@ -1,0 +1,51 @@
+{
+  "version": "4.1.0",
+  "principle": "Trust is a feature. Precision must degrade gracefully as video evidence degrades.",
+  "gates": [
+    {
+      "id": "PLAYER_SCALE",
+      "check": "median_player_pixel_height",
+      "outcome": "Below configured threshold: suppress fine distal-joint/racket-face claims; retain coarse footwork/court-position analysis if usable."
+    },
+    {
+      "id": "FRAME_RATE",
+      "check": "fps",
+      "outcome": "Below 60 fps: label high-speed racket velocity and contact micro-timing as lower-confidence; use intervals and relative comparisons."
+    },
+    {
+      "id": "MOTION_BLUR",
+      "check": "racket_and_ball_blur",
+      "outcome": "Suppress racket-face and precise racket-head claims when blur is excessive."
+    },
+    {
+      "id": "OCCLUSION",
+      "check": "joint_or_racket_visibility",
+      "outcome": "Use visibility masks; do not interpolate through long occlusions for diagnosis."
+    },
+    {
+      "id": "COURT_CALIBRATION",
+      "check": "court_line_visibility_and_homography_residual",
+      "outcome": "Without stable calibration, suppress meter-based court distances and use body-normalized/image-plane comparisons."
+    },
+    {
+      "id": "VIEW_SUITABILITY",
+      "check": "metric_specific_view_support",
+      "outcome": "A metric may be valid in one view and invalid in another; gate per metric, not per whole video."
+    },
+    {
+      "id": "SPORTS_POSE_DOMAIN",
+      "check": "pose_model_validation_on_high_acceleration_motion",
+      "outcome": "Monocular 3D and especially velocity estimates require conservative uncertainty unless the model is validated/fine-tuned for athletic movement."
+    }
+  ],
+  "confidence_propagation": {
+    "event": "combine detector agreement, track quality and temporal resolution",
+    "metric": "combine input-track confidence, event confidence, view suitability, calibration and smoothing sensitivity",
+    "construct": "use weakest-critical-input principle plus multi-rep consistency",
+    "insight": "combine construct confidence, context match, recurrence, outcome link and counterexample rate",
+    "visual": "never render a more precise-looking overlay than the evidence supports"
+  },
+  "source_ids": [
+    "SCI-YEUNG-2025-ATHLETEPOSE3D"
+  ]
+}

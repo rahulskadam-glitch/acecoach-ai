@@ -54,6 +54,7 @@ type RawReport = Record<string, unknown> & {
 };
 
 function mapReport(rawReport: RawReport): Report {
+  const coachSummary = (rawReport.coach_summary ?? {}) as Record<string, unknown>;
   return {
     overallScore: rawReport.overall_score,
     scoreStatus: rawReport.score_status ?? "legacy",
@@ -112,6 +113,8 @@ function mapReport(rawReport: RawReport): Report {
     movementClassification: rawReport.movement_classification as Report["movementClassification"],
     coachingAreas: rawReport.coaching_areas as Report["coachingAreas"],
     referenceComparison: rawReport.reference_comparison as Report["referenceComparison"],
+    nextGenerationStory: coachSummary.nextGenerationStory as Report["nextGenerationStory"],
+    ontologyReasoning: coachSummary.ontologyReasoning as Report["ontologyReasoning"],
   };
 }
 

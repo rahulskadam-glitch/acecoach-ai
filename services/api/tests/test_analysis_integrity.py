@@ -120,7 +120,7 @@ class AnalysisIntegrityTests(unittest.TestCase):
             expected_content_hash=None,
             sport_id="tennis",
             action_type="forehand",
-            confirmed_action_type=None,
+            confirmed_action_type="forehand",
             dominant_side="right",
             age_band="19_29",
             playing_level="developing",
@@ -151,6 +151,26 @@ class AnalysisIntegrityTests(unittest.TestCase):
         self.assertEqual(result["frame_summary"]["bodyRegionReview"][2]["status"], "needs_confirmation")
         self.assertEqual(len(result["coach_summary"]["executiveBullets"]), 4)
         self.assertIn("pyramidSummary", result["coach_summary"])
+        self.assertEqual(result["engine_manifest"]["ontologyVersion"], "4.1.0")
+        self.assertEqual(len(result["engine_manifest"]["ontologyManifestHash"]), 64)
+        self.assertIsNotNone(result["next_generation_story"])
+        self.assertTrue(result["next_generation_story"]["insightId"].startswith("ONTO-FH-"))
+        self.assertEqual(result["next_generation_story"]["playerCoaching"]["languageProfileId"], "PLAYER_COACH_v4.1")
+        self.assertGreaterEqual(len(result["next_generation_story"]["visualStory"]["beats"]), 5)
+        self.assertEqual(result["ontology_reasoning"]["ontologyVersion"], "4.1.0")
+        self.assertIn("confidence_policy", result["ontology_reasoning"]["policiesApplied"])
+        self.assertIn(result["priorities"][0]["faultId"], result["ontology_reasoning"]["evaluatedFaultIds"])
+        self.assertEqual(len(result["drills"]), 3)
+        self.assertEqual(len({drill["id"] for drill in result["drills"]}), 3)
+        self.assertEqual(result["drills"][0]["ontologyVersion"], "4.1.0")
+        chapter_ids = {item["chapterId"] for item in result["ontology_reasoning"]["findings"]}
+        self.assertIn("weight_transfer", chapter_ids)
+        self.assertEqual(len(result["ontology_reasoning"]["movementChain"]), 6)
+        self.assertEqual(
+            {item["chapterId"] for item in result["ontology_reasoning"]["findings"]}
+            | {item["chapterId"] for item in result["ontology_reasoning"]["strengthReview"]},
+            {"setup", "movement_spacing", "weight_transfer", "swing_connection", "contact_stability", "finish_recovery"},
+        )
         self.assertIsInstance(result["coach_summary"]["pyramidSummary"]["strengths"], list)
         self.assertIsInstance(result["coach_summary"]["pyramidSummary"]["improvements"], list)
         self.assertIn("firstAction", result["coach_summary"]["pyramidSummary"])

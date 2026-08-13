@@ -21,13 +21,16 @@ from .experience import (
 )
 from .pose import POSE_MODEL_VERSION, extract_pose_frames
 from .signal_analytics import SIGNAL_ANALYTICS_VERSION
+from .ontology_reasoner import ground_report_in_ontology, ontology_manifest_hash
 from .sport_rules import KNOWLEDGE_VERSION, build_coaching
 from .stroke_guide import GUIDE_EVIDENCE_ID, STROKE_GUIDE_VERSION, guide_for
 from .temporal import TEMPORAL_MODEL_VERSION, RepetitionWindow
 from .video import download_video
 
-ENGINE_VERSION = "movement-intelligence-v1.9.0"
-REPORT_VERSION = "6.6.0-complete-stroke-rubric"
+ENGINE_VERSION = "movement-intelligence-v1.10.0"
+REPORT_VERSION = "6.7.0-ontology-complete-stroke-report"
+ONTOLOGY_VERSION = "4.1.0"
+ONTOLOGY_REASONER_VERSION = "4.1.1-complete-chain"
 MAX_REPORT_FRAMES = 1200
 SUPPORTED_TECHNIQUE_SPORTS = {"tennis"}
 
@@ -1422,6 +1425,89 @@ class AnalysisPipeline:
                 payload.primary_goal,
             )
             repetition_insights = build_repetition_insights(biomechanics.repetitions)
+            ontology_reasoning = None
+            if (
+                sport_supported
+                and movement_confirmed
+                and not capture_blocked
+                and not no_repetitions
+                and coaching_areas
+            ):
+                ontology_reasoning = ground_report_in_ontology(
+                    action_type=analysis_action,
+                    camera_angle=analysis_context["cameraAngle"],
+                    confidence=confidence,
+                    repetition_count=repetition_count,
+                    timeline=biomechanics.timeline,
+                    areas=coaching_areas,
+                    strengths=strengths,
+                    limitations=limitations,
+                    repetition_insights=repetition_insights,
+                )
+            if ontology_reasoning:
+                fault = ontology_reasoning["fault"]
+                insight = ontology_reasoning["insight"]
+                selected_drill = ontology_reasoning["drill"]
+                origin_time = next(
+                    (beat["timeWindow"].get("timestampSeconds") for beat in insight["visualStory"]["beats"] if beat["beatId"] == "B2_CAUSE"),
+                    insight["visualStory"]["beats"][0]["timeWindow"].get("timestampSeconds", 0),
+                )
+                priorities = [{
+                    "rank": 1,
+                    "title": fault["title"],
+                    "finding": insight["playerCoaching"]["coachRead"],
+                    "impact": fault["performance_consequence"],
+                    "nextStep": fault["player_message"],
+                    "cue": insight["playerCoaching"]["feel"],
+                    "frameIndex": next((item.get("frameIndex") for item in biomechanics.timeline if item.get("timestampSeconds") == origin_time), None),
+                    "timestampSeconds": origin_time,
+                    "confidence": insight["confidence"]["interpretation"],
+                    "measurementBasis": f"ontology-v4.1:{fault['fault_id']}",
+                    "faultId": fault["fault_id"],
+                    "faultStatus": ontology_reasoning["status"],
+                    "phaseOrigin": fault["phase_origin"],
+                    "phaseVisibleEffect": fault["phase_visible_effect"],
+                }]
+                ontology_drills = []
+                seen_drill_ids: set[str] = set()
+                for finding in ontology_reasoning.get("findings", []):
+                    finding_drill = finding.get("drill")
+                    if not finding_drill or finding_drill["id"] in seen_drill_ids:
+                        continue
+                    seen_drill_ids.add(finding_drill["id"])
+                    ontology_drills.append({
+                        "id": finding_drill["id"], "name": finding_drill["name"],
+                        "purpose": finding_drill["purpose"], "dosage": finding_drill["dosage"],
+                        "cue": finding_drill["cue"], "successMetric": finding_drill["success"],
+                        "setup": finding_drill.get("setup"), "action": finding_drill.get("action"),
+                        "stopCondition": finding_drill.get("stopCondition"),
+                        "reassessment": finding_drill.get("reassessment"),
+                        "targetFaultIds": finding_drill.get("targetFaultIds", []),
+                        "ontologyVersion": "4.1.0",
+                    })
+                    if len(ontology_drills) == 3:
+                        break
+                if ontology_drills:
+                    drills = ontology_drills
+                coach_summary.update({
+                    "headline": insight["thesis"],
+                    "mainPriority": fault["title"],
+                    "whyItMatters": insight["playerCoaching"]["why"],
+                    "practiceFocus": [insight["playerCoaching"]["change"], insight["playerCoaching"]["feel"], insight["playerCoaching"]["success"]],
+                    "ontologyFaultId": fault["fault_id"],
+                    "ontologyFaultStatus": ontology_reasoning["status"],
+                    "nextGenerationStory": insight,
+                    "ontologyReasoning": {key: value for key, value in ontology_reasoning.items() if key not in {"insight", "fault", "drill"}},
+                })
+                performance_story.update({
+                    "rootCauseHypothesis": insight["thesis"],
+                    "transferRisk": insight["playerCoaching"]["why"],
+                    "nextMilestone": insight["playerCoaching"]["success"],
+                    "coachPrinciple": f"One active cue: {insight['playerCoaching']['feel']}",
+                })
+                coaching_playbook = build_coaching_playbook(
+                    analysis_action, coach_summary, priorities, drills, payload.primary_goal,
+                )
 
             coach_summary["contextStatement"] = analysis_context["statement"]
             coach_summary["coachVerdict"] = (
@@ -1482,8 +1568,11 @@ class AnalysisPipeline:
                 "scoringVersion": SCORING_VERSION,
                 "biomechanicalProfileVersion": PROFILE_VERSION,
                 "knowledgeVersion": KNOWLEDGE_VERSION,
+                "ontologyVersion": ONTOLOGY_VERSION,
+                "ontologyManifestHash": ontology_manifest_hash(),
                 "evidenceVersion": EVIDENCE_VERSION,
                 "reportVersion": REPORT_VERSION,
+                "ontologyReasonerVersion": ONTOLOGY_REASONER_VERSION,
                 "analysisMode": "monocular_pose_review_governed_progress_analytics_beta",
                 "runtime": runtime,
                 "runtimeSignature": runtime_signature,
@@ -1511,6 +1600,10 @@ class AnalysisPipeline:
                 SCORING_VERSION,
                 PROFILE_VERSION,
                 KNOWLEDGE_VERSION,
+                ONTOLOGY_VERSION,
+                ontology_manifest_hash(),
+                ONTOLOGY_REASONER_VERSION,
+                REPORT_VERSION,
                 EVIDENCE_VERSION,
                 runtime_signature,
             ])
@@ -1602,6 +1695,8 @@ class AnalysisPipeline:
                 "coaching_areas": coaching_areas,
                 "reference_comparison": reference,
                 "quality_gate": quality_gate,
+                "next_generation_story": ontology_reasoning["insight"] if ontology_reasoning else None,
+                "ontology_reasoning": ({key: value for key, value in ontology_reasoning.items() if key not in {"insight", "fault", "drill"}} if ontology_reasoning else None),
             }
         finally:
             Path(metadata.path).unlink(missing_ok=True)

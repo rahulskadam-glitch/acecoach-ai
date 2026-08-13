@@ -1,0 +1,168 @@
+{
+  "groundstroke": [
+    {
+      "code": "G0",
+      "name": "Ready",
+      "description": "Stable position before reaction"
+    },
+    {
+      "code": "G1",
+      "name": "Recognition",
+      "description": "First observable response to incoming ball"
+    },
+    {
+      "code": "G2",
+      "name": "Unit turn initiation",
+      "description": "Shoulder or pelvis orientation begins changing"
+    },
+    {
+      "code": "G3",
+      "name": "Preparation complete",
+      "description": "Racket and body reach prepared state"
+    },
+    {
+      "code": "G4",
+      "name": "Load or slot",
+      "description": "Maximum usable load before sustained forward acceleration"
+    },
+    {
+      "code": "G5",
+      "name": "Acceleration onset",
+      "description": "Racket begins sustained forward movement"
+    },
+    {
+      "code": "G6",
+      "name": "Contact",
+      "description": "Detected or estimated racket-ball impact"
+    },
+    {
+      "code": "G7",
+      "name": "Extension",
+      "description": "Immediate post-contact extension"
+    },
+    {
+      "code": "G8",
+      "name": "Finish",
+      "description": "Maximum follow-through state"
+    },
+    {
+      "code": "G9",
+      "name": "Recovery",
+      "description": "First purposeful return toward readiness"
+    }
+  ],
+  "serve": [
+    {
+      "code": "S0",
+      "name": "Starting stance"
+    },
+    {
+      "code": "S1",
+      "name": "Toss initiation"
+    },
+    {
+      "code": "S2",
+      "name": "Toss release"
+    },
+    {
+      "code": "S3",
+      "name": "Trophy position"
+    },
+    {
+      "code": "S4",
+      "name": "Maximum leg load"
+    },
+    {
+      "code": "S5",
+      "name": "Maximum racket drop"
+    },
+    {
+      "code": "S6",
+      "name": "Upward acceleration"
+    },
+    {
+      "code": "S7",
+      "name": "Contact"
+    },
+    {
+      "code": "S8",
+      "name": "Follow-through"
+    },
+    {
+      "code": "S9",
+      "name": "Landing"
+    },
+    {
+      "code": "S10",
+      "name": "Recovery"
+    }
+  ],
+  "volley": [
+    {
+      "code": "V0",
+      "name": "Net ready"
+    },
+    {
+      "code": "V1",
+      "name": "Split step"
+    },
+    {
+      "code": "V2",
+      "name": "Recognition"
+    },
+    {
+      "code": "V3",
+      "name": "Compact preparation"
+    },
+    {
+      "code": "V4",
+      "name": "Step or weight transfer"
+    },
+    {
+      "code": "V5",
+      "name": "Contact"
+    },
+    {
+      "code": "V6",
+      "name": "Hold or short finish"
+    },
+    {
+      "code": "V7",
+      "name": "Recovery"
+    }
+  ],
+  "overhead": [
+    {
+      "code": "O0",
+      "name": "Lob recognition"
+    },
+    {
+      "code": "O1",
+      "name": "Side-on turn"
+    },
+    {
+      "code": "O2",
+      "name": "Repositioning"
+    },
+    {
+      "code": "O3",
+      "name": "Trophy or set position"
+    },
+    {
+      "code": "O4",
+      "name": "Acceleration"
+    },
+    {
+      "code": "O5",
+      "name": "Contact"
+    },
+    {
+      "code": "O6",
+      "name": "Follow-through"
+    },
+    {
+      "code": "O7",
+      "name": "Landing and recovery"
+    }
+  ]
+}

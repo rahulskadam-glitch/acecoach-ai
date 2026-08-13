@@ -3,8 +3,8 @@ import path from "node:path";
 
 const root = process.cwd();
 const checks = [
-  ["package version", "package.json", '"version": "5.0.0"'],
-  ["release version", "src/lib/config/version.ts", 'APP_VERSION = "5.0.0"'],
+  ["current package retains v5 capabilities", "package.json", '"version": "6.0.0"'],
+  ["current release retains v5 capabilities", "src/lib/config/version.ts", 'APP_VERSION = "6.0.0"'],
   ["active player report", "src/components/analysis/AnalysisReport.tsx", "@/features/report/components/PlayerReport"],
   ["clean video guide toggle", "src/features/report/components/SynchronizedHumanComparison.tsx", "Compare one difference"],
   ["player-proportioned selector", "src/features/report/components/SynchronizedHumanComparison.tsx", "player-matched"],

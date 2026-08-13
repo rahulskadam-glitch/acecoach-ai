@@ -1,0 +1,2379 @@
+[
+  {
+    "drill_id": "FH_EARLY_READ_01",
+    "name": "Read the ball earlier and start moving sooner",
+    "target_fault_ids": [
+      "FH-REC-01"
+    ],
+    "purpose": "reduces preparation time and creates downstream timing compensations",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Read the ball earlier and start moving sooner.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FH_EARLY_TURN_01",
+    "name": "Turn as soon as you recognize forehand",
+    "target_fault_ids": [
+      "FH-PREP-01"
+    ],
+    "purpose": "compresses the acceleration window and often moves contact backward",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Turn as soon as you recognize forehand.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FH_UNIT_TURN_01",
+    "name": "Move the racket with your body turn",
+    "target_fault_ids": [
+      "FH-PREP-02"
+    ],
+    "purpose": "limits torso loading and increases reliance on the arm",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Move the racket with your body turn.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FH_SPACING_01",
+    "name": "Create more room between your body and the ball",
+    "target_fault_ids": [
+      "FH-SPACE-01"
+    ],
+    "purpose": "reduces extension and forces late racket-face compensation",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Create more room between your body and the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FH_SPACING_02",
+    "name": "Move your feet so you do not have to reach",
+    "target_fault_ids": [
+      "FH-SPACE-02"
+    ],
+    "purpose": "reduces balance and racket control",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Move your feet so you do not have to reach.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FH_LOAD_01",
+    "name": "Load your legs before you drive the racket",
+    "target_fault_ids": [
+      "FH-LOAD-01"
+    ],
+    "purpose": "reduces available ground-up contribution",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Load your legs before you drive the racket.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FH_SEQUENCE_01",
+    "name": "Start the forward move from the ground and hips",
+    "target_fault_ids": [
+      "FH-SEQ-01"
+    ],
+    "purpose": "reverses the intended proximal-to-distal sequence",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Start the forward move from the ground and hips.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FH_STAY_TURNED_01",
+    "name": "Stay turned a little longer before you release",
+    "target_fault_ids": [
+      "FH-ROT-01"
+    ],
+    "purpose": "reduces stored rotation and can pull contact across the body",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Stay turned a little longer before you release.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FH_PATH_01",
+    "name": "Drive forward and slightly up through the ball",
+    "target_fault_ids": [
+      "FH-PATH-01"
+    ],
+    "purpose": "reduces net clearance and topspin margin",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Drive forward and slightly up through the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FH_EXTENSION_01",
+    "name": "Send the racket farther through the ball",
+    "target_fault_ids": [
+      "FH-PATH-02"
+    ],
+    "purpose": "creates a spin-only ball with reduced depth and timing margin",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Send the racket farther through the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FH_CONTACT_01",
+    "name": "Meet the ball farther in front",
+    "target_fault_ids": [
+      "FH-CON-01"
+    ],
+    "purpose": "reduces extension and often causes across-body steering",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Meet the ball farther in front.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FH_HEAD_01",
+    "name": "Keep your eyes near the contact spot a little longer",
+    "target_fault_ids": [
+      "FH-HEAD-01"
+    ],
+    "purpose": "reduces visual and postural stability through impact",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep your eyes near the contact spot a little longer.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FH_FINISH_01",
+    "name": "Swing through the ball and let the finish happen",
+    "target_fault_ids": [
+      "FH-FIN-01"
+    ],
+    "purpose": "reduces energy transfer and may signal an upstream timing problem",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Swing through the ball and let the finish happen.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FH_RECOVERY_01",
+    "name": "Finish, then recover immediately",
+    "target_fault_ids": [
+      "FH-RECOV-01"
+    ],
+    "purpose": "reduces readiness for the next ball",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Finish, then recover immediately.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_EARLY_READ_01",
+    "name": "Recognize backhand early and turn",
+    "target_fault_ids": [
+      "2HB-REC-01"
+    ],
+    "purpose": "compresses preparation and spacing time",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Recognize backhand early and turn.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_EARLY_TURN_01",
+    "name": "Turn and set the racket earlier",
+    "target_fault_ids": [
+      "2HB-PREP-01"
+    ],
+    "purpose": "moves contact backward and rushes the forward swing",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Turn and set the racket earlier.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_UNIT_TURN_01",
+    "name": "Turn your shoulders and racket together",
+    "target_fault_ids": [
+      "2HB-PREP-02"
+    ],
+    "purpose": "limits whole-body loading",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Turn your shoulders and racket together.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_SPACING_01",
+    "name": "Create more space before you swing",
+    "target_fault_ids": [
+      "2HB-SPACE-01"
+    ],
+    "purpose": "restricts extension and hand path",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Create more space before you swing.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_CONTACT_01",
+    "name": "Meet the ball farther in front",
+    "target_fault_ids": [
+      "2HB-CON-01"
+    ],
+    "purpose": "reduces extension and can force the racket across the body",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Meet the ball farther in front.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_STABILITY_01",
+    "name": "Stay taller and more centered through contact",
+    "target_fault_ids": [
+      "2HB-TILT-01"
+    ],
+    "purpose": "disrupts rotation around a stable axis and may reduce balance",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Stay taller and more centered through contact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_LOAD_01",
+    "name": "Load your legs, then drive up through the shot",
+    "target_fault_ids": [
+      "2HB-LOAD-01"
+    ],
+    "purpose": "increases arm dependence and reduces vertical support",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Load your legs, then drive up through the shot.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_SEQUENCE_01",
+    "name": "Start the forward move from your legs and hips",
+    "target_fault_ids": [
+      "2HB-SEQ-01"
+    ],
+    "purpose": "reverses the intended kinetic sequence",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Start the forward move from your legs and hips.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_HIP_LEAD_01",
+    "name": "Keep the turn, then let the hips lead",
+    "target_fault_ids": [
+      "2HB-SEQ-02"
+    ],
+    "purpose": "reduces stored rotation and can pull contact sideways",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the turn, then let the hips lead.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_ARM_STRUCTURE_01",
+    "name": "Keep your arm shape stable through the hit",
+    "target_fault_ids": [
+      "2HB-ARM-01"
+    ],
+    "purpose": "shortens the hitting zone and can block extension",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep your arm shape stable through the hit.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_TOP_HAND_01",
+    "name": "Let the top hand guide the racket through the ball",
+    "target_fault_ids": [
+      "2HB-ARM-02"
+    ],
+    "purpose": "may indicate the bottom hand is steering across the body",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Let the top hand guide the racket through the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_PATH_01",
+    "name": "Swing forward and up through the ball",
+    "target_fault_ids": [
+      "2HB-PATH-01"
+    ],
+    "purpose": "reduces spin and net-clearance margin",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Swing forward and up through the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_DROP_01",
+    "name": "Let the racket settle before you drive forward",
+    "target_fault_ids": [
+      "2HB-RDROP-01"
+    ],
+    "purpose": "creates a rushed path and timing compensation",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Let the racket settle before you drive forward.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_HEAD_01",
+    "name": "Keep your head near the contact point longer",
+    "target_fault_ids": [
+      "2HB-HEAD-01"
+    ],
+    "purpose": "reduces contact stability",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep your head near the contact point longer.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_STAY_DOWN_01",
+    "name": "Stay down through contact, then rise",
+    "target_fault_ids": [
+      "2HB-RISE-01"
+    ],
+    "purpose": "reduces support and can lift the swing out of the contact zone",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Stay down through contact, then rise.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_FINISH_01",
+    "name": "Let both elbows finish freely",
+    "target_fault_ids": [
+      "2HB-FIN-01"
+    ],
+    "purpose": "limits extension and completion of the top-arm path",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Let both elbows finish freely.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "2HB_RECOVERY_01",
+    "name": "Finish and recover right away",
+    "target_fault_ids": [
+      "2HB-RECOV-01"
+    ],
+    "purpose": "reduces readiness for the next shot",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Finish and recover right away.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_EARLY_TURN_01",
+    "name": "Turn earlier and show your back shoulder",
+    "target_fault_ids": [
+      "1HB-PREP-01"
+    ],
+    "purpose": "reduces the one-hander’s already limited timing margin",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Turn earlier and show your back shoulder.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_PREP_01",
+    "name": "Prepare higher and create room for the racket",
+    "target_fault_ids": [
+      "1HB-PREP-02"
+    ],
+    "purpose": "limits usable acceleration path",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Prepare higher and create room for the racket.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_GRIP_01",
+    "name": "Set your backhand grip as you turn",
+    "target_fault_ids": [
+      "1HB-GRIP-01"
+    ],
+    "purpose": "uses time needed for positioning and setup",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Set your backhand grip as you turn.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_SPACING_01",
+    "name": "Move away enough to reach through the ball",
+    "target_fault_ids": [
+      "1HB-SPACE-01"
+    ],
+    "purpose": "reduces leverage and control",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Move away enough to reach through the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_LOAD_01",
+    "name": "Load your front leg, then drive through the shot",
+    "target_fault_ids": [
+      "1HB-LOAD-01"
+    ],
+    "purpose": "reduces support for extension and rotation",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Load your front leg, then drive through the shot.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_SEQUENCE_01",
+    "name": "Let your body start the swing, then release the arm",
+    "target_fault_ids": [
+      "1HB-SEQ-01"
+    ],
+    "purpose": "reduces efficient power transfer",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Let your body start the swing, then release the arm.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_STAY_SIDEWAYS_01",
+    "name": "Stay more side-on through the hit",
+    "target_fault_ids": [
+      "1HB-ROT-01"
+    ],
+    "purpose": "pulls the hitting structure away from contact",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Stay more side-on through the hit.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_DROP_01",
+    "name": "Let the racket drop into the slot before you swing",
+    "target_fault_ids": [
+      "1HB-PATH-01"
+    ],
+    "purpose": "reduces acceleration and topspin potential",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Let the racket drop into the slot before you swing.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_COMPACT_01",
+    "name": "Make the preparation more compact",
+    "target_fault_ids": [
+      "1HB-PATH-02"
+    ],
+    "purpose": "increases timing demands",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Make the preparation more compact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_CONTACT_01",
+    "name": "Meet the ball well in front",
+    "target_fault_ids": [
+      "1HB-CON-01"
+    ],
+    "purpose": "reduces extension and control",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Meet the ball well in front.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_HEAD_01",
+    "name": "Keep your head still through contact",
+    "target_fault_ids": [
+      "1HB-HEAD-01"
+    ],
+    "purpose": "reduces stability on a low-margin stroke",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep your head still through contact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_WRIST_01",
+    "name": "Keep the wrist stable and swing from the arm and body",
+    "target_fault_ids": [
+      "1HB-WRIST-01"
+    ],
+    "purpose": "reduces racket-face consistency",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the wrist stable and swing from the arm and body.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_FINISH_01",
+    "name": "Reach through and finish high",
+    "target_fault_ids": [
+      "1HB-FIN-01"
+    ],
+    "purpose": "can indicate deceleration or late contact",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Reach through and finish high.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "1HB_BALANCE_01",
+    "name": "Stay balanced through the hit",
+    "target_fault_ids": [
+      "1HB-BAL-01"
+    ],
+    "purpose": "reduces shot control and next-ball readiness",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Stay balanced through the hit.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SL_PREP_01",
+    "name": "Prepare the racket earlier and above the ball",
+    "target_fault_ids": [
+      "SL-PREP-01"
+    ],
+    "purpose": "creates a rushed chop and late contact",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Prepare the racket earlier and above the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SL_SPACING_01",
+    "name": "Meet the ball in front with room to extend",
+    "target_fault_ids": [
+      "SL-SPACE-01"
+    ],
+    "purpose": "reduces control and forward penetration",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Meet the ball in front with room to extend.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SL_FORWARD_01",
+    "name": "Move your weight through the ball",
+    "target_fault_ids": [
+      "SL-BAL-01"
+    ],
+    "purpose": "causes floating contact and unstable direction",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Move your weight through the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SL_SIDEWAYS_01",
+    "name": "Stay more side-on through contact",
+    "target_fault_ids": [
+      "SL-ROT-01"
+    ],
+    "purpose": "reduces stable carving path and low trajectory",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Stay more side-on through contact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SL_PATH_01",
+    "name": "Drive forward as you move down through the ball",
+    "target_fault_ids": [
+      "SL-PATH-01"
+    ],
+    "purpose": "creates a floating or short slice",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Drive forward as you move down through the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SL_PATH_02",
+    "name": "Start above the ball and carve through it",
+    "target_fault_ids": [
+      "SL-PATH-02"
+    ],
+    "purpose": "reduces underspin and control",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Start above the ball and carve through it.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SL_FACE_01",
+    "name": "Keep the face slightly open, not pointing upward",
+    "target_fault_ids": [
+      "SL-FACE-01"
+    ],
+    "purpose": "causes a high floating ball",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the face slightly open, not pointing upward.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SL_WRIST_01",
+    "name": "Keep the wrist and racket stable through contact",
+    "target_fault_ids": [
+      "SL-WRIST-01"
+    ],
+    "purpose": "reduces directional control",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the wrist and racket stable through contact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SL_ARM_01",
+    "name": "Keep the hitting arm long through the finish",
+    "target_fault_ids": [
+      "SL-ARM-01"
+    ],
+    "purpose": "reduces penetration and control",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the hitting arm long through the finish.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SL_BALANCE_01",
+    "name": "Let the other arm reach back for balance",
+    "target_fault_ids": [
+      "SL-COUNTER-01"
+    ],
+    "purpose": "reduces trunk stability",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Let the other arm reach back for balance.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SL_FINISH_01",
+    "name": "Continue the racket toward your target",
+    "target_fault_ids": [
+      "SL-FIN-01"
+    ],
+    "purpose": "reduces depth and control",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Continue the racket toward your target.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SL_RECOVERY_01",
+    "name": "Finish, then reset your feet and racket",
+    "target_fault_ids": [
+      "SL-RECOV-01"
+    ],
+    "purpose": "reduces readiness for the next ball",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Finish, then reset your feet and racket.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_BALANCE_01",
+    "name": "Start balanced and still",
+    "target_fault_ids": [
+      "SRV-SETUP-01"
+    ],
+    "purpose": "reduces repeatability of toss and rhythm",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Start balanced and still.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_RHYTHM_01",
+    "name": "Use one smooth rhythm from start to contact",
+    "target_fault_ids": [
+      "SRV-RHYTHM-01"
+    ],
+    "purpose": "disrupts toss-to-load sequencing",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Use one smooth rhythm from start to contact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_TOSS_RELEASE_01",
+    "name": "Release the toss from the same place",
+    "target_fault_ids": [
+      "SRV-TOSS-01"
+    ],
+    "purpose": "reduces serve repeatability",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Release the toss from the same place.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_TOSS_FRONT_01",
+    "name": "Place the toss more in front",
+    "target_fault_ids": [
+      "SRV-TOSS-02"
+    ],
+    "purpose": "forces backward lean or late contact",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Place the toss more in front.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_TOSS_TARGET_01",
+    "name": "Keep the toss inside your contact corridor",
+    "target_fault_ids": [
+      "SRV-TOSS-03"
+    ],
+    "purpose": "disrupts balance and contact quality",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the toss inside your contact corridor.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_COIL_01",
+    "name": "Turn your shoulders as the toss rises",
+    "target_fault_ids": [
+      "SRV-TROPHY-01"
+    ],
+    "purpose": "reduces stored rotational contribution",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Turn your shoulders as the toss rises.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_TOSS_ARM_01",
+    "name": "Keep the tossing arm up a little longer",
+    "target_fault_ids": [
+      "SRV-TOSSARM-01"
+    ],
+    "purpose": "can reduce upward alignment and timing",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the tossing arm up a little longer.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_EDGE_01",
+    "name": "Lead with the racket edge before the strings turn to the ball",
+    "target_fault_ids": [
+      "SRV-WAITER-01"
+    ],
+    "purpose": "limits racket-head acceleration and serve development",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Lead with the racket edge before the strings turn to the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_DROP_01",
+    "name": "Let the racket drop as your legs drive",
+    "target_fault_ids": [
+      "SRV-DROP-01"
+    ],
+    "purpose": "reduces stretch-shortening and acceleration opportunity",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Let the racket drop as your legs drive.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_LEGS_01",
+    "name": "Load, then drive upward to the ball",
+    "target_fault_ids": [
+      "SRV-LEG-01"
+    ],
+    "purpose": "reduces upward force and contact height",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Load, then drive upward to the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_SYNC_01",
+    "name": "Drive up as the racket drops and begins to accelerate",
+    "target_fault_ids": [
+      "SRV-LEG-02"
+    ],
+    "purpose": "reduces segment synchronization",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Drive up as the racket drops and begins to accelerate.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_SEQUENCE_01",
+    "name": "Let the legs and body start the acceleration",
+    "target_fault_ids": [
+      "SRV-SEQ-01"
+    ],
+    "purpose": "creates an arm-dominant serve",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Let the legs and body start the acceleration.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_HEAD_01",
+    "name": "Keep looking up through contact",
+    "target_fault_ids": [
+      "SRV-HEAD-01"
+    ],
+    "purpose": "reduces tracking and posture stability",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep looking up through contact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_CONTACT_HIGH_01",
+    "name": "Reach up to meet the ball higher",
+    "target_fault_ids": [
+      "SRV-CON-01"
+    ],
+    "purpose": "reduces leverage and serve margin",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Reach up to meet the ball higher.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_CONTACT_FRONT_01",
+    "name": "Meet the toss slightly more in front",
+    "target_fault_ids": [
+      "SRV-CON-02"
+    ],
+    "purpose": "forces compensation and reduces forward transfer",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Meet the toss slightly more in front.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_PRONATION_PROXY_01",
+    "name": "Let the racket edge lead, then turn naturally through contact",
+    "target_fault_ids": [
+      "SRV-PRON-01"
+    ],
+    "purpose": "may limit racket-head speed; view may be insufficient",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Let the racket edge lead, then turn naturally through contact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_LANDING_01",
+    "name": "Land balanced and ready for the next ball",
+    "target_fault_ids": [
+      "SRV-LAND-01"
+    ],
+    "purpose": "reduces recovery and serve repeatability",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Land balanced and ready for the next ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_FINISH_01",
+    "name": "Let the racket finish across your body",
+    "target_fault_ids": [
+      "SRV-FIN-01"
+    ],
+    "purpose": "reduces natural deceleration and flow",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Let the racket finish across your body.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "SRV_RECOVERY_01",
+    "name": "Land, recover, and prepare for the next shot",
+    "target_fault_ids": [
+      "SRV-RECOV-01"
+    ],
+    "purpose": "reduces readiness for return",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Land, recover, and prepare for the next shot.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "VOLLEY_SPLIT_01",
+    "name": "Split as your opponent hits",
+    "target_fault_ids": [
+      "FHV-SPLIT-01",
+      "BHV-SPLIT-01"
+    ],
+    "purpose": "delays reaction and preparation",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Split as your opponent hits.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FHV_READY_01",
+    "name": "Keep the racket up and in front",
+    "target_fault_ids": [
+      "FHV-READY-01"
+    ],
+    "purpose": "increases preparation distance under time pressure",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the racket up and in front.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FHV_COMPACT_01",
+    "name": "Keep the volley preparation compact",
+    "target_fault_ids": [
+      "FHV-PREP-01"
+    ],
+    "purpose": "delays contact and reduces control",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the volley preparation compact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FHV_ELBOW_01",
+    "name": "Keep your elbow in front of your body",
+    "target_fault_ids": [
+      "FHV-ELB-01"
+    ],
+    "purpose": "makes timely contact difficult",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep your elbow in front of your body.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FHV_CONTACT_01",
+    "name": "Catch the ball farther in front",
+    "target_fault_ids": [
+      "FHV-CON-01"
+    ],
+    "purpose": "reduces directional control",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Catch the ball farther in front.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FHV_STABLE_FACE_01",
+    "name": "Keep the racket face stable through contact",
+    "target_fault_ids": [
+      "FHV-WRIST-01"
+    ],
+    "purpose": "reduces precision on fast balls",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the racket face stable through contact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FHV_STEP_01",
+    "name": "Step and move through the ball",
+    "target_fault_ids": [
+      "FHV-STEP-01"
+    ],
+    "purpose": "reduces controlled penetration",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Step and move through the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FHV_PUNCH_01",
+    "name": "Punch the volley; do not take a full swing",
+    "target_fault_ids": [
+      "FHV-SWING-01"
+    ],
+    "purpose": "reduces timing and touch",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Punch the volley; do not take a full swing.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FHV_BALANCE_01",
+    "name": "Stay forward and balanced",
+    "target_fault_ids": [
+      "FHV-BAL-01"
+    ],
+    "purpose": "reduces pace absorption and direction",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Stay forward and balanced.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "FHV_RECOVERY_01",
+    "name": "Reset the racket and split again",
+    "target_fault_ids": [
+      "FHV-RECOV-01"
+    ],
+    "purpose": "reduces readiness for the next volley",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Reset the racket and split again.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "BHV_PREP_01",
+    "name": "Set the racket earlier",
+    "target_fault_ids": [
+      "BHV-PREP-01"
+    ],
+    "purpose": "forces rushed contact",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Set the racket earlier.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "BHV_COMPACT_01",
+    "name": "Keep the backhand volley compact",
+    "target_fault_ids": [
+      "BHV-PREP-02"
+    ],
+    "purpose": "reduces timing and control",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the backhand volley compact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "BHV_SUPPORT_01",
+    "name": "Support the racket until it is set",
+    "target_fault_ids": [
+      "BHV-SUPPORT-01"
+    ],
+    "purpose": "reduces racket stability during setup",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Support the racket until it is set.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "BHV_GRIP_01",
+    "name": "Use a continental volley grip",
+    "target_fault_ids": [
+      "BHV-GRIP-01"
+    ],
+    "purpose": "can require last-second face correction",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Use a continental volley grip.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "BHV_FORWARD_01",
+    "name": "Step in and stay balanced",
+    "target_fault_ids": [
+      "BHV-BAL-01"
+    ],
+    "purpose": "reduces control and penetration",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Step in and stay balanced.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "BHV_CONTACT_01",
+    "name": "Meet the ball farther in front",
+    "target_fault_ids": [
+      "BHV-CON-01"
+    ],
+    "purpose": "reduces racket stability and control",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Meet the ball farther in front.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "BHV_ARM_01",
+    "name": "Keep the arm structure firm through contact",
+    "target_fault_ids": [
+      "BHV-ARM-01"
+    ],
+    "purpose": "reduces stable reach and punch",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the arm structure firm through contact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "BHV_FACE_01",
+    "name": "Keep the wrist and racket stable",
+    "target_fault_ids": [
+      "BHV-WRIST-01"
+    ],
+    "purpose": "reduces directional control",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the wrist and racket stable.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "BHV_RECOVERY_01",
+    "name": "Reset the racket and feet immediately",
+    "target_fault_ids": [
+      "BHV-RECOV-01"
+    ],
+    "purpose": "reduces readiness for the next ball",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Reset the racket and feet immediately.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "OVH_READ_01",
+    "name": "Recognize the lob and turn immediately",
+    "target_fault_ids": [
+      "OVH-REC-01"
+    ],
+    "purpose": "reduces positioning time",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Recognize the lob and turn immediately.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "OVH_FOOTWORK_01",
+    "name": "Turn and use crossover steps to get behind the ball",
+    "target_fault_ids": [
+      "OVH-FOOT-01"
+    ],
+    "purpose": "makes tracking and positioning less stable",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Turn and use crossover steps to get behind the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "OVH_SPACING_01",
+    "name": "Move slightly behind and beside the ball",
+    "target_fault_ids": [
+      "OVH-POS-01"
+    ],
+    "purpose": "removes room for a full swing",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Move slightly behind and beside the ball.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "OVH_HIGH_CONTACT_01",
+    "name": "Take the ball higher",
+    "target_fault_ids": [
+      "OVH-POS-02"
+    ],
+    "purpose": "reduces leverage and put-away potential",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Take the ball higher.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "OVH_POINT_01",
+    "name": "Keep the pointing arm up longer",
+    "target_fault_ids": [
+      "OVH-ARM-01"
+    ],
+    "purpose": "reduces tracking and shoulder-set support",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep the pointing arm up longer.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "OVH_SET_01",
+    "name": "Turn side-on and set the racket early",
+    "target_fault_ids": [
+      "OVH-TROPHY-01"
+    ],
+    "purpose": "reduces body contribution and timing",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Turn side-on and set the racket early.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "OVH_SEQUENCE_01",
+    "name": "Use your legs and body before the arm releases",
+    "target_fault_ids": [
+      "OVH-SEQ-01"
+    ],
+    "purpose": "makes power effortful and less repeatable",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Use your legs and body before the arm releases.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "OVH_HEAD_01",
+    "name": "Keep looking at the ball through contact",
+    "target_fault_ids": [
+      "OVH-HEAD-01"
+    ],
+    "purpose": "reduces tracking accuracy",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Keep looking at the ball through contact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "OVH_CONTACT_01",
+    "name": "Get behind the ball and contact in front",
+    "target_fault_ids": [
+      "OVH-CON-01"
+    ],
+    "purpose": "reduces control and downward trajectory",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Get behind the ball and contact in front.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "OVH_ROTATION_01",
+    "name": "Lead with the edge and let the racket turn through contact",
+    "target_fault_ids": [
+      "OVH-PRON-01"
+    ],
+    "purpose": "may limit racket-head speed; view may be insufficient",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Lead with the edge and let the racket turn through contact.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "OVH_FINISH_01",
+    "name": "Let the racket finish across your body",
+    "target_fault_ids": [
+      "OVH-FIN-01"
+    ],
+    "purpose": "reduces natural deceleration and direction",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Let the racket finish across your body.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "OVH_LANDING_01",
+    "name": "Land balanced and recover",
+    "target_fault_ids": [
+      "OVH-LAND-01"
+    ],
+    "purpose": "reduces control and next-ball readiness",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Land balanced and recover.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  },
+  {
+    "drill_id": "OVH_RECOVERY_01",
+    "name": "Recover to the right position as soon as you land",
+    "target_fault_ids": [
+      "OVH-RECOV-01"
+    ],
+    "purpose": "reduces readiness for the next shot",
+    "setup": "Use a coach, partner, ball machine, or self-feed appropriate to the stroke. Record from a supported camera view.",
+    "action": "Perform controlled repetitions focusing on one cue only.",
+    "cue": "Recover to the right position as soon as you land.",
+    "dosage": {
+      "sets": 2,
+      "repetitions_per_set": 8,
+      "rest_seconds": 45
+    },
+    "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality.",
+    "stop_condition": "Stop for pain, dizziness, loss of control, or material technique deterioration.",
+    "reassessment": "Record 10 comparable strokes from a supported view.",
+    "age_adjustments": {
+      "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    }
+  }
+]

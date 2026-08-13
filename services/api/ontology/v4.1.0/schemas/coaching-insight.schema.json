@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acecoach.ai/schemas/coaching-insight.schema.json",
+  "title": "AceCoach Coaching Insight",
+  "type": "object",
+  "required": [
+    "insight_id",
+    "role",
+    "archetype",
+    "thesis",
+    "root_event",
+    "evidence_ids",
+    "comparison_basis",
+    "causal_chain",
+    "confidence",
+    "player_coaching",
+    "visual_story"
+  ],
+  "properties": {
+    "insight_id": {
+      "type": "string"
+    },
+    "role": {
+      "enum": [
+        "STRENGTH",
+        "PRIMARY_CORRECTION",
+        "SECONDARY_OBSERVATION",
+        "LIMITATION"
+      ]
+    },
+    "archetype": {
+      "type": "string"
+    },
+    "thesis": {
+      "type": "string"
+    },
+    "root_event": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "comparison_basis": {
+      "type": "object"
+    },
+    "supporting_reps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "counterexamples": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "causal_chain": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "relationship",
+          "confidence"
+        ]
+      }
+    },
+    "confidence": {
+      "type": "object"
+    },
+    "falsification_conditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "player_coaching": {
+      "type": "object",
+      "required": [
+        "coach_read",
+        "change",
+        "why",
+        "feel",
+        "watch",
+        "train",
+        "success"
+      ],
+      "properties": {
+        "coach_read": {
+          "type": "string"
+        },
+        "keep": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "change": {
+          "type": "string"
+        },
+        "why": {
+          "type": "string"
+        },
+        "feel": {
+          "type": "string"
+        },
+        "watch": {
+          "type": "string"
+        },
+        "train": {
+          "type": "string"
+        },
+        "success": {
+          "type": "string"
+        },
+        "language_profile_id": {
+          "type": "string"
+        },
+        "surface": {
+          "enum": [
+            "PLAYER_COACH",
+            "COACH_ANALYST"
+          ]
+        }
+      }
+    },
+    "visual_story": {
+      "$ref": "visual-story.schema.json"
+    }
+  },
+  "additionalProperties": true
+}

@@ -43,8 +43,9 @@ export default function StrokePyramidSummary({ report, movement }: { report: Ana
         <p className="mt-3 max-w-4xl text-xs leading-6 text-slate-500">{summary.synthesisNote}</p>
       </div>
 
-      {summary.framework?.length ? <div className="border-b border-slate-200 bg-slate-50/60 p-6 sm:p-8">
-        <div className="flex flex-wrap items-end justify-between gap-3">
+      {summary.framework?.length ? <details className="border-b border-slate-200 bg-slate-50/60 p-6 sm:p-8">
+        <summary className="cursor-pointer list-none rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-800">Optional stroke detail</p><h2 className="mt-2 text-xl font-semibold text-slate-950">Open the four-stage breakdown</h2><p className="mt-2 text-sm text-slate-500">Use this after you understand the one main correction.</p></div><span className="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800">4 stages</span></div></summary>
+        <div className="mt-6 flex flex-wrap items-end justify-between gap-3">
           <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-800">Complete stroke read</p><h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em] text-slate-950">The {movement.toLowerCase()} in four connected stages</h2></div>
           <p className="max-w-xl text-xs leading-6 text-slate-500">These same numbers appear on the video: 1 prepare, 2 build the power position, 3 meet the ball, 4 finish and recover.</p>
         </div>
@@ -62,7 +63,7 @@ export default function StrokePyramidSummary({ report, movement }: { report: Ana
             <button type="button" onClick={() => showPoint(item, "video")} className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#173F6A] px-3 text-xs font-semibold text-white hover:bg-[#103554]"><Eye className="h-4 w-4" />Show stage {item.step} on video</button>
           </article>)}
         </div>
-      </div> : null}
+      </details> : null}
 
       {summary.audit?.checkpoints?.length ? <div className="border-b border-slate-200 bg-slate-50/60 p-6 sm:p-8" data-testid="stroke-phase-rubric">
         {summary.audit.version.includes("two-handed-backhand") ? <span className="sr-only" data-testid="backhand-seven-phase-rubric">Two-handed backhand phase rubric</span> : null}

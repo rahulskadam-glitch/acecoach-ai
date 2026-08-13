@@ -1,0 +1,105 @@
+{
+  "version": "4.1.0",
+  "goal": "Produce insights that sound like an elite coach because they reveal relationships, not because they use more technical words.",
+  "insight_archetypes": [
+    {
+      "id": "HIDDEN_CAUSE",
+      "pattern": "Visible problem is downstream of an earlier event.",
+      "example": "Your finish changes because your spacing collapses two steps earlier."
+    },
+    {
+      "id": "TIMING_BOTTLENECK",
+      "pattern": "A phase has insufficient time reserve, forcing later compression.",
+      "example": "Your turn is not slow; it simply finishes after the ball has already taken away your setup time."
+    },
+    {
+      "id": "CONDITIONAL_LEAK",
+      "pattern": "Issue appears only in a specific ball/context class.",
+      "example": "Your backhand is stable on neutral balls; deep balls expose the spacing leak."
+    },
+    {
+      "id": "COMPENSATION",
+      "pattern": "A downstream action is helping the player survive an upstream problem.",
+      "example": "The steeper racket path is a rescue, not the root problem."
+    },
+    {
+      "id": "SELF_BEST_BLUEPRINT",
+      "pattern": "Player already owns a better solution under comparable conditions.",
+      "example": "Your best reps keep the same swing but preserve one more adjustment step."
+    },
+    {
+      "id": "STRENGTH_ANCHOR",
+      "pattern": "Stable useful behavior should be protected while correcting something else.",
+      "example": "Keep this trunk stability; change only the spacing before the swing."
+    },
+    {
+      "id": "CONSISTENCY_LEAK",
+      "pattern": "Average technique is acceptable but variability grows in one event window.",
+      "example": "The issue is not your normal contact point; it is the 30% of reps where it collapses under movement."
+    },
+    {
+      "id": "TACTICAL_MECHANICAL_MISMATCH",
+      "pattern": "Mechanics conflict with likely tactical intent/context.",
+      "example": "You use a defensive spacing solution while trying to attack a short ball."
+    },
+    {
+      "id": "PROGRESS_SHIFT",
+      "pattern": "Distribution improves relative to prior sessions.",
+      "example": "Preparation is no longer the limiter; the next bottleneck is recovery."
+    },
+    {
+      "id": "LIMITATION",
+      "pattern": "Interesting hypothesis is deliberately withheld because measurement is not trustworthy.",
+      "example": "Racket-face angle is not graded from this rear view."
+    }
+  ],
+  "hypothesis_contract": {
+    "required": [
+      "hypothesis_id",
+      "archetype",
+      "thesis",
+      "root_event",
+      "evidence_ids",
+      "comparison_basis",
+      "supporting_reps",
+      "counterexamples",
+      "downstream_effects",
+      "confidence",
+      "falsification_conditions",
+      "coachability"
+    ],
+    "causal_language_gate": "Use 'caused' only for configured deterministic relationships or validated experimental knowledge. Otherwise use 'likely drives', 'appears to lead to', or 'is consistent with'."
+  },
+  "priority_formula": {
+    "formula": "0.20*performance_impact + 0.18*recurrence + 0.18*causal_leverage + 0.15*evidence_confidence + 0.10*coachability + 0.08*self_best_contrast + 0.06*visual_explainability + 0.05*persistence - overload_penalty - ambiguity_penalty",
+    "tie_breakers": [
+      "earlier_root_event",
+      "stronger_self_best_contrast",
+      "simpler_actionable_cue",
+      "higher_measurement_class"
+    ]
+  },
+  "suppression_rules": [
+    "Suppress a symptom when its likely upstream cause is selected and coaching the symptom would conflict with that correction.",
+    "Suppress a metric difference if it has no clear tennis consequence.",
+    "Suppress a generic issue when the pattern disappears after context matching.",
+    "Suppress redundant insights that would produce the same cue.",
+    "Suppress numerical language when the number is less reliable than the qualitative pattern."
+  ],
+  "player_insight_contract": {
+    "headline": "A specific thesis, preferably contrastive: what is NOT the issue + what IS the issue.",
+    "proof": "2-3 pieces of traceable evidence from comparable reps.",
+    "why": "One causal chain ending in a tennis consequence.",
+    "protect": "Name a strength that should remain unchanged when relevant.",
+    "feel": "One cue; prefer external/effect-oriented wording when suitable.",
+    "practice": "One constraint or drill linked to the causal mechanism.",
+    "success": "One measurable reassessment target.",
+    "confidence": "Shown only when it materially affects trust/interpretation."
+  },
+  "source_ids": [
+    "SCI-ELLIOTT-2006",
+    "SCI-REID-2013",
+    "SCI-CHUA-2021-EXTERNAL-FOCUS",
+    "SCI-SIGRIST-2013-FEEDBACK"
+  ]
+}

@@ -1,0 +1,200 @@
+{
+  "version": "4.1.0",
+  "principle": "Events are intervals with uncertainty, not magical exact frames. Fuse ball, racket, body, court and optional audio evidence.",
+  "generic_groundstroke_events": [
+    {
+      "event_id": "incoming_ball_visible",
+      "role": "context_anchor",
+      "signals": [
+        "ball_track_stable"
+      ]
+    },
+    {
+      "event_id": "bounce",
+      "role": "context_anchor",
+      "signals": [
+        "ball_vertical_direction_change",
+        "court_plane_proximity"
+      ],
+      "fallback": "trajectory_fit"
+    },
+    {
+      "event_id": "split_step_onset",
+      "signals": [
+        "bilateral_foot_motion",
+        "vertical_COM_proxy_change"
+      ],
+      "optional": true
+    },
+    {
+      "event_id": "split_step_landing",
+      "signals": [
+        "foot_vertical_velocity_minimum",
+        "support_transition"
+      ],
+      "optional": true
+    },
+    {
+      "event_id": "unit_turn_onset",
+      "signals": [
+        "shoulder_orientation_change",
+        "racket_body_motion_onset"
+      ]
+    },
+    {
+      "event_id": "unit_turn_complete",
+      "signals": [
+        "shoulder_rotation_plateau_or_transition",
+        "racket_set_relative_to_torso"
+      ]
+    },
+    {
+      "event_id": "final_adjustment_step",
+      "signals": [
+        "last_foot_contact_before_forward_swing",
+        "ball_body_closure_rate"
+      ]
+    },
+    {
+      "event_id": "forward_swing_onset",
+      "signals": [
+        "racket_head_velocity_rise",
+        "hand_path_direction_change",
+        "trunk_rotation_acceleration"
+      ]
+    },
+    {
+      "event_id": "contact",
+      "signals": [
+        "racket_ball_min_distance",
+        "ball_trajectory_discontinuity",
+        "optional_audio_impulse"
+      ],
+      "must_report_interval_if_low_fps": true
+    },
+    {
+      "event_id": "extension_window_end",
+      "signals": [
+        "racket_hand_distance_from_torso_peak_or_direction_change"
+      ]
+    },
+    {
+      "event_id": "finish_landmark",
+      "signals": [
+        "racket_speed_decay",
+        "upper_body_rotation_plateau"
+      ],
+      "optional": true
+    },
+    {
+      "event_id": "recovery_onset",
+      "signals": [
+        "COM_or_foot_velocity_toward_recovery_target",
+        "racket_deceleration"
+      ],
+      "optional": true
+    }
+  ],
+  "serve_events": [
+    {
+      "event_id": "toss_release",
+      "signals": [
+        "non_hitting_hand_ball_separation",
+        "ball_upward_track"
+      ]
+    },
+    {
+      "event_id": "load_onset",
+      "signals": [
+        "knee_flexion_increase",
+        "COM_lowering"
+      ]
+    },
+    {
+      "event_id": "trophy_transition",
+      "signals": [
+        "shoulder_trunk_configuration",
+        "racket_arm_transition"
+      ],
+      "note": "Use as a transition window, not an ideal static pose."
+    },
+    {
+      "event_id": "leg_drive_onset",
+      "signals": [
+        "knee_extension_velocity_rise",
+        "COM_upward_velocity"
+      ]
+    },
+    {
+      "event_id": "racket_acceleration_onset",
+      "signals": [
+        "racket_head_speed_rise",
+        "shoulder_rotation_progression"
+      ]
+    },
+    {
+      "event_id": "contact",
+      "signals": [
+        "racket_ball_min_distance",
+        "ball_trajectory_discontinuity",
+        "optional_audio_impulse"
+      ]
+    },
+    {
+      "event_id": "landing",
+      "signals": [
+        "front_foot_contact",
+        "COM_descent"
+      ]
+    },
+    {
+      "event_id": "recovery_onset",
+      "signals": [
+        "first_stable_repositioning_step"
+      ]
+    }
+  ],
+  "volley_events": [
+    {
+      "event_id": "recognition",
+      "signals": [
+        "racket_side_selection",
+        "body_orientation_response"
+      ]
+    },
+    {
+      "event_id": "set",
+      "signals": [
+        "racket_stabilization",
+        "shoulder_turn"
+      ]
+    },
+    {
+      "event_id": "step_or_load",
+      "signals": [
+        "foot_contact_sequence",
+        "COM_shift"
+      ]
+    },
+    {
+      "event_id": "contact",
+      "signals": [
+        "racket_ball_min_distance",
+        "ball_trajectory_discontinuity"
+      ]
+    },
+    {
+      "event_id": "recovery_onset",
+      "signals": [
+        "racket_reset",
+        "court_repositioning"
+      ]
+    }
+  ],
+  "fusion_policy": {
+    "high_confidence": "two_or_more_independent_signal_families_agree",
+    "medium_confidence": "one_strong_signal_or_multiple_weak_signals",
+    "low_confidence": "event inferred primarily from pose or interpolation",
+    "contact_note": "At consumer frame rates, contact may occur between frames; store [t_start,t_end] and a best estimate, not false precision."
+  }
+}

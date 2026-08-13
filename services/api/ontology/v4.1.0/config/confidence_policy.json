@@ -1,0 +1,31 @@
+{
+  "dimensions": [
+    "detection",
+    "measurement",
+    "context",
+    "interpretation"
+  ],
+  "thresholds": {
+    "high": 0.85,
+    "medium": 0.65,
+    "low": 0.0
+  },
+  "confirmation_rule": {
+    "minimum_interpretation_confidence": 0.75,
+    "minimum_measurement_confidence": 0.65,
+    "minimum_comparable_strokes": 3,
+    "requires_context_gate_pass": true,
+    "requires_exclusion_clear": true
+  },
+  "no_score_conditions": [
+    "measurement<0.65",
+    "camera_unsupported",
+    "required_evidence_missing",
+    "status in [NOT_VISIBLE,NOT_SUPPORTED_BY_VIEW,INSUFFICIENT_SAMPLE]"
+  ],
+  "language": {
+    "high": "We detected this pattern on {count} of {total} comparable strokes.",
+    "medium": "This pattern appears repeatedly, but part of the movement was difficult to measure.",
+    "low": "This camera view does not support a reliable assessment of this feature."
+  }
+}

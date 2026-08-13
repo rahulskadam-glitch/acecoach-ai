@@ -1,0 +1,107 @@
+{
+  "version": "4.1.0",
+  "principle": "The report should feel like a high-level tennis lesson: instant diagnosis first, visible proof second, one cue and one practice task next, technical evidence on demand.",
+  "levels": [
+    {
+      "level": "GLANCE",
+      "target_time_seconds": 5,
+      "content": [
+        "one headline thesis",
+        "one strength",
+        "one visual cue"
+      ]
+    },
+    {
+      "level": "UNDERSTAND",
+      "target_time_seconds": 20,
+      "content": [
+        "what happened",
+        "where it started",
+        "why it changed the ball",
+        "self-best proof",
+        "one correction"
+      ]
+    },
+    {
+      "level": "PRACTICE",
+      "content": [
+        "one external/effect cue where appropriate",
+        "one drill/constraint",
+        "10-ball success test"
+      ]
+    },
+    {
+      "level": "DEEP_DIVE",
+      "content": [
+        "metric traces",
+        "event timing",
+        "reference distributions",
+        "alternative hypotheses",
+        "uncertainty",
+        "source provenance"
+      ]
+    }
+  ],
+  "headline_patterns": [
+    "Your {not_problem} is fine. The leak starts at {actual_problem}.",
+    "This isn't a {surface_symptom} problem. It starts with {root_cause}.",
+    "Your best reps already show the answer: {self_best_difference}.",
+    "This works on {good_context}; {fail_context} is where it breaks down.",
+    "Keep {strength}. Change {primary_correction}."
+  ],
+  "cue_policy": {
+    "preference_order": [
+      "external_effect",
+      "environmental_constraint",
+      "simple_kinesthetic",
+      "body_part_internal_when_needed"
+    ],
+    "max_active_cues": 1,
+    "do_not_change_cue_every_session": true,
+    "source_ids": [
+      "SCI-CHUA-2021-EXTERNAL-FOCUS",
+      "SCI-SIGRIST-2013-FEEDBACK"
+    ]
+  },
+  "language_guardrails": [
+    "Never say 'always' or 'never' for technique unless it is truly a rule/safety condition.",
+    "Distinguish observation from interpretation without sounding robotic: direct for high-confidence evidence; 'it looks like'/'likely' when needed.",
+    "Use tennis consequence language: space, time, contact options, margin, depth, direction, spin, pace and recovery.",
+    "Avoid the words metric, causal graph, recurrence, pose model and interpretation confidence in player mode.",
+    "No fake praise. Every 'good', 'strong', 'clean' or 'excellent' statement must point to an evidenced strength.",
+    "One card = one coaching priority. Secondary issues stay collapsed until the primary correction is understood.",
+    "A visual caption should sound like something a coach might say while pausing the video and should normally fit in eight words.",
+    "Do not quote or imitate named coaches; synthesize general elite-coaching communication patterns."
+  ],
+  "player_report_contract": {
+    "default_card_order": [
+      "coach_read",
+      "keep",
+      "change",
+      "why",
+      "feel",
+      "watch",
+      "train",
+      "success"
+    ],
+    "player_language_surface": "PLAYER_COACH",
+    "deep_dive_surface": "COACH_ANALYST",
+    "never_show_by_default": [
+      "confidence_vector",
+      "raw_joint_angles",
+      "model_names",
+      "metric_ids",
+      "causal_graph_nodes",
+      "benchmark_z_scores"
+    ],
+    "coach_like_behavior": [
+      "name the real problem",
+      "show when it begins",
+      "explain the downstream consequence",
+      "protect a strength",
+      "give one feel",
+      "ask for a constrained set of reps",
+      "define what success looks like"
+    ]
+  }
+}

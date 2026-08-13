@@ -1,0 +1,278 @@
+{
+  "version": "4.1.0",
+  "principle": "Each stroke family is analyzed as a sequence of coaching questions. Metrics are evidence for questions, not the product itself.",
+  "playbooks": {
+    "forehand": {
+      "questions": [
+        "Did the player buy enough time with recognition and preparation for this incoming ball?",
+        "Did the feet create a viable strike distance for the chosen stance and direction?",
+        "Was load/balance appropriate to the ball and intended shot rather than merely visually conventional?",
+        "Did pelvis/trunk/arm/racket contributions organize the swing without an obvious rescue compensation?",
+        "Was contact geometry compatible with the intended trajectory?",
+        "Did the racket path produce the intended launch/spin proxy without excessive late correction?",
+        "Did recovery begin in time for the next likely ball?"
+      ],
+      "priority_constructs": [
+        "timing_budget",
+        "spacing",
+        "footwork",
+        "sequencing",
+        "contact_geometry",
+        "racket_path",
+        "outcome",
+        "recovery"
+      ],
+      "context_splitters": [
+        "incoming_depth",
+        "incoming_height",
+        "movement_direction",
+        "stance",
+        "court_position",
+        "intent",
+        "direction_change"
+      ],
+      "language_profile_id": "forehand",
+      "player_story_rule": "Translate the selected construct through the stroke-specific coach lexicon before generating player-facing text.",
+      "report_question": "What would an excellent coach want this player to notice, understand and feel on the very next rep?"
+    },
+    "two_handed_backhand": {
+      "questions": [
+        "Was side recognition and shoulder organization early enough?",
+        "Did the last adjustment steps preserve hitting radius instead of crowding the torso?",
+        "Did trunk and both arms work as the player's repeatable technique family rather than separating under pressure?",
+        "Does the racket path change because of an upstream spacing/timing issue?",
+        "Which self-best reps solve the same ball with less compensation?"
+      ],
+      "priority_constructs": [
+        "timing_budget",
+        "spacing",
+        "preparation_timing",
+        "footwork",
+        "sequencing",
+        "contact_geometry",
+        "racket_path",
+        "recovery"
+      ],
+      "context_splitters": [
+        "incoming_depth",
+        "incoming_height",
+        "movement_direction",
+        "stance",
+        "court_position",
+        "intent"
+      ],
+      "language_profile_id": "two_handed_backhand",
+      "player_story_rule": "Translate the selected construct through the stroke-specific coach lexicon before generating player-facing text.",
+      "report_question": "What would an excellent coach want this player to notice, understand and feel on the very next rep?"
+    },
+    "one_handed_backhand": {
+      "questions": [
+        "Was preparation completed with enough spatial/time reserve?",
+        "Did the feet create the earlier/more forward contact solution required by this player's technique family?",
+        "Was trunk contribution coordinated without the hitting arm becoming a late rescue?",
+        "Was racket path/contact appropriate for topspin, drive or slice intent?"
+      ],
+      "priority_constructs": [
+        "timing_budget",
+        "spacing",
+        "footwork",
+        "contact_geometry",
+        "sequencing",
+        "racket_path",
+        "stability"
+      ],
+      "context_splitters": [
+        "variant",
+        "incoming_height",
+        "incoming_depth",
+        "movement_direction",
+        "stance",
+        "intent"
+      ],
+      "language_profile_id": "one_handed_backhand",
+      "player_story_rule": "Translate the selected construct through the stroke-specific coach lexicon before generating player-facing text.",
+      "report_question": "What would an excellent coach want this player to notice, understand and feel on the very next rep?"
+    },
+    "slice_backhand": {
+      "questions": [
+        "Was the ball read early enough to organize a compact structure?",
+        "Was spacing preserved so the racket could travel through rather than chop down?",
+        "Was racket path and face proxy stable enough for the intended float/drive/drop outcome?",
+        "Was balance maintained through a typically more linear redirection task?"
+      ],
+      "priority_constructs": [
+        "timing_budget",
+        "spacing",
+        "racket_path",
+        "contact_geometry",
+        "stability",
+        "outcome"
+      ],
+      "context_splitters": [
+        "intent",
+        "incoming_height",
+        "incoming_pace",
+        "movement_state"
+      ],
+      "language_profile_id": "slice_backhand",
+      "player_story_rule": "Translate the selected construct through the stroke-specific coach lexicon before generating player-facing text.",
+      "report_question": "What would an excellent coach want this player to notice, understand and feel on the very next rep?"
+    },
+    "serve": {
+      "questions": [
+        "Is the toss repeatable enough for this intended serve?",
+        "How does load transition into upward drive?",
+        "Do trunk/arm/racket acceleration events form a repeatable sequence?",
+        "Is contact reached from a stable, repeatable movement solution?",
+        "Does the landing/recovery support the serve location and next ball?"
+      ],
+      "priority_constructs": [
+        "serve_toss",
+        "load",
+        "serve_sequence",
+        "contact_geometry",
+        "racket_path",
+        "outcome",
+        "recovery"
+      ],
+      "context_splitters": [
+        "serve_type",
+        "side",
+        "target",
+        "first_or_second",
+        "stance_family"
+      ],
+      "language_profile_id": "serve",
+      "player_story_rule": "Translate the selected construct through the stroke-specific coach lexicon before generating player-facing text.",
+      "report_question": "What would an excellent coach want this player to notice, understand and feel on the very next rep?"
+    },
+    "return_of_serve": {
+      "questions": [
+        "Was split-step/recognition timing synchronized with the incoming serve?",
+        "Did the player preserve enough time for a compact response at this serve speed?",
+        "Was contact space created without excessive backswing?",
+        "Did the movement solution match block, drive, chip or attack intent?"
+      ],
+      "priority_constructs": [
+        "recognition",
+        "split_step",
+        "timing_budget",
+        "spacing",
+        "compactness",
+        "contact_geometry",
+        "outcome"
+      ],
+      "context_splitters": [
+        "serve_speed_class",
+        "serve_direction",
+        "first_or_second",
+        "court_position",
+        "intent"
+      ],
+      "language_profile_id": "return_of_serve",
+      "player_story_rule": "Translate the selected construct through the stroke-specific coach lexicon before generating player-facing text.",
+      "report_question": "What would an excellent coach want this player to notice, understand and feel on the very next rep?"
+    },
+    "forehand_volley": {
+      "questions": [
+        "Was recognition early enough for a compact set?",
+        "Was the body/racket structure stable at redirection?",
+        "Did step/load support contact without unnecessary swing?",
+        "Did the outgoing ball match the intended depth/angle/touch?"
+      ],
+      "priority_constructs": [
+        "recognition",
+        "compactness",
+        "stability",
+        "contact_geometry",
+        "outcome",
+        "recovery"
+      ],
+      "context_splitters": [
+        "ball_height",
+        "incoming_pace",
+        "reach",
+        "intent"
+      ],
+      "language_profile_id": "forehand_volley",
+      "player_story_rule": "Translate the selected construct through the stroke-specific coach lexicon before generating player-facing text.",
+      "report_question": "What would an excellent coach want this player to notice, understand and feel on the very next rep?"
+    },
+    "backhand_volley": {
+      "questions": [
+        "Was recognition early enough for a compact set?",
+        "Was spacing adequate for the backhand-side block/punch/drop solution?",
+        "Did the racket stay sufficiently organized through impact?",
+        "Was recovery immediate enough for net play?"
+      ],
+      "priority_constructs": [
+        "recognition",
+        "spacing",
+        "compactness",
+        "stability",
+        "outcome",
+        "recovery"
+      ],
+      "context_splitters": [
+        "ball_height",
+        "incoming_pace",
+        "reach",
+        "intent"
+      ],
+      "language_profile_id": "backhand_volley",
+      "player_story_rule": "Translate the selected construct through the stroke-specific coach lexicon before generating player-facing text.",
+      "report_question": "What would an excellent coach want this player to notice, understand and feel on the very next rep?"
+    },
+    "overhead": {
+      "questions": [
+        "Did the player move behind/under the ball early enough?",
+        "Was the last positioning phase stable enough to strike upward?",
+        "Did trunk/arm/racket acceleration sequence without a late arm-only rescue?",
+        "Did landing preserve balance and court recovery?"
+      ],
+      "priority_constructs": [
+        "recognition",
+        "positioning",
+        "timing_budget",
+        "sequencing",
+        "contact_geometry",
+        "outcome",
+        "recovery"
+      ],
+      "context_splitters": [
+        "moving_backward",
+        "bounce_smash",
+        "ball_depth",
+        "court_position"
+      ],
+      "language_profile_id": "overhead",
+      "player_story_rule": "Translate the selected construct through the stroke-specific coach lexicon before generating player-facing text.",
+      "report_question": "What would an excellent coach want this player to notice, understand and feel on the very next rep?"
+    },
+    "half_volley": {
+      "questions": [
+        "Was the bounce-contact timing read early enough?",
+        "Did the player lower and stabilize to the ball without collapsing space?",
+        "Was the racket path compact and matched to the low-bounce redirection task?"
+      ],
+      "priority_constructs": [
+        "recognition",
+        "timing_budget",
+        "spacing",
+        "stability",
+        "racket_path",
+        "outcome"
+      ],
+      "context_splitters": [
+        "side",
+        "incoming_pace",
+        "bounce_distance",
+        "reach",
+        "intent"
+      ],
+      "language_profile_id": "half_volley",
+      "player_story_rule": "Translate the selected construct through the stroke-specific coach lexicon before generating player-facing text.",
+      "report_question": "What would an excellent coach want this player to notice, understand and feel on the very next rep?"
+    }
+  }
+}

@@ -1,0 +1,2197 @@
+[
+  {
+    "fault_id": "SRV-SETUP-01",
+    "title": "Unstable starting balance",
+    "domain": "Stability",
+    "phase_origin": "S0",
+    "phase_visible_effect": "S2",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "COM movement or foot instability occurs before intended motion begins",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces repeatability of toss and rhythm",
+    "player_message": "Start balanced and still.",
+    "coach_message_template": "Unstable starting balance: {evidence_summary}.",
+    "overlay_markers": [
+      "COM_ESTIMATE",
+      "BASE_OF_SUPPORT"
+    ],
+    "drill_ids": [
+      "SRV_BALANCE_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Dynamic balance and head/trunk control support a repeatable strike without requiring the body to be motionless.",
+    "observable_evidence": [
+      {
+        "metric_id": "head_displacement_body_ratio",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "trunk_sway_body_ratio",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "post_contact_balance_proxy",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Start balanced and still.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S0",
+      "effect_phase": "S2",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "STRENGTH_LOCK",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "DYNAMIC_STABILITY",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-RHYTHM-01",
+    "title": "Rushed or interrupted rhythm",
+    "domain": "Preparation",
+    "phase_origin": "S0",
+    "phase_visible_effect": "S6",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "phase intervals vary strongly or contain an unplanned pause",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "disrupts toss-to-load sequencing",
+    "player_message": "Use one smooth rhythm from start to contact.",
+    "coach_message_template": "Rushed or interrupted rhythm: {evidence_summary}.",
+    "overlay_markers": [
+      "TIMING_DELTA",
+      "SEQUENCE_RIBBON"
+    ],
+    "drill_ids": [
+      "SRV_RHYTHM_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Preparation timing/shape affects available spacing, swing organization and contact options.",
+    "observable_evidence": [
+      {
+        "metric_id": "prep_completion_relative_to_bounce",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "shoulder_orientation_deg",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "racket_head_path_2d",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Use one smooth rhythm from start to contact.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S0",
+      "effect_phase": "S6",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "CAUSE_TO_EFFECT_6_BEAT",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "PREPARATION_TIMING_AND_SHAPE",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-TOSS-01",
+    "title": "Inconsistent toss release",
+    "domain": "Preparation",
+    "phase_origin": "S1",
+    "phase_visible_effect": "S2",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "release location varies beyond player/session tolerance",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces serve repeatability",
+    "player_message": "Release the toss from the same place.",
+    "coach_message_template": "Inconsistent toss release: {evidence_summary}.",
+    "overlay_markers": [
+      "BALL_TRAIL",
+      "TARGET_GHOST"
+    ],
+    "drill_ids": [
+      "SRV_TOSS_RELEASE_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Preparation timing/shape affects available spacing, swing organization and contact options.",
+    "observable_evidence": [
+      {
+        "metric_id": "prep_completion_relative_to_bounce",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "shoulder_orientation_deg",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "racket_head_path_2d",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Release the toss from the same place.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S1",
+      "effect_phase": "S2",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "CAUSE_TO_EFFECT_6_BEAT",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "PREPARATION_TIMING_AND_SHAPE",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-TOSS-02",
+    "title": "Toss too far behind",
+    "domain": "Positioning",
+    "phase_origin": "S2",
+    "phase_visible_effect": "S7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "ball trajectory or contact projection falls behind serve-type corridor",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "forces backward lean or late contact",
+    "player_message": "Place the toss more in front.",
+    "coach_message_template": "Toss too far behind: {evidence_summary}.",
+    "overlay_markers": [
+      "BALL_TRAIL",
+      "CONTACT_WINDOW",
+      "CORRECTION_ARROW"
+    ],
+    "drill_ids": [
+      "SRV_TOSS_FRONT_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Court/ball positioning determines whether the intended stroke geometry is physically available.",
+    "observable_evidence": [
+      {
+        "metric_id": "court_position_m",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "distance_to_ball_at_contact",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "first_step_direction",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Place the toss more in front.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S2",
+      "effect_phase": "S7",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "CAUSE_TO_EFFECT_6_BEAT",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "POSITIONING_AND_SPACING",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-TOSS-03",
+    "title": "Toss too far forward or lateral",
+    "domain": "Positioning",
+    "phase_origin": "S2",
+    "phase_visible_effect": "S7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "player chases ball and COM exits controlled support path",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "disrupts balance and contact quality",
+    "player_message": "Keep the toss inside your contact corridor.",
+    "coach_message_template": "Toss too far forward or lateral: {evidence_summary}.",
+    "overlay_markers": [
+      "BALL_TRAIL",
+      "COM_ESTIMATE",
+      "CONTACT_WINDOW"
+    ],
+    "drill_ids": [
+      "SRV_TOSS_TARGET_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Court/ball positioning determines whether the intended stroke geometry is physically available.",
+    "observable_evidence": [
+      {
+        "metric_id": "court_position_m",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "distance_to_ball_at_contact",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "first_step_direction",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Keep the toss inside your contact corridor.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S2",
+      "effect_phase": "S7",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "CAUSE_TO_EFFECT_6_BEAT",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "POSITIONING_AND_SPACING",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-TROPHY-01",
+    "title": "Incomplete coil",
+    "domain": "Loading",
+    "phase_origin": "S1",
+    "phase_visible_effect": "S4",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "shoulder/pelvis orientation change is below family/personal successful range",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces stored rotational contribution",
+    "player_message": "Turn your shoulders as the toss rises.",
+    "coach_message_template": "Incomplete coil: {evidence_summary}.",
+    "overlay_markers": [
+      "SHOULDER_LINE",
+      "PELVIS_LINE",
+      "HIP_SHOULDER_SEPARATION"
+    ],
+    "drill_ids": [
+      "SRV_COIL_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Loading should create usable force and balance for the actual stance and time pressure.",
+    "observable_evidence": [
+      {
+        "metric_id": "knee_flexion_deg",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "base_width_hip_widths",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "load_side",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Turn your shoulders as the toss rises.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S1",
+      "effect_phase": "S4",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "SELF_BEST_MORPH",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "LOAD_AND_BALANCE",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-TOSSARM-01",
+    "title": "Tossing arm drops early",
+    "domain": "Stability",
+    "phase_origin": "S3",
+    "phase_visible_effect": "S6",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "tossing arm descends before upward acceleration window",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "can reduce upward alignment and timing",
+    "player_message": "Keep the tossing arm up a little longer.",
+    "coach_message_template": "Tossing arm drops early: {evidence_summary}.",
+    "overlay_markers": [
+      "BODY_SKELETON",
+      "TIMING_DELTA"
+    ],
+    "drill_ids": [
+      "SRV_TOSS_ARM_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Dynamic balance and head/trunk control support a repeatable strike without requiring the body to be motionless.",
+    "observable_evidence": [
+      {
+        "metric_id": "head_displacement_body_ratio",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "trunk_sway_body_ratio",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "post_contact_balance_proxy",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Keep the tossing arm up a little longer.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S3",
+      "effect_phase": "S6",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "STRENGTH_LOCK",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "DYNAMIC_STABILITY",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-WAITER-01",
+    "title": "Waiter’s-tray pattern",
+    "domain": "Racket orientation",
+    "phase_origin": "S3",
+    "phase_visible_effect": "S7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "racket face opens upward early and approaches face-first rather than edge-first",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "INFERRED",
+    "performance_consequence": "limits racket-head acceleration and serve development",
+    "player_message": "Lead with the racket edge before the strings turn to the ball.",
+    "coach_message_template": "Waiter’s-tray pattern: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_AXIS",
+      "RACKET_FACE_ESTIMATE",
+      "SEQUENCE_RIBBON"
+    ],
+    "drill_ids": [
+      "SRV_EDGE_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Racket orientation influences launch and control but is difficult to infer precisely from monocular views.",
+    "observable_evidence": [
+      {
+        "metric_id": "racket_axis_deg",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "racket_face_proxy_deg",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Lead with the racket edge before the strings turn to the ball.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S3",
+      "effect_phase": "S7",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "SELF_BEST_MORPH",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "RACKET_ORIENTATION_CONFIDENCE_GATED",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-DROP-01",
+    "title": "Limited or mistimed racket drop",
+    "domain": "Racket path",
+    "phase_origin": "S3",
+    "phase_visible_effect": "S6",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "drop depth is low or maximum drop occurs outside leg-drive timing envelope",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces stretch-shortening and acceleration opportunity",
+    "player_message": "Let the racket drop as your legs drive.",
+    "coach_message_template": "Limited or mistimed racket drop: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_DROP_DEPTH",
+      "TIMING_DELTA"
+    ],
+    "drill_ids": [
+      "SRV_DROP_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "The racket path shapes launch/spin/depth and should be interpreted relative to ball and intent.",
+    "observable_evidence": [
+      {
+        "metric_id": "racket_head_path_2d",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "low_to_high_path_deg",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "post_contact_extension_body_ratio",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Let the racket drop as your legs drive.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S3",
+      "effect_phase": "S6",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "SELF_BEST_MORPH",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "RACKET_PATH_SHAPE",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-LEG-01",
+    "title": "Insufficient leg contribution",
+    "domain": "Loading",
+    "phase_origin": "S3",
+    "phase_visible_effect": "S7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "knee load and upward COM movement are below personal/style range",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces upward force and contact height",
+    "player_message": "Load, then drive upward to the ball.",
+    "coach_message_template": "Insufficient leg contribution: {evidence_summary}.",
+    "overlay_markers": [
+      "KNEE_ANGLE_L",
+      "KNEE_ANGLE_R",
+      "COM_ESTIMATE"
+    ],
+    "drill_ids": [
+      "SRV_LEGS_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Loading should create usable force and balance for the actual stance and time pressure.",
+    "observable_evidence": [
+      {
+        "metric_id": "knee_flexion_deg",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "base_width_hip_widths",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "load_side",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Load, then drive upward to the ball.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S3",
+      "effect_phase": "S7",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "SELF_BEST_MORPH",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "LOAD_AND_BALANCE",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-LEG-02",
+    "title": "Leg drive mistimed",
+    "domain": "Sequencing",
+    "phase_origin": "S4",
+    "phase_visible_effect": "S7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "leg extension occurs too early or after racket acceleration window",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces segment synchronization",
+    "player_message": "Drive up as the racket drops and begins to accelerate.",
+    "coach_message_template": "Leg drive mistimed: {evidence_summary}.",
+    "overlay_markers": [
+      "SEQUENCE_RIBBON",
+      "TIMING_DELTA"
+    ],
+    "drill_ids": [
+      "SRV_SYNC_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Segment timing determines how efficiently momentum is transferred to the racket while maintaining control.",
+    "observable_evidence": [
+      {
+        "metric_id": "segment_peak_order",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "pelvis_orientation_deg",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "shoulder_orientation_deg",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Drive up as the racket drops and begins to accelerate.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S4",
+      "effect_phase": "S7",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "CAUSE_TO_EFFECT_6_BEAT",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "KINETIC_SEQUENCE_PROXY",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-SEQ-01",
+    "title": "Arm initiates before lower body and trunk",
+    "domain": "Sequencing",
+    "phase_origin": "S4",
+    "phase_visible_effect": "S7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "arm/racket acceleration precedes upward drive and trunk rotation",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "INFERRED",
+    "performance_consequence": "creates an arm-dominant serve",
+    "player_message": "Let the legs and body start the acceleration.",
+    "coach_message_template": "Arm initiates before lower body and trunk: {evidence_summary}.",
+    "overlay_markers": [
+      "SEQUENCE_RIBBON",
+      "RACKET_PATH"
+    ],
+    "drill_ids": [
+      "SRV_SEQUENCE_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Segment timing determines how efficiently momentum is transferred to the racket while maintaining control.",
+    "observable_evidence": [
+      {
+        "metric_id": "segment_peak_order",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "pelvis_orientation_deg",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "shoulder_orientation_deg",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Let the legs and body start the acceleration.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S4",
+      "effect_phase": "S7",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "CAUSE_TO_EFFECT_6_BEAT",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "KINETIC_SEQUENCE_PROXY",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-HEAD-01",
+    "title": "Head drops before contact",
+    "domain": "Stability",
+    "phase_origin": "S6",
+    "phase_visible_effect": "S7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "head orientation drops or turns away before impact",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces tracking and posture stability",
+    "player_message": "Keep looking up through contact.",
+    "coach_message_template": "Head drops before contact: {evidence_summary}.",
+    "overlay_markers": [
+      "HEAD_AXIS",
+      "STABILITY_HALO"
+    ],
+    "drill_ids": [
+      "SRV_HEAD_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Dynamic balance and head/trunk control support a repeatable strike without requiring the body to be motionless.",
+    "observable_evidence": [
+      {
+        "metric_id": "head_displacement_body_ratio",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "trunk_sway_body_ratio",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "post_contact_balance_proxy",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Keep looking up through contact.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S6",
+      "effect_phase": "S7",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "STRENGTH_LOCK",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "DYNAMIC_STABILITY",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-CON-01",
+    "title": "Contact too low",
+    "domain": "Contact",
+    "phase_origin": "S5",
+    "phase_visible_effect": "S7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "contact height is below personalized reachable envelope",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces leverage and serve margin",
+    "player_message": "Reach up to meet the ball higher.",
+    "coach_message_template": "Contact too low: {evidence_summary}.",
+    "overlay_markers": [
+      "CONTACT_POINT",
+      "CONTACT_WINDOW"
+    ],
+    "drill_ids": [
+      "SRV_CONTACT_HIGH_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Contact is the convergence of earlier timing, spacing, racket path and body organization.",
+    "observable_evidence": [
+      {
+        "metric_id": "contact_offset_body_widths",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "contact_height_body_ratio",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "racket_speed_relative",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Reach up to meet the ball higher.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S5",
+      "effect_phase": "S7",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "CAUSE_TO_EFFECT_6_BEAT",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "CONTACT_GEOMETRY",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-CON-02",
+    "title": "Contact behind body",
+    "domain": "Contact",
+    "phase_origin": "S2",
+    "phase_visible_effect": "S7",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "contact falls behind shoulder/hip projection for serve type",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "forces compensation and reduces forward transfer",
+    "player_message": "Meet the toss slightly more in front.",
+    "coach_message_template": "Contact behind body: {evidence_summary}.",
+    "overlay_markers": [
+      "CONTACT_POINT",
+      "CONTACT_WINDOW",
+      "TRUNK_AXIS"
+    ],
+    "drill_ids": [
+      "SRV_CONTACT_FRONT_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Contact is the convergence of earlier timing, spacing, racket path and body organization.",
+    "observable_evidence": [
+      {
+        "metric_id": "contact_offset_body_widths",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "contact_height_body_ratio",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "racket_speed_relative",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Meet the toss slightly more in front.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S2",
+      "effect_phase": "S7",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "CAUSE_TO_EFFECT_6_BEAT",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "CONTACT_GEOMETRY",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-PRON-01",
+    "title": "Forearm-racket rotation not visible or appears limited",
+    "domain": "Racket orientation",
+    "phase_origin": "S6",
+    "phase_visible_effect": "S8",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "racket-axis progression lacks supported edge-face-edge change",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "front_oblique"
+    ],
+    "measurement_class": "INFERRED",
+    "performance_consequence": "may limit racket-head speed; view may be insufficient",
+    "player_message": "Let the racket edge lead, then turn naturally through contact.",
+    "coach_message_template": "Forearm-racket rotation not visible or appears limited: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_AXIS",
+      "CONFIDENCE_BADGE"
+    ],
+    "drill_ids": [
+      "SRV_PRONATION_PROXY_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Racket orientation influences launch and control but is difficult to infer precisely from monocular views.",
+    "observable_evidence": [
+      {
+        "metric_id": "racket_axis_deg",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "racket_face_proxy_deg",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Let the racket edge lead, then turn naturally through contact.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S6",
+      "effect_phase": "S8",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "SELF_BEST_MORPH",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "RACKET_ORIENTATION_CONFIDENCE_GATED",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-LAND-01",
+    "title": "Unbalanced landing",
+    "domain": "Stability",
+    "phase_origin": "S7",
+    "phase_visible_effect": "S10",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "landing COM is outside support base and requires uncontrolled correction",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces recovery and serve repeatability",
+    "player_message": "Land balanced and ready for the next ball.",
+    "coach_message_template": "Unbalanced landing: {evidence_summary}.",
+    "overlay_markers": [
+      "COM_ESTIMATE",
+      "BASE_OF_SUPPORT",
+      "FOOT_TRAIL"
+    ],
+    "drill_ids": [
+      "SRV_LANDING_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Dynamic balance and head/trunk control support a repeatable strike without requiring the body to be motionless.",
+    "observable_evidence": [
+      {
+        "metric_id": "head_displacement_body_ratio",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "trunk_sway_body_ratio",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "post_contact_balance_proxy",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Land balanced and ready for the next ball.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S7",
+      "effect_phase": "S10",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "STRENGTH_LOCK",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "DYNAMIC_STABILITY",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-FIN-01",
+    "title": "Abrupt follow-through",
+    "domain": "Extension/finish",
+    "phase_origin": "S7",
+    "phase_visible_effect": "S9",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "racket path terminates abruptly after impact",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces natural deceleration and flow",
+    "player_message": "Let the racket finish across your body.",
+    "coach_message_template": "Abrupt follow-through: {evidence_summary}.",
+    "overlay_markers": [
+      "RACKET_PATH",
+      "PATH_CORRIDOR"
+    ],
+    "drill_ids": [
+      "SRV_FINISH_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Post-contact path reveals how the racket traveled through the strike; the finish itself is not a pose target.",
+    "observable_evidence": [
+      {
+        "metric_id": "post_contact_extension_body_ratio",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "racket_head_path_2d",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Let the racket finish across your body.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S7",
+      "effect_phase": "S9",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "CAUSE_TO_EFFECT_6_BEAT",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "POST_CONTACT_EXTENSION",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  },
+  {
+    "fault_id": "SRV-RECOV-01",
+    "title": "No recovery after serve",
+    "domain": "Recovery",
+    "phase_origin": "S9",
+    "phase_visible_effect": "S10",
+    "default_status": "FAULT_SUSPECTED",
+    "minimum_comparable_strokes": 3,
+    "detection": "player does not re-establish readiness after landing",
+    "context_gates": [],
+    "exclusions": [],
+    "supported_views": [
+      "rear_oblique",
+      "side",
+      "rear",
+      "front_oblique"
+    ],
+    "measurement_class": "MEASURED_OR_ESTIMATED",
+    "performance_consequence": "reduces readiness for return",
+    "player_message": "Land, recover, and prepare for the next shot.",
+    "coach_message_template": "No recovery after serve: {evidence_summary}.",
+    "overlay_markers": [
+      "RECOVERY_TARGET",
+      "FOOT_TRAIL"
+    ],
+    "drill_ids": [
+      "SRV_RECOVERY_01"
+    ],
+    "severity_policy": {
+      "default": "medium",
+      "escalate_when": [
+        "recurrence>=0.70",
+        "outcome_correlation>=0.50",
+        "confidence.interpretation>=0.85"
+      ]
+    },
+    "no_score_when": [
+      "measurement_confidence<0.65",
+      "camera_suitability=unsupported",
+      "required_evidence_missing"
+    ],
+    "mechanism": "Recovery converts stroke execution into readiness for the next ball.",
+    "observable_evidence": [
+      {
+        "metric_id": "recovery_latency_ms",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "recovery_displacement_m",
+        "role": "supporting",
+        "required": false
+      },
+      {
+        "metric_id": "recovery_step_pattern",
+        "role": "supporting",
+        "required": false
+      }
+    ],
+    "benchmark_strategy": {
+      "primary": "player_success_baseline",
+      "fallback": "matched_cohort_then_research_pattern",
+      "condition_on": [
+        "stroke_variant",
+        "level",
+        "age_band",
+        "stance",
+        "incoming_ball",
+        "intent"
+      ]
+    },
+    "causal_reasoning": {
+      "possible_upstream_domains": [],
+      "downstream_checks": [
+        "contact_quality",
+        "ball_outcome",
+        "recovery"
+      ],
+      "do_not_infer_causality_from_single_rep": true
+    },
+    "coaching_ladder": {
+      "explain": "Name the observable deviation and its likely consequence.",
+      "cue": "Land, recover, and prepare for the next shot.",
+      "constraint": "Choose one drill or ball constraint linked to this fault.",
+      "success_test": "Improvement requires a repeatable measurable change across comparable strokes, not one good rep."
+    },
+    "visualization": {
+      "primary_storyboard": "PRIMARY_CORRECTION_4_BEAT",
+      "evidence_phase": "S9",
+      "effect_phase": "S10",
+      "show_reference_as": "range_or_matched_example",
+      "clean_replay": true,
+      "primary_storyboard_v4": "CAUSE_TO_EFFECT_6_BEAT",
+      "player_mode_rule": "Render the minimum evidence needed to explain one thesis; no default full skeleton.",
+      "comparison_preference": "self_best_event_aligned_then_context_matched_range"
+    },
+    "evidence_policy": {
+      "single_rep": "describe_only",
+      "habit_candidate_min": 3,
+      "habit_confirmed_min": 5,
+      "must_state_limitation_if_estimated": true
+    },
+    "source_ids": [
+      "SCI-KOVACS-2011",
+      "SCI-ELLIOTT-2006",
+      "SCI-BRITO-2024",
+      "ORG-USTA-INSTRUCTION"
+    ],
+    "analysis_recipe_id": "RECOVERY_EFFICIENCY",
+    "analysis_protocol_version": "4.1.0",
+    "counterfactual_test": {
+      "required_when_player_baseline_available": true,
+      "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
+      "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
+    }
+  }
+]

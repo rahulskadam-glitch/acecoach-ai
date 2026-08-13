@@ -1,0 +1,68 @@
+{
+  "nodes": [
+    "recognition_and_time",
+    "movement_to_ball",
+    "spacing",
+    "stance_and_balance",
+    "loading",
+    "pelvis_trunk_sequence",
+    "arm_racket_sequence",
+    "racket_path_face",
+    "contact",
+    "ball_outcome",
+    "recovery"
+  ],
+  "edges": [
+    {
+      "from": "recognition_and_time",
+      "to": "movement_to_ball",
+      "strength": "contextual"
+    },
+    {
+      "from": "movement_to_ball",
+      "to": "spacing",
+      "strength": "strong"
+    },
+    {
+      "from": "spacing",
+      "to": "racket_path_face",
+      "strength": "contextual"
+    },
+    {
+      "from": "stance_and_balance",
+      "to": "loading",
+      "strength": "strong"
+    },
+    {
+      "from": "loading",
+      "to": "pelvis_trunk_sequence",
+      "strength": "contextual"
+    },
+    {
+      "from": "pelvis_trunk_sequence",
+      "to": "arm_racket_sequence",
+      "strength": "contextual"
+    },
+    {
+      "from": "arm_racket_sequence",
+      "to": "racket_path_face",
+      "strength": "strong"
+    },
+    {
+      "from": "racket_path_face",
+      "to": "contact",
+      "strength": "strong"
+    },
+    {
+      "from": "contact",
+      "to": "ball_outcome",
+      "strength": "strong"
+    },
+    {
+      "from": "stance_and_balance",
+      "to": "recovery",
+      "strength": "strong"
+    }
+  ],
+  "rule": "Edges are hypotheses to test against repeated evidence. The engine must not label a causal edge confirmed solely because it exists in this graph."
+}

@@ -1,4 +1,5 @@
 import os
+import hashlib
 from pathlib import Path
 
 import certifi
@@ -16,22 +17,23 @@ os.environ.setdefault("SSL_CERT_FILE", certifi.where())
 
 from routes.analysis import router as analysis_router
 from routes.context_safety import router as context_safety_router
+from analysis_engine.pipeline import ENGINE_VERSION
 from ontology_runtime.acecoach_ontology.loader import OntologyBundle, OntologyError
 
-API_VERSION = "1.9.0"
-ONTOLOGY_BUNDLE_PATH = Path(__file__).resolve().parent / "ontology" / "v2.2.0"
+API_VERSION = "1.10.0"
+ONTOLOGY_BUNDLE_PATH = Path(__file__).resolve().parent / "ontology" / "v4.1.0"
 
 
-def _load_ontology_bundle() -> tuple[OntologyBundle | None, str]:
-    try:
-        bundle = OntologyBundle.load(ONTOLOGY_BUNDLE_PATH)
-    except OntologyError:
-        return None, "unavailable"
+def _load_ontology_bundle() -> tuple[OntologyBundle, str]:
+    bundle = OntologyBundle.load(ONTOLOGY_BUNDLE_PATH)
     version = str(bundle.manifest.get("version", "unknown"))
+    if version != "4.1.0":
+        raise OntologyError(f"Expected ontology 4.1.0, loaded {version}")
     return bundle, version
 
 
 ontology_bundle, ontology_version = _load_ontology_bundle()
+ontology_manifest_hash = hashlib.sha256((ONTOLOGY_BUNDLE_PATH / "manifest.json").read_bytes()).hexdigest()
 
 app = FastAPI(
     title="AceCoach AI Analysis API",
@@ -55,9 +57,9 @@ app.add_middleware(
 app.include_router(analysis_router)
 app.include_router(context_safety_router)
 
-if ontology_bundle is not None:
-    app.state.ontology_bundle = ontology_bundle
+app.state.ontology_bundle = ontology_bundle
 app.state.ontology_version = ontology_version
+app.state.ontology_manifest_hash = ontology_manifest_hash
 
 
 @app.get("/health")
@@ -66,5 +68,7 @@ def health() -> dict[str, str]:
         "status": "ok",
         "service": "analysis-api",
         "version": API_VERSION,
+        "engine_version": ENGINE_VERSION,
         "ontology_version": app.state.ontology_version,
+        "ontology_manifest_hash": app.state.ontology_manifest_hash,
     }

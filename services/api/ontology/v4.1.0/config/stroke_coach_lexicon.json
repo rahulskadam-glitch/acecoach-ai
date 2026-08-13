@@ -1,0 +1,532 @@
+{
+  "version": "4.1.0",
+  "principle": "Use tennis words a good coach would say on court. Technical terms may exist in DEEP_DIVE but player-facing language should describe time, space, shape, rhythm, contact, ball and recovery before anatomy.",
+  "global": {
+    "preferred_player_words": [
+      "space",
+      "time",
+      "set",
+      "turn",
+      "load",
+      "reach",
+      "meet",
+      "contact",
+      "shape",
+      "path",
+      "rhythm",
+      "balance",
+      "recover",
+      "margin",
+      "depth",
+      "direction",
+      "spin",
+      "pace",
+      "adjust",
+      "compact",
+      "through the ball",
+      "out in front"
+    ],
+    "use_sparingly": [
+      "kinetic chain",
+      "pelvis",
+      "thorax",
+      "angular velocity",
+      "joint angle",
+      "segment sequencing",
+      "pronation",
+      "lag"
+    ],
+    "avoid_in_player_voice": [
+      "recurrence rate",
+      "comparable strokes",
+      "metric deviation",
+      "interpretation confidence",
+      "causal graph",
+      "biomechanical inefficiency",
+      "pose-estimation confidence",
+      "kinematic anomaly",
+      "fault detected"
+    ],
+    "anti_cliche": [
+      "bend your knees",
+      "watch the ball",
+      "follow through",
+      "move your feet",
+      "swing low to high",
+      "use your body"
+    ],
+    "anti_cliche_rule": "These phrases may appear only when made specific to the player's evidence, timing and intended ball."
+  },
+  "strokes": {
+    "forehand": {
+      "coach_language_focus": [
+        "time",
+        "spacing",
+        "unit turn",
+        "last adjustment",
+        "load",
+        "contact",
+        "racquet path",
+        "shape",
+        "finish",
+        "recovery"
+      ],
+      "natural_correction_verbs": [
+        "make room",
+        "set earlier",
+        "stay with the feet",
+        "load",
+        "drive",
+        "release",
+        "send",
+        "shape",
+        "recover"
+      ],
+      "consequence_words": [
+        "crowded contact",
+        "late contact",
+        "rushed swing",
+        "lost margin",
+        "short ball",
+        "floating ball",
+        "pulled direction",
+        "slow recovery"
+      ],
+      "cue_examples": [
+        "Make room, then swing.",
+        "Turn early; let the feet finish the job.",
+        "Meet it in your space.",
+        "Shape the ball, don't force the finish."
+      ],
+      "visual_caption_examples": [
+        "Your turn is ready.",
+        "Space disappears here.",
+        "Now contact gets crowded.",
+        "Make room before you swing."
+      ],
+      "avoid": [
+        "copy a professional forehand exactly",
+        "grade the finish without checking spacing/timing first",
+        "call every open stance a fault"
+      ]
+    },
+    "two_handed_backhand": {
+      "coach_language_focus": [
+        "shoulder turn",
+        "spacing",
+        "last adjustment",
+        "top-hand support",
+        "trunk",
+        "contact",
+        "extension",
+        "racquet path",
+        "recovery"
+      ],
+      "natural_correction_verbs": [
+        "turn",
+        "make room",
+        "stay organized",
+        "drive",
+        "extend",
+        "send",
+        "recover"
+      ],
+      "consequence_words": [
+        "jammed hands",
+        "crowded contact",
+        "late rescue",
+        "steep escape path",
+        "lost depth",
+        "direction leak"
+      ],
+      "cue_examples": [
+        "Turn early; keep the feet alive.",
+        "Make space for the hands.",
+        "Meet it away from your body.",
+        "Drive through your window."
+      ],
+      "visual_caption_examples": [
+        "The turn is on time.",
+        "The last step closes the space.",
+        "Your hands get jammed here.",
+        "Keep adjusting one step longer."
+      ],
+      "avoid": [
+        "coach the finish before the feet",
+        "force identical arm roles across technique families"
+      ]
+    },
+    "one_handed_backhand": {
+      "coach_language_focus": [
+        "early set",
+        "spacing",
+        "front shoulder",
+        "contact in front",
+        "hitting-arm length",
+        "racquet path",
+        "balance",
+        "recovery"
+      ],
+      "natural_correction_verbs": [
+        "set",
+        "create room",
+        "reach",
+        "drive",
+        "extend",
+        "hold your line",
+        "recover"
+      ],
+      "consequence_words": [
+        "contact falls back",
+        "arm rushes",
+        "ball floats",
+        "frame opens early",
+        "lost extension",
+        "late recovery"
+      ],
+      "cue_examples": [
+        "Set early so you can reach through it.",
+        "Give the arm room to extend.",
+        "Meet it in front, then send it.",
+        "Don't chase the ball with the arm."
+      ],
+      "visual_caption_examples": [
+        "You have time here.",
+        "The space disappears before the swing.",
+        "Contact falls behind you.",
+        "Create room, then reach."
+      ],
+      "avoid": [
+        "treat two-handed and one-handed contact solutions as interchangeable",
+        "prescribe a fixed shoulder angle"
+      ]
+    },
+    "slice_backhand": {
+      "coach_language_focus": [
+        "set",
+        "spacing",
+        "stable face",
+        "through path",
+        "height",
+        "length",
+        "float versus drive",
+        "balance",
+        "recovery"
+      ],
+      "natural_correction_verbs": [
+        "set",
+        "make room",
+        "send",
+        "drive through",
+        "carve",
+        "hold",
+        "stay through",
+        "recover"
+      ],
+      "consequence_words": [
+        "chop",
+        "float",
+        "sit up",
+        "lose penetration",
+        "pull wide",
+        "lose control of height"
+      ],
+      "cue_examples": [
+        "Send the racquet through the ball.",
+        "Make space so you don't have to chop.",
+        "Drive the slice; don't just cut down.",
+        "Keep the face quiet through contact."
+      ],
+      "visual_caption_examples": [
+        "Your set is fine.",
+        "You're too close here.",
+        "That turns the path into a chop.",
+        "Make room and send it through."
+      ],
+      "avoid": [
+        "equate more downward path with better slice",
+        "grade face angle precisely from unsupported camera"
+      ]
+    },
+    "serve": {
+      "coach_language_focus": [
+        "toss",
+        "rhythm",
+        "load",
+        "upward drive",
+        "racquet acceleration",
+        "reach",
+        "contact",
+        "landing",
+        "recovery"
+      ],
+      "natural_correction_verbs": [
+        "place",
+        "flow",
+        "load",
+        "drive up",
+        "reach",
+        "accelerate",
+        "land",
+        "recover"
+      ],
+      "consequence_words": [
+        "chasing the toss",
+        "broken rhythm",
+        "arm-only serve",
+        "contact drops",
+        "lost height",
+        "lost spin margin",
+        "falling away"
+      ],
+      "cue_examples": [
+        "Place the toss, then go up to it.",
+        "Let the motion flow into the hit.",
+        "Reach up—don't chase sideways.",
+        "Load, rise, then let the racquet go."
+      ],
+      "visual_caption_examples": [
+        "Your rhythm is good.",
+        "The toss drifts here.",
+        "Now you're chasing it.",
+        "Place it, then reach up."
+      ],
+      "avoid": [
+        "wrist snap",
+        "deeper racquet drop as an isolated goal",
+        "a single trophy pose as the serve"
+      ]
+    },
+    "return_of_serve": {
+      "coach_language_focus": [
+        "read",
+        "split",
+        "first move",
+        "compact turn",
+        "spacing",
+        "meet",
+        "block/drive choice",
+        "direction",
+        "recovery"
+      ],
+      "natural_correction_verbs": [
+        "read",
+        "split",
+        "set",
+        "shorten",
+        "meet",
+        "block",
+        "drive",
+        "redirect",
+        "recover"
+      ],
+      "consequence_words": [
+        "backswing steals time",
+        "late contact",
+        "jammed return",
+        "rushed hands",
+        "weak block",
+        "missed direction"
+      ],
+      "cue_examples": [
+        "Small turn, early contact.",
+        "Let the serve bring you the pace.",
+        "Meet it—don't build a groundstroke.",
+        "Split, set, redirect."
+      ],
+      "visual_caption_examples": [
+        "Your split is on time.",
+        "The backswing keeps going.",
+        "That steals your contact time.",
+        "Turn smaller and meet it earlier."
+      ],
+      "avoid": [
+        "analyze return exactly like a rally groundstroke",
+        "ignore serve pace and direction"
+      ]
+    },
+    "forehand_volley": {
+      "coach_language_focus": [
+        "read",
+        "set",
+        "quiet racquet",
+        "step",
+        "contact in front",
+        "redirect",
+        "finish small",
+        "recover"
+      ],
+      "natural_correction_verbs": [
+        "set",
+        "meet",
+        "catch",
+        "punch",
+        "redirect",
+        "step through",
+        "hold",
+        "recover"
+      ],
+      "consequence_words": [
+        "swing gets too big",
+        "late face",
+        "ball pops up",
+        "contact drifts back",
+        "lost control",
+        "slow recovery"
+      ],
+      "cue_examples": [
+        "Meet it in front and keep the racquet quiet.",
+        "Step through the catch.",
+        "Redirect the pace—don't manufacture a swing.",
+        "Short move, firm contact."
+      ],
+      "visual_caption_examples": [
+        "You're set early.",
+        "The racquet keeps travelling.",
+        "Contact moves behind you.",
+        "Shorten it and meet the ball."
+      ],
+      "avoid": [
+        "full groundstroke follow-through",
+        "add swing before checking contact and stability"
+      ]
+    },
+    "backhand_volley": {
+      "coach_language_focus": [
+        "read",
+        "set",
+        "spacing",
+        "stable racquet",
+        "contact in front",
+        "step",
+        "redirect",
+        "recover"
+      ],
+      "natural_correction_verbs": [
+        "set",
+        "make room",
+        "meet",
+        "block",
+        "punch",
+        "redirect",
+        "hold",
+        "recover"
+      ],
+      "consequence_words": [
+        "jammed contact",
+        "face wobbles",
+        "ball floats",
+        "reach collapses",
+        "late recovery"
+      ],
+      "cue_examples": [
+        "Make a little room and meet it out front.",
+        "Set the racquet; let the feet deliver it.",
+        "Quiet racquet, clear contact.",
+        "Block the ball into your target."
+      ],
+      "visual_caption_examples": [
+        "The racquet is ready.",
+        "Your body closes the space.",
+        "Contact gets jammed.",
+        "Make room with the feet."
+      ],
+      "avoid": [
+        "large backswing",
+        "force a step pattern when reach/context requires another solution"
+      ]
+    },
+    "overhead": {
+      "coach_language_focus": [
+        "read lob",
+        "turn",
+        "move behind ball",
+        "adjust",
+        "reach",
+        "contact overhead",
+        "rotation",
+        "landing",
+        "recovery"
+      ],
+      "natural_correction_verbs": [
+        "turn",
+        "get behind",
+        "adjust",
+        "reach",
+        "go up",
+        "drive",
+        "land",
+        "recover"
+      ],
+      "consequence_words": [
+        "hitting while backing up",
+        "contact drops",
+        "arm-only rescue",
+        "ball sits up",
+        "balance spills backward"
+      ],
+      "cue_examples": [
+        "Get behind it, then go up.",
+        "Move first; hit second.",
+        "Keep adjusting until you can reach tall.",
+        "Own the space under the ball."
+      ],
+      "visual_caption_examples": [
+        "You're still moving backward.",
+        "Contact arrives before you're set.",
+        "Now the arm has to rescue it.",
+        "Get behind it, then go up."
+      ],
+      "avoid": [
+        "coach the overhead as a stationary serve when the player is moving",
+        "ignore backward movement and court position"
+      ]
+    },
+    "half_volley": {
+      "coach_language_focus": [
+        "read bounce",
+        "lower base",
+        "spacing",
+        "quiet hands",
+        "meet just after bounce",
+        "redirect",
+        "depth",
+        "recover"
+      ],
+      "natural_correction_verbs": [
+        "read",
+        "get down",
+        "meet",
+        "soften",
+        "absorb",
+        "redirect",
+        "hold",
+        "recover"
+      ],
+      "consequence_words": [
+        "late pickup",
+        "ball jumps into the body",
+        "hands lift",
+        "ball floats",
+        "contact gets noisy",
+        "lost depth"
+      ],
+      "cue_examples": [
+        "Meet the bounce with quiet hands.",
+        "Get down early and redirect it.",
+        "Don't lift it—catch it just after the bounce.",
+        "Soft hands, simple path."
+      ],
+      "visual_caption_examples": [
+        "You read the bounce early.",
+        "The racquet lifts after it lands.",
+        "That makes contact noisy.",
+        "Meet the bounce; keep the hands quiet."
+      ],
+      "avoid": [
+        "large lifting swing",
+        "treat half-volley as a normal groundstroke"
+      ]
+    }
+  }
+}

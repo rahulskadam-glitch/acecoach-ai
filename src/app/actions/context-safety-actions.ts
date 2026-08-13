@@ -186,7 +186,7 @@ export async function ensureContextSafetyReadiness(input: IntakeContextPayload) 
       },
       granted_at: now,
       revoked_at: null,
-      ontology_version_at_consent: "2.2.0",
+      ontology_version_at_consent: "4.1.0",
     },
   });
 

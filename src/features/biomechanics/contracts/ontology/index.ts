@@ -1,5 +1,15 @@
 export * from "./types";
 export * from "./context-safety";
+export type {
+  CausalHypothesis,
+  CausalRole,
+  DeepCoachingInsight,
+  MetricSeries,
+  PlayerCoachMessage,
+  StrokeEvent,
+  VisualBeat,
+  VisualStory,
+} from "./v4-types";
 import type { FaultDefinition, OntologyManifest } from "./types";
 
 export interface OntologyClientBundle {

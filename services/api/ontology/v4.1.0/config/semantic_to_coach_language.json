@@ -1,0 +1,489 @@
+{
+  "version": "4.1.0",
+  "principle": "Translate evidence constructs into words players actually use on court before composing prose. These are semantic mappings, not canned sentences.",
+  "constructs": {
+    "recognition_timing": {
+      "analyst_terms": [
+        "recognition onset",
+        "response latency"
+      ],
+      "player_language": [
+        "read the ball earlier",
+        "you see it in time",
+        "the read is late",
+        "you are reacting after the ball has already taken time away"
+      ],
+      "visual_language": [
+        "You read it here.",
+        "The read comes late."
+      ]
+    },
+    "split_step_timing": {
+      "analyst_terms": [
+        "split-step event",
+        "landing timing"
+      ],
+      "player_language": [
+        "your split is on time",
+        "you are landing too early to react",
+        "you are still in the air when the direction is clear"
+      ],
+      "visual_language": [
+        "The split is on time.",
+        "You land before the read."
+      ]
+    },
+    "preparation_timing": {
+      "analyst_terms": [
+        "unit-turn completion",
+        "preparation reserve"
+      ],
+      "player_language": [
+        "your turn is on time",
+        "the racquet is set early enough",
+        "you are finishing the setup after the ball has taken your time away"
+      ],
+      "visual_language": [
+        "The turn is ready.",
+        "Setup finishes late."
+      ]
+    },
+    "timing_budget": {
+      "analyst_terms": [
+        "time reserve",
+        "event latency"
+      ],
+      "player_language": [
+        "you still have time here",
+        "you are running out of setup time",
+        "the backswing is stealing time",
+        "you are rushed before the forward swing starts"
+      ],
+      "visual_language": [
+        "You still have time.",
+        "The time disappears here."
+      ]
+    },
+    "spacing": {
+      "analyst_terms": [
+        "lateral body-normalized spacing",
+        "hitting radius"
+      ],
+      "player_language": [
+        "make room for the ball",
+        "the ball gets too close to you",
+        "you keep a good hitting distance",
+        "your feet close the space"
+      ],
+      "visual_language": [
+        "Space disappears here.",
+        "You keep the ball outside you."
+      ]
+    },
+    "final_adjustment": {
+      "analyst_terms": [
+        "final step-to-contact interval",
+        "late adjustment"
+      ],
+      "player_language": [
+        "stay with the feet a little longer",
+        "the last step takes you too close",
+        "finish the feet before you release the swing"
+      ],
+      "visual_language": [
+        "The last step changes it.",
+        "Keep adjusting here."
+      ]
+    },
+    "balance": {
+      "analyst_terms": [
+        "COM displacement",
+        "postural stability"
+      ],
+      "player_language": [
+        "you stay balanced through the hit",
+        "your weight spills away from the ball",
+        "you are still falling when you need to strike"
+      ],
+      "visual_language": [
+        "You stay balanced.",
+        "Balance spills away here."
+      ]
+    },
+    "load": {
+      "analyst_terms": [
+        "lower-limb loading",
+        "vertical impulse proxy"
+      ],
+      "player_language": [
+        "you load before you go",
+        "the legs never get a chance to support the hit",
+        "you are pushing after the racquet has already gone"
+      ],
+      "visual_language": [
+        "The load is ready.",
+        "The push comes too late."
+      ]
+    },
+    "sequence": {
+      "analyst_terms": [
+        "segment peak order",
+        "proximal-to-distal timing"
+      ],
+      "player_language": [
+        "the body starts the motion and the racquet follows",
+        "the arm is taking over too early",
+        "the motion arrives in pieces instead of flowing"
+      ],
+      "visual_language": [
+        "The motion flows here.",
+        "The arm takes over early."
+      ]
+    },
+    "trunk_stability": {
+      "analyst_terms": [
+        "head/trunk displacement",
+        "axial stability"
+      ],
+      "player_language": [
+        "your body gives the hands a stable platform",
+        "you stay organized through contact",
+        "the upper body drifts while the racquet is trying to meet the ball"
+      ],
+      "visual_language": [
+        "Keep this stability.",
+        "Your base stays organized."
+      ]
+    },
+    "contact_forwardness": {
+      "analyst_terms": [
+        "contact forward offset",
+        "contact relative to torso"
+      ],
+      "player_language": [
+        "meet it farther in front",
+        "contact falls beside you",
+        "you catch the ball in front of your body"
+      ],
+      "visual_language": [
+        "Contact falls back.",
+        "This is your better window."
+      ]
+    },
+    "contact_lateral_space": {
+      "analyst_terms": [
+        "contact lateral offset",
+        "body-width-normalized contact"
+      ],
+      "player_language": [
+        "the ball is too close to your body",
+        "you have room for the hands",
+        "contact is jammed"
+      ],
+      "visual_language": [
+        "Contact gets crowded.",
+        "This space lets you swing."
+      ]
+    },
+    "racket_path_steepening": {
+      "analyst_terms": [
+        "vertical path gain",
+        "steepening compensation"
+      ],
+      "player_language": [
+        "the racquet has to climb sharply to escape the body",
+        "the swing gets steeper late",
+        "the racquet is rescuing the contact"
+      ],
+      "visual_language": [
+        "The path steepens here.",
+        "The swing has to rescue it."
+      ]
+    },
+    "racket_path_through": {
+      "analyst_terms": [
+        "through-window travel",
+        "forward path duration"
+      ],
+      "player_language": [
+        "send the racquet through the ball",
+        "stay through contact longer",
+        "you are cutting away too quickly"
+      ],
+      "visual_language": [
+        "Stay through this window.",
+        "The path cuts away early."
+      ]
+    },
+    "racket_face_stability": {
+      "analyst_terms": [
+        "face-orientation variance"
+      ],
+      "player_language": [
+        "keep the racquet face quiet through contact",
+        "the face is changing too much around the hit",
+        "the strings stay organized"
+      ],
+      "visual_language": [
+        "The face stays quiet.",
+        "The face changes here."
+      ]
+    },
+    "finish_symptom": {
+      "analyst_terms": [
+        "follow-through variability",
+        "downstream endpoint variance"
+      ],
+      "player_language": [
+        "the finish is changing because of what happened earlier",
+        "do not chase the finish yet",
+        "the finish is the symptom, not the fix"
+      ],
+      "visual_language": [
+        "Don't coach the finish first.",
+        "The finish changes later."
+      ]
+    },
+    "recovery": {
+      "analyst_terms": [
+        "recovery onset",
+        "time to ready position"
+      ],
+      "player_language": [
+        "recover sooner after the hit",
+        "you finish the shot but stay stuck there",
+        "you are ready for the next ball quickly"
+      ],
+      "visual_language": [
+        "Recovery starts here.",
+        "You stay in the finish too long."
+      ]
+    },
+    "toss_repeatability": {
+      "analyst_terms": [
+        "toss cloud variance",
+        "lateral toss drift"
+      ],
+      "player_language": [
+        "the toss is making you chase it",
+        "place the toss where you can reach up",
+        "your toss gives you the same strike point repeatedly"
+      ],
+      "visual_language": [
+        "The toss drifts here.",
+        "This toss lets you reach up."
+      ]
+    },
+    "serve_upward_reach": {
+      "analyst_terms": [
+        "contact height proxy",
+        "vertical reach"
+      ],
+      "player_language": [
+        "reach up to the ball",
+        "contact loses height",
+        "you are going sideways instead of up"
+      ],
+      "visual_language": [
+        "Contact loses height.",
+        "Reach up through this space."
+      ]
+    },
+    "serve_rhythm": {
+      "analyst_terms": [
+        "serve event intervals",
+        "tempo variability"
+      ],
+      "player_language": [
+        "the serve flows as one motion",
+        "your rhythm breaks between the load and the hit",
+        "the racquet and body arrive together"
+      ],
+      "visual_language": [
+        "The rhythm flows.",
+        "The motion breaks here."
+      ]
+    },
+    "return_compactness": {
+      "analyst_terms": [
+        "backswing amplitude",
+        "return swing length"
+      ],
+      "player_language": [
+        "turn smaller",
+        "the backswing is stealing time",
+        "let the incoming pace do more of the work",
+        "meet and redirect"
+      ],
+      "visual_language": [
+        "The backswing keeps going.",
+        "Turn smaller here."
+      ]
+    },
+    "volley_compactness": {
+      "analyst_terms": [
+        "pre-impact racquet travel",
+        "post-impact racquet travel"
+      ],
+      "player_language": [
+        "keep the racquet quiet",
+        "short move, clean contact",
+        "you are adding more swing than the volley needs"
+      ],
+      "visual_language": [
+        "The racquet keeps travelling.",
+        "Short move here."
+      ]
+    },
+    "volley_contact": {
+      "analyst_terms": [
+        "contact forwardness",
+        "reach collapse"
+      ],
+      "player_language": [
+        "meet it out in front",
+        "contact gets jammed",
+        "let the feet deliver the racquet to the ball"
+      ],
+      "visual_language": [
+        "Meet it here.",
+        "Contact gets jammed."
+      ]
+    },
+    "overhead_positioning": {
+      "analyst_terms": [
+        "backward COM velocity at contact",
+        "ball-body alignment"
+      ],
+      "player_language": [
+        "get behind the ball before you hit",
+        "you are still moving backward at contact",
+        "move first; hit second"
+      ],
+      "visual_language": [
+        "You're still moving backward.",
+        "Get behind it first."
+      ]
+    },
+    "half_volley_bounce_timing": {
+      "analyst_terms": [
+        "bounce-to-contact interval",
+        "post-bounce racquet acceleration"
+      ],
+      "player_language": [
+        "meet the bounce",
+        "catch it just after it lands",
+        "you are waiting and then lifting after the bounce"
+      ],
+      "visual_language": [
+        "Meet the bounce here.",
+        "The lift starts too late."
+      ]
+    },
+    "half_volley_hands": {
+      "analyst_terms": [
+        "racquet-path excursion",
+        "face stability"
+      ],
+      "player_language": [
+        "quiet hands",
+        "soft hands, simple path",
+        "do not scoop it up"
+      ],
+      "visual_language": [
+        "Keep the hands quiet.",
+        "The scoop starts here."
+      ]
+    },
+    "depth_outcome": {
+      "analyst_terms": [
+        "landing-depth variance",
+        "median depth"
+      ],
+      "player_language": [
+        "your depth becomes harder to repeat",
+        "the ball lands shorter when this happens",
+        "you keep the ball driving deep"
+      ],
+      "visual_language": [
+        "The ball lands shorter.",
+        "Depth holds up here."
+      ]
+    },
+    "direction_outcome": {
+      "analyst_terms": [
+        "directional error",
+        "launch azimuth variance"
+      ],
+      "player_language": [
+        "direction gets harder to control",
+        "the ball leaks away from the target",
+        "you hold your line well"
+      ],
+      "visual_language": [
+        "Direction leaks here.",
+        "This holds your line."
+      ]
+    },
+    "spin_margin": {
+      "analyst_terms": [
+        "spin proxy",
+        "vertical path/launch relationship"
+      ],
+      "player_language": [
+        "you lose shape and margin",
+        "the ball has less room over the net",
+        "you create a safer shape without forcing spin"
+      ],
+      "visual_language": [
+        "You lose margin here.",
+        "This gives the ball more shape."
+      ]
+    },
+    "self_best": {
+      "analyst_terms": [
+        "within-player successful cluster",
+        "self-best distribution"
+      ],
+      "player_language": [
+        "your best reps already show the answer",
+        "this is already in your game",
+        "you do not need a new stroke"
+      ],
+      "visual_language": [
+        "This is your own best rep.",
+        "The difference starts here."
+      ]
+    },
+    "conditional_leak": {
+      "analyst_terms": [
+        "context-conditioned variance",
+        "cluster-specific failure"
+      ],
+      "player_language": [
+        "this works on neutral balls and breaks on deep balls",
+        "this is not an every-ball problem",
+        "this pressure is what exposes the leak"
+      ],
+      "visual_language": [
+        "It works on this ball.",
+        "This ball exposes the leak."
+      ]
+    },
+    "tactical_mismatch": {
+      "analyst_terms": [
+        "intent-mechanics mismatch",
+        "shot-selection inconsistency"
+      ],
+      "player_language": [
+        "the movement and the shot choice do not match",
+        "you are using a defensive solution for an attacking ball",
+        "for this ball, choose the simpler option"
+      ],
+      "visual_language": [
+        "The shot choice changes here.",
+        "Use the movement for this ball."
+      ]
+    }
+  }
+}

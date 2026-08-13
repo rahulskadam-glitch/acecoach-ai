@@ -20,11 +20,30 @@ class OntologyBundle:
     confidence_policy: Dict[str, Any]
     scoring_profiles: Dict[str, Any]
     camera_suitability: Dict[str, Any]
-    context_model: Dict[str, Any]
-    accessibility: Dict[str, Any]
-    safeguarding: Dict[str, Any]
-    longitudinal_model: Dict[str, Any]
-    visual_grammar: Dict[str, Any]
+    research_sources: Dict[str, Dict[str, Any]]
+    observation_taxonomy: Dict[str, Any]
+    context_ontology: Dict[str, Any]
+    stroke_library: Dict[str, Any]
+    benchmark_policy: Dict[str, Any]
+    diagnostic_engine: Dict[str, Any]
+    coaching_language: Dict[str, Any]
+    visual_coaching_grammar: Dict[str, Any]
+    causal_graph: Dict[str, Any]
+    video_analysis_protocol: Dict[str, Any]
+    event_detection: Dict[str, Any]
+    measurement_recipes: Dict[str, Any]
+    stroke_analysis_playbooks: Dict[str, Any]
+    multi_rep_analysis: Dict[str, Any]
+    insight_reasoner: Dict[str, Any]
+    visual_story_compiler: Dict[str, Any]
+    player_feedback_policy: Dict[str, Any]
+    model_quality_gates: Dict[str, Any]
+    coach_language_sources: Dict[str, Any]
+    stroke_coach_lexicon: Dict[str, Any]
+    coach_storytelling: Dict[str, Any]
+    natural_language_quality_gates: Dict[str, Any]
+    coach_language_generation_protocol: Dict[str, Any]
+    semantic_to_coach_language: Dict[str, Any]
 
     @staticmethod
     def _read(path: Path) -> Any:
@@ -55,11 +74,30 @@ class OntologyBundle:
             confidence_policy=cls._read(root/'config/confidence_policy.json'),
             scoring_profiles=cls._read(root/'config/scoring_profiles.json'),
             camera_suitability=cls._read(root/'config/camera_suitability.json'),
-            context_model=cls._read(root/'config/context_model.json'),
-            accessibility=cls._read(root/'config/accessibility.json'),
-            safeguarding=cls._read(root/'config/safeguarding.json'),
-            longitudinal_model=cls._read(root/'config/longitudinal_model.json'),
-            visual_grammar=cls._read(root/'config/visual_grammar.json'),
+            research_sources={x['source_id']: x for x in cls._read(root/'config/research_sources.json')},
+            observation_taxonomy=cls._read(root/'config/observation_taxonomy.json'),
+            context_ontology=cls._read(root/'config/context_ontology.json'),
+            stroke_library=cls._read(root/'config/stroke_library.json'),
+            benchmark_policy=cls._read(root/'config/benchmark_policy.json'),
+            diagnostic_engine=cls._read(root/'config/diagnostic_engine.json'),
+            coaching_language=cls._read(root/'config/coaching_language.json'),
+            visual_coaching_grammar=cls._read(root/'config/visual_coaching_grammar.json'),
+            causal_graph=cls._read(root/'config/causal_graph.json'),
+            video_analysis_protocol=cls._read(root/'config/video_analysis_protocol.json'),
+            event_detection=cls._read(root/'config/event_detection.json'),
+            measurement_recipes=cls._read(root/'config/measurement_recipes.json'),
+            stroke_analysis_playbooks=cls._read(root/'config/stroke_analysis_playbooks.json'),
+            multi_rep_analysis=cls._read(root/'config/multi_rep_analysis.json'),
+            insight_reasoner=cls._read(root/'config/insight_reasoner.json'),
+            visual_story_compiler=cls._read(root/'config/visual_story_compiler.json'),
+            player_feedback_policy=cls._read(root/'config/player_feedback_policy.json'),
+            model_quality_gates=cls._read(root/'config/model_quality_gates.json'),
+            coach_language_sources=cls._read(root/'config/coach_language_sources.json'),
+            stroke_coach_lexicon=cls._read(root/'config/stroke_coach_lexicon.json'),
+            coach_storytelling=cls._read(root/'config/coach_storytelling.json'),
+            natural_language_quality_gates=cls._read(root/'config/natural_language_quality_gates.json'),
+            coach_language_generation_protocol=cls._read(root/'config/coach_language_generation_protocol.json'),
+            semantic_to_coach_language=cls._read(root/'config/semantic_to_coach_language.json'),
         )
         bundle.validate_references()
         return bundle
@@ -73,6 +111,9 @@ class OntologyBundle:
             for did in f.get('drill_ids', []):
                 if did not in self.drills:
                     raise OntologyError(f'{fid} references missing drill {did}')
+            for sid in f.get('source_ids', []):
+                if sid not in self.research_sources:
+                    raise OntologyError(f'{fid} references missing research source {sid}')
 
     def get_fault(self, fault_id: str) -> Dict[str, Any]:
         try:
@@ -91,32 +132,3 @@ class OntologyBundle:
             and interpretation_confidence >= policy['minimum_interpretation_confidence']
             and camera_supported and required_evidence_present
         )
-
-    def is_minor_age_band(self, age_band: str) -> bool:
-        """Fail-closed per safeguarding.json: anything not explicitly an adult band is treated as a minor."""
-        adult_bands = {'18_to_34', '35_to_54', '55_plus'}
-        return age_band not in adult_bands
-
-    def render_style_for_confidence(self, score: float) -> Dict[str, Any]:
-        """Look up the confidence-band rendering rule (line style, opacity, badge) from visual_grammar.json
-        for a given confidence score, matching the rules the video overlay engine must apply."""
-        rendering = self.visual_grammar['confidence_rendering']
-        if score >= rendering['high']['min_score']:
-            return rendering['high']
-        if score >= rendering['medium']['min_score']:
-            return rendering['medium']
-        return rendering['low_estimated']
-
-    def color_token_for_marker(self, marker: str) -> str:
-        """Resolve which color_token in visual_grammar.json a given overlay marker uses."""
-        families = self.visual_grammar['marker_families']
-        for family in families.values():
-            if marker in family.get('members', []):
-                color_map = family.get('color_map')
-                if color_map:
-                    return color_map.get(marker, color_map.get('default'))
-                return family.get('default_color', 'structure_neutral')
-        raise OntologyError(f'Unknown overlay marker: {marker}')
-
-    def guardian_consent_required(self, age_band: str) -> bool:
-        return self.is_minor_age_band(age_band)

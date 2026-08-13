@@ -1,0 +1,247 @@
+{
+  "version": "4.1.0",
+  "principle": "Every metric defines inputs, event window, normalization, valid views, uncertainty behavior and allowed interpretation.",
+  "measurement_classes": {
+    "COURT_CALIBRATED_2D": "Court-plane distances/positions after court homography.",
+    "BODY_NORMALIZED_2D": "Distances normalized by stable body scale; robust for relative comparisons in similar views.",
+    "IMAGE_PLANE_2D": "View-dependent path/orientation evidence; avoid pretending it is true 3D geometry.",
+    "MONOCULAR_3D_ESTIMATE": "Model-estimated 3D with explicit uncertainty; restricted for high-speed velocities unless validated.",
+    "EVENT_TIMING": "Temporal relationship between fused events.",
+    "RELATIVE_VELOCITY": "Within-video or within-player relative speed proxy, not absolute biomechanical truth."
+  },
+  "recipes": [
+    {
+      "metric_id": "preparation_reserve_ms",
+      "construct": "timing_budget",
+      "class": "EVENT_TIMING",
+      "formula": "contact.best_ms - unit_turn_complete.best_ms",
+      "window": "unit_turn_complete->contact",
+      "min_fps": 30,
+      "allowed_claim": "time available after preparation",
+      "do_not_claim": "reaction quality without incoming-ball anchor"
+    },
+    {
+      "metric_id": "unit_turn_relative_to_bounce_ms",
+      "construct": "preparation_timing",
+      "class": "EVENT_TIMING",
+      "formula": "unit_turn_complete.best_ms - bounce.best_ms",
+      "window": "bounce->unit_turn_complete",
+      "min_fps": 30,
+      "allowed_claim": "relative preparation timing in matched context"
+    },
+    {
+      "metric_id": "forward_swing_duration_ms",
+      "construct": "swing_timing",
+      "class": "EVENT_TIMING",
+      "formula": "contact.best_ms - forward_swing_onset.best_ms",
+      "window": "forward_swing_onset->contact",
+      "min_fps": 30
+    },
+    {
+      "metric_id": "final_step_to_contact_ms",
+      "construct": "spacing_timing",
+      "class": "EVENT_TIMING",
+      "formula": "contact.best_ms - final_adjustment_step.best_ms",
+      "window": "final_adjustment_step->contact",
+      "min_fps": 30
+    },
+    {
+      "metric_id": "contact_lateral_body_widths",
+      "construct": "spacing",
+      "class": "BODY_NORMALIZED_2D",
+      "formula": "lateral_distance(ball_at_contact, torso_midline) / shoulder_width",
+      "window": "contact",
+      "valid_views": [
+        "rear",
+        "rear_oblique",
+        "front",
+        "front_oblique"
+      ],
+      "uncertainty": "inflate_when_body_rotation_or_occlusion_high"
+    },
+    {
+      "metric_id": "contact_forwardness_body_widths",
+      "construct": "contact_geometry",
+      "class": "BODY_NORMALIZED_2D",
+      "formula": "view_conditioned_forward_component(ball-contact relative to torso) / shoulder_width",
+      "window": "contact",
+      "valid_views": [
+        "side",
+        "side_oblique"
+      ],
+      "uncertainty": "unsupported_from_rear_only_view"
+    },
+    {
+      "metric_id": "contact_height_body_ratio",
+      "construct": "contact_geometry",
+      "class": "BODY_NORMALIZED_2D",
+      "formula": "contact_y_relative_to_ankle / body_height",
+      "window": "contact"
+    },
+    {
+      "metric_id": "spacing_closure_rate_relative",
+      "construct": "spacing",
+      "class": "BODY_NORMALIZED_2D",
+      "formula": "slope(ball_to_torso_distance) during last 200ms before contact",
+      "window": "pre_contact_200ms",
+      "allowed_claim": "whether space is collapsing or stabilizing"
+    },
+    {
+      "metric_id": "last_two_step_displacement_body_widths",
+      "construct": "footwork",
+      "class": "BODY_NORMALIZED_2D",
+      "formula": "sum(foot_center_displacement) over final two contacts / shoulder_width",
+      "window": "final_adjustment",
+      "valid_views": [
+        "rear",
+        "rear_oblique",
+        "front_oblique",
+        "side"
+      ]
+    },
+    {
+      "metric_id": "stance_geometry",
+      "construct": "footwork",
+      "class": "BODY_NORMALIZED_2D",
+      "formula": "foot vector orientation and separation at contact",
+      "window": "contact",
+      "allowed_claim": "stance family and width; not quality by itself"
+    },
+    {
+      "metric_id": "head_trunk_stability_trace",
+      "construct": "dynamic_stability",
+      "class": "BODY_NORMALIZED_2D",
+      "formula": "normalized head and trunk motion relative to pelvis across event window",
+      "window": "forward_swing_onset->extension_window_end",
+      "allowed_claim": "repeatability/stability relative to task",
+      "do_not_claim": "head must be stationary"
+    },
+    {
+      "metric_id": "pelvis_shoulder_phase_lag_ms",
+      "construct": "sequencing",
+      "class": "EVENT_TIMING",
+      "formula": "shoulder_angular_velocity_peak_time - pelvis_angular_velocity_peak_time",
+      "window": "load->contact",
+      "requires": [
+        "stable_orientation_tracks"
+      ],
+      "uncertainty": "high_when_camera_axis_aligns_with_rotation"
+    },
+    {
+      "metric_id": "segment_peak_order",
+      "construct": "sequencing",
+      "class": "EVENT_TIMING",
+      "formula": "ordered peak times of pelvis,trunk,upper_arm,hand,racket proxies",
+      "window": "load->contact",
+      "allowed_claim": "timing relationship; avoid universal proximal-distal perfection claim"
+    },
+    {
+      "metric_id": "racket_path_corridor_2d",
+      "construct": "racket_path",
+      "class": "IMAGE_PLANE_2D",
+      "formula": "spline of racket-head positions normalized to body/court frame",
+      "window": "forward_swing_onset->extension_window_end",
+      "allowed_claim": "shape comparison within comparable view/context"
+    },
+    {
+      "metric_id": "racket_vertical_gain_body_ratio",
+      "construct": "racket_path",
+      "class": "IMAGE_PLANE_2D",
+      "formula": "racket-head vertical displacement / body_height",
+      "window": "pre_contact_120ms->post_contact_120ms",
+      "allowed_claim": "relative low-to-high component in image plane"
+    },
+    {
+      "metric_id": "racket_speed_relative",
+      "construct": "racket_speed",
+      "class": "RELATIVE_VELOCITY",
+      "formula": "smoothed image/court normalized racket-head displacement per time",
+      "window": "forward_swing_onset->contact",
+      "min_fps": 60,
+      "allowed_claim": "relative within-player speed when tracking stable",
+      "do_not_claim": "absolute racquet speed without calibrated validated pipeline"
+    },
+    {
+      "metric_id": "ball_incoming_depth_m",
+      "construct": "context",
+      "class": "COURT_CALIBRATED_2D",
+      "formula": "court-plane bounce depth",
+      "window": "bounce",
+      "requires": [
+        "court_homography",
+        "ball_track"
+      ]
+    },
+    {
+      "metric_id": "player_contact_court_position_m",
+      "construct": "context",
+      "class": "COURT_CALIBRATED_2D",
+      "formula": "court-plane player reference point at contact",
+      "window": "contact",
+      "requires": [
+        "court_homography"
+      ]
+    },
+    {
+      "metric_id": "recovery_latency_ms",
+      "construct": "recovery",
+      "class": "EVENT_TIMING",
+      "formula": "recovery_onset.best_ms - contact.best_ms",
+      "window": "contact->recovery_onset",
+      "allowed_claim": "time to begin repositioning"
+    },
+    {
+      "metric_id": "recovery_direction_error_deg",
+      "construct": "recovery",
+      "class": "COURT_CALIBRATED_2D",
+      "formula": "angle between initial recovery vector and context-derived recovery target vector",
+      "window": "first_recovery_step",
+      "requires": [
+        "court_homography",
+        "recovery_target"
+      ]
+    },
+    {
+      "metric_id": "toss_repeatability_cloud",
+      "construct": "serve_toss",
+      "class": "BODY_NORMALIZED_2D",
+      "formula": "distribution of ball positions at selected toss landmarks across serves",
+      "window": "toss_release->contact",
+      "valid_views": [
+        "rear",
+        "side",
+        "front_oblique"
+      ],
+      "allowed_claim": "repeatability and directional drift, not a single universal toss point"
+    },
+    {
+      "metric_id": "serve_leg_drive_to_racket_accel_ms",
+      "construct": "serve_sequence",
+      "class": "EVENT_TIMING",
+      "formula": "racket_acceleration_onset.best_ms - leg_drive_onset.best_ms",
+      "window": "leg_drive_onset->racket_acceleration_onset",
+      "allowed_claim": "within-player sequence timing"
+    },
+    {
+      "metric_id": "contact_outcome_depth_zone",
+      "construct": "outcome",
+      "class": "COURT_CALIBRATED_2D",
+      "formula": "first bounce after contact mapped to court zones",
+      "window": "post_contact",
+      "requires": [
+        "ball_track",
+        "court_homography"
+      ]
+    },
+    {
+      "metric_id": "outgoing_launch_direction_deg",
+      "construct": "outcome",
+      "class": "COURT_CALIBRATED_2D",
+      "formula": "initial post-contact ball trajectory on court/image calibrated plane",
+      "window": "first_stable_post_contact_segment",
+      "requires": [
+        "ball_track"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acecoach.ai/schemas/analysis-result.schema.json",
+  "title": "AceCoach Analysis Result",
+  "type": "object",
+  "required": [
+    "session_id",
+    "source_video_hash",
+    "status",
+    "versions",
+    "strokes",
+    "observations",
+    "report"
+  ],
+  "properties": {
+    "session_id": {
+      "type": "string"
+    },
+    "source_video_hash": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "completed",
+        "completed_with_limitations",
+        "failed"
+      ]
+    },
+    "versions": {
+      "type": "object",
+      "required": [
+        "ontology",
+        "ruleset",
+        "scoring",
+        "model",
+        "prompt",
+        "coaching_language",
+        "coach_language_corpus"
+      ],
+      "properties": {
+        "ontology": {
+          "type": "string"
+        },
+        "ruleset": {
+          "type": "string"
+        },
+        "scoring": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "prompt": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "research": {
+          "type": "string"
+        },
+        "benchmark": {
+          "type": "string"
+        },
+        "coaching_language": {
+          "type": "string"
+        },
+        "coach_language_corpus": {
+          "type": "string"
+        },
+        "visual_compiler": {
+          "type": "string"
+        }
+      }
+    },
+    "strokes": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "$ref": "observation.schema.json"
+      }
+    },
+    "report": {
+      "type": "object",
+      "required": [
+        "strength",
+        "primary_correction",
+        "drill",
+        "reassessment_target"
+      ],
+      "properties": {
+        "strength": {
+          "type": "object"
+        },
+        "primary_correction": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "secondary_issues": {
+          "type": "array",
+          "maxItems": 2
+        },
+        "drill": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "reassessment_target": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
+      }
+    },
+    "event_timeline": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "metric_series": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "rep_clusters": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "insights": {
+      "type": "array",
+      "items": {
+        "$ref": "coaching-insight.schema.json"
+      }
+    },
+    "visual_stories": {
+      "type": "array",
+      "items": {
+        "$ref": "visual-story.schema.json"
+      }
+    },
+    "quality_report": {
+      "type": "object"
+    },
+    "claim_traceability": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "claim_id",
+          "evidence_ids"
+        ]
+      }
+    },
+    "player_report": {
+      "type": "object",
+      "description": "Natural player-facing report. Technical evidence remains in insights/evidence surfaces.",
+      "properties": {
+        "primary_message": {
+          "$ref": "player-coach-message.schema.json"
+        },
+        "strength_message": {
+          "$ref": "player-coach-message.schema.json"
+        },
+        "secondary_messages": {
+          "type": "array",
+          "items": {
+            "$ref": "player-coach-message.schema.json"
+          },
+          "maxItems": 2
+        },
+        "language_surface": {
+          "enum": [
+            "PLAYER_COACH"
+          ]
+        }
+      }
+    }
+  },
+  "additionalProperties": true,
+  "description": "v4.1 perceptual-causal analysis with a separate evidence-grounded natural coach-language surface: events -> measurements -> comparable reps -> hypotheses -> insights -> player coaching -> visual stories."
+}

@@ -1,0 +1,115 @@
+{
+  "philosophy": [
+    "A benchmark is a context-conditioned reference distribution, not a single ideal pose.",
+    "Prefer within-player successful-stroke baselines when enough samples exist.",
+    "Then compare to matched cohort priors (stroke variant, level, age band, handedness, stance, incoming-ball class).",
+    "Use expert/pro examples to illustrate solutions, never to imply every player should copy one athlete's geometry.",
+    "Do not use a numerical threshold unless source evidence, camera suitability and normalization are adequate."
+  ],
+  "benchmark_tiers": [
+    {
+      "tier": "P0",
+      "name": "player_success_baseline",
+      "priority": 1,
+      "minimum_samples": 8,
+      "description": "Player's own high-quality successful strokes under comparable conditions."
+    },
+    {
+      "tier": "P1",
+      "name": "matched_cohort",
+      "priority": 2,
+      "minimum_samples": 30,
+      "description": "Matched age/level/stance/ball-context cohort distribution."
+    },
+    {
+      "tier": "P2",
+      "name": "expert_reference_family",
+      "priority": 3,
+      "description": "Curated high-level technique family examples used for shape/timing explanation."
+    },
+    {
+      "tier": "P3",
+      "name": "research_pattern",
+      "priority": 4,
+      "description": "Peer-reviewed directional relationships and phase/sequence principles."
+    }
+  ],
+  "comparison_output": {
+    "required": [
+      "metric_id",
+      "player_value",
+      "reference_type",
+      "reference_center_or_pattern",
+      "reference_band_if_valid",
+      "effect_size_or_deviation",
+      "confidence",
+      "context_match_score",
+      "coaching_interpretation"
+    ],
+    "forbidden": [
+      "unqualified_perfect_angle",
+      "single_pro_copy_instruction",
+      "score_zero_for_unavailable_metric"
+    ]
+  },
+  "seed_patterns": [
+    {
+      "pattern_id": "KINETIC_CHAIN_POWER",
+      "applies_to": [
+        "serve",
+        "forehand",
+        "two_handed_backhand",
+        "one_handed_backhand",
+        "overhead"
+      ],
+      "expected": "coordinated multi-segment contribution with task-appropriate proximal-to-distal timing",
+      "sources": [
+        "SCI-ELLIOTT-2006",
+        "SCI-KOVACS-2011"
+      ]
+    },
+    {
+      "pattern_id": "VOLLEY_COMPACTNESS",
+      "applies_to": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "expected": "reduced swing amplitude and stable racket structure relative to groundstroke when precision/redirection dominates",
+      "sources": [
+        "SCI-ELLIOTT-2006",
+        "SCI-CHOW-2007"
+      ]
+    },
+    {
+      "pattern_id": "2HB_TRUNK_CONTRIBUTION",
+      "applies_to": [
+        "two_handed_backhand"
+      ],
+      "expected": "substantial trunk contribution; do not diagnose lack of dominant-arm independence as a fault by itself",
+      "sources": [
+        "SCI-GENEVOIS-2015",
+        "SCI-STEPien-2011"
+      ]
+    },
+    {
+      "pattern_id": "FOREHAND_SKILL_TIMING",
+      "applies_to": [
+        "forehand"
+      ],
+      "expected": "evaluate timing relationships and racket/body sequencing as skill-sensitive features, conditioned on shot direction and task",
+      "sources": [
+        "SCI-LANDLINGER-2010"
+      ]
+    },
+    {
+      "pattern_id": "SERVE_EIGHT_STAGE",
+      "applies_to": [
+        "serve"
+      ],
+      "expected": "evaluate serve as linked stages rather than isolated trophy/contact poses",
+      "sources": [
+        "SCI-KOVACS-2011"
+      ]
+    }
+  ]
+}

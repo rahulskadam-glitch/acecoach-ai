@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const sessionId = process.argv[2];
 const confirmedAction = process.argv[3] ?? "two_handed_backhand";
-const engineVersion = "movement-intelligence-v1.9.0";
+const engineVersion = "movement-intelligence-v1.10.0";
 
 if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(sessionId ?? "")) {
   throw new Error("Usage: node --env-file=.env.local scripts/reanalyze-session.mjs <session-uuid> [confirmed-action]");

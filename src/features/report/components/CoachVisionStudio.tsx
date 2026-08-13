@@ -27,7 +27,7 @@ import type { AnalysisReport, BiomechanicalLinkage, BiomechanicalMetric } from "
 import { plainLanguage } from "../model/plain-language";
 import {
   MOTION_STAGES,
-  nearestFrame,
+  frameAtOrBefore,
   stageAnchors,
   stageForTime,
   type JointName,
@@ -175,6 +175,7 @@ export default function CoachVisionStudio({
   const mediaSurfaceRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
+  const videoFrameRef = useRef<number | null>(null);
   const primaryIndex = report.frameSummary?.primaryRepetitionIndex ?? report.repetitions?.[0]?.index ?? null;
   const primary = report.repetitions?.find((item) => item.index === primaryIndex) ?? report.repetitions?.[0];
   const start = primary?.startSeconds ?? 0;
@@ -195,7 +196,9 @@ export default function CoachVisionStudio({
   const [selectedAction, setSelectedAction] = useState(actionType);
   const [correcting, setCorrecting] = useState(false);
   const [correctionError, setCorrectionError] = useState<string | null>(null);
-  const currentFrame = useMemo(() => nearestFrame(frames, time), [frames, time]);
+  const [storyCaption, setStoryCaption] = useState<string | null>(null);
+  const [seeking, setSeeking] = useState(false);
+  const currentFrame = useMemo(() => frameAtOrBefore(frames, time), [frames, time]);
   const profilePhase = STAGE_TO_PROFILE_PHASE[stage];
   const phaseSummary = profile?.phases.find((item) => item.id === profilePhase);
   const phaseMetrics = profile?.metrics.filter((item) => item.phase === profilePhase && item.status === "available") ?? [];
@@ -206,10 +209,10 @@ export default function CoachVisionStudio({
   const activeFrameworkStage = activeBackhandGuide
     ? report.coachSummary.pyramidSummary?.framework?.find((item) => item.step === activeBackhandGuide.number)
     : undefined;
-  const activeVisualChecks = activeBackhandGuide?.visualChecks.map((check) => ({
+  const activeVisualChecks = useMemo(() => activeBackhandGuide?.visualChecks.map((check) => ({
     ...check,
     status: visualStatus(activeFrameworkStage?.checks?.find((item) => item.id === check.id)?.status),
-  })) ?? [];
+  })) ?? [], [activeBackhandGuide, activeFrameworkStage]);
   const chainLinks = useMemo(() => profile?.linkages ?? [], [profile?.linkages]);
   const chainProgress = Math.max(0, Math.min(1, (time - anchors.loading) / Math.max(anchors.contact - anchors.loading, 0.1)));
 
@@ -230,7 +233,7 @@ export default function CoachVisionStudio({
     if (!context) return;
     context.setTransform(ratio, 0, 0, ratio, 0, 0);
     context.clearRect(0, 0, cssWidth, cssHeight);
-    if (mode === "clean" || !currentFrame?.keyLandmarks) return;
+    if (seeking || mode === "clean" || !currentFrame?.keyLandmarks) return;
     const rect = video ? contentRect(video) : { x: 0, y: 0, width: cssWidth, height: cssHeight };
     const toCanvas = (point: { x: number; y: number }) => ({ x: rect.x + point.x * rect.width, y: rect.y + point.y * rect.height });
     const landmarks = currentFrame.keyLandmarks;
@@ -255,9 +258,9 @@ export default function CoachVisionStudio({
 
       context.beginPath();
       context.moveTo(ls.x, ls.y);
-      context.quadraticCurveTo((ls.x + rs.x) / 2, Math.min(ls.y, rs.y) - shoulderSpan * 0.06, rs.x, rs.y);
+      context.lineTo(rs.x, rs.y);
       context.lineTo(rh.x, rh.y);
-      context.quadraticCurveTo((rh.x + lh.x) / 2, Math.max(rh.y, lh.y) + shoulderSpan * 0.05, lh.x, lh.y);
+      context.lineTo(lh.x, lh.y);
       context.closePath();
       context.fillStyle = palette.body;
       context.fill();
@@ -319,17 +322,36 @@ export default function CoachVisionStudio({
       joint: "rgba(248,250,252,.94)",
     }, 0.72);
 
+    const placedLabels: Array<{ left: number; top: number; right: number; bottom: number }> = [];
     const label = (text: string, x: number, y: number, color = "#e2e8f0") => {
-      context.font = "600 11px ui-sans-serif, system-ui, sans-serif";
-      const width = context.measureText(text).width + 14;
-      const left = Math.max(5, Math.min(cssWidth - width - 5, x));
-      const top = Math.max(5, Math.min(cssHeight - 25, y));
+      context.font = "700 9px ui-sans-serif, system-ui, sans-serif";
+      const width = Math.min(cssWidth - 10, context.measureText(text).width + 12);
+      const height = 18;
+      const candidates = [
+        { left: x, top: y },
+        { left: x, top: y - 25 },
+        { left: x - width - 10, top: y },
+        { left: x - width - 10, top: y - 25 },
+        { left: x - width / 2, top: y + 13 },
+      ].map((item) => ({
+        left: Math.max(5, Math.min(cssWidth - width - 5, item.left)),
+        top: Math.max(5, Math.min(cssHeight - height - 5, item.top)),
+      }));
+      const position = candidates.find((candidate) => !placedLabels.some((placed) => (
+        candidate.left < placed.right + 5
+        && candidate.left + width > placed.left - 5
+        && candidate.top < placed.bottom + 5
+        && candidate.top + height > placed.top - 5
+      )));
+      if (!position) return;
+      const { left, top } = position;
+      placedLabels.push({ left, top, right: left + width, bottom: top + height });
       context.fillStyle = "rgba(2,6,23,.84)";
       context.beginPath();
-      context.roundRect(left, top, width, 22, 7);
+      context.roundRect(left, top, width, height, 6);
       context.fill();
       context.fillStyle = color;
-      context.fillText(text, left + 7, top + 15);
+      context.fillText(text, left + 6, top + 12.5, width - 12);
     };
 
     const drawLine = (a: Landmark | Point | undefined, b: Landmark | Point | undefined, color: string, width: number, dash: number[] = []) => {
@@ -371,65 +393,82 @@ export default function CoachVisionStudio({
     }
 
     const frameIndex = frames.findIndex((frame) => frame.frameIndex === currentFrame.frameIndex);
-    const trail = frames.slice(Math.max(0, frameIndex - 14), frameIndex + 1)
-      .map((frame) => frame.keyLandmarks?.[`${side}_wrist`])
-      .filter((point): point is Landmark => Boolean(point && point.visibility >= 0.35));
-    if (trail.length > 1 && mode !== "coach") {
+    const pointEntries = Object.entries(landmarks).filter(([, point]) => point.visibility >= 0.35);
+    for (const [name, point] of pointEntries) {
+      const mapped = toCanvas(point);
+      const isHitJoint = name.startsWith(hit) && (name.includes("shoulder") || name.includes("elbow") || name.includes("wrist"));
       context.beginPath();
-      trail.forEach((point, index) => {
-        const mapped = toCanvas(point);
-        if (index === 0) context.moveTo(mapped.x, mapped.y);
-        else context.lineTo(mapped.x, mapped.y);
-      });
-      context.strokeStyle = assessmentColor;
-      context.lineWidth = 2;
-      context.setLineDash([3, 5]);
-      context.stroke();
-      context.setLineDash([]);
+      context.arc(mapped.x, mapped.y, isHitJoint ? 4.2 : 3.1, 0, Math.PI * 2);
+      context.fillStyle = isHitJoint ? "#f8fafc" : "rgba(226,232,240,.82)";
+      context.fill();
     }
 
     if (mode === "coach" && activeBackhandGuide) {
       type CanvasPoint = { x: number; y: number };
-      const direction = side === "right" ? -1 : 1;
       const handCenter = midpoint(landmarks.left_wrist, landmarks.right_wrist);
       const shoulderCenter = midpoint(landmarks.left_shoulder, landmarks.right_shoulder);
       const ankleCenter = midpoint(landmarks.left_ankle, landmarks.right_ankle);
       const torsoCenter = midpoint(landmarks.left_hip, landmarks.right_hip) ?? shoulderCenter;
       const nose = landmarks.nose;
       const leadElbow = landmarks[`${support}_elbow`];
+      const leadWrist = landmarks[`${support}_wrist`];
+      const previousFinishLandmarks = frameIndex > 0
+        ? frames[Math.max(0, frameIndex - 4)]?.keyLandmarks
+        : undefined;
+      const mappedLeftShoulder = landmarks.left_shoulder ? toCanvas(landmarks.left_shoulder) : null;
+      const mappedRightShoulder = landmarks.right_shoulder ? toCanvas(landmarks.right_shoulder) : null;
+      const shoulderWidth = mappedLeftShoulder && mappedRightShoulder
+        ? Math.hypot(mappedRightShoulder.x - mappedLeftShoulder.x, mappedRightShoulder.y - mappedLeftShoulder.y)
+        : 80;
+      const markerRadius = Math.max(4, Math.min(6, shoulderWidth * 0.055));
 
       const markerColor = (index: number) => VISUAL_STATUS[activeVisualChecks[index]?.status ?? "confirm"].color;
-      const drawPixelArrow = (from: CanvasPoint, to: CanvasPoint, color: string) => {
-        const angle = Math.atan2(to.y - from.y, to.x - from.x);
+      const drawShortArrow = (from: CanvasPoint, to: CanvasPoint, color: string) => {
+        const dx = to.x - from.x;
+        const dy = to.y - from.y;
+        const distance = Math.hypot(dx, dy);
+        if (distance < 5) return;
+        const unitX = dx / distance;
+        const unitY = dy / distance;
+        const arrowLength = Math.min(distance * 0.72, Math.max(18, Math.min(34, shoulderWidth * 0.34)));
+        const end = { x: to.x - unitX * (markerRadius + 2), y: to.y - unitY * (markerRadius + 2) };
+        const start = { x: end.x - unitX * arrowLength, y: end.y - unitY * arrowLength };
+        const headLength = Math.max(5, Math.min(7, markerRadius + 1));
         context.save();
-        context.globalAlpha = 0.92;
-        context.strokeStyle = color;
-        context.fillStyle = color;
-        context.lineWidth = 2.25;
         context.lineCap = "round";
-        context.beginPath();
-        context.moveTo(from.x, from.y);
-        context.lineTo(to.x, to.y);
-        context.stroke();
-        context.beginPath();
-        context.moveTo(to.x, to.y);
-        context.lineTo(to.x - 9 * Math.cos(angle - Math.PI / 6), to.y - 9 * Math.sin(angle - Math.PI / 6));
-        context.lineTo(to.x - 9 * Math.cos(angle + Math.PI / 6), to.y - 9 * Math.sin(angle + Math.PI / 6));
-        context.closePath();
-        context.fill();
-        context.restore();
-      };
-      const drawSteadyRing = (point: CanvasPoint, color: string) => {
-        context.save();
-        context.globalAlpha = 0.9;
+        context.lineJoin = "round";
+        context.globalAlpha = 0.32;
         context.strokeStyle = color;
+        context.lineWidth = 5;
+        context.beginPath();
+        context.moveTo(start.x, start.y);
+        context.lineTo(end.x, end.y);
+        context.stroke();
+        context.globalAlpha = 0.98;
         context.lineWidth = 2;
         context.beginPath();
-        context.arc(point.x, point.y, 13, 0, Math.PI * 2);
+        context.moveTo(start.x, start.y);
+        context.lineTo(end.x, end.y);
         context.stroke();
-        context.setLineDash([2, 5]);
         context.beginPath();
-        context.arc(point.x, point.y, 20, 0, Math.PI * 2);
+        context.moveTo(end.x, end.y);
+        context.lineTo(end.x - unitX * headLength - unitY * headLength * 0.62, end.y - unitY * headLength + unitX * headLength * 0.62);
+        context.moveTo(end.x, end.y);
+        context.lineTo(end.x - unitX * headLength + unitY * headLength * 0.62, end.y - unitY * headLength - unitX * headLength * 0.62);
+        context.stroke();
+        context.restore();
+      };
+      const drawCompactMarker = (point: CanvasPoint, color: string) => {
+        context.save();
+        context.globalAlpha = 0.96;
+        context.fillStyle = "rgba(2,6,23,.72)";
+        context.beginPath();
+        context.arc(point.x, point.y, markerRadius, 0, Math.PI * 2);
+        context.fill();
+        context.strokeStyle = color;
+        context.lineWidth = 1.75;
+        context.beginPath();
+        context.arc(point.x, point.y, markerRadius, 0, Math.PI * 2);
         context.stroke();
         context.restore();
       };
@@ -446,77 +485,88 @@ export default function CoachVisionStudio({
       };
 
       if (activeBackhandGuide.number === 1) {
-        if (shoulderCenter) {
+        if (shoulderCenter && mappedLeftShoulder && mappedRightShoulder) {
           const shoulder = toCanvas(shoulderCenter);
           const color = markerColor(0);
-          drawSteadyRing(shoulder, color);
-          label("1A · TURN EARLY", shoulder.x + 20, shoulder.y + 18, color);
+          drawShortArrow(mappedLeftShoulder, mappedRightShoulder, color);
+          drawCompactMarker(shoulder, color);
+          label("1A · TURN EARLY", shoulder.x + 11, shoulder.y + 9, color);
         }
-        if (handCenter) {
+        if (handCenter && landmarks[`${side}_wrist`]) {
           const hands = toCanvas(handCenter);
+          const wrist = toCanvas(landmarks[`${side}_wrist`]);
           const color = markerColor(1);
-          drawSteadyRing(hands, color);
-          label("1B · HANDS TOGETHER", hands.x + 18, hands.y - 24, color);
+          drawShortArrow(wrist, hands, color);
+          drawCompactMarker(hands, color);
+          label("1B · HANDS TOGETHER", hands.x + 11, hands.y - 19, color);
         }
       } else if (activeBackhandGuide.number === 2) {
         const outsideKnee = landmarks[`${side}_knee`];
-        if (outsideKnee) {
+        const outsideHip = landmarks[`${side}_hip`];
+        if (outsideKnee && outsideHip) {
           const knee = toCanvas(outsideKnee);
+          const hip = toCanvas(outsideHip);
           const color = markerColor(0);
-          drawPixelArrow({ x: knee.x, y: knee.y - 30 }, knee, color);
-          drawSteadyRing(knee, color);
-          label("2A · LOAD LEG", knee.x + 18, knee.y + 12, color);
+          drawShortArrow(hip, knee, color);
+          drawCompactMarker(knee, color);
+          label("2A · LOAD LEG", knee.x + 11, knee.y + 7, color);
         }
         if (handCenter && torsoCenter) {
           const hands = toCanvas(handCenter);
           const torso = toCanvas(torsoCenter);
           const color = markerColor(1);
-          drawPixelArrow(torso, hands, color);
-          label("2B · CREATE ARM SPACE", (torso.x + hands.x) / 2 + 10, (torso.y + hands.y) / 2 + 10, color);
+          drawShortArrow(torso, hands, color);
+          drawCompactMarker(hands, color);
+          label("2B · CREATE SPACE", hands.x + 11, hands.y + 7, color);
         }
       } else if (activeBackhandGuide.number === 3) {
         if (nose) {
           const head = toCanvas(nose);
           const color = markerColor(0);
-          drawSteadyRing(head, color);
-          label("3A · KEEP HEAD QUIET", head.x + 22, head.y - 18, color);
+          drawCompactMarker(head, color);
+          label("3A · HEAD QUIET", head.x + 11, head.y - 18, color);
         }
         if (handCenter && torsoCenter) {
           const hands = toCanvas(handCenter);
           const torso = toCanvas(torsoCenter);
           const color = markerColor(1);
-          drawPixelArrow(torso, hands, color);
-          label("3B · KEEP BODY SPACE", (torso.x + hands.x) / 2 + 10, (torso.y + hands.y) / 2 + 10, color);
+          drawShortArrow(torso, hands, color);
+          drawCompactMarker(hands, color);
+          label("3B · BODY SPACE", hands.x + 11, hands.y + 7, color);
         }
       } else if (activeBackhandGuide.number === 4) {
         if (nose && leadElbow) {
           const head = toCanvas(nose);
           const elbow = toCanvas(leadElbow);
-          const elbowTarget = { x: elbow.x + direction * 18, y: head.y - 28 };
-          drawReferenceLine({ x: head.x - 78, y: head.y }, { x: head.x + 78, y: head.y });
-          label("NOSE LINE", head.x + 52, head.y + 5, VISUAL_STATUS.confirm.color);
+          const leadShoulder = landmarks[`${support}_shoulder`];
+          drawReferenceLine({ x: head.x - shoulderWidth * 0.55, y: head.y }, { x: head.x + shoulderWidth * 0.55, y: head.y });
           const color = markerColor(0);
-          drawPixelArrow(elbow, elbowTarget, color);
-          drawSteadyRing(elbowTarget, color);
-          label("4A · ELBOW ABOVE NOSE", elbowTarget.x + 18, elbowTarget.y - 20, color);
+          if (leadShoulder) drawShortArrow(toCanvas(leadShoulder), elbow, color);
+          drawCompactMarker(elbow, color);
+          label("4A · ELBOW HIGH", elbow.x + 11, elbow.y - 18, color);
         }
-        if (ankleCenter) {
+        if (ankleCenter && torsoCenter) {
           const base = toCanvas(ankleCenter);
+          const torso = toCanvas(torsoCenter);
           const color = markerColor(1);
-          drawSteadyRing(base, color);
-          label("4B · RECOVER BALANCED", base.x + 20, base.y - 18, color);
+          drawShortArrow(torso, base, color);
+          drawCompactMarker(base, color);
+          label("4B · RECOVER", base.x + 11, base.y - 18, color);
+        }
+        if (leadWrist && previousFinishLandmarks) {
+          const previousWrist = previousFinishLandmarks[`${support}_wrist`];
+          if (previousWrist && previousWrist.visibility >= 0.35) {
+            const wrist = toCanvas(leadWrist);
+            const prior = toCanvas(previousWrist);
+            if (Math.hypot(wrist.x - prior.x, wrist.y - prior.y) > 2) {
+              const color = markerColor(0);
+              drawShortArrow(prior, wrist, color);
+              drawCompactMarker(wrist, color);
+              label("4C · SWING THROUGH", wrist.x + 11, wrist.y + 7, color);
+            }
+          }
         }
       }
-    }
-
-    const pointEntries = Object.entries(landmarks).filter(([, point]) => point.visibility >= 0.35);
-    for (const [name, point] of pointEntries) {
-      const mapped = toCanvas(point);
-      const isHitJoint = name.startsWith(hit) && (name.includes("shoulder") || name.includes("elbow") || name.includes("wrist"));
-      context.beginPath();
-      context.arc(mapped.x, mapped.y, isHitJoint ? 5.3 : 3.8, 0, Math.PI * 2);
-      context.fillStyle = isHitJoint ? "#f8fafc" : "rgba(226,232,240,.86)";
-      context.fill();
     }
 
     if (mode === "chain" && chainLinks.length > 0) {
@@ -536,7 +586,7 @@ export default function CoachVisionStudio({
         const mapped = toCanvas(node);
         const active = index === activeIndex;
         context.beginPath();
-        context.arc(mapped.x, mapped.y, active ? 12 : 7, 0, Math.PI * 2);
+        context.arc(mapped.x, mapped.y, active ? 8 : 5, 0, Math.PI * 2);
         context.fillStyle = active ? "rgba(248,250,252,.22)" : "rgba(15,23,42,.64)";
         context.fill();
         context.strokeStyle = index === 0 ? linkColor(0) : linkColor(Math.min(index - 1, 5));
@@ -561,24 +611,24 @@ export default function CoachVisionStudio({
     }
 
     if (mode === "body") {
-      const angleArc = (aName: string, bName: string, cName: string, value: number | null | undefined, title: string) => {
+      const angleMarker = (aName: string, bName: string, cName: string, value: number | null | undefined, title: string) => {
         const a = landmarks[aName]; const b = landmarks[bName]; const c = landmarks[cName];
         if (!a || !b || !c || typeof value !== "number") return;
-        const pa = toCanvas(a); const pb = toCanvas(b); const pc = toCanvas(c);
-        const startAngle = Math.atan2(pa.y - pb.y, pa.x - pb.x);
-        const endAngle = Math.atan2(pc.y - pb.y, pc.x - pb.x);
+        const pb = toCanvas(b);
         context.beginPath();
-        context.arc(pb.x, pb.y, 23, startAngle, endAngle, false);
+        context.arc(pb.x, pb.y, 6, 0, Math.PI * 2);
+        context.fillStyle = "rgba(2,6,23,.72)";
+        context.fill();
         context.strokeStyle = assessmentColor;
-        context.lineWidth = 2;
+        context.lineWidth = 1.75;
         context.stroke();
-        if (cssWidth >= 420) label(`${title} ${Math.round(value)}°`, pb.x + 18, pb.y - 30, assessmentColor);
+        if (cssWidth >= 420) label(`${title} ${Math.round(value)}°`, pb.x + 10, pb.y - 20, assessmentColor);
       };
       if (stage === "loading") {
-        angleArc(`${side}_hip`, `${side}_knee`, `${side}_ankle`, currentFrame.dominantKneeAngle, "knee");
-        angleArc(`${support}_hip`, `${support}_knee`, `${support}_ankle`, currentFrame.oppositeKneeAngle, "support knee");
+        angleMarker(`${side}_hip`, `${side}_knee`, `${side}_ankle`, currentFrame.dominantKneeAngle, "knee");
+        angleMarker(`${support}_hip`, `${support}_knee`, `${support}_ankle`, currentFrame.oppositeKneeAngle, "support knee");
       } else if (stage === "contact" || stage === "swing") {
-        angleArc(`${side}_shoulder`, `${side}_elbow`, `${side}_wrist`, currentFrame.dominantElbowAngle ?? currentFrame.elbowAngle, "elbow");
+        angleMarker(`${side}_shoulder`, `${side}_elbow`, `${side}_wrist`, currentFrame.dominantElbowAngle ?? currentFrame.elbowAngle, "elbow");
       } else if (typeof currentFrame.shoulderPelvisSeparation === "number") {
         const shoulder = midpoint(landmarks.left_shoulder, landmarks.right_shoulder);
         if (shoulder) {
@@ -587,7 +637,7 @@ export default function CoachVisionStudio({
         }
       }
     }
-  }, [activeBackhandGuide, activeVisualChecks, area, chainLinks, chainProgress, currentFrame, frames, mode, side, stage]);
+  }, [activeBackhandGuide, activeVisualChecks, area, chainLinks, chainProgress, currentFrame, frames, mode, seeking, side, stage]);
 
   useEffect(() => {
     drawOverlay();
@@ -595,7 +645,13 @@ export default function CoachVisionStudio({
     return () => window.removeEventListener("resize", drawOverlay);
   }, [drawOverlay]);
 
-  useEffect(() => () => { if (animationRef.current) cancelAnimationFrame(animationRef.current); }, []);
+  useEffect(() => () => {
+    if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    const video = videoRef.current;
+    if (video && videoFrameRef.current !== null && typeof video.cancelVideoFrameCallback === "function") {
+      video.cancelVideoFrameCallback(videoFrameRef.current);
+    }
+  }, []);
 
   useEffect(() => {
     function showMoment() {
@@ -609,37 +665,104 @@ export default function CoachVisionStudio({
       const mapped: Record<string, MotionStage> = { preparation: "preparation", loading: "loading", acceleration: "swing", contact: "contact", follow_through: "finish" };
       if (requested && mapped[requested]) setStage(mapped[requested]);
       setMode("coach");
+      setStoryCaption(null);
+    }
+    function showStoryBeat(event: Event) {
+      const detail = (event as CustomEvent<{ timestampSeconds?: number; playbackRate?: number; caption?: string; intent?: string }>).detail;
+      if (typeof detail?.timestampSeconds === "number") seek(detail.timestampSeconds);
+      if (typeof detail?.playbackRate === "number") {
+        setRate(detail.playbackRate);
+        if (videoRef.current) videoRef.current.playbackRate = detail.playbackRate;
+      }
+      setMode(detail?.intent === "clean" || detail?.intent === "orient" ? "clean" : "coach");
+      setStoryCaption(detail?.caption ?? null);
     }
     window.addEventListener("acecoach:show-key-moment", showMoment);
     window.addEventListener("acecoach:coach-region", showRegion);
+    window.addEventListener("acecoach:story-beat", showStoryBeat);
     return () => {
       window.removeEventListener("acecoach:show-key-moment", showMoment);
       window.removeEventListener("acecoach:coach-region", showRegion);
+      window.removeEventListener("acecoach:story-beat", showStoryBeat);
     };
   });
 
-  function updateFromVideo() {
+  function applyPresentedTime(next: number) {
+    const value = Math.max(start, Math.min(end, next));
+    setTime(value);
+    setStage(stageForTime(value, anchors));
+  }
+
+  function cancelFrameSync() {
+    if (animationRef.current !== null) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+    const video = videoRef.current;
+    if (video && videoFrameRef.current !== null && typeof video.cancelVideoFrameCallback === "function") {
+      video.cancelVideoFrameCallback(videoFrameRef.current);
+      videoFrameRef.current = null;
+    }
+  }
+
+  function updateFromAnimationClock() {
     const video = videoRef.current;
     if (!video) return;
-    if (video.currentTime >= end) video.currentTime = start;
-    const next = video.currentTime;
-    setTime(next);
-    setStage(stageForTime(next, anchors));
-    if (!video.paused) animationRef.current = requestAnimationFrame(updateFromVideo);
+    if (video.currentTime >= end) {
+      setSeeking(true);
+      video.currentTime = start;
+      return;
+    }
+    const oneFrameSafety = 1 / Math.max(report.frameSummary?.fps ?? 30, 1);
+    applyPresentedTime(Math.max(start, video.currentTime - oneFrameSafety));
+    if (!video.paused) animationRef.current = requestAnimationFrame(updateFromAnimationClock);
+  }
+
+  function scheduleFrameSync() {
+    const video = videoRef.current;
+    if (!video || video.paused) return;
+    if (typeof video.requestVideoFrameCallback === "function") {
+      videoFrameRef.current = video.requestVideoFrameCallback((_now, metadata) => {
+        videoFrameRef.current = null;
+        if (metadata.mediaTime >= end) {
+          setSeeking(true);
+          video.currentTime = start;
+        } else {
+          applyPresentedTime(metadata.mediaTime);
+        }
+        if (!video.paused) scheduleFrameSync();
+      });
+      return;
+    }
+    animationRef.current = requestAnimationFrame(updateFromAnimationClock);
   }
 
   function seek(next: number) {
     const value = Math.max(start, Math.min(end, next));
-    if (videoRef.current) videoRef.current.currentTime = value;
-    setTime(value);
-    setStage(stageForTime(value, anchors));
+    const video = videoRef.current;
+    if (video) {
+      setSeeking(true);
+      video.currentTime = value;
+      return;
+    }
+    applyPresentedTime(value);
+  }
+
+  function handleSeeked() {
+    const video = videoRef.current;
+    if (!video) return;
+    setSeeking(false);
+    applyPresentedTime(video.currentTime);
   }
 
   async function toggle() {
     const video = videoRef.current;
     if (!video) return;
     if (video.paused) {
-      if (video.currentTime < start || video.currentTime >= end) video.currentTime = start;
+      if (video.currentTime < start || video.currentTime >= end) {
+        setSeeking(true);
+        video.currentTime = start;
+      }
       video.playbackRate = rate;
       try {
         await video.play();
@@ -648,11 +771,12 @@ export default function CoachVisionStudio({
         return;
       }
       setPlaying(true);
-      animationRef.current = requestAnimationFrame(updateFromVideo);
+      cancelFrameSync();
+      scheduleFrameSync();
     } else {
       video.pause();
       setPlaying(false);
-      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+      cancelFrameSync();
     }
   }
 
@@ -677,8 +801,8 @@ export default function CoachVisionStudio({
       <div className="border-b border-slate-200 bg-[radial-gradient(circle_at_90%_0%,rgba(191,219,254,.5),transparent_34%),linear-gradient(135deg,#ffffff_0%,#f8fafc_58%,#ecfdf5_100%)] p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div className="max-w-3xl">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-800"><ScanLine className="h-4 w-4" />1 · See the video evidence</div>
-            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl">Now see the summary on your stroke</h2>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-800"><ScanLine className="h-4 w-4" />2 · See it in your video</div>
+            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl">Watch where the pattern begins</h2>
             <p className="mt-3 text-sm leading-7 text-slate-600">Use the same stage-and-letter references as the summary above. Green means the measured body check is working, red means change it, and gray means the camera cannot confirm it. The light dotted body map stays neutral.</p>
           </div>
           <div className="min-w-64 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
@@ -701,8 +825,9 @@ export default function CoachVisionStudio({
           </div>
 
           <div ref={mediaSurfaceRef} className="relative mt-4 aspect-video overflow-hidden rounded-2xl border border-white/10 bg-black">
-            {previewOnly ? <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_32%,rgba(30,64,175,.25),transparent_34%),linear-gradient(145deg,#020617,#0f172a)]" aria-label="Visual QA movement preview"><div className="absolute inset-x-0 bottom-16 text-center text-[0.65rem] font-medium uppercase tracking-[0.16em] text-slate-500">Visual QA movement preview</div></div> : <video ref={videoRef} src={videoUrl} muted playsInline preload="metadata" className="h-full w-full object-contain" onLoadedMetadata={() => seek(initialTime)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} />}
+            {previewOnly ? <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_32%,rgba(30,64,175,.25),transparent_34%),linear-gradient(145deg,#020617,#0f172a)]" aria-label="Visual QA movement preview"><div className="absolute inset-x-0 bottom-16 text-center text-[0.65rem] font-medium uppercase tracking-[0.16em] text-slate-500">Visual QA movement preview</div></div> : <video ref={videoRef} src={videoUrl} muted playsInline preload="metadata" className="h-full w-full object-contain" onLoadedMetadata={() => seek(initialTime)} onSeeked={handleSeeked} onPlay={() => setPlaying(true)} onPause={() => { setPlaying(false); cancelFrameSync(); }} />}
             <canvas ref={canvasRef} className="pointer-events-none absolute inset-0" aria-hidden="true" />
+            {storyCaption ? <div className="pointer-events-none absolute inset-x-3 bottom-3 flex justify-center"><p className="max-w-xl rounded-2xl border border-white/15 bg-slate-950/88 px-4 py-3 text-center text-sm font-semibold leading-6 text-white shadow-xl backdrop-blur">{storyCaption}</p></div> : null}
             <div data-testid="video-stage-reference" className="absolute left-3 top-3 rounded-xl border border-white/10 bg-slate-950/90 px-3 py-2 backdrop-blur"><p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white">{activeBackhandGuide ? `Stage ${activeBackhandGuide.number} · ${activeBackhandGuide.label}` : phaseTitle(stage)} · {time.toFixed(2)}s</p><p className="mt-1 text-[0.65rem] text-slate-300">{phaseTitle(stage)} frame {currentFrame?.frameIndex ?? "—"} · {mode === "clean" ? "original video" : MODE_OPTIONS.find((item) => item.id === mode)?.label}</p></div>
             {mode !== "clean" ? <div data-testid="correction-overlay-key" className="absolute bottom-3 left-3 flex flex-wrap gap-2 text-[0.62rem]"><span className="rounded-full bg-slate-950/88 px-2 py-1 text-slate-100">light dots = {BODY_CONNECTIONS.length} body links</span>{mode === "coach" ? <><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = change</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = working</span><span className="rounded-full bg-slate-800/90 px-2 py-1 text-slate-100">gray = confirm</span></> : null}{mode === "chain" ? <><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = connected</span><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = timing issue</span></> : null}</div> : null}
           </div>

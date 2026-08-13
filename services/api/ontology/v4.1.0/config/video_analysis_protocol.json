@@ -1,0 +1,193 @@
+{
+  "version": "4.1.0",
+  "mission": "Convert raw consumer tennis video into a traceable perceptual-causal coaching explanation. Detection, measurement, diagnosis, coaching and rendering are separate contracts.",
+  "non_negotiables": [
+    "Do not begin with fault labels. Begin with events, tracks, observables and context.",
+    "Preserve time-series evidence; a stroke is a movement through time, not a collection of frozen poses.",
+    "Every derived claim must name its evidence IDs, confidence and comparison basis.",
+    "Prefer within-player good-vs-poor rep contrasts to generic professional geometry when enough comparable reps exist.",
+    "Locate the earliest meaningful divergence that plausibly explains later symptoms.",
+    "Treat adaptation to ball context as intelligence, not inconsistency.",
+    "If the camera cannot support a claim, suppress the claim rather than fill the gap with language-model inference.",
+    "The player report is a teaching product; the coach/debug report is an evidence product."
+  ],
+  "stages": [
+    {
+      "stage": 1,
+      "id": "INGEST_QA",
+      "purpose": "Determine whether the clip can support analysis before any coaching is attempted.",
+      "outputs": [
+        "fps",
+        "resolution",
+        "duration",
+        "motion_blur_score",
+        "camera_motion_score",
+        "player_pixel_height",
+        "court_line_visibility",
+        "audio_available",
+        "quality_flags"
+      ]
+    },
+    {
+      "stage": 2,
+      "id": "SCENE_CALIBRATION",
+      "purpose": "Build the coordinate system used by later measurements.",
+      "outputs": [
+        "court_homography_if_available",
+        "camera_view",
+        "camera_pose_class",
+        "net_and_baseline_geometry",
+        "player_track",
+        "opponent_track_optional"
+      ]
+    },
+    {
+      "stage": 3,
+      "id": "OBJECT_TRACKING",
+      "purpose": "Track the objects whose interaction defines a tennis stroke.",
+      "outputs": [
+        "body_keypoints_2d",
+        "body_pose_3d_estimate_optional",
+        "ball_track",
+        "racket_handle_track",
+        "racket_head_track",
+        "racket_axis",
+        "track_confidence_timeseries"
+      ]
+    },
+    {
+      "stage": 4,
+      "id": "RALLY_AND_STROKE_SEGMENTATION",
+      "purpose": "Find individual stroke attempts and group them into rallies/context windows.",
+      "outputs": [
+        "stroke_candidates",
+        "pre_stroke_context_window",
+        "post_contact_outcome_window"
+      ]
+    },
+    {
+      "stage": 5,
+      "id": "EVENT_GRAPH",
+      "purpose": "Timestamp biomechanically meaningful events using fused evidence rather than a single detector.",
+      "outputs": [
+        "event_timeline",
+        "event_confidence",
+        "event_intervals",
+        "unresolved_events"
+      ]
+    },
+    {
+      "stage": 6,
+      "id": "CONTEXT_MODEL",
+      "purpose": "Describe the problem the player was solving on this ball.",
+      "outputs": [
+        "stroke_family",
+        "variant",
+        "incoming_ball",
+        "court_position",
+        "movement_state",
+        "stance",
+        "time_pressure",
+        "likely_intent",
+        "context_confidence"
+      ]
+    },
+    {
+      "stage": 7,
+      "id": "OBSERVABLE_TIME_SERIES",
+      "purpose": "Create normalized metric traces and event-window summaries.",
+      "outputs": [
+        "metric_series",
+        "window_features",
+        "measurement_uncertainty",
+        "visibility_masks"
+      ]
+    },
+    {
+      "stage": 8,
+      "id": "REP_CLUSTERING",
+      "purpose": "Compare only meaningfully similar repetitions.",
+      "outputs": [
+        "context_signature",
+        "comparable_rep_cluster",
+        "success_cluster",
+        "failure_cluster",
+        "outliers"
+      ]
+    },
+    {
+      "stage": 9,
+      "id": "BIOMECHANICAL_CONSTRUCTS",
+      "purpose": "Transform raw metrics into coaching constructs such as timing reserve, spacing, sequencing, stability and recovery.",
+      "outputs": [
+        "construct_scores",
+        "construct_evidence",
+        "construct_confidence"
+      ]
+    },
+    {
+      "stage": 10,
+      "id": "EARLIEST_DIVERGENCE",
+      "purpose": "Find where weaker reps first separate from the player's stronger comparable reps.",
+      "outputs": [
+        "earliest_divergence_event",
+        "divergent_metrics",
+        "effect_size",
+        "downstream_changes"
+      ]
+    },
+    {
+      "stage": 11,
+      "id": "CAUSAL_HYPOTHESES",
+      "purpose": "Generate and test root-cause, contributor, compensation and symptom hypotheses.",
+      "outputs": [
+        "hypotheses",
+        "supporting_evidence",
+        "contradicting_evidence",
+        "falsifiers",
+        "causal_role"
+      ]
+    },
+    {
+      "stage": 12,
+      "id": "INSIGHT_SELECTION",
+      "purpose": "Choose the smallest set of high-value coaching insights.",
+      "outputs": [
+        "strengths",
+        "primary_insight",
+        "secondary_insights",
+        "suppressed_insights",
+        "priority_scores"
+      ]
+    },
+    {
+      "stage": 13,
+      "id": "VISUAL_STORY_COMPILATION",
+      "purpose": "Translate each selected insight into an understandable visual sentence.",
+      "outputs": [
+        "storyboard",
+        "overlay_timeline",
+        "narration",
+        "interaction_points",
+        "accessibility_text"
+      ]
+    },
+    {
+      "stage": 14,
+      "id": "REPORT_QA",
+      "purpose": "Prevent unsupported, contradictory, repetitive or overloaded feedback.",
+      "outputs": [
+        "claim_traceability_check",
+        "confidence_gate",
+        "visual_load_check",
+        "language_consistency_check",
+        "final_status"
+      ]
+    }
+  ],
+  "three_products": {
+    "player": "1 strength + 1 primary correction + optional 1 secondary; visual first; few numbers; one cue.",
+    "advanced_player": "same thesis with timing/spacing/sequence evidence and self-best comparison.",
+    "coach": "full event timeline, metric traces, alternative hypotheses, uncertainty and raw evidence."
+  }
+}

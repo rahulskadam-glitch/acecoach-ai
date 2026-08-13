@@ -1,0 +1,101 @@
+{
+  "version": "4.1.0",
+  "hard_fail_rules": [
+    {
+      "id": "QG-PLAYER-JARGON",
+      "rule": "Player-facing text contains analyst/system jargon from the blocked glossary.",
+      "action": "rewrite"
+    },
+    {
+      "id": "QG-UNTRACEABLE",
+      "rule": "A diagnostic or causal sentence has no evidence_ids or comparison basis.",
+      "action": "reject"
+    },
+    {
+      "id": "QG-MULTI-CUE",
+      "rule": "More than one active correction cue is given in the primary coaching card.",
+      "action": "rewrite"
+    },
+    {
+      "id": "QG-VISUAL-MISMATCH",
+      "rule": "Narration/caption discusses a body event or consequence not visible in the compiled story beat.",
+      "action": "reject_or_change_visual"
+    },
+    {
+      "id": "QG-FAKE-PRAISE",
+      "rule": "Positive language is not tied to an evidenced strength.",
+      "action": "remove"
+    },
+    {
+      "id": "QG-FALSE-PRECISION",
+      "rule": "Player mode exposes an unsupported exact angle, millisecond, or contact frame.",
+      "action": "rewrite_or_move_to_deep_dive"
+    },
+    {
+      "id": "QG-COPYCAT",
+      "rule": "Language reproduces distinctive wording from a source or asks the model to imitate a named coach.",
+      "action": "rewrite_as_general_elite_coach_language"
+    },
+    {
+      "id": "QG-GENERIC",
+      "rule": "Correction could be pasted onto almost any tennis stroke without changing meaning.",
+      "action": "rewrite_with_stroke_phase_context_and_ball_consequence"
+    }
+  ],
+  "blocked_player_terms": [
+    "recurrence rate",
+    "comparable strokes",
+    "metric",
+    "causal chain",
+    "biomechanical inefficiency",
+    "kinematic anomaly",
+    "interpretation confidence",
+    "pose confidence",
+    "fault detected",
+    "angular velocity",
+    "thorax rotation"
+  ],
+  "robotic_phrase_patterns": [
+    "Across {n} comparable strokes",
+    "The analysis indicates that",
+    "The model detected",
+    "This metric suggests",
+    "Your performance would benefit from",
+    "It is recommended that you",
+    "A key area for improvement is"
+  ],
+  "quality_dimensions": {
+    "grounded": 0.24,
+    "stroke_specific": 0.18,
+    "causally_clear": 0.18,
+    "natural_spoken_rhythm": 0.15,
+    "actionable": 0.12,
+    "visual_alignment": 0.08,
+    "emotionally_credible": 0.05
+  },
+  "minimum_scores": {
+    "player_report": 0.84,
+    "visual_caption": 0.88,
+    "deep_dive": 0.8
+  },
+  "surface_limits": {
+    "headline_words": 14,
+    "coach_read_words": 55,
+    "why_words": 55,
+    "feel_cue_words": 9,
+    "visual_caption_words": 8,
+    "primary_card_active_numbers": 1,
+    "primary_card_active_cues": 1,
+    "watch_words": 16
+  },
+  "semantic_checks": [
+    "coach_read and change must describe the same selected primary insight",
+    "why must include at least one movement consequence or ball consequence",
+    "feel must be one cue, not a list separated by semicolons/slashes/and-then instructions",
+    "watch must point to a visible event/overlay in the visual story",
+    "train must constrain one main variable and define a finite practice set or clear task",
+    "success must be observable or feelable by the player and must not depend only on an internal model score",
+    "keep may appear only when a strength has evidence",
+    "no-major-correction reports must not invent a defect"
+  ]
+}

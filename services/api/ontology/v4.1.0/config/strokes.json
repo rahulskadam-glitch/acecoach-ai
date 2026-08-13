@@ -1,0 +1,96 @@
+{
+  "forehand": {
+    "code": "FH",
+    "name": "Forehand",
+    "phase_model": "groundstroke",
+    "technique_families": [
+      "eastern_bent",
+      "eastern_straight",
+      "semiwestern_bent",
+      "semiwestern_straight",
+      "western_bent",
+      "uncertain"
+    ]
+  },
+  "two_handed_backhand": {
+    "code": "2HB",
+    "name": "Two-Handed Backhand",
+    "phase_model": "groundstroke",
+    "technique_families": [
+      "bent_bent",
+      "straight_straight",
+      "bent_straight",
+      "straight_bent",
+      "uncertain"
+    ]
+  },
+  "one_handed_backhand": {
+    "code": "1HB",
+    "name": "One-Handed Topspin Backhand",
+    "phase_model": "groundstroke",
+    "technique_families": [
+      "compact",
+      "loop",
+      "uncertain"
+    ]
+  },
+  "slice_backhand": {
+    "code": "SL",
+    "name": "Slice Backhand",
+    "phase_model": "groundstroke",
+    "technique_families": [
+      "drive_slice",
+      "defensive_slice",
+      "approach_slice",
+      "drop_slice",
+      "uncertain"
+    ]
+  },
+  "serve": {
+    "code": "SRV",
+    "name": "Serve",
+    "phase_model": "serve",
+    "technique_families": [
+      "platform",
+      "pinpoint",
+      "hybrid",
+      "uncertain"
+    ]
+  },
+  "forehand_volley": {
+    "code": "FHV",
+    "name": "Forehand Volley",
+    "phase_model": "volley",
+    "technique_families": [
+      "block",
+      "drive",
+      "drop",
+      "stretch",
+      "uncertain"
+    ]
+  },
+  "backhand_volley": {
+    "code": "BHV",
+    "name": "Backhand Volley",
+    "phase_model": "volley",
+    "technique_families": [
+      "block",
+      "drive",
+      "drop",
+      "stretch",
+      "uncertain"
+    ]
+  },
+  "overhead": {
+    "code": "OVH",
+    "name": "Overhead Smash",
+    "phase_model": "overhead",
+    "technique_families": [
+      "stationary",
+      "moving_backward",
+      "scissor_kick",
+      "bounce_smash",
+      "uncertain"
+    ]
+  }
+}

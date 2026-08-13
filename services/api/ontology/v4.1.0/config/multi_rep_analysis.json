@@ -1,0 +1,64 @@
+{
+  "version": "4.1.0",
+  "principle": "Deep coaching comes from patterns across comparable repetitions and from contrasts between the player's own better and worse solutions.",
+  "context_signature_fields": [
+    "stroke_family",
+    "variant",
+    "incoming_depth_class",
+    "incoming_height_class",
+    "incoming_pace_class",
+    "court_position_zone",
+    "movement_direction",
+    "stance_family",
+    "intent"
+  ],
+  "cluster_rules": {
+    "minimum_for_pattern": 3,
+    "minimum_for_confirmed_habit": 5,
+    "minimum_for_self_baseline": 8,
+    "do_not_merge": [
+      "defensive_stretch_with_neutral_rally",
+      "return_with_groundstroke",
+      "slice_with_topspin",
+      "first_serve_with_second_serve_when_mechanics_intent_differs"
+    ]
+  },
+  "success_labeling": {
+    "preferred_sources": [
+      "known_in_ball_and_target_zone",
+      "depth_and_direction_proxy",
+      "player_or_coach_label",
+      "stable_outcome_proxy"
+    ],
+    "rule": "Do not define a biomechanically attractive rep as successful if the actual tennis outcome is poor."
+  },
+  "contrast_analysis": {
+    "steps": [
+      "Select 2-5 best comparable reps and 2-5 weak comparable reps.",
+      "Synchronize by invariant events such as bounce and contact.",
+      "Compare time-series constructs, not only snapshots.",
+      "Find earliest event window with a stable meaningful divergence.",
+      "Check whether downstream symptoms appear after that divergence.",
+      "Search for counterexamples: good outcome despite alleged root cause, or bad outcome without it.",
+      "Promote root-cause language only when counterexamples do not materially contradict the hypothesis."
+    ],
+    "outputs": [
+      "earliest_divergence",
+      "support_rate",
+      "counterexample_rate",
+      "downstream_consistency",
+      "self_best_blueprint"
+    ]
+  },
+  "cross_session_learning": {
+    "track": [
+      "primary_construct",
+      "cue",
+      "success_metric",
+      "rep_distribution",
+      "context_specificity"
+    ],
+    "promotion_rule": "Call something improved only when the distribution shifts across multiple comparable reps/sessions; do not celebrate one outlier as learning.",
+    "feedback_stability": "Keep the same primary cue across sessions unless evidence shows it is solved, wrong, or superseded by a more upstream issue."
+  }
+}

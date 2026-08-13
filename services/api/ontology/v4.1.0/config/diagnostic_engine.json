@@ -1,0 +1,109 @@
+{
+  "pipeline": [
+    {
+      "step": 1,
+      "name": "ingest_qa",
+      "contract": "video_analysis_protocol.INGEST_QA"
+    },
+    {
+      "step": 2,
+      "name": "scene_calibration_and_tracks",
+      "contract": "video_analysis_protocol.SCENE_CALIBRATION + OBJECT_TRACKING"
+    },
+    {
+      "step": 3,
+      "name": "segment_strokes_and_context",
+      "contract": "RALLY_AND_STROKE_SEGMENTATION + CONTEXT_MODEL"
+    },
+    {
+      "step": 4,
+      "name": "event_graph",
+      "contract": "event_detection.json"
+    },
+    {
+      "step": 5,
+      "name": "metric_time_series",
+      "contract": "measurement_recipes.json"
+    },
+    {
+      "step": 6,
+      "name": "comparable_rep_clustering",
+      "contract": "multi_rep_analysis.json"
+    },
+    {
+      "step": 7,
+      "name": "self_best_contrast",
+      "rule": "Synchronize good/weak comparable reps and find earliest meaningful divergence."
+    },
+    {
+      "step": 8,
+      "name": "causal_hypotheses",
+      "rule": "Label ROOT_CAUSE / CONTRIBUTOR / COMPENSATION / SYMPTOM; preserve contradictory evidence."
+    },
+    {
+      "step": 9,
+      "name": "insight_ranking",
+      "contract": "insight_reasoner.json"
+    },
+    {
+      "step": 10,
+      "name": "coaching_compilation",
+      "rule": "1 primary insight, 1-3 strengths, <=2 secondary insights; one active cue."
+    },
+    {
+      "step": 11,
+      "name": "visual_story_compilation",
+      "contract": "visual_story_compiler.json"
+    },
+    {
+      "step": 12,
+      "name": "claim_traceability_qa",
+      "rule": "Every public claim must resolve to evidence IDs and a comparison basis; unsupported claims are removed."
+    }
+  ],
+  "causal_priority": {
+    "order": [
+      "recognition_and_time",
+      "positioning_and_spacing",
+      "balance_and_loading",
+      "sequencing",
+      "racket_path_and_face",
+      "contact",
+      "finish",
+      "recovery"
+    ],
+    "note": "This is a coaching heuristic, not a claim that every earlier event causes every later event."
+  },
+  "minimum_evidence": {
+    "single_stroke": "describe mechanics of this rep only; no habit language and no population benchmark unless explicitly contextualized",
+    "habit_candidate": 3,
+    "habit_confirmed": 5,
+    "player_baseline": 8
+  },
+  "strength_selection": {
+    "minimum": 1,
+    "maximum": 3,
+    "criteria": [
+      "high_confidence",
+      "repeatable",
+      "performance_relevant",
+      "technique_family_appropriate"
+    ],
+    "language": "Specific and earned: name exactly what the player is doing well and why it helps."
+  },
+  "correction_selection": {
+    "primary_count": 1,
+    "secondary_max": 2,
+    "primary_score_formula": "0.20*performance_impact + 0.18*recurrence + 0.18*causal_leverage + 0.15*evidence_confidence + 0.10*coachability + 0.08*self_best_contrast + 0.06*visual_explainability + 0.05*persistence - overload_penalty - ambiguity_penalty",
+    "safety_gate": "Do not prescribe through pain; do not diagnose injury.",
+    "causal_roles": [
+      "ROOT_CAUSE",
+      "CONTRIBUTOR",
+      "COMPENSATION",
+      "SYMPTOM",
+      "UNKNOWN"
+    ],
+    "stability_rule": "Do not churn the primary correction between sessions unless evidence materially changes."
+  },
+  "version": "4.1.0"
+}

@@ -1,0 +1,46 @@
+{
+  "side": {
+    "contact_depth": "excellent",
+    "lateral_spacing": "limited",
+    "rotation": "limited",
+    "racket_path": "good",
+    "head_stability": "good",
+    "court_recovery": "limited",
+    "serve_toss_depth": "excellent",
+    "serve_lateral_toss": "limited",
+    "racket_face": "conditional"
+  },
+  "rear": {
+    "contact_depth": "limited",
+    "lateral_spacing": "excellent",
+    "rotation": "good",
+    "racket_path": "good",
+    "head_stability": "good",
+    "court_recovery": "excellent",
+    "serve_toss_depth": "limited",
+    "serve_lateral_toss": "excellent",
+    "racket_face": "conditional"
+  },
+  "rear_oblique": {
+    "contact_depth": "good",
+    "lateral_spacing": "good",
+    "rotation": "excellent",
+    "racket_path": "excellent",
+    "head_stability": "excellent",
+    "court_recovery": "excellent",
+    "serve_toss_depth": "good",
+    "serve_lateral_toss": "good",
+    "racket_face": "conditional"
+  },
+  "front_oblique": {
+    "contact_depth": "good",
+    "lateral_spacing": "good",
+    "rotation": "good",
+    "racket_path": "good",
+    "head_stability": "good",
+    "court_recovery": "good",
+    "serve_toss_depth": "good",
+    "serve_lateral_toss": "good",
+    "racket_face": "conditional"
+  }
+}

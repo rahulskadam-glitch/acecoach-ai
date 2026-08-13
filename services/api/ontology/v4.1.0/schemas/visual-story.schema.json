@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://acecoach.ai/schemas/visual-story.schema.json",
+  "title": "AceCoach Visual Story",
+  "type": "object",
+  "required": [
+    "story_id",
+    "archetype",
+    "focus_insight_id",
+    "beats"
+  ],
+  "properties": {
+    "story_id": {
+      "type": "string"
+    },
+    "archetype": {
+      "type": "string"
+    },
+    "focus_insight_id": {
+      "type": "string"
+    },
+    "beats": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "required": [
+          "beat_id",
+          "time_window",
+          "overlays",
+          "caption"
+        ],
+        "properties": {
+          "beat_id": {
+            "type": "string"
+          },
+          "time_window": {
+            "type": "object"
+          },
+          "playback_rate": {
+            "type": "number"
+          },
+          "overlays": {
+            "type": "array"
+          },
+          "caption": {
+            "type": "string"
+          },
+          "accessibility_text": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "alignment": {
+      "type": "object"
+    },
+    "limitations": {
+      "type": "array"
+    }
+  },
+  "additionalProperties": true
+}

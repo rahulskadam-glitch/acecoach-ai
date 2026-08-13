@@ -255,3 +255,23 @@ export function nearestFrame(frames: FrameMetric[], time: number) {
   }
   return best;
 }
+
+/** Selects only a pose that has already occurred on the presented video clock. */
+export function frameAtOrBefore(frames: FrameMetric[], time: number) {
+  if (frames.length === 0) return undefined;
+  if (time <= frames[0].timestampSeconds) return frames[0];
+  let low = 0;
+  let high = frames.length - 1;
+  let match = frames[0];
+  while (low <= high) {
+    const middle = Math.floor((low + high) / 2);
+    const candidate = frames[middle];
+    if (candidate.timestampSeconds <= time) {
+      match = candidate;
+      low = middle + 1;
+    } else {
+      high = middle - 1;
+    }
+  }
+  return match;
+}

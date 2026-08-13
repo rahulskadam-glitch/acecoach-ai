@@ -88,9 +88,14 @@ export default function AnalysisProcessing({ sessionId, fileName, sport, initial
     if (!SHOW_CONTEXT_PANEL || staticPreview) {
       return;
     }
-    void refreshContextInfo();
+    // Defer the first refresh so this effect only establishes the external
+    // polling subscription; state updates happen from timer callbacks.
+    const initialTimer = window.setTimeout(() => void refreshContextInfo(), 0);
     const timer = window.setInterval(() => void refreshContextInfo(), 5000);
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearTimeout(initialTimer);
+      window.clearInterval(timer);
+    };
   }, [refreshContextInfo, staticPreview]);
 
   async function confirmMovement(actionType: string | null) {
