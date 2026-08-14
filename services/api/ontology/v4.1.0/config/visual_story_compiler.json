@@ -183,6 +183,96 @@
           "action": "Mark the feature 'KEEP THIS' while introducing the separate correction."
         }
       ]
+    },
+    "TREND_ARC": {
+      "use_for": [
+        "PROGRESS_SHIFT",
+        "REGRESSION_OR_PLATEAU"
+      ],
+      "beats": [
+        {
+          "id": "BASELINE",
+          "action": "Show the earlier comparable-session distribution as a bounded band, with cue-change points marked.",
+          "overlays": ["SESSION_DISTRIBUTION_BAND"],
+          "caption": "This was your earlier pattern."
+        },
+        {
+          "id": "CURRENT",
+          "action": "Add the current comparable-session distribution without hiding spread or outliers.",
+          "overlays": ["SESSION_DISTRIBUTION_BAND", "TREND_DIRECTION_MARKER"],
+          "caption": "Here is the recent shift."
+        },
+        {
+          "id": "PROOF",
+          "action": "Play one representative earlier rep and one recent rep synchronized to the measured event.",
+          "overlays": ["REP_MOSAIC", "EVENT_BEACON"],
+          "caption": "The change survives several reps."
+        },
+        {
+          "id": "NEXT",
+          "action": "End with the stable cue or next bottleneck; never infer a cause from the trend alone.",
+          "overlays": ["CUE_CARD"],
+          "caption": "Keep the cue for the next test."
+        }
+      ]
+    },
+    "TRANSPARENT_LIMITATION": {
+      "use_for": [
+        "LIMITATION"
+      ],
+      "beats": [
+        {
+          "id": "VISIBLE_EVIDENCE",
+          "action": "Show the clean source frame with only the visible, trustworthy evidence highlighted.",
+          "overlays": ["EVIDENCE_HIGHLIGHT"],
+          "caption": "This view supports only this."
+        },
+        {
+          "id": "WITHHELD_CLAIM",
+          "action": "Mark the unavailable region or track gap without drawing an estimated target pose.",
+          "overlays": ["TRACK_GAP_WARNING", "UNCERTAINTY_DASH"],
+          "caption": "This detail is not measurable."
+        },
+        {
+          "id": "BETTER_CAPTURE",
+          "action": "Show one capture instruction that would make the claim testable.",
+          "overlays": ["CUE_CARD"],
+          "caption": "Use this view next time."
+        }
+      ]
+    },
+    "SHARED_ROOT_MAP": {
+      "use_for": [
+        "SHARED_ROOT_CONSTRUCT"
+      ],
+      "beats": [
+        {
+          "id": "STROKE_EVIDENCE",
+          "action": "Show one independently supported representative rep from each affected stroke without overlaying incompatible body geometry.",
+          "overlays": ["REP_MOSAIC", "CONTEXT_CHIP"],
+          "caption": "The same pattern appears here."
+        },
+        {
+          "id": "SHARED_CONSTRUCT",
+          "action": "Connect each stroke card to one labeled player-level construct; keep stroke-specific symptoms on their own branches.",
+          "overlays": ["SHARED_CONSTRUCT_NODE", "EVIDENCE_BRANCH"],
+          "caption": "One movement skill links them."
+        },
+        {
+          "id": "TRAINING_PRIORITY",
+          "action": "Show the shared practice objective and retain separate stroke cues when they are not interchangeable.",
+          "overlays": ["CUE_CARD"],
+          "caption": "Train the shared root first."
+        }
+      ]
+    },
+    "LOAD_TREND_CAUTION": {
+      "use_for": ["LOAD_PATTERN_FLAG"],
+      "beats": [
+        {"id": "RECENT_LOGS", "action": "Show the athlete's recent logged attempt counts as neutral bars.", "overlays": ["SESSION_DISTRIBUTION_BAND"], "caption": "These are your recent logs."},
+        {"id": "CURRENT_SPIKE", "action": "Highlight the current high-effort entry without using injury colors or anatomical load graphics.", "overlays": ["TREND_DIRECTION_MARKER"], "caption": "This hard session jumped higher."},
+        {"id": "SAFE_NEXT_STEP", "action": "End with recovery-oriented options and the pain stop rule.", "overlays": ["CUE_CARD"], "caption": "Make the next block easier."}
+      ]
     }
   },
   "overlay_primitives_to_add": [
@@ -202,7 +292,20 @@
     "UNCERTAINTY_DASH",
     "TRACK_GAP_WARNING",
     "EARLIEST_DIVERGENCE_MARKER"
+    ,"SESSION_DISTRIBUTION_BAND"
+    ,"TREND_DIRECTION_MARKER"
+    ,"SHARED_CONSTRUCT_NODE"
+    ,"EVIDENCE_BRANCH"
   ],
+  "mobile_viewport_contract": {
+    "minimum_supported_width_px": 320,
+    "minimum_tap_target_px": 44,
+    "maximum_caption_lines": 2,
+    "portrait": "Keep the athlete and active evidence inside the central 70% of the viewport; prefer side-by-side cards over overlaid ghosts when crop alignment is unsafe.",
+    "landscape": "Use the full video frame with controls outside the evidence region where possible.",
+    "reduced_motion": "Replace animated causal links and morphs with ordered still frames and explicit sequence labels.",
+    "rule": "Never shrink labels below legibility or crop evidence merely to preserve decorative layout."
+  },
   "camera_alignment_rules": [
     "Use ghost overlays only when body/court alignment error is acceptable.",
     "If camera/player scale differs too much, use synchronized side-by-side rather than silhouette overlay.",

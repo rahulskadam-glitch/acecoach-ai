@@ -5,7 +5,7 @@ import hashlib
 from pathlib import Path
 from typing import Any
 
-from ontology_runtime.acecoach_ontology.coaching_engine import compile_visual_story, rank_insights
+from ontology_runtime.acecoach_ontology.coaching_engine import compile_visual_story, earliest_meaningful_divergence, rank_insights
 from ontology_runtime.acecoach_ontology.loader import OntologyBundle
 
 
@@ -57,6 +57,13 @@ DOMAIN_ORDER = {
     "Loading": 2, "Sequencing": 3, "Racket path": 4,
     "Racket orientation": 4, "Contact": 5, "Extension/finish": 6, "Recovery": 7,
 }
+DOMAIN_GRAPH_NODE = {
+    "Recognition": "recognition_and_time", "Preparation": "recognition_and_time",
+    "Positioning": "movement_to_ball", "Spacing": "spacing", "Stability": "stance_and_balance",
+    "Loading": "loading", "Sequencing": "pelvis_trunk_sequence", "Racket path": "racket_path_face",
+    "Racket orientation": "racket_path_face", "Contact": "contact",
+    "Extension/finish": "recovery", "Recovery": "recovery",
+}
 PHASE_TO_TIMELINE = {
     "G0": "ready", "G1": "ready", "G2": "preparation", "G3": "preparation",
     "G4": "loading", "G5": "acceleration", "G6": "contact_proxy",
@@ -86,12 +93,15 @@ def _timestamp(timeline: list[dict[str, Any]], phase_code: str, fallback: float 
     return float(item.get("timestampSeconds", fallback)) if item else fallback
 
 
-def _dosage(drill: dict[str, Any]) -> str:
+def _dosage(drill: dict[str, Any], canonical_level: str | None = None) -> str:
     dosage = drill.get("dosage", {})
     if not isinstance(dosage, dict):
         return str(dosage)
     sets = dosage.get("sets", 2)
     reps = dosage.get("repetitions_per_set", 8)
+    if canonical_level:
+        scale = drill.get("level_adjustments", {}).get(canonical_level, {}).get("dosage_scale", 1.0)
+        reps = max(1, round(float(reps) * float(scale)))
     rest = dosage.get("rest_seconds")
     return f"{sets} sets of {reps} repetitions" + (f" · {rest} seconds rest" if rest else "")
 
@@ -106,89 +116,294 @@ def _chapter_evaluations(action_type: str, areas: list[dict[str, Any]]) -> list[
     for chapter in MOVEMENT_CHAPTERS:
         matches = [by_id[area_id] for area_id in chapter["area_ids"] if area_id in by_id]
         if not matches:
-            evaluations.append({"chapter": chapter, "areas": [], "area": None, "fault": None, "score": None})
+            evaluations.append({"chapter": chapter, "areas": [], "area": None, "faults": [], "score": None})
             continue
         representative = min(matches, key=lambda item: float(item.get("score", 100)))
-        compatible = [fault for fault in faults if fault.get("domain") in chapter["domains"]]
-        compatible.sort(key=lambda fault: (
-            min((index for index, token in enumerate(chapter["fault_tokens"]) if f"-{token}" in fault["fault_id"]), default=99),
-            fault["fault_id"],
-        ))
         evaluations.append({
             "chapter": chapter,
             "areas": matches,
             "area": representative,
-            "fault": compatible[0] if compatible else None,
+            "faults": [fault for fault in faults if fault.get("domain") in chapter["domains"]],
             "score": round(sum(float(item.get("score", 100)) for item in matches) / len(matches)),
         })
     return evaluations
 
 
-def _fault_candidates(action_type: str, areas: list[dict[str, Any]], confidence: float) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+def _direction_supported(fault: dict[str, Any], deviations: set[str]) -> bool:
+    """Use only explicit directional language; an unknown direction stays ambiguous."""
+    text = f"{fault.get('title', '')} {fault.get('detection', '')}".lower()
+    low_terms = ("insufficient", "limited", "too little", "narrow", "blocked", "stops", "delayed", "late", "collapses")
+    high_terms = ("excessive", "too much", "too wide", "over-", "premature", "moves before", "leaning")
+    wants_low = any(term in text for term in low_terms)
+    wants_high = any(term in text for term in high_terms)
+    return (wants_low and "low" in deviations) or (wants_high and "high" in deviations) or (not wants_low and not wants_high)
+
+
+def _evaluate_fault_evidence(fault: dict[str, Any], areas: list[dict[str, Any]], camera_angle: str) -> dict[str, Any]:
+    available = [
+        {**record, "areaId": area.get("id"), "areaScore": area.get("score"), "confidence": area.get("confidence"), "measurementBasis": area.get("measurementBasis")}
+        for area in areas for record in area.get("evidenceRecords", [])
+        if isinstance(record, dict) and record.get("metricId")
+    ]
+    by_metric = {str(record["metricId"]): record for record in available}
+    requirements = fault.get("observable_evidence", [])
+    required_ids = {str(item["metric_id"]) for item in requirements if item.get("required")}
+    expected_ids = {str(item["metric_id"]) for item in requirements}
+    matched = [by_metric[metric_id] for metric_id in expected_ids if metric_id in by_metric]
+    missing_required = sorted(required_ids - set(by_metric))
+    camera_supported = camera_angle in fault.get("supported_views", [])
+    deviations = {str(item.get("deviation")) for item in matched}
+    direction_supported = _direction_supported(fault, deviations)
+    reasons: list[str] = []
+    if not camera_supported:
+        reasons.append("camera_not_supported")
+    if missing_required:
+        reasons.append("required_evidence_missing")
+    if not matched:
+        reasons.append("no_compatible_measured_metric")
+    if matched and not direction_supported:
+        reasons.append("measured_direction_does_not_support_fault")
+    eligible = not reasons
+    return {
+        "eligible": eligible,
+        "cameraSupported": camera_supported,
+        "matchedEvidence": matched,
+        "missingRequiredMetricIds": missing_required,
+        "expectedMetricIds": sorted(expected_ids),
+        "reasons": reasons,
+        "directionSupported": direction_supported,
+    }
+
+
+def _validated_self_best_contrast(repetitions: list[dict[str, Any]], metric_ids: set[str]) -> dict[str, Any] | None:
+    """Compare only externally/validated outcome-labelled repetitions.
+
+    Tracking clarity or a visually typical repetition is deliberately not treated
+    as a successful tennis outcome.
+    """
+    success_labels = {"success", "in_target", "good_outcome"}
+    weak_labels = {"weak", "out_of_target", "poor_outcome"}
+    differences: list[dict[str, Any]] = []
+    for metric_id in sorted(metric_ids):
+        successful: list[float] = []
+        weak: list[float] = []
+        event_times: list[float] = []
+        for repetition in repetitions:
+            label = str(repetition.get("outcomeLabel", "")).lower()
+            metrics = repetition.get("knowledgeMetrics", {})
+            metric = metrics.get(metric_id) if isinstance(metrics, dict) else None
+            if isinstance(metric, dict):
+                value = metric.get("value")
+                event_times.append(float(metric.get("eventTimeMs", 0.0)))
+            else:
+                value = metric
+            if not isinstance(value, (int, float)):
+                continue
+            if label in success_labels:
+                successful.append(float(value))
+            elif label in weak_labels:
+                weak.append(float(value))
+        if len(successful) < 2 or len(weak) < 2:
+            continue
+        success_mean = sum(successful) / len(successful)
+        weak_mean = sum(weak) / len(weak)
+        combined = successful + weak
+        mean = sum(combined) / len(combined)
+        variance = sum((value - mean) ** 2 for value in combined) / max(1, len(combined) - 1)
+        effect = (success_mean - weak_mean) / max(variance ** .5, 1e-6)
+        direction = 1 if effect >= 0 else -1
+        comparisons = [1 for good in successful for poor in weak if (good - poor) * direction > 0]
+        support_rate = len(comparisons) / max(1, len(successful) * len(weak))
+        differences.append({
+            "metric_id": metric_id,
+            "effect_size": effect,
+            "support_rate": support_rate,
+            "event_time_ms": min(event_times) if event_times else 0.0,
+            "successful_repetitions": len(successful),
+            "weak_repetitions": len(weak),
+        })
+    return earliest_meaningful_divergence(differences)
+
+
+def _fault_candidates(
+    action_type: str, camera_angle: str, areas: list[dict[str, Any]], confidence: float,
+    repetitions: list[dict[str, Any]],
+    level_profile: dict[str, Any],
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
     candidates: list[dict[str, Any]] = []
+    rejected: list[dict[str, Any]] = []
     evaluations = _chapter_evaluations(action_type, areas)
+    allowed_chapters = set(level_profile.get("default_chapter_ids", []))
     for evaluation in evaluations:
-        fault = evaluation["fault"]
         area = evaluation["area"]
-        if not fault or not area:
+        if not area:
+            continue
+        if allowed_chapters and evaluation["chapter"]["id"] not in allowed_chapters:
             continue
         score = float(evaluation["score"])
         deficit = max(0.0, min(1.0, (82.0 - score) / 42.0))
         if deficit <= 0:
             continue
-        candidates.append({
-            "fault": fault, "area": area, "chapter": evaluation["chapter"], "areas": evaluation["areas"], "chapter_score": score,
-            "performance_impact": deficit,
-            "recurrence": deficit,
-            "causal_leverage": max(.35, 1.0 - DOMAIN_ORDER.get(fault["domain"], 8) / 10.0),
-            "evidence_confidence": confidence,
-            "coachability": .9 if fault.get("drill_ids") else .55,
-            "self_best_contrast": .35,
-            "visual_explainability": .9 if fault.get("overlay_markers") else .4,
-            "persistence": deficit,
-            "causal_role": "ROOT_CAUSE" if DOMAIN_ORDER.get(fault["domain"], 8) <= 3 else "CONTRIBUTOR",
-            "root_event_index": DOMAIN_ORDER.get(fault["domain"], 8),
-            "insight_id": f"ONTO-{fault['fault_id']}",
-        })
-    return rank_insights(candidates), evaluations
+        eligible_in_chapter: list[dict[str, Any]] = []
+        for fault in evaluation["faults"]:
+            evidence_result = _evaluate_fault_evidence(fault, evaluation["areas"], camera_angle)
+            if not evidence_result["eligible"]:
+                rejected.append({"faultId": fault["fault_id"], "chapterId": evaluation["chapter"]["id"], **evidence_result})
+                continue
+            eligible_in_chapter.append({"fault": fault, "evidence_result": evidence_result})
+        ambiguity = max(0, len(eligible_in_chapter) - 1)
+        if ambiguity:
+            for item in eligible_in_chapter:
+                rejected.append({
+                    "faultId": item["fault"]["fault_id"], "chapterId": evaluation["chapter"]["id"],
+                    **item["evidence_result"],
+                    "eligible": False,
+                    "reasons": [*item["evidence_result"]["reasons"], "non_discriminative_evidence"],
+                    "ambiguousWith": [other["fault"]["fault_id"] for other in eligible_in_chapter if other["fault"]["fault_id"] != item["fault"]["fault_id"]],
+                })
+            continue
+        for item in eligible_in_chapter:
+            fault = item["fault"]
+            matched = item["evidence_result"]["matchedEvidence"]
+            evidence_confidence = min([float(record.get("confidence") or confidence) for record in matched] or [confidence])
+            expected_metric_ids = {str(record["metricId"]) for record in matched}
+            divergence = _validated_self_best_contrast(repetitions, expected_metric_ids)
+            support_rate = float(divergence.get("support_rate", 0.0)) if divergence else 0.0
+            candidates.append({
+                "fault": fault, "area": area, "chapter": evaluation["chapter"], "areas": evaluation["areas"], "chapter_score": score,
+                "performance_impact": deficit,
+                "recurrence": support_rate,
+                "causal_leverage": min(1.0, .35 + support_rate * .45) if divergence else .35,
+                "evidence_confidence": evidence_confidence,
+                "coachability": .9 if fault.get("drill_ids") else .55,
+                "self_best_contrast": min(1.0, abs(float(divergence.get("effect_size", 0.0))) / 2.0) if divergence else 0.0,
+                "visual_explainability": .9 if fault.get("overlay_markers") else .4,
+                "persistence": 0.0,
+                "ambiguity_penalty": 0.0,
+                "causal_role": "ROOT_CAUSE" if divergence and not ambiguity else "UNKNOWN",
+                "root_event_index": DOMAIN_ORDER.get(fault["domain"], 8),
+                "insight_id": f"ONTO-{fault['fault_id']}",
+                "evidence_result": item["evidence_result"],
+                "ambiguousWith": [],
+                "selfBestDivergence": divergence,
+            })
+    weights = ontology().insight_reasoner["priority_formula"]["weights"]
+    return rank_insights(candidates, weights), evaluations, rejected
+
+
+def _canonical_level(playing_level: str | None, profiles: dict[str, Any]) -> str:
+    raw = (playing_level or "developing").strip().lower().replace(" ", "_")
+    aliases = profiles.get("aliases", {})
+    canonical = aliases.get(raw, raw)
+    return canonical if canonical in profiles["profiles"] else profiles.get("default_profile", "developing")
+
+
+def _cross_stroke_policy(bundle: OntologyBundle) -> dict[str, Any]:
+    contract = bundle.cross_stroke_constructs
+    return {
+        "minimumDistinctActions": contract["minimum_distinct_actions"],
+        "minimumSessionsPerAction": contract["minimum_sessions_per_action"],
+        "minimumConfidence": contract["minimum_confidence"],
+        "maximumCaptureScoreDifference": contract["maximum_capture_score_difference"],
+        "maximumLimiterMedianScore": contract["maximum_limiter_median_score"],
+        "contextMatchFields": contract["context_match_fields"],
+        "eligibleActionsByConstruct": {
+            item["id"]: item["eligible_actions"] for item in contract["constructs"]
+        },
+    }
+
+
+def _tested_causal_chain(selected: dict[str, Any], ranked: list[dict[str, Any]], bundle: OntologyBundle) -> list[dict[str, Any]]:
+    divergence = selected.get("selfBestDivergence")
+    if not divergence:
+        return []
+    source = DOMAIN_GRAPH_NODE.get(selected["fault"].get("domain"))
+    observed_nodes = {DOMAIN_GRAPH_NODE.get(item["fault"].get("domain")) for item in ranked if item is not selected}
+    edges = [edge for edge in bundle.causal_graph.get("edges", []) if edge.get("from") == source and edge.get("to") in observed_nodes]
+    return [{
+        "from": edge["from"], "to": edge["to"], "relationship": f"Configured {edge.get('strength', 'contextual')} hypothesis supported by measured findings at both nodes.",
+        "confidence": min(float(selected["evidence_confidence"]), float(divergence["support_rate"])),
+    } for edge in edges]
 
 
 def ground_report_in_ontology(
     *, action_type: str, camera_angle: str, confidence: float,
     repetition_count: int, timeline: list[dict[str, Any]], areas: list[dict[str, Any]],
     strengths: list[dict[str, Any]], limitations: list[str], repetition_insights: dict[str, Any],
+    repetitions: list[dict[str, Any]] | None = None,
+    playing_level: str | None = None,
 ) -> dict[str, Any] | None:
     """Compile v4.1 coaching from measured legacy signals without inventing measurements."""
     bundle = ontology()
-    ranked, evaluations = _fault_candidates(action_type, areas, confidence)
+    canonical_level = _canonical_level(playing_level, bundle.level_analysis_profiles)
+    level_profile = bundle.level_analysis_profiles["profiles"][canonical_level]
+    ranked, evaluations, rejected = _fault_candidates(action_type, camera_angle, areas, confidence, repetitions or [], level_profile)
     if not ranked:
-        return None
+        return {
+            "status": "NO_SUPPORTED_FAULT", "priorityScore": 0.0, "candidateCount": 0,
+            "evaluatedFaultIds": [], "findings": [], "strengthReview": [],
+            "movementChain": [{
+                "id": evaluation["chapter"]["id"], "label": evaluation["chapter"]["label"],
+                "status": "not_assessed", "score": evaluation["score"],
+                "summary": "Available evidence cannot distinguish a specific knowledge-layer finding.", "faultId": None,
+            } for evaluation in evaluations],
+            "rejectedCandidates": rejected, "cameraSupport": camera_angle, "sourceIds": [],
+            "ontologyVersion": bundle.manifest.get("version"),
+            "levelAnalysis": {"canonicalLevel": canonical_level, "profileId": level_profile["profile_id"], "fallbackMode": level_profile["fallback_mode"]},
+            "crossStrokePolicy": _cross_stroke_policy(bundle), "manifestHash": ontology_manifest_hash(),
+            "policiesApplied": ["fault_evidence_evaluation", "confidence_policy", "level_analysis_profile", "claim_traceability"],
+            "skippedPolicies": {
+                "insight_reasoner": "No unambiguous evidence-compatible fault remained after gating.",
+                "earliest_meaningful_divergence": "No eligible fault and validated outcome-labelled contrast were available.",
+                "causal_graph": "No eligible findings were available at graph endpoints.",
+                "visual_story_compiler": "No supported insight was available to visualize.",
+                "drill_linkage": "No supported fault was available for drill selection.",
+                "tactical_companion_ontology": "Validated ball tracking is unavailable.",
+                "cohort_benchmark_registry": "No validated numeric cohort is registered.",
+                "skill_transition_policy": "Automatic promotion remains disabled until validated level cohorts exist.",
+            },
+            "gatedCapabilities": [
+                "Ball outcome and exact contact remain unavailable without validated ball tracking.",
+                "Racket face, grip and exact racket path remain confirmation-only without racket tracking.",
+                "No specific fault is selected when pose evidence cannot distinguish compatible alternatives.",
+            ],
+        }
     selected = ranked[0]
     fault = selected["fault"]
     area = selected["area"]
     camera = camera_angle if camera_angle in fault.get("supported_views", []) else "unsupported"
+    minimum_reps = int(level_profile["cluster_thresholds"]["minimum_for_confirmed_habit"])
     confirmed = bundle.can_confirm_fault(
         fault_id=fault["fault_id"], comparable_strokes=repetition_count,
         measurement_confidence=float(area.get("confidence", confidence)),
         interpretation_confidence=confidence, camera_supported=camera != "unsupported",
         required_evidence_present=bool(area.get("measurementBasis")),
     )
+    # The current pose pipeline produces aggregate evidence, not per-repetition
+    # fault support. Keep habit confirmation closed until recurrence is measured.
+    confirmed = confirmed and repetition_count >= minimum_reps and float(selected["recurrence"]) > 0
     status = "FAULT_CONFIRMED" if confirmed else "FAULT_SUSPECTED"
     drill = bundle.drills[fault["drill_ids"][0]] if fault.get("drill_ids") else None
     root_time = _timestamp(timeline, fault["phase_origin"], float(area.get("timestampSeconds") or 0))
     effect_time = _timestamp(timeline, fault["phase_visible_effect"], float(area.get("timestampSeconds") or root_time))
+    matched_evidence = selected["evidence_result"]["matchedEvidence"]
     evidence_ids = [
         f"frame:{area.get('frameIndex', 'unknown')}",
-        f"measurement:{area.get('measurementBasis', 'unknown')}",
-        *[f"metric:{item['metric_id']}" for item in fault.get("observable_evidence", [])],
+        *[f"metric:{item['metricId']}:{item.get('measurementBasis', 'unknown')}" for item in matched_evidence],
     ]
-    comparison = (
-        {"type": "self_best", "repetition": repetition_insights.get("clearestReferenceRepetition"), "scope": "current comparable clip"}
-        if repetition_count >= 2 and repetition_insights.get("clearestReferenceRepetition") is not None
-        else {"type": "single_clip", "scope": "this measured repetition", "limitation": "Habit language is withheld until at least three comparable strokes."}
-    )
+    divergence = selected.get("selfBestDivergence")
+    causal_chain = _tested_causal_chain(selected, ranked, bundle)
+    comparison = ({
+        "type": "validated_self_best",
+        "scope": "outcome-labelled comparable repetitions in this clip",
+        "earliestDivergence": divergence,
+    } if divergence else {
+        "type": "within_clip_observation",
+        "scope": "aggregate pose evidence from this clip",
+        "limitation": "Repetitions are compared for consistency only; no validated ball-outcome labels are available for a self-best causal contrast.",
+    })
     story_seed = {
-        "insight_id": selected["insight_id"], "archetype": "HIDDEN_CAUSE",
+        "insight_id": selected["insight_id"], "archetype": "HIDDEN_CAUSE" if divergence else "LIMITATION",
         "root_event": fault["phase_origin"],
         "visual_captions": {
             "B1_ORIENT": "Watch the whole stroke once.",
@@ -205,26 +420,21 @@ def ground_report_in_ontology(
         if beat.get("beat_id") not in {"B1_ORIENT", "B6_CLEAN"}:
             beat["overlays"] = list(dict.fromkeys([*beat.get("overlays", []), *fault.get("overlay_markers", [])]))
 
-    coach_read = (
-        f"The first useful change is {fault['title'].lower()}. It starts during {fault['domain'].lower()}, "
-        f"before the later {fault['phase_visible_effect']} effect."
-    )
-    if status == "FAULT_SUSPECTED":
-        coach_read = f"In this clip, {fault['title'].lower()} is the clearest working hypothesis—not yet a confirmed habit."
+    coach_read = (f"Your stronger and weaker repetitions first separate around {fault['title'].lower()}, making it the best-supported starting point." if divergence else f"In this clip, {fault['title'].lower()} is supported as a working priority. Its underlying cause is not yet confirmed.")
     keep = strengths[0].get("title") if strengths else None
     insight = {
-        "insightId": selected["insight_id"], "role": "PRIMARY_CORRECTION", "archetype": "HIDDEN_CAUSE",
+        "insightId": selected["insight_id"], "role": "PRIMARY_CORRECTION", "archetype": "HIDDEN_CAUSE" if divergence else "LIMITATION",
         "thesis": coach_read, "rootEvent": fault["phase_origin"], "evidenceIds": evidence_ids,
         "comparisonBasis": comparison,
-        "causalChain": [{"from": fault["domain"], "to": fault["phase_visible_effect"], "relationship": fault["performance_consequence"], "confidence": confidence}],
+        "causalChain": causal_chain,
         "confidence": {"detection": confidence, "measurement": float(area.get("confidence", confidence)), "context": confidence if camera != "unsupported" else .35, "interpretation": confidence if confirmed else min(confidence, .74)},
         "falsificationConditions": [fault.get("counterfactual_test", {}).get("reject_root_cause_when", "The pattern does not recur in comparable strokes."), *limitations[:1]],
         "playerCoaching": {
             "coachRead": coach_read, "keep": keep, "change": fault["player_message"],
-            "why": fault["performance_consequence"], "feel": fault["coaching_ladder"]["cue"],
+            "why": f"This pattern is consistent with {fault['performance_consequence']}, but the clip does not prove causation.", "feel": fault["coaching_ladder"]["cue"],
             "watch": f"Watch {fault['domain'].lower()} near {root_time:.2f}s, then its effect near {effect_time:.2f}s.",
-            "train": f"{drill['name']}: {_dosage(drill)}" if drill else fault["coaching_ladder"]["constraint"],
-            "success": drill["success_condition"] if drill else fault["coaching_ladder"]["success_test"],
+            "train": f"{drill['name']}: {_dosage(drill, canonical_level)}" if drill else fault["coaching_ladder"]["constraint"],
+            "success": drill.get("level_adjustments", {}).get(canonical_level, {}).get("success_condition", drill["success_condition"]) if drill else fault["coaching_ladder"]["success_test"],
             "languageProfileId": "PLAYER_COACH_v4.1", "surface": "PLAYER_COACH",
         },
         "visualStory": {
@@ -242,13 +452,7 @@ def ground_report_in_ontology(
         item_fault = candidate["fault"]
         item_area = candidate["area"]
         chapter = candidate["chapter"]
-        item_camera_supported = camera_angle in item_fault.get("supported_views", [])
-        item_confirmed = bundle.can_confirm_fault(
-            fault_id=item_fault["fault_id"], comparable_strokes=repetition_count,
-            measurement_confidence=float(item_area.get("confidence", confidence)),
-            interpretation_confidence=confidence, camera_supported=item_camera_supported,
-            required_evidence_present=bool(item_area.get("measurementBasis")),
-        )
+        item_confirmed = False
         item_status = "FAULT_CONFIRMED" if item_confirmed else "FAULT_SUSPECTED"
         item_drill = bundle.drills[item_fault["drill_ids"][0]] if item_fault.get("drill_ids") else None
         chapter_copy = CHAPTER_LANGUAGE[chapter["id"]]
@@ -270,6 +474,8 @@ def ground_report_in_ontology(
             "phaseVisibleEffect": item_fault["phase_visible_effect"],
             "overlayMarkers": item_fault.get("overlay_markers", []),
             "sourceIds": item_fault.get("source_ids", []),
+            "evidenceEvaluation": candidate["evidence_result"],
+            "ambiguousWith": candidate["ambiguousWith"],
             "evidence": [{
                 "areaId": evidence_area.get("id"), "label": evidence_area.get("label"),
                 "observation": evidence_area.get("observation"),
@@ -279,8 +485,9 @@ def ground_report_in_ontology(
             } for evidence_area in candidate["areas"]],
             "drill": ({
                 "id": item_drill["drill_id"], "name": item_drill["name"],
-                "purpose": item_drill["purpose"], "dosage": _dosage(item_drill),
-                "cue": item_drill["cue"], "success": item_drill["success_condition"],
+                "purpose": item_drill["purpose"], "dosage": _dosage(item_drill, canonical_level),
+                "cue": item_drill["cue"],
+                "success": item_drill.get("level_adjustments", {}).get(canonical_level, {}).get("success_condition", item_drill["success_condition"]),
                 "setup": item_drill.get("setup"), "action": item_drill.get("action"),
                 "stopCondition": item_drill.get("stop_condition"),
                 "reassessment": item_drill.get("reassessment"),
@@ -323,15 +530,22 @@ def ground_report_in_ontology(
         "priorityScore": selected["priority_score"], "candidateCount": len(ranked),
         "evaluatedFaultIds": [item["fault"]["fault_id"] for item in ranked],
         "findings": findings, "strengthReview": strength_review, "movementChain": movement_chain,
+        "rejectedCandidates": rejected,
         "cameraSupport": camera, "sourceIds": fault.get("source_ids", []),
         "ontologyVersion": bundle.manifest.get("version"),
+        "levelAnalysis": {"canonicalLevel": canonical_level, "profileId": level_profile["profile_id"], "fallbackMode": level_profile["fallback_mode"]},
+        "crossStrokePolicy": _cross_stroke_policy(bundle),
         "manifestHash": ontology_manifest_hash(),
-        "policiesApplied": [
-            "confidence_policy", "camera_suitability", "diagnostic_engine", "causal_graph",
-            "insight_reasoner", "player_feedback_policy", "coach_language_generation_protocol",
-            "semantic_to_coach_language", "visual_story_compiler", "overlay_recipes",
-            "drill_linkage", "claim_traceability",
-        ],
+        "policiesApplied": ["fault_evidence_evaluation", "confidence_policy", "level_analysis_profile", "insight_reasoner", "visual_story_compiler", "drill_linkage", "claim_traceability", *(["earliest_meaningful_divergence"] if divergence else []), *(["causal_graph"] if causal_chain else [])],
+        "skippedPolicies": {
+            **({} if divergence else {"earliest_meaningful_divergence": "Validated success and weak-repetition outcome labels are unavailable."}),
+            **({} if causal_chain else {"causal_graph": "No configured graph edge has measured support at both endpoints."}),
+            "camera_suitability_config": "Fault-specific supported views were applied; metric-level camera recipes are not yet emitted by the pose pipeline.",
+            "player_feedback_policy": "Feedback is stored for evaluation but is not promoted into diagnostic evidence.",
+            "tactical_companion_ontology": "Validated ball tracking is unavailable.",
+            "cohort_benchmark_registry": "No validated numeric cohort is registered.",
+            "skill_transition_policy": "Automatic promotion remains disabled until validated level cohorts exist.",
+        },
         "gatedCapabilities": [
             "Ball outcome and exact contact remain unavailable without validated ball tracking.",
             "Racket face, grip and exact racket path remain confirmation-only without racket tracking.",

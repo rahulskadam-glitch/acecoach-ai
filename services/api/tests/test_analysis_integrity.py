@@ -24,6 +24,8 @@ from analysis_engine.sport_rules import build_coaching
 from analysis_engine.signal_analytics import robust_outlier_indices, smooth_signal
 from analysis_engine.temporal import RepetitionWindow, detect_repetitions
 from analysis_engine.video import VideoMetadata
+from analysis_engine.multi_view_fusion import fused_metric_support, synchronize_event_timelines
+from analysis_engine.tactical_reasoner import tactical_eligibility
 
 
 def point(x: float, y: float, z: float = 0.0) -> dict[str, float]:
@@ -90,6 +92,38 @@ class AnalysisIntegrityTests(unittest.TestCase):
         second_signal, second_windows = detect_repetitions(self.frames, self.fps, "right")
         self.assertEqual(first_signal.tolist(), second_signal.tolist())
         self.assertEqual(first_windows, second_windows)
+
+    def test_dual_view_fusion_fails_closed_without_trackers(self) -> None:
+        sync = synchronize_event_timelines([100, 500, 900], [70, 470, 870])
+        self.assertTrue(sync.synchronized)
+        config = {
+            "supported_pairs": [["side", "rear"]],
+            "metric_upgrades": {
+                "racket_face": {"from": "conditional", "to": "good", "requires": ["racket_tracking_in_both_views", "synchronized_contact_interval"]}
+            },
+        }
+        withheld = fused_metric_support("racket_face", "side", "rear", sync, {"synchronized_contact_interval"}, config)
+        self.assertFalse(withheld["supported"])
+        self.assertIn("racket_tracking_in_both_views", withheld["missing"])
+        unlocked = fused_metric_support("racket_face", "side", "rear", sync, {"synchronized_contact_interval", "racket_tracking_in_both_views"}, config)
+        self.assertTrue(unlocked["supported"])
+
+    def test_dual_view_fusion_rejects_bad_event_alignment(self) -> None:
+        sync = synchronize_event_timelines([100, 500, 900], [50, 300, 830], maximum_median_error_ms=40)
+        self.assertFalse(sync.synchronized)
+
+    def test_tactical_companion_remains_gated_without_ball_pipeline(self) -> None:
+        config = {
+            "required_base_capabilities": ["validated_ball_tracking", "point_boundary_detection"],
+            "insight_families": [{"id": "SERVE_PLUS_ONE", "minimum_points": 2, "additional_capabilities": ["shot_direction"], "allowed_claim": "Describe the pattern."}],
+        }
+        observations = [{"point_complete": True, "outcome": "won"}, {"point_complete": True, "outcome": "lost"}]
+        blocked = tactical_eligibility("SERVE_PLUS_ONE", observations, {"point_boundary_detection", "shot_direction"}, config)
+        self.assertFalse(blocked["eligible"])
+        self.assertIn("validated_ball_tracking", blocked["missing_capabilities"])
+        allowed = tactical_eligibility("SERVE_PLUS_ONE", observations, {"validated_ball_tracking", "point_boundary_detection", "shot_direction"}, config)
+        self.assertTrue(allowed["eligible"])
+        self.assertFalse(allowed["mechanical_inference_allowed"])
 
     def test_decoder_presentation_timestamp_uses_monotonic_fallback(self) -> None:
         capture = SimpleNamespace(get=lambda _property: 42.0)
@@ -187,21 +221,23 @@ class AnalysisIntegrityTests(unittest.TestCase):
         self.assertIsNotNone(result["next_generation_story"])
         self.assertTrue(result["next_generation_story"]["insightId"].startswith("ONTO-FH-"))
         self.assertEqual(result["next_generation_story"]["playerCoaching"]["languageProfileId"], "PLAYER_COACH_v4.1")
-        self.assertGreaterEqual(len(result["next_generation_story"]["visualStory"]["beats"]), 5)
+        self.assertGreaterEqual(len(result["next_generation_story"]["visualStory"]["beats"]), 3)
         self.assertEqual(result["ontology_reasoning"]["ontologyVersion"], "4.1.0")
         self.assertIn("confidence_policy", result["ontology_reasoning"]["policiesApplied"])
+        self.assertIn("fault_evidence_evaluation", result["ontology_reasoning"]["policiesApplied"])
+        self.assertNotIn("causal_graph", result["ontology_reasoning"]["policiesApplied"])
+        self.assertIn("causal_graph", result["ontology_reasoning"]["skippedPolicies"])
+        self.assertEqual(result["ontology_reasoning"]["status"], "FAULT_SUSPECTED")
+        self.assertEqual(result["next_generation_story"]["causalChain"], [])
         self.assertIn(result["priorities"][0]["faultId"], result["ontology_reasoning"]["evaluatedFaultIds"])
-        self.assertEqual(len(result["drills"]), 3)
-        self.assertEqual(len({drill["id"] for drill in result["drills"]}), 3)
+        self.assertGreaterEqual(len(result["drills"]), 1)
+        self.assertEqual(len({drill["id"] for drill in result["drills"]}), len(result["drills"]))
         self.assertEqual(result["drills"][0]["ontologyVersion"], "4.1.0")
         chapter_ids = {item["chapterId"] for item in result["ontology_reasoning"]["findings"]}
         self.assertIn("weight_transfer", chapter_ids)
         self.assertEqual(len(result["ontology_reasoning"]["movementChain"]), 6)
-        self.assertEqual(
-            {item["chapterId"] for item in result["ontology_reasoning"]["findings"]}
-            | {item["chapterId"] for item in result["ontology_reasoning"]["strengthReview"]},
-            {"setup", "movement_spacing", "weight_transfer", "swing_connection", "contact_stability", "finish_recovery"},
-        )
+        self.assertTrue(all(item["evidenceEvaluation"]["matchedEvidence"] for item in result["ontology_reasoning"]["findings"]))
+        self.assertTrue(result["ontology_reasoning"]["rejectedCandidates"])
         self.assertIsInstance(result["coach_summary"]["pyramidSummary"]["strengths"], list)
         self.assertIsInstance(result["coach_summary"]["pyramidSummary"]["improvements"], list)
         self.assertIn("firstAction", result["coach_summary"]["pyramidSummary"])

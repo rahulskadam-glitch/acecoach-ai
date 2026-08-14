@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "coordinate_space": "normalized_video",
+  "video": {"width": 1280, "height": 720, "fps": 30, "camera_view": "side"},
+  "events": {"setup": 0, "earliest_divergence": 1, "contact_proxy": 2},
+  "connections": [["left_shoulder", "right_shoulder"], ["left_shoulder", "left_hip"], ["right_shoulder", "right_hip"], ["left_hip", "right_hip"], ["right_shoulder", "right_elbow"], ["right_elbow", "right_wrist"], ["left_hip", "left_knee"], ["left_knee", "left_ankle"], ["right_hip", "right_knee"], ["right_knee", "right_ankle"]],
+  "repetitions": {
+    "self_best": [
+      {"timestamp_ms": 300, "landmarks": {"left_shoulder":[0.43,0.31,0.98],"right_shoulder":[0.55,0.32,0.98],"left_elbow":[0.40,0.43,0.96],"right_elbow":[0.61,0.41,0.97],"left_wrist":[0.39,0.54,0.95],"right_wrist":[0.68,0.38,0.96],"left_hip":[0.46,0.54,0.98],"right_hip":[0.55,0.54,0.98],"left_knee":[0.43,0.72,0.97],"right_knee":[0.58,0.71,0.97],"left_ankle":[0.40,0.91,0.96],"right_ankle":[0.62,0.90,0.96]}},
+      {"timestamp_ms": 600, "landmarks": {"left_shoulder":[0.46,0.31,0.98],"right_shoulder":[0.57,0.33,0.98],"left_elbow":[0.42,0.44,0.96],"right_elbow":[0.62,0.43,0.97],"left_wrist":[0.41,0.55,0.95],"right_wrist":[0.70,0.47,0.96],"left_hip":[0.48,0.54,0.98],"right_hip":[0.57,0.54,0.98],"left_knee":[0.45,0.72,0.97],"right_knee":[0.61,0.70,0.97],"left_ankle":[0.42,0.91,0.96],"right_ankle":[0.66,0.89,0.96]}},
+      {"timestamp_ms": 900, "landmarks": {"left_shoulder":[0.49,0.32,0.98],"right_shoulder":[0.60,0.34,0.98],"left_elbow":[0.45,0.45,0.96],"right_elbow":[0.67,0.46,0.97],"left_wrist":[0.44,0.56,0.95],"right_wrist":[0.77,0.50,0.96],"left_hip":[0.50,0.54,0.98],"right_hip":[0.59,0.55,0.98],"left_knee":[0.47,0.72,0.97],"right_knee":[0.63,0.70,0.97],"left_ankle":[0.44,0.91,0.96],"right_ankle":[0.69,0.89,0.96]}}
+    ],
+    "current": [
+      {"timestamp_ms": 300, "landmarks": {"left_shoulder":[0.43,0.31,0.98],"right_shoulder":[0.55,0.32,0.98],"left_elbow":[0.40,0.43,0.96],"right_elbow":[0.61,0.41,0.97],"left_wrist":[0.39,0.54,0.95],"right_wrist":[0.68,0.38,0.96],"left_hip":[0.46,0.54,0.98],"right_hip":[0.55,0.54,0.98],"left_knee":[0.43,0.72,0.97],"right_knee":[0.58,0.71,0.97],"left_ankle":[0.40,0.91,0.96],"right_ankle":[0.62,0.90,0.96]}},
+      {"timestamp_ms": 600, "landmarks": {"left_shoulder":[0.43,0.32,0.96],"right_shoulder":[0.55,0.34,0.96],"left_elbow":[0.40,0.45,0.94],"right_elbow":[0.59,0.45,0.93],"left_wrist":[0.39,0.56,0.93],"right_wrist":[0.65,0.50,0.91],"left_hip":[0.44,0.55,0.97],"right_hip":[0.53,0.56,0.97],"left_knee":[0.43,0.73,0.95],"right_knee":[0.55,0.72,0.94],"left_ankle":[0.41,0.91,0.95],"right_ankle":[0.58,0.91,0.94]}},
+      {"timestamp_ms": 900, "landmarks": {"left_shoulder":[0.45,0.33,0.95],"right_shoulder":[0.57,0.35,0.95],"left_elbow":[0.42,0.46,0.92],"right_elbow":[0.62,0.47,0.90],"left_wrist":[0.41,0.57,0.91],"right_wrist":[0.70,0.54,0.88],"left_hip":[0.45,0.56,0.96],"right_hip":[0.54,0.57,0.96],"left_knee":[0.44,0.74,0.94],"right_knee":[0.56,0.73,0.93],"left_ankle":[0.42,0.92,0.94],"right_ankle":[0.59,0.92,0.93]}}
+    ]
+  }
+}

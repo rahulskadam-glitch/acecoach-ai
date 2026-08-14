@@ -1,15 +1,18 @@
 import { saveProductFeedback } from "@/app/actions/experience-actions";
 import ProductFeedbackForm from "@/components/feedback/ProductFeedbackForm";
-import AthleteWorkspaceShell from "@/components/layout/AthleteWorkspaceShell";
-import WorkspacePageHeader from "@/components/layout/WorkspacePageHeader";
+import JourneyShell from "@/features/journey/presentation/JourneyShell";
 import { requireUser } from "@/lib/supabase/server";
 
-export default async function FeedbackPage() {
+const stages = new Set(["capture", "processing", "report", "practice", "progress", "coach", "pricing"]);
+
+export default async function FeedbackPage({ searchParams }: { searchParams: Promise<{ stage?: string }> }) {
   await requireUser();
+  const params = await searchParams;
+  const initialStage = params.stage && stages.has(params.stage) ? params.stage : "report";
   async function save(formData: FormData) { "use server"; await saveProductFeedback(formData); }
   return (
-    <AthleteWorkspaceShell>
-      <div className="space-y-6"><WorkspacePageHeader eyebrow="Build with athletes" title="Feedback becomes a governed product input" description="AceCoach groups feedback by journey stage and issue type, reviews it against evidence and telemetry, and ships changes only through versioned releases and deterministic tests." /><ProductFeedbackForm action={save} /></div>
-    </AthleteWorkspaceShell>
+    <JourneyShell current="coach" showProgress={false}>
+      <div className="mx-auto max-w-4xl space-y-6"><header className="rounded-3xl border border-violet-200 bg-violet-50 p-6 sm:p-8"><p className="text-sm font-semibold uppercase tracking-[0.18em] text-violet-800">Player feedback</p><h1 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl">Help make your next session better</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">Rate the experience, tell us what was useful, or point out what needs work. Feedback is reviewed by people and never changes coaching rules automatically.</p></header><ProductFeedbackForm action={save} initialStage={initialStage} /></div>
+    </JourneyShell>
   );
 }

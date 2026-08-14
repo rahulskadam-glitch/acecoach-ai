@@ -1,0 +1,24 @@
+{
+  "version": "0.1.0-gated",
+  "status": "companion_contract_not_enabled_without_validated_ball_pipeline",
+  "boundary": "Consumes the mechanics event graph but never changes biomechanical fault confirmation. Tactical intent may contextualize mechanics; it may not manufacture a mechanical diagnosis.",
+  "required_base_capabilities": ["point_boundary_detection", "validated_ball_tracking", "court_calibration", "shot_event_detection", "outcome_labeling"],
+  "event_graph": {
+    "nodes": ["point_start", "serve_contact", "bounce", "shot_contact", "court_landing", "player_recovery", "point_end"],
+    "edges": ["serve_to_return", "return_to_next_ball", "shot_to_landing", "landing_to_recovery", "shot_sequence", "point_outcome"]
+  },
+  "insight_families": [
+    {"id": "SERVE_PLUS_ONE", "minimum_points": 8, "additional_capabilities": ["serve_classification", "shot_direction"], "allowed_claim": "Describe recurring serve-plus-one direction and depth patterns."},
+    {"id": "RETURN_DEPTH_PATTERN", "minimum_points": 8, "additional_capabilities": ["return_classification", "landing_depth"], "allowed_claim": "Describe return landing-depth distributions by serve context."},
+    {"id": "RALLY_SHAPE", "minimum_points": 12, "additional_capabilities": ["shot_direction", "landing_depth", "rally_index"], "allowed_claim": "Describe recurring rally direction and depth sequences."},
+    {"id": "TRANSITION_OPPORTUNITY", "minimum_points": 10, "additional_capabilities": ["court_position", "landing_depth", "point_outcome"], "allowed_claim": "Identify repeated short-ball contexts followed by approach or non-approach choices."}
+  ],
+  "do_not_claim": [
+    "shot intention from body pose alone",
+    "point construction when point boundaries are uncertain",
+    "ball depth from player location alone",
+    "tactical weakness from fewer than the configured point minimum",
+    "mechanical cause from a tactical correlation"
+  ],
+  "activation_rule": "Remain dormant until every required base capability is validated and versioned in the engine manifest."
+}

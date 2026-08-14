@@ -12,7 +12,7 @@ fi
 api_dir="${repo_root}/services/api"
 api_host="${ANALYSIS_API_HOST:-127.0.0.1}"
 api_port="${ANALYSIS_PORT:-${ANALYSIS_API_PORT:-8000}}"
-web_host="${HOST:-127.0.0.1}"
+web_host="${WEB_HOST:-127.0.0.1}"
 web_port="${PORT:-3000}"
 api_pid=""
 web_pid=""

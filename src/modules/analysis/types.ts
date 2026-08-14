@@ -576,7 +576,7 @@ export type AnalysisReport = {
   };
   nextGenerationStory?: import("@/features/biomechanics/contracts/ontology").DeepCoachingInsight;
   ontologyReasoning?: {
-    status: "FAULT_SUSPECTED" | "FAULT_CONFIRMED";
+    status: "FAULT_SUSPECTED" | "FAULT_CONFIRMED" | "NO_SUPPORTED_FAULT";
     priorityScore: number;
     candidateCount: number;
     evaluatedFaultIds: string[];
@@ -585,7 +585,19 @@ export type AnalysisReport = {
     ontologyVersion: string;
     manifestHash: string;
     policiesApplied: string[];
+    skippedPolicies?: Record<string, string>;
     gatedCapabilities: string[];
+    rejectedCandidates?: Array<{
+      faultId: string;
+      chapterId: string;
+      eligible: boolean;
+      cameraSupported: boolean;
+      matchedEvidence: Array<Record<string, unknown>>;
+      missingRequiredMetricIds: string[];
+      expectedMetricIds: string[];
+      reasons: string[];
+      directionSupported: boolean;
+    }>;
     findings: Array<{
       id: string;
       rank: number;
@@ -608,6 +620,16 @@ export type AnalysisReport = {
       phaseVisibleEffect: string;
       overlayMarkers: string[];
       sourceIds: string[];
+      evidenceEvaluation?: {
+        eligible: boolean;
+        cameraSupported: boolean;
+        matchedEvidence: Array<Record<string, unknown>>;
+        missingRequiredMetricIds: string[];
+        expectedMetricIds: string[];
+        reasons: string[];
+        directionSupported: boolean;
+      };
+      ambiguousWith?: string[];
       evidence: Array<{
         areaId: string;
         label: string;

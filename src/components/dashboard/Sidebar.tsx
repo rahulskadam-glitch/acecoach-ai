@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, BookOpenCheck, FlaskConical, Gauge, LayoutGrid, Library, LifeBuoy, LogOut, MessageSquareHeart, ReceiptText, Upload, UserRound } from "lucide-react";
+import { BarChart3, BookOpenCheck, LayoutGrid, Library, LifeBuoy, LogOut, MessageSquareHeart, Upload, UserRound } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
@@ -8,17 +8,13 @@ import { useState } from "react";
 import { signOutUser } from "@/app/actions/auth-actions";
 
 const links = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
-  { href: "/upload", label: "Record / Upload", icon: Upload },
-  { href: "/library", label: "Analyze / Library", icon: Library },
+  { href: "/home", label: "Home", icon: LayoutGrid },
+  { href: "/start", label: "New analysis", icon: Upload },
+  { href: "/library", label: "My videos", icon: Library },
   { href: "/practice", label: "Practice", icon: BookOpenCheck },
   { href: "/progress", label: "Progress", icon: BarChart3 },
-  { href: "/benchmark", label: "Product benchmark", icon: Gauge },
-  { href: "/feedback", label: "Feedback", icon: MessageSquareHeart },
-  { href: "/methodology", label: "Methodology", icon: FlaskConical },
-  { href: "/pricing", label: "Plans", icon: ReceiptText },
-  { href: "/support", label: "Support", icon: LifeBuoy },
-  { href: "/profile", label: "Profile", icon: UserRound },
+  { href: "/settings", label: "Account", icon: UserRound },
+  { href: "/support", label: "Help", icon: LifeBuoy },
 ];
 
 export default function Sidebar() {
@@ -47,6 +43,7 @@ export default function Sidebar() {
             return <Link key={item.href} href={item.href} className={`flex items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition ${active ? "bg-emerald-500/15 text-emerald-300" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}><Icon className="h-4 w-4" />{item.label}</Link>;
           })}
         </nav>
+        <Link href="/feedback" className="mt-6 flex items-start gap-3 rounded-2xl border border-violet-400/25 bg-violet-400/10 p-4 text-violet-100 transition hover:bg-violet-400/15"><MessageSquareHeart className="mt-0.5 h-5 w-5 shrink-0" /><span><span className="block text-sm font-semibold">Give feedback</span><span className="mt-1 block text-xs leading-5 text-violet-200/70">Rate the experience or suggest an improvement.</span></span></Link>
       </div>
       <button type="button" onClick={handleSignOut} disabled={signingOut} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-3 text-sm font-medium text-slate-300 transition hover:bg-white/10 hover:text-white disabled:opacity-60"><LogOut className="h-4 w-4" />{signingOut ? "Signing out..." : "Sign out"}</button>
     </aside>

@@ -731,6 +731,7 @@ def build_coaching(
             "timestampSeconds": timestamp,
             "confidence": float(metric.get("confidence", confidence)),
             "measurementBasis": metric.get("basis", "development_rule"),
+            "evidenceRecords": metric.get("evidenceRecords", []),
         })
 
     strongest = sorted(coaching_areas, key=lambda item: (-item["score"], item["id"]))[:2]

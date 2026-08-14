@@ -21,9 +21,10 @@ export default function JourneyShell({
       <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur">
         <div className={`mx-auto flex ${maxWidth} items-center justify-between gap-6 px-5 py-4 sm:px-8`}>
           <AceCoachMark />
-          <div className="flex items-center gap-5">
-            <Link href="/support" className="hidden text-sm font-medium text-slate-600 hover:text-slate-950 sm:inline">Help</Link>
-            <Link href="/home" className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 shadow-sm hover:border-slate-300 hover:text-slate-950">Account</Link>
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Link href="/feedback" className="hidden rounded-xl px-3 py-2 text-sm font-semibold text-violet-700 hover:bg-violet-50 sm:inline">Give feedback</Link>
+            <Link href="/support" className="hidden text-sm font-medium text-slate-600 hover:text-slate-950 md:inline">Help</Link>
+            <Link href="/settings" className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 shadow-sm hover:border-slate-300 hover:text-slate-950">Account</Link>
           </div>
         </div>
         {showProgress ? (

@@ -22,7 +22,7 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
   const sport = getSport(params.sport);
   const next = safeNext(params.next);
   const { user } = await getAuthenticatedUser();
-  if (user) redirect(`${next}?sport=${encodeURIComponent(sport.id)}`);
+  if (user) redirect(`${next}${next.includes("?") ? "&" : "?"}sport=${encodeURIComponent(sport.id)}`);
   const enabled = new Set((process.env.NEXT_PUBLIC_AUTH_PROVIDERS ?? "").split(",").map((item) => item.trim().toLowerCase()).filter(Boolean));
   const providers = PROVIDERS.filter((provider) => enabled.has(provider.id) || (provider.id === "azure" && enabled.has("microsoft")));
   return <JourneyShell current="auth"><AuthExperience sportName={sport.name} sportId={sport.id} next={next} providers={providers} message={params.message ?? params.error ?? null} /></JourneyShell>;

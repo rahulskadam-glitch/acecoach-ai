@@ -4,7 +4,7 @@
 2. Back up `C:\workspace\web` and `.env.local`.
 3. Replace the full `web` folder with the package `web` folder.
 4. Restore `.env.local`.
-5. Run `supabase/022_simple_athlete_journey_v600.sql` after migration 021.
+5. Run migrations `supabase/022_simple_athlete_journey_v600.sql` through `supabase/029_cue_history_fk_index_v622.sql` in numeric order after migration 021. Migrations 026–029 add the optional durable learning-state and shared-root layers plus their policy/index hardening; analysis reports remain usable during a rolling deployment before they are applied.
 6. Add configured OAuth providers to `NEXT_PUBLIC_AUTH_PROVIDERS`, for example:
 
    `NEXT_PUBLIC_AUTH_PROVIDERS=google,microsoft,facebook`

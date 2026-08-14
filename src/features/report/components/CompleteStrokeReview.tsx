@@ -22,100 +22,9 @@ const STATUS_STYLE = {
   not_assessed: "border-slate-200 bg-slate-50 text-slate-600",
 } as const;
 
-const REVIEW_CHAPTERS = [
-  { id: "setup", label: "Setup & timing" },
-  { id: "movement_spacing", label: "Footwork & spacing" },
-  { id: "weight_transfer", label: "Weight transfer & leg drive" },
-  { id: "swing_connection", label: "Body-to-racket connection" },
-  { id: "contact_stability", label: "Head & contact stability" },
-  { id: "finish_recovery", label: "Finish & recovery" },
-] as const;
-
-function chapterForRegion(id: string) {
-  if (id.includes("head")) return "contact_stability";
-  if (id.includes("finish")) return "finish_recovery";
-  if (id.includes("feet")) return "movement_spacing";
-  if (id.includes("hip")) return "weight_transfer";
-  if (id.includes("knee") || id.includes("hand")) return "swing_connection";
-  return "setup";
-}
-
 function reviewTrace(report: AnalysisReport): NonNullable<AnalysisReport["ontologyReasoning"]> | null {
   if (report.ontologyReasoning?.findings?.length) return report.ontologyReasoning;
-  const regions = report.frameSummary?.bodyRegionReview ?? [];
-  const developing = regions.filter((item) => item.status === "priority" || item.status === "developing").slice(0, 5);
-  if (!developing.length) return null;
-  const findings = developing.map((item, index) => {
-    const chapterId = chapterForRegion(item.id);
-    const chapter = REVIEW_CHAPTERS.find((candidate) => candidate.id === chapterId) ?? REVIEW_CHAPTERS[0];
-    return {
-      id: `review-${item.id}`,
-      rank: index + 1,
-      role: index === 0 ? "PRIMARY" as const : "SECONDARY" as const,
-      chapterId,
-      label: chapter.label,
-      faultId: `VIDEO-${item.id.toUpperCase()}`,
-      ontologyTitle: item.title,
-      domain: chapterId,
-      status: "FAULT_SUSPECTED" as const,
-      score: item.status === "priority" ? 48 : 64,
-      priorityScore: developing.length - index,
-      confidence: report.confidence,
-      summary: item.coachNote,
-      why: item.whyItMatters,
-      correction: item.coachNote,
-      cue: item.cue,
-      watch: typeof item.timestampSeconds === "number" ? `Watch near ${item.timestampSeconds.toFixed(2)}s.` : "Watch this movement through the relevant phase.",
-      phaseOrigin: item.phase,
-      phaseVisibleEffect: item.phase,
-      overlayMarkers: [],
-      sourceIds: [],
-      evidence: item.evidence.map((evidence) => ({
-        areaId: evidence.id,
-        label: evidence.label,
-        observation: evidence.displayValue,
-        score: item.status === "priority" ? 48 : 64,
-        confidence: evidence.confidence,
-        measurementBasis: evidence.measurementBasis,
-        timestampSeconds: item.timestampSeconds,
-      })),
-      drill: report.drills[index] ? {
-        id: report.drills[index].id,
-        name: report.drills[index].name,
-        purpose: report.drills[index].purpose,
-        dosage: report.drills[index].dosage,
-        cue: report.drills[index].cue,
-        success: report.drills[index].successMetric,
-      } : null,
-    };
-  });
-  const strength = regions.find((item) => item.status === "strength");
-  const strengthReview = strength ? [{
-    chapterId: chapterForRegion(strength.id),
-    label: strength.title,
-    score: 86,
-    summary: strength.coachNote,
-    evidence: strength.evidence.map((evidence) => ({ areaId: evidence.id, label: evidence.label, observation: evidence.displayValue, score: 86, confidence: evidence.confidence, measurementBasis: evidence.measurementBasis })),
-  }] : [];
-  return {
-    status: "FAULT_SUSPECTED",
-    priorityScore: findings[0].priorityScore,
-    candidateCount: findings.length,
-    evaluatedFaultIds: findings.map((item) => item.faultId),
-    cameraSupport: "pose-supported video review",
-    sourceIds: [],
-    ontologyVersion: "4.1.0",
-    manifestHash: report.engineManifest?.ontologyManifestHash ?? "legacy-compatible-review",
-    policiesApplied: ["progressive_disclosure", "camera_honesty"],
-    gatedCapabilities: [],
-    findings,
-    strengthReview,
-    movementChain: REVIEW_CHAPTERS.map((chapter) => {
-      const finding = findings.find((item) => item.chapterId === chapter.id);
-      const isStrength = strengthReview.some((item) => item.chapterId === chapter.id);
-      return { id: chapter.id, label: chapter.label, status: finding?.role === "PRIMARY" ? "priority" as const : finding ? "developing" as const : isStrength ? "strength" as const : "not_assessed" as const, score: finding?.score ?? (isStrength ? 86 : null), summary: finding?.summary ?? strengthReview.find((item) => item.chapterId === chapter.id)?.summary ?? "Not assessed from this camera view.", faultId: finding?.faultId ?? null };
-    }),
-  };
+  return null;
 }
 
 function phaseLabel(value: string) {
@@ -137,7 +46,8 @@ export default function CompleteStrokeReview({ report }: { report: AnalysisRepor
   const story = useMemo(() => buildNextGenerationStory(report), [report]);
   const [activeBeatIndex, setActiveBeatIndex] = useState(0);
   const activeBeat = story.visualStory.beats[activeBeatIndex] ?? story.visualStory.beats[0];
-  if (!trace?.findings?.length) return null;
+  if (!trace) return <section className="rounded-3xl border border-amber-200 bg-amber-50 p-6 text-amber-950"><p className="text-xs font-bold uppercase tracking-[0.14em]">Earlier report</p><h2 className="mt-2 text-xl font-semibold">This analysis does not contain a verified knowledge trace</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-amber-900/80">The original measurements remain available, but AceCoach will not present them as ontology-derived reasoning. Reanalyze the video from My Videos to use the current evidence-gated coaching engine.</p></section>;
+  if (!trace.findings.length) return <section className="rounded-3xl border border-blue-200 bg-blue-50 p-6 text-blue-950"><p className="text-xs font-bold uppercase tracking-[0.14em]">Evidence check completed</p><h2 className="mt-2 text-xl font-semibold">No specific coaching fault passed the evidence gates</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-blue-900/80">AceCoach measured the visible movement, but the available pose and camera evidence could not distinguish one ontology finding reliably. The supporting measurements remain below; no fault-specific causal story or drill has been invented.</p></section>;
   const primaryFinding = trace.findings.find((item) => item.role === "PRIMARY") ?? trace.findings[0];
   const supportingFindings = trace.findings.filter((item) => item.id !== primaryFinding.id);
 
@@ -168,7 +78,7 @@ export default function CompleteStrokeReview({ report }: { report: AnalysisRepor
           <div className="max-w-3xl">
             <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-blue-800"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-950 text-white">1</span><Sparkles className="h-4 w-4" />Understand your stroke</p>
             <h2 id="complete-review-title" className="mt-3 text-3xl font-bold tracking-[-0.035em] text-slate-950 sm:text-4xl">Your stroke story</h2>
-            <p className="mt-3 max-w-2xl text-base font-medium leading-7 text-slate-700">Start with the main pattern. Then see how it changes the rest of the stroke and what to do next.</p>
+            <p className="mt-3 max-w-2xl text-base font-medium leading-7 text-slate-700">Start with the best-supported pattern. Then see what it may affect and what to do next.</p>
           </div>
           <div className="grid min-w-[250px] grid-cols-2 gap-2">
             <div data-testid="stroke-improvement-count" className="rounded-2xl border-2 border-rose-300 bg-white p-4 shadow-sm"><p className="text-3xl font-bold text-rose-800">{trace.findings.length}</p><p className="mt-1 text-xs font-bold uppercase tracking-wide text-rose-900">areas to improve</p></div>
@@ -193,7 +103,7 @@ export default function CompleteStrokeReview({ report }: { report: AnalysisRepor
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.15em] text-sky-300">Coach&apos;s bottom line</p>
               <h3 className="mt-3 text-2xl font-semibold leading-tight tracking-[-0.03em] sm:text-3xl">{story.playerCoaching.coachRead}</h3>
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300">The complete stroke map above gives you the context. This is the first connection to understand and train.</p>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-300">The complete stroke map above gives you the context. This is the first evidence-backed priority to understand and train.</p>
             </div>
             <div className="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 p-5">
               <p className="text-[0.68rem] font-semibold uppercase tracking-[0.14em] text-emerald-300">One cue for the next rep</p>
@@ -203,11 +113,11 @@ export default function CompleteStrokeReview({ report }: { report: AnalysisRepor
           </div>
 
           <div className="border-t border-white/10 p-5 sm:p-7">
-            <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-sky-300">Priority explained</p><h3 className="mt-1 text-xl font-semibold">Follow cause → effect → correction</h3></div><p className="text-xs text-slate-400">The first finding, connected to the whole stroke</p></div>
+            <div className="flex flex-wrap items-end justify-between gap-3"><div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-sky-300">Priority explained</p><h3 className="mt-1 text-xl font-semibold">Follow evidence → likely effect → correction</h3></div><p className="text-xs text-slate-400">Causation stays unconfirmed until comparable outcomes support it</p></div>
             <div className="mt-4 grid gap-3 lg:grid-cols-[1fr_auto_1fr_auto_1fr] lg:items-stretch">
-              <div className="rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4"><p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-amber-300">1 · Where it starts</p><p className="mt-2 text-sm font-semibold leading-6">{primaryFinding.summary}</p><p className="mt-2 text-xs text-slate-400">{phaseLabel(primaryFinding.phaseOrigin)}</p></div>
+              <div className="rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4"><p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-amber-300">1 · What we observed</p><p className="mt-2 text-sm font-semibold leading-6">{primaryFinding.summary}</p><p className="mt-2 text-xs text-slate-400">{phaseLabel(primaryFinding.phaseOrigin)}</p></div>
               <ArrowRight className="mx-auto h-5 w-5 self-center rotate-90 text-slate-500 lg:rotate-0" />
-              <div className="rounded-2xl border border-rose-300/20 bg-rose-300/10 p-4"><p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-rose-300">2 · What it changes</p><p className="mt-2 text-sm font-semibold leading-6">{primaryFinding.why}</p><p className="mt-2 text-xs text-slate-400">Visible by {phaseLabel(primaryFinding.phaseVisibleEffect)}</p></div>
+              <div className="rounded-2xl border border-rose-300/20 bg-rose-300/10 p-4"><p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-rose-300">2 · What it may change</p><p className="mt-2 text-sm font-semibold leading-6">{primaryFinding.why}</p><p className="mt-2 text-xs text-slate-400">Expected by {phaseLabel(primaryFinding.phaseVisibleEffect)}</p></div>
               <ArrowRight className="mx-auto h-5 w-5 self-center rotate-90 text-slate-500 lg:rotate-0" />
               <div className="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 p-4"><p className="text-[0.65rem] font-bold uppercase tracking-[0.14em] text-emerald-300">3 · What to change</p><p className="mt-2 text-sm font-semibold leading-6">{primaryFinding.correction}</p><p className="mt-2 text-xs text-slate-400">Feel: “{primaryFinding.cue}”</p></div>
             </div>

@@ -42,5 +42,28 @@
     "serve_toss_depth": "good",
     "serve_lateral_toss": "good",
     "racket_face": "conditional"
+  },
+  "multi_view_fusion": {
+    "status": "contract_ready_capture_ui_pending",
+    "required_distinct_views": 2,
+    "supported_pairs": [
+      ["side", "rear"],
+      ["side", "rear_oblique"],
+      ["side", "front_oblique"]
+    ],
+    "synchronization": {
+      "required_shared_events": 2,
+      "maximum_median_event_error_ms": 50,
+      "maximum_clock_drift_ms_per_second": 3,
+      "failure_behavior": "analyze_each_view_independently_and_do_not_relax_metric_gates"
+    },
+    "metric_upgrades": {
+      "contact_depth": {"from": "conditional", "to": "good", "requires": ["side_view_pose", "second_view_pose", "synchronized_contact_interval"]},
+      "lateral_spacing": {"from": "conditional", "to": "good", "requires": ["rear_or_oblique_pose", "side_view_pose", "court_or_body_scale_alignment"]},
+      "rotation": {"from": "limited", "to": "good", "requires": ["two_view_torso_landmarks", "calibration_quality_at_least_medium"]},
+      "racket_face": {"from": "conditional", "to": "good", "requires": ["racket_tracking_in_both_views", "synchronized_contact_interval", "calibration_quality_high"]}
+    },
+    "never_unlock_from_pose_only": ["racket_face", "grip", "joint_load", "force", "exact_3d_ball_trajectory"],
+    "claim_rule": "Two views improve geometry only for metrics whose required trackers and calibration gates pass; a second phone alone does not make a metric measured."
   }
 }

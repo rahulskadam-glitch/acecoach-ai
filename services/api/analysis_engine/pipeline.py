@@ -1443,8 +1443,10 @@ class AnalysisPipeline:
                     strengths=strengths,
                     limitations=limitations,
                     repetition_insights=repetition_insights,
+                    repetitions=biomechanics.repetitions,
+                    playing_level=payload.playing_level,
                 )
-            if ontology_reasoning:
+            if ontology_reasoning and ontology_reasoning.get("fault"):
                 fault = ontology_reasoning["fault"]
                 insight = ontology_reasoning["insight"]
                 selected_drill = ontology_reasoning["drill"]
@@ -1508,6 +1510,8 @@ class AnalysisPipeline:
                 coaching_playbook = build_coaching_playbook(
                     analysis_action, coach_summary, priorities, drills, payload.primary_goal,
                 )
+            elif ontology_reasoning:
+                coach_summary["ontologyReasoning"] = ontology_reasoning
 
             coach_summary["contextStatement"] = analysis_context["statement"]
             coach_summary["coachVerdict"] = (
@@ -1742,7 +1746,7 @@ class AnalysisPipeline:
                 "coaching_areas": coaching_areas,
                 "reference_comparison": reference,
                 "quality_gate": quality_gate,
-                "next_generation_story": ontology_reasoning["insight"] if ontology_reasoning else None,
+                "next_generation_story": ontology_reasoning.get("insight") if ontology_reasoning else None,
                 "ontology_reasoning": ({key: value for key, value in ontology_reasoning.items() if key not in {"insight", "fault", "drill"}} if ontology_reasoning else None),
             }
         finally:

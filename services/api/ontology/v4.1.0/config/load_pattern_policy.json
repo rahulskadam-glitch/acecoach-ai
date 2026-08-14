@@ -1,0 +1,28 @@
+{
+  "version": "4.1.0",
+  "archetype": "LOAD_PATTERN_FLAG",
+  "inputs": ["logged_practice_attempts", "self_rated_effort", "practice_timestamp", "stroke_action"],
+  "minimum_prior_checkins": 2,
+  "minimum_current_attempts": 40,
+  "volume_spike_ratio": 1.5,
+  "allowed_claims": [
+    "Recorded practice attempts increased relative to the athlete's own recent logs.",
+    "A high-effort volume spike may justify an easier session or recovery discussion.",
+    "Pain, numbness, weakness, or persistent symptoms should be discussed with a qualified clinician."
+  ],
+  "do_not_claim": [
+    "injury diagnosis",
+    "injury prediction",
+    "joint load from monocular pose",
+    "tissue stress",
+    "safe universal repetition limit",
+    "total training load when practice logging is incomplete"
+  ],
+  "suppression_rules": [
+    "Suppress without at least two prior check-ins for the same stroke action.",
+    "Suppress when attempts are missing or current effort is not self-rated hard.",
+    "Label the result recorded practice volume, never total training load."
+  ],
+  "player_message": "Your logged attempts jumped above your recent pattern and this session felt hard. Consider an easier next block, and stop if you feel pain.",
+  "clinical_boundary": "This is a practice-log pattern, not a medical assessment."
+}

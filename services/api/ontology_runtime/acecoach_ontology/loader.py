@@ -16,9 +16,7 @@ class OntologyBundle:
     faults: Dict[str, Dict[str, Any]]
     shared_faults: Dict[str, Dict[str, Any]]
     drills: Dict[str, Dict[str, Any]]
-    overlay_recipes: Dict[str, Any]
     confidence_policy: Dict[str, Any]
-    scoring_profiles: Dict[str, Any]
     camera_suitability: Dict[str, Any]
     research_sources: Dict[str, Dict[str, Any]]
     observation_taxonomy: Dict[str, Any]
@@ -27,7 +25,6 @@ class OntologyBundle:
     benchmark_policy: Dict[str, Any]
     diagnostic_engine: Dict[str, Any]
     coaching_language: Dict[str, Any]
-    visual_coaching_grammar: Dict[str, Any]
     causal_graph: Dict[str, Any]
     video_analysis_protocol: Dict[str, Any]
     event_detection: Dict[str, Any]
@@ -44,6 +41,12 @@ class OntologyBundle:
     natural_language_quality_gates: Dict[str, Any]
     coach_language_generation_protocol: Dict[str, Any]
     semantic_to_coach_language: Dict[str, Any]
+    level_analysis_profiles: Dict[str, Any]
+    cross_stroke_constructs: Dict[str, Any]
+    load_pattern_policy: Dict[str, Any]
+    tactical_companion_ontology: Dict[str, Any]
+    cohort_benchmark_registry: Dict[str, Any]
+    skill_transition_policy: Dict[str, Any]
 
     @staticmethod
     def _read(path: Path) -> Any:
@@ -70,9 +73,7 @@ class OntologyBundle:
         bundle = cls(
             root=root, manifest=manifest, strokes=strokes, phases=phases,
             faults=faults, shared_faults=shared, drills=drills,
-            overlay_recipes=cls._read(root/'config/overlay_recipes.json'),
             confidence_policy=cls._read(root/'config/confidence_policy.json'),
-            scoring_profiles=cls._read(root/'config/scoring_profiles.json'),
             camera_suitability=cls._read(root/'config/camera_suitability.json'),
             research_sources={x['source_id']: x for x in cls._read(root/'config/research_sources.json')},
             observation_taxonomy=cls._read(root/'config/observation_taxonomy.json'),
@@ -81,7 +82,6 @@ class OntologyBundle:
             benchmark_policy=cls._read(root/'config/benchmark_policy.json'),
             diagnostic_engine=cls._read(root/'config/diagnostic_engine.json'),
             coaching_language=cls._read(root/'config/coaching_language.json'),
-            visual_coaching_grammar=cls._read(root/'config/visual_coaching_grammar.json'),
             causal_graph=cls._read(root/'config/causal_graph.json'),
             video_analysis_protocol=cls._read(root/'config/video_analysis_protocol.json'),
             event_detection=cls._read(root/'config/event_detection.json'),
@@ -98,6 +98,12 @@ class OntologyBundle:
             natural_language_quality_gates=cls._read(root/'config/natural_language_quality_gates.json'),
             coach_language_generation_protocol=cls._read(root/'config/coach_language_generation_protocol.json'),
             semantic_to_coach_language=cls._read(root/'config/semantic_to_coach_language.json'),
+            level_analysis_profiles=cls._read(root/'config/level_analysis_profiles.json'),
+            cross_stroke_constructs=cls._read(root/'config/cross_stroke_constructs.json'),
+            load_pattern_policy=cls._read(root/'config/load_pattern_policy.json'),
+            tactical_companion_ontology=cls._read(root/'config/tactical_companion_ontology.json'),
+            cohort_benchmark_registry=cls._read(root/'config/cohort_benchmark_registry.json'),
+            skill_transition_policy=cls._read(root/'config/skill_transition_policy.json'),
         )
         bundle.validate_references()
         return bundle
@@ -114,6 +120,43 @@ class OntologyBundle:
             for sid in f.get('source_ids', []):
                 if sid not in self.research_sources:
                     raise OntologyError(f'{fid} references missing research source {sid}')
+        priority = self.insight_reasoner.get('priority_formula', {})
+        weights = priority.get('weights', {})
+        if not weights or abs(sum(float(value) for value in weights.values()) - 1.0) > 1e-9:
+            raise OntologyError('insight_reasoner priority weights must exist and sum to 1.0')
+        archetypes = {item['id'] for item in self.insight_reasoner.get('insight_archetypes', [])}
+        story_coverage = {
+            archetype
+            for story in self.visual_story_compiler.get('story_archetypes', {}).values()
+            for archetype in story.get('use_for', [])
+        }
+        missing_stories = archetypes - story_coverage
+        if missing_stories:
+            raise OntologyError(f'Insight archetypes missing visual stories: {sorted(missing_stories)}')
+        canonical_levels = set(self.context_ontology['profile_modifiers']['level'])
+        configured_levels = set(self.level_analysis_profiles.get('profiles', {}))
+        if configured_levels != canonical_levels:
+            raise OntologyError(
+                f'Level analysis profiles must match canonical levels: missing={sorted(canonical_levels-configured_levels)}, '
+                f'unknown={sorted(configured_levels-canonical_levels)}'
+            )
+        for drill_id, drill in self.drills.items():
+            if set(drill.get('level_adjustments', {})) != canonical_levels:
+                raise OntologyError(f'{drill_id} must define adjustments for every canonical player level')
+        stroke_ids = set(self.strokes)
+        construct_ids: set[str] = set()
+        for construct in self.cross_stroke_constructs.get('constructs', []):
+            construct_id = construct['id']
+            if construct_id in construct_ids:
+                raise OntologyError(f'Duplicate cross-stroke construct: {construct_id}')
+            construct_ids.add(construct_id)
+            unknown_actions = set(construct.get('eligible_actions', [])) - stroke_ids
+            if unknown_actions:
+                raise OntologyError(f'{construct_id} uses unknown actions: {sorted(unknown_actions)}')
+        for seed in self.cohort_benchmark_registry.get('qualitative_seeds', []):
+            unknown_sources = set(seed.get('source_ids', [])) - set(self.research_sources)
+            if unknown_sources:
+                raise OntologyError(f"{seed.get('id')} uses unknown research sources: {sorted(unknown_sources)}")
 
     def get_fault(self, fault_id: str) -> Dict[str, Any]:
         try:

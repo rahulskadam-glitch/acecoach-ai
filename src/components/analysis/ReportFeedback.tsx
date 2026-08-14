@@ -44,7 +44,7 @@ export default function ReportFeedback({ existing, onSubmit }: { existing: Exist
 
   return (
     <section id="report-feedback" className="scroll-mt-24 rounded-[1.75rem] border border-sky-500/20 bg-sky-500/[0.05] p-6 print:hidden">
-      <div className="flex items-start gap-3"><MessageSquareText className="mt-1 h-5 w-5 text-sky-300" /><div><p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-300">Make the coach smarter</p><h2 className="mt-2 text-2xl font-semibold text-white">Was this report accurate and useful?</h2><p className="mt-2 text-sm leading-6 text-slate-400">Your feedback is tied to this engine version and session. It helps identify classification errors, unclear coaching, and irrelevant drills.</p></div></div>
+      <div className="flex items-start gap-3"><MessageSquareText className="mt-1 h-5 w-5 text-sky-300" /><div><p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-300">Help improve your coaching</p><h2 className="mt-2 text-2xl font-semibold text-white">Was this report accurate and useful?</h2><p className="mt-2 text-sm leading-6 text-slate-400">Tell us if the movement, coaching, visuals, or drills did not fit your video.</p></div></div>
       <form action={submit} className="mt-6 space-y-5">
         <div>
           <p className="text-sm font-medium text-white">Did AceCoach identify the movement correctly?</p>

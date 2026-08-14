@@ -587,6 +587,13 @@ def compute_frame_metrics(frames: list[PoseFrame], fps: float, dominant_side: st
             "headVerticalRange": round(max(head_y) - min(head_y), 5) if head_y else None,
             "headToComRange": round(max(head_to_com) - min(head_to_com), 5) if head_to_com else None,
             "phaseTimeline": phase_timeline,
+            "knowledgeMetrics": ({
+                "head_displacement_body_ratio": {
+                    "value": round(max(head_to_com) - min(head_to_com), 5),
+                    "eventTimeMs": round((frames[window.peak_frame].timestamp_seconds - frames[window.start_frame].timestamp_seconds) * 1000.0, 2),
+                    "measurementClass": "BODY_NORMALIZED_2D",
+                },
+            } if head_to_com else {}),
         })
 
     primary_index: int | None = None
@@ -668,6 +675,11 @@ def _frame(result: BiomechanicsResult, frame_index: int | None) -> dict | None:
 def _timeline_index(result: BiomechanicsResult, phase: str) -> int | None:
     item = next((entry for entry in result.timeline if entry.get("phase") == phase), None)
     return int(item["frameIndex"]) if item else None
+
+
+def _timeline_timestamp(result: BiomechanicsResult, phase: str) -> float:
+    item = next((entry for entry in result.timeline if entry.get("phase") == phase), None)
+    return float(item.get("timestampSeconds", 0.0)) if item else 0.0
 
 
 def _score_band(value: float, ideal_low: float, ideal_high: float, tolerance: float) -> int:
@@ -857,14 +869,14 @@ def score_from_measurements(
 
     metric_scores = [
         {"id": "video_measurability", "label": "Video measurability", "score": capture_score, "explanation": f"Capture quality grade: {result.capture_quality.get('grade', 'unknown')}.", "confidence": 1.0, "basis": "measured_capture_quality"},
-        {"id": "footwork_base", "label": "Footwork and base", "score": phase_scores[0]["score"], "explanation": f"Median ankle-to-ankle width was {stance_median:.2f} shoulder widths; this is a body-scaled image-plane measure.", "confidence": measurement_confidence, "basis": "2d_body_scaled_distance"},
-        {"id": "body_position", "label": "Body position and head stability", "score": head_control, "explanation": (f"Body-relative head movement from forward acceleration through follow-through was {contact_head_range:.3f} shoulder-scaled units." if action_type == "two_handed_backhand" else f"Body-relative head movement within the primary repetition was {head_range:.3f} shoulder-scaled units."), "confidence": measurement_confidence, "basis": "2d_pose_stability_proxy"},
+        {"id": "footwork_base", "label": "Footwork and base", "score": phase_scores[0]["score"], "explanation": f"Median ankle-to-ankle width was {stance_median:.2f} shoulder widths; this is a body-scaled image-plane measure.", "confidence": measurement_confidence, "basis": "2d_body_scaled_distance", "evidenceRecords": [{"metricId": "base_width_hip_widths", "value": round(stance_median, 5), "unit": "shoulder_widths", "measurementClass": "BODY_NORMALIZED_2D", "quality": "proxy", "deviation": "low" if stance_median < 0.75 else "high" if stance_median > 2.35 else "within_band"}]},
+        {"id": "body_position", "label": "Body position and head stability", "score": head_control, "explanation": (f"Body-relative head movement from forward acceleration through follow-through was {contact_head_range:.3f} shoulder-scaled units." if action_type == "two_handed_backhand" else f"Body-relative head movement within the primary repetition was {head_range:.3f} shoulder-scaled units."), "confidence": measurement_confidence, "basis": "2d_pose_stability_proxy", "evidenceRecords": [{"metricId": "head_displacement_body_ratio", "value": round(contact_head_range if action_type == "two_handed_backhand" else head_range, 6), "unit": "shoulder_widths", "measurementClass": "BODY_NORMALIZED_2D", "quality": "estimated", "deviation": "high" if head_control < 78 else "within_band"}]},
         {"id": "backlift_preparation", "label": "Preparation timing", "score": preparation_control, "explanation": f"Preparation occupied approximately {tempo_ratio * 100:.0f}% of the preparation-to-contact window.", "confidence": measurement_confidence, "basis": "temporal_phase_proxy"},
-        {"id": "lower_body_loading", "label": "Knee loading", "score": loading_control, "explanation": f"The larger visible knee-flexion change was approximately {knee_flex_change:.1f}° from ready to loading. This is the load event, scored separately from the later drive.", "confidence": measurement_confidence, "basis": "world_pose_angle_proxy"},
+        {"id": "lower_body_loading", "label": "Knee loading", "score": loading_control, "explanation": f"The larger visible knee-flexion change was approximately {knee_flex_change:.1f}° from ready to loading. This is the load event, scored separately from the later drive.", "confidence": measurement_confidence, "basis": "world_pose_angle_proxy", "evidenceRecords": [{"metricId": "knee_flexion_deg", "value": round(knee_flex_change, 4), "unit": "degrees_change", "measurementClass": "MONOCULAR_3D_ESTIMATE", "quality": "estimated", "deviation": "low" if loading_control < 78 else "within_band"}]},
         {"id": "lower_body_extension", "label": "Knee drive after loading", "score": extension_control, "explanation": f"The larger visible knee-extension change was approximately {knee_extension_change:.1f}° from loading into follow-through.", "confidence": measurement_confidence, "basis": "world_pose_angle_proxy"},
         {"id": "hand_swing_path", "label": "Swing rhythm and acceleration", "score": acceleration_control, "explanation": f"The smoothed whole-chain motion peak was {peak_prominence:.2f}× the clip mean.", "confidence": measurement_confidence, "basis": "smoothed_pose_motion_signal"},
         {"id": "contact_spacing", "label": "Contact-spacing proxy", "score": contact_control, "explanation": f"At peak whole-chain motion, hand-to-torso distance was {contact_spacing:.2f} shoulder widths.", "confidence": measurement_confidence * 0.82, "basis": "peak_motion_proxy_without_ball"},
-        {"id": "ending_position", "label": "Ending position and recovery", "score": finish_control, "explanation": f"The post-peak reset lasted {recovery_span} frames; court-position recovery is not directly measured.", "confidence": measurement_confidence, "basis": "post_peak_control_proxy"},
+        {"id": "ending_position", "label": "Ending position and recovery", "score": finish_control, "explanation": f"The post-peak reset lasted {recovery_span} frames; court-position recovery is not directly measured.", "confidence": measurement_confidence, "basis": "post_peak_control_proxy", "evidenceRecords": [{"metricId": "recovery_latency_ms", "value": round(max(0.0, (_timeline_timestamp(result, "recovery") - _timeline_timestamp(result, "contact_proxy")) * 1000.0), 2), "unit": "milliseconds", "measurementClass": "EVENT_TIMING", "quality": "estimated", "deviation": "high" if recovery_control < 78 else "within_band"}]},
         {"id": "repeatability", "label": "Repetition consistency", "score": repeatability, "explanation": f"{len(result.repetitions)} repetition{'s' if len(result.repetitions) != 1 else ''} were detected; consistency is more reliable with at least three.", "confidence": min(measurement_confidence, 0.85 if len(result.repetitions) >= 3 else 0.55), "basis": "between_repetition_variability"},
     ]
 

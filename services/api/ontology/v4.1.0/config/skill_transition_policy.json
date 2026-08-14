@@ -1,0 +1,22 @@
+{
+  "version": "0.1.0",
+  "status": "evidence_collection_only_until_calibrated",
+  "candidate_archetype": "SKILL_LEVEL_TRANSITION",
+  "principle": "Consistency and construct stability may nominate a development milestone; they must not silently rewrite the athlete's declared level.",
+  "minimum_requirements": {
+    "comparable_sessions": 8,
+    "distinct_constructs": 3,
+    "retention_checks": 2,
+    "transfer_contexts": 2,
+    "validated_level_cohort_required": true,
+    "coach_or_player_confirmation_required": true
+  },
+  "allowed_output_before_calibration": "Your movement consistency is building toward the next development band; keep collecting comparable sessions.",
+  "forbidden_outputs": [
+    "automatic declared-level change",
+    "skill percentile",
+    "promotion based on one stroke",
+    "promotion based on immediate post-drill performance"
+  ],
+  "activation_rule": "Enable nomination only after the cohort registry contains a validated cohort for the athlete's age/context and retention/transfer fields are populated."
+}

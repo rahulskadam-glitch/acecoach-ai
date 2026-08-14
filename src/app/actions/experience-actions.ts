@@ -4,6 +4,7 @@ import { createHash, randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 
 import { createAdminClient, requireUser } from "@/lib/supabase/server";
+import { APP_VERSION } from "@/lib/config/version";
 
 function clampRating(value: FormDataEntryValue | null) {
   if (value === null) return null;
@@ -172,7 +173,7 @@ export async function saveProductFeedback(formData: FormData) {
     category,
     rating,
     comment,
-    app_version: "3.2.0",
+    app_version: APP_VERSION,
   });
   if (error) throw new Error(error.message);
   revalidatePath("/feedback");

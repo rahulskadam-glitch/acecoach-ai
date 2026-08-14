@@ -51,6 +51,21 @@
       "id": "LIMITATION",
       "pattern": "Interesting hypothesis is deliberately withheld because measurement is not trustworthy.",
       "example": "Racket-face angle is not graded from this rear view."
+    },
+    {
+      "id": "REGRESSION_OR_PLATEAU",
+      "pattern": "A comparable multi-session distribution is stable or has shifted backward without enough evidence to assign a cause.",
+      "example": "Spacing has stopped improving across comparable sessions; keep the cue stable while we test retention."
+    },
+    {
+      "id": "SHARED_ROOT_CONSTRUCT",
+      "pattern": "The same upstream player-level construct is independently supported across multiple stroke families in matched contexts.",
+      "example": "Arrival spacing is the common limiter across your forehand and backhand; train the shared movement skill while keeping each stroke cue specific."
+    },
+    {
+      "id": "LOAD_PATTERN_FLAG",
+      "pattern": "Logged high-effort practice volume rises materially above the athlete's own recent pattern without making a medical or biomechanical load claim.",
+      "example": "Your logged serve attempts jumped above your recent sessions and this block felt hard; consider an easier next block."
     }
   ],
   "hypothesis_contract": {
@@ -71,6 +86,16 @@
     "causal_language_gate": "Use 'caused' only for configured deterministic relationships or validated experimental knowledge. Otherwise use 'likely drives', 'appears to lead to', or 'is consistent with'."
   },
   "priority_formula": {
+    "weights": {
+      "performance_impact": 0.2,
+      "recurrence": 0.18,
+      "causal_leverage": 0.18,
+      "evidence_confidence": 0.15,
+      "coachability": 0.1,
+      "self_best_contrast": 0.08,
+      "visual_explainability": 0.06,
+      "persistence": 0.05
+    },
     "formula": "0.20*performance_impact + 0.18*recurrence + 0.18*causal_leverage + 0.15*evidence_confidence + 0.10*coachability + 0.08*self_best_contrast + 0.06*visual_explainability + 0.05*persistence - overload_penalty - ambiguity_penalty",
     "tie_breakers": [
       "earlier_root_event",

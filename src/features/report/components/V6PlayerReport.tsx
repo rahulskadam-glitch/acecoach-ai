@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, BadgeCheck, CheckCircle2, ChevronDown, Dumbbell, FlaskConical, MessageCircle, Play, RotateCcw, Route, ShieldCheck } from "lucide-react";
+import { ArrowRight, BadgeCheck, CheckCircle2, ChevronDown, Dumbbell, FlaskConical, MessageCircle, MessageSquareHeart, Play, RotateCcw, Route, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 
 import { getSport } from "@/lib/sports";
@@ -46,7 +46,7 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
 
       <nav aria-label="Your coaching journey" className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="grid gap-px bg-slate-200 md:grid-cols-3">
-          {[{ href: "#stroke-story", number: "1", icon: Route, title: "Understand", copy: "See the whole stroke and its main cause." }, { href: "#key-moment", number: "2", icon: Play, title: "See it", copy: "Watch the correction on your movement." }, { href: "#practice-reassess", number: "3", icon: Dumbbell, title: "Train it", copy: "Use one cue, one drill, then reassess." }].map((step) => <a key={step.number} href={step.href} className="group flex items-center gap-4 bg-white p-4 transition hover:bg-slate-50 sm:px-5"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-950 text-sm font-bold text-white">{step.number}</span><span className="min-w-0 flex-1"><span className="flex items-center gap-2 font-semibold text-slate-950"><step.icon className="h-4 w-4 text-blue-800" />{step.title}</span><span className="mt-0.5 block text-xs leading-5 text-slate-500">{step.copy}</span></span><ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-blue-800" /></a>)}
+          {[{ href: "#stroke-story", number: "1", icon: Route, title: "Understand", copy: "See the whole stroke and its best-supported priority." }, { href: "#key-moment", number: "2", icon: Play, title: "See it", copy: "Watch the correction on your movement." }, { href: "#practice-reassess", number: "3", icon: Dumbbell, title: "Train it", copy: "Use one cue, one drill, then reassess." }].map((step) => <a key={step.number} href={step.href} className="group flex items-center gap-4 bg-white p-4 transition hover:bg-slate-50 sm:px-5"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-950 text-sm font-bold text-white">{step.number}</span><span className="min-w-0 flex-1"><span className="flex items-center gap-2 font-semibold text-slate-950"><step.icon className="h-4 w-4 text-blue-800" />{step.title}</span><span className="mt-0.5 block text-xs leading-5 text-slate-500">{step.copy}</span></span><ArrowRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-0.5 group-hover:text-blue-800" /></a>)}
         </div>
       </nav>
 
@@ -104,7 +104,7 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
         </div>
       </details>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5"><div className="flex items-center gap-2 text-sm text-slate-600"><CheckCircle2 className="h-4 w-4 text-emerald-700" />Full diagnosis. One clear starting point.</div><a href={`/coach/${sessionId}`} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#173F6A] px-5 text-sm font-semibold text-white hover:bg-[#103554]">Ask AceCoach about this report<ArrowRight className="h-4 w-4" /></a></div>
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5"><div className="flex items-center gap-2 text-sm text-slate-600"><CheckCircle2 className="h-4 w-4 text-emerald-700" />Full diagnosis. One clear starting point.</div><div className="flex flex-wrap gap-2"><a href="/feedback?stage=report" className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-4 text-sm font-semibold text-violet-800 hover:bg-violet-100"><MessageSquareHeart className="h-4 w-4" />Rate this experience</a><a href={`/coach/${sessionId}`} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#173F6A] px-5 text-sm font-semibold text-white hover:bg-[#103554]">Ask AceCoach about this report<ArrowRight className="h-4 w-4" /></a></div></div>
     </div>
   );
 }

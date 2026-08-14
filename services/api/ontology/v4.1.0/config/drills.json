@@ -19,6 +19,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -41,6 +68,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -63,6 +117,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -85,6 +166,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -107,6 +215,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -129,6 +264,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -151,6 +313,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -173,6 +362,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -195,6 +411,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -217,6 +460,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -239,6 +509,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -261,6 +558,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -283,6 +607,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -305,6 +656,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -327,6 +705,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -349,6 +754,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -371,6 +803,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -393,6 +852,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -415,6 +901,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -437,6 +950,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -459,6 +999,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -481,6 +1048,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -503,6 +1097,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -525,6 +1146,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -547,6 +1195,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -569,6 +1244,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -591,6 +1293,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -613,6 +1342,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -635,6 +1391,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -657,6 +1440,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -679,6 +1489,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -701,6 +1538,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -723,6 +1587,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -745,6 +1636,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -767,6 +1685,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -789,6 +1734,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -811,6 +1783,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -833,6 +1832,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -855,6 +1881,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -877,6 +1930,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -899,6 +1979,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -921,6 +2028,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -943,6 +2077,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -965,6 +2126,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -987,6 +2175,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1009,6 +2224,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1031,6 +2273,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1053,6 +2322,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1075,6 +2371,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1097,6 +2420,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1119,6 +2469,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1141,6 +2518,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1163,6 +2567,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1185,6 +2616,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1207,6 +2665,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1229,6 +2714,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1251,6 +2763,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1273,6 +2812,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1295,6 +2861,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1317,6 +2910,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1339,6 +2959,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1361,6 +3008,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1383,6 +3057,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1405,6 +3106,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1427,6 +3155,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1449,6 +3204,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1471,6 +3253,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1493,6 +3302,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1515,6 +3351,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1537,6 +3400,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1559,6 +3449,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1581,6 +3498,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1603,6 +3547,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1625,6 +3596,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1647,6 +3645,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1669,6 +3694,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1692,6 +3744,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1714,6 +3793,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1736,6 +3842,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1758,6 +3891,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1780,6 +3940,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1802,6 +3989,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1824,6 +4038,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1846,6 +4087,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1868,6 +4136,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1890,6 +4185,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1912,6 +4234,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1934,6 +4283,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1956,6 +4332,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -1978,6 +4381,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2000,6 +4430,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2022,6 +4479,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2044,6 +4528,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2066,6 +4577,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2088,6 +4626,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2110,6 +4675,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2132,6 +4724,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2154,6 +4773,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2176,6 +4822,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2198,6 +4871,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2220,6 +4920,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2242,6 +4969,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2264,6 +5018,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2286,6 +5067,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2308,6 +5116,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2330,6 +5165,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2352,6 +5214,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   },
   {
@@ -2374,6 +5263,33 @@
     "reassessment": "Record 10 comparable strokes from a supported view.",
     "age_adjustments": {
       "13_to_15": "Use shorter sets, simple external-focus cue, and guardian/coach supervision where required."
+    },
+    "level_adjustments": {
+      "beginner": {
+        "dosage_scale": 0.75,
+        "success_threshold": 0.60,
+        "success_condition": "At least 60% of comparable repetitions show the selected simple movement goal without reducing balance or control."
+      },
+      "developing": {
+        "dosage_scale": 0.875,
+        "success_threshold": 0.65,
+        "success_condition": "At least 65% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "intermediate": {
+        "dosage_scale": 1.0,
+        "success_threshold": 0.70,
+        "success_condition": "At least 70% of comparable repetitions meet the selected reassessment metric without reducing balance or contact quality."
+      },
+      "advanced": {
+        "dosage_scale": 1.125,
+        "success_threshold": 0.80,
+        "success_condition": "At least 80% of comparable repetitions meet the selected reassessment metric across the intended practice context."
+      },
+      "elite": {
+        "dosage_scale": 1.25,
+        "success_threshold": 0.85,
+        "success_condition": "At least 85% of comparable repetitions meet the selected reassessment metric and retain it under a representative pressure or transfer condition."
+      }
     }
   }
 ]

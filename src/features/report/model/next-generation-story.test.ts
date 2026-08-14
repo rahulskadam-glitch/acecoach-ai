@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import test from "node:test";
+import { test } from "vitest";
 
 import { visualQaReport } from "@/features/visual-qa/report-fixture";
 import { buildNextGenerationStory } from "./next-generation-story";

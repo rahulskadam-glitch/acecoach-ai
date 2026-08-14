@@ -1,26 +1,19 @@
 from __future__ import annotations
-from dataclasses import dataclass
 import hashlib
 from typing import Any, Dict, Iterable, List, Sequence
 
-DEFAULT_WEIGHTS = {
-    "performance_impact": .20, "recurrence": .18, "causal_leverage": .18,
-    "evidence_confidence": .15, "coachability": .10, "self_best_contrast": .08,
-    "visual_explainability": .06, "persistence": .05,
-}
-
-def insight_priority(candidate: Dict[str, Any]) -> float:
-    score = sum(DEFAULT_WEIGHTS[k] * float(candidate.get(k, 0.0)) for k in DEFAULT_WEIGHTS)
+def insight_priority(candidate: Dict[str, Any], weights: Dict[str, float]) -> float:
+    score = sum(float(weight) * float(candidate.get(key, 0.0)) for key, weight in weights.items())
     score -= float(candidate.get("overload_penalty", 0.0))
     score -= float(candidate.get("ambiguity_penalty", 0.0))
     if candidate.get("causal_role") == "SYMPTOM" and candidate.get("upstream_selected"):
         score -= 0.25
     return round(max(0.0, min(1.0, score)), 6)
 
-def rank_insights(candidates: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def rank_insights(candidates: Sequence[Dict[str, Any]], weights: Dict[str, float]) -> List[Dict[str, Any]]:
     enriched=[]
     for c in candidates:
-        x=dict(c); x["priority_score"] = insight_priority(x); enriched.append(x)
+        x=dict(c); x["priority_score"] = insight_priority(x, weights); enriched.append(x)
     role_rank={"ROOT_CAUSE":0,"CONTRIBUTOR":1,"COMPENSATION":2,"SYMPTOM":3,"UNKNOWN":4}
     return sorted(enriched, key=lambda x: (-x["priority_score"], role_rank.get(x.get("causal_role","UNKNOWN"),4), x.get("root_event_index",999), x.get("insight_id","")))
 
@@ -34,9 +27,15 @@ def compile_visual_story(insight: Dict[str, Any], compiler: Dict[str, Any]) -> D
     mapping={
       "HIDDEN_CAUSE":"CAUSE_TO_EFFECT","COMPENSATION":"CAUSE_TO_EFFECT","TIMING_BOTTLENECK":"TIMING_TUNNEL",
       "SELF_BEST_BLUEPRINT":"SELF_BEST_MORPH","CONSISTENCY_LEAK":"SELF_BEST_MORPH",
-      "CONDITIONAL_LEAK":"CONTEXT_SPLIT","TACTICAL_MECHANICAL_MISMATCH":"CONTEXT_SPLIT","STRENGTH_ANCHOR":"STRENGTH_LOCK"
+      "CONDITIONAL_LEAK":"CONTEXT_SPLIT","TACTICAL_MECHANICAL_MISMATCH":"CONTEXT_SPLIT","STRENGTH_ANCHOR":"STRENGTH_LOCK",
+      "PROGRESS_SHIFT":"TREND_ARC","REGRESSION_OR_PLATEAU":"TREND_ARC",
+      "LIMITATION":"TRANSPARENT_LIMITATION"
+      ,"SHARED_ROOT_CONSTRUCT":"SHARED_ROOT_MAP"
+      ,"LOAD_PATTERN_FLAG":"LOAD_TREND_CAUTION"
     }
-    story_name=mapping.get(archetype,"CAUSE_TO_EFFECT")
+    if archetype not in mapping:
+        raise ValueError(f"No visual story mapping for insight archetype: {archetype}")
+    story_name=mapping[archetype]
     spec=compiler["story_archetypes"][story_name]
     beats=[]
     for i,b in enumerate(spec["beats"],1):

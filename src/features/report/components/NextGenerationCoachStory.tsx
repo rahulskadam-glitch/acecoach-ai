@@ -38,12 +38,12 @@ export default function NextGenerationCoachStory({ report }: { report: AnalysisR
         <div className="rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-emerald-200">One cue for the next rep</p>
           <p className="mt-2 text-2xl font-semibold leading-8">“{story.playerCoaching.feel}”</p>
-          <p className="mt-3 flex items-center gap-2 text-xs text-blue-100/70"><ShieldCheck className="h-4 w-4 text-emerald-300" />{story.evidenceLabel} · {trace ? `${trace.status === "FAULT_CONFIRMED" ? "repeated pattern" : "working hypothesis"} · ontology ${trace.ontologyVersion}` : "camera limits preserved"}</p>
+          <p className="mt-3 flex items-center gap-2 text-xs text-blue-100/70"><ShieldCheck className="h-4 w-4 text-emerald-300" />{story.evidenceLabel} · {trace ? (trace.status === "FAULT_CONFIRMED" ? "Repeated pattern" : "Working hypothesis") : "Camera limits considered"}</p>
         </div>
       </div>
 
       <div className="p-5 sm:p-7">
-        {trace ? <div className="mb-5 flex flex-wrap items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-xs text-blue-950"><span className="font-semibold">Knowledge trace</span><span className="rounded-full bg-white px-2.5 py-1">{trace.evaluatedFaultIds[0]}</span><span>{trace.candidateCount} evidence-compatible hypotheses ranked</span><span>·</span><span>{trace.policiesApplied.length} v4.1 policies applied</span></div> : null}
+        {trace ? <div className="mb-5 flex flex-wrap items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-xs text-blue-950"><span className="font-semibold">Why this cue</span><span>{trace.candidateCount > 1 ? "AceCoach compared several possible explanations and selected the best-supported one." : "This cue matches the clearest pattern visible in your video."}</span></div> : null}
         <div className="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
           <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
           <div><p className="text-xs font-semibold uppercase tracking-[0.12em] text-emerald-800">Keep this</p><p className="mt-1 text-sm font-semibold leading-6 text-slate-900">{story.playerCoaching.keep ?? "Keep the part of the stroke that already repeats well."}</p></div>

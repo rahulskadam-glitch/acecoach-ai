@@ -1,0 +1,48 @@
+{
+  "version": "4.1.0",
+  "principle": "A shared root is a player-level construct supported independently in multiple strokes; it is not inferred by matching fault names or aggregate scores.",
+  "minimum_distinct_actions": 2,
+  "minimum_sessions_per_action": 2,
+  "minimum_confidence": 0.65,
+  "maximum_limiter_median_score": 78,
+  "maximum_capture_score_difference": 15,
+  "context_match_fields": ["shot_situation", "shot_intent"],
+  "constructs": [
+    {
+      "id": "setup",
+      "label": "Recognition and preparation timing",
+      "eligible_actions": ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "forehand_volley", "backhand_volley", "overhead"]
+    },
+    {
+      "id": "movement_spacing",
+      "label": "Arrival and spacing stability",
+      "eligible_actions": ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "forehand_volley", "backhand_volley", "overhead"]
+    },
+    {
+      "id": "weight_transfer",
+      "label": "Load and transfer organization",
+      "eligible_actions": ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "serve", "overhead"]
+    },
+    {
+      "id": "swing_connection",
+      "label": "Body-to-racket connection",
+      "eligible_actions": ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "serve", "overhead"]
+    },
+    {
+      "id": "contact_stability",
+      "label": "Contact-platform stability",
+      "eligible_actions": ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "serve", "forehand_volley", "backhand_volley", "overhead"]
+    },
+    {
+      "id": "finish_recovery",
+      "label": "Finish and recovery readiness",
+      "eligible_actions": ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "serve", "forehand_volley", "backhand_volley", "overhead"]
+    }
+  ],
+  "suppression_rules": [
+    "Suppress when fewer than two eligible actions have independent multi-session evidence.",
+    "Suppress when shot situation or intent differs materially across the supporting actions.",
+    "Suppress when runtime, confidence, or capture-quality compatibility fails.",
+    "Do not replace stroke-specific cues unless one shared cue is valid for every supporting action."
+  ]
+}

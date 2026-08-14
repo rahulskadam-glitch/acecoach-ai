@@ -1,0 +1,21 @@
+{
+  "version": "0.1.0",
+  "status": "qualitative_stopgap_only",
+  "validated_numeric_cohorts": [],
+  "qualitative_seeds": [
+    {
+      "id": "SKILL_TIMING_PATTERN_SEED",
+      "source_ids": ["SCI-LANDLINGER-2010"],
+      "allowed_use": "Use as a qualitative skill-level timing pattern when self-best evidence is unavailable.",
+      "forbidden_use": "Do not create percentile ranks, universal thresholds, or an automatic player-level promotion."
+    },
+    {
+      "id": "BEGINNER_REPORT_SHAPE_SEED",
+      "source_ids": ["ORG-USTA-INSTRUCTION"],
+      "allowed_use": "Prefer simple progressions, external cues, and encouragement for beginner fallback reports.",
+      "forbidden_use": "Do not present governing-body instruction as a measured cohort distribution."
+    }
+  ],
+  "fallback_order": ["self_best", "qualitative_level_pattern", "simple_observation"],
+  "numeric_claim_rule": "No cohort score, percentile, or promotion claim is allowed until a cohort has validation_status=validated and documented sample/context coverage."
+}

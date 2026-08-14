@@ -6,6 +6,14 @@ import { revalidatePath } from "next/cache";
 import { getSport } from "@/lib/sports";
 import { createAdminClient, requireUser } from "@/lib/supabase/server";
 import type { AnalysisReport, EngineManifest } from "@/modules/analysis/types";
+import {
+  reduceDevelopmentState,
+  reduceSharedRootConstruct,
+  resolveMeasuredDistribution,
+  type ConstructDistribution,
+  type CrossStrokeContract,
+  type DevelopmentState,
+} from "@/modules/analysis/longitudinal";
 
 const ANALYSIS_API_URL = process.env.ANALYSIS_API_URL ?? "http://127.0.0.1:8000";
 const ENGINE_VERSION = "movement-intelligence-v1.11.0";
@@ -48,6 +56,19 @@ type AnalysisApiResponse = {
   next_generation_story?: AnalysisReport["nextGenerationStory"] | null;
   ontology_reasoning?: Record<string, unknown> | null;
 };
+
+type LongitudinalAnalysisResult = Pick<AnalysisApiResponse,
+  | "overall_score"
+  | "confidence"
+  | "capture_quality"
+  | "quality_gate"
+  | "priorities"
+  | "next_session"
+  | "repetition_insights"
+  | "engine_manifest"
+  | "repetitions"
+  | "ontology_reasoning"
+>;
 
 
 
@@ -427,6 +448,361 @@ function reportContextPersistence(
   });
 }
 
+function longitudinalContextSignature(
+  sportId: string,
+  actionType: string,
+  captureContext: ReturnType<typeof normalizeCaptureContext>,
+) {
+  return createHash("sha256").update(JSON.stringify({
+    sportId,
+    actionType,
+    cameraAngle: captureContext.cameraAngle,
+    shotSituation: captureContext.shotSituation,
+    shotIntent: captureContext.shotIntent,
+  })).digest("hex");
+}
+
+function finiteNumber(value: unknown, fallback: number) {
+  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+}
+
+async function persistLongitudinalDevelopment(
+  supabase: SupabaseClient,
+  input: {
+    userId: string;
+    sessionId: string;
+    sportId: string;
+    actionType: string;
+    captureContext: ReturnType<typeof normalizeCaptureContext>;
+    result: LongitudinalAnalysisResult;
+  },
+) {
+  if (!input.result.quality_gate.movementConfirmed || input.result.repetitions.length === 0) return;
+
+  const contextSignature = longitudinalContextSignature(input.sportId, input.actionType, input.captureContext);
+  const reasoning = isRecord(input.result.ontology_reasoning) ? input.result.ontology_reasoning : null;
+  const findings = reasoning && Array.isArray(reasoning.findings)
+    ? reasoning.findings.filter(isRecord)
+    : [];
+  const movementChain = reasoning && Array.isArray(reasoning.movementChain)
+    ? reasoning.movementChain.filter(isRecord)
+    : [];
+  const proposedFinding = findings.find((item) => item.role === "PRIMARY") ?? findings[0] ?? null;
+  const proposedConstruct = typeof proposedFinding?.chapterId === "string"
+    ? proposedFinding.chapterId
+    : input.result.priorities[0]?.title?.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "") || "movement_quality";
+
+  const { data: stateRow, error: stateError } = await supabase
+    .from("player_development_state")
+    .select("primary_construct_id, active_cue, success_metric, status")
+    .eq("user_id", input.userId)
+    .eq("sport_id", input.sportId)
+    .eq("action_type", input.actionType)
+    .eq("context_signature", contextSignature)
+    .maybeSingle();
+  if (stateError) throw new Error(stateError.message);
+
+  const existing = stateRow ? {
+    primaryConstructId: stateRow.primary_construct_id,
+    activeCue: stateRow.active_cue,
+    successMetric: stateRow.success_metric,
+    status: stateRow.status,
+  } as DevelopmentState : null;
+  const constructId = existing && !["solved", "superseded"].includes(existing.status)
+    ? existing.primaryConstructId
+    : proposedConstruct;
+  const finding = findings.find((item) => item.chapterId === constructId) ?? null;
+  const chainMeasurement = movementChain.find((item) => item.id === constructId) ?? null;
+  const measurement = finding ?? chainMeasurement ?? proposedFinding;
+  const measured = resolveMeasuredDistribution(
+    measurement?.score,
+    input.result.repetition_insights.consistencyScore,
+    input.result.capture_quality.score,
+  );
+  if (!measured) return;
+  const medianScore = measured.medianScore;
+  const evidenceRows = finding && Array.isArray(finding.evidence) ? finding.evidence.filter(isRecord) : [];
+  const evidenceIds = evidenceRows
+    .map((item) => typeof item.areaId === "string" ? `area:${item.areaId}` : null)
+    .filter((item): item is string => item !== null);
+  const manifest = input.result.engine_manifest;
+  const current: ConstructDistribution = {
+    sessionId: input.sessionId,
+    constructId,
+    contextSignature,
+    contextDimensions: { shotSituation: input.captureContext.shotSituation, shotIntent: input.captureContext.shotIntent },
+    sampleCount: input.result.repetitions.length,
+    medianScore,
+    spread: measured.spread,
+    successRate: null,
+    confidence: input.result.confidence,
+    captureScore: measured.captureScore,
+    engineVersion: manifest.engineVersion,
+    runtimeSignature: manifest.runtimeSignature ?? null,
+    recordedAt: new Date().toISOString(),
+  };
+
+  const { data: historyRows, error: historyError } = await supabase
+    .from("construct_session_distributions")
+    .select("analysis_session_id, construct_id, context_signature, sample_count, median_score, spread, success_rate, confidence, capture_score, engine_version, runtime_signature, recorded_at")
+    .eq("user_id", input.userId)
+    .eq("sport_id", input.sportId)
+    .eq("action_type", input.actionType)
+    .eq("construct_id", constructId)
+    .eq("context_signature", contextSignature)
+    .order("recorded_at", { ascending: false })
+    .limit(6);
+  if (historyError) throw new Error(historyError.message);
+
+  const history: ConstructDistribution[] = (historyRows ?? []).map((row) => ({
+    sessionId: row.analysis_session_id,
+    constructId: row.construct_id,
+    contextSignature: row.context_signature,
+    sampleCount: Number(row.sample_count),
+    medianScore: Number(row.median_score),
+    spread: Number(row.spread),
+    successRate: row.success_rate === null ? null : Number(row.success_rate),
+    confidence: Number(row.confidence),
+    captureScore: Number(row.capture_score),
+    engineVersion: row.engine_version,
+    runtimeSignature: row.runtime_signature,
+    recordedAt: row.recorded_at,
+  }));
+  const decision = reduceDevelopmentState(
+    current,
+    history,
+    existing,
+    input.result.priorities[0]?.cue ?? null,
+    input.result.next_session.successCriteria[0] ?? null,
+  );
+  const { error: applyError } = await supabase.rpc("apply_player_development_observation_v610", {
+    p_user_id: input.userId,
+    p_session_id: input.sessionId,
+    p_sport_id: input.sportId,
+    p_action_type: input.actionType,
+    p_context_signature: contextSignature,
+    p_context_dimensions: current.contextDimensions,
+    p_construct_id: constructId,
+    p_sample_count: current.sampleCount,
+    p_median_score: current.medianScore,
+    p_spread: current.spread,
+    p_success_rate: current.successRate,
+    p_confidence: current.confidence,
+    p_capture_score: current.captureScore,
+    p_engine_version: current.engineVersion,
+    p_runtime_signature: current.runtimeSignature,
+    p_evidence_ids: evidenceIds,
+    p_active_cue: decision.activeCue,
+    p_success_metric: decision.successMetric,
+    p_status: decision.status,
+    p_evidence_summary: {
+      archetype: decision.archetype,
+      baselineMedian: decision.baselineMedian,
+      shift: decision.shift,
+      comparisonSessionIds: decision.comparisonSessionIds,
+      reason: decision.reason,
+    },
+    p_ontology_version: manifest.ontologyVersion ?? "unknown",
+    p_cue_change_reason: decision.cueChangeReason,
+  });
+  if (applyError) throw new Error(applyError.message);
+}
+
+function numericMedian(values: number[]) {
+  const sorted = [...values].sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
+}
+
+function parseCrossStrokeContract(reasoning: Record<string, unknown> | null): CrossStrokeContract | null {
+  const raw = reasoning && isRecord(reasoning.crossStrokePolicy) ? reasoning.crossStrokePolicy : null;
+  if (!raw || !isRecord(raw.eligibleActionsByConstruct)) return null;
+  const eligibleActionsByConstruct = Object.fromEntries(
+    Object.entries(raw.eligibleActionsByConstruct).flatMap(([key, value]) =>
+      Array.isArray(value) && value.every((item) => typeof item === "string") ? [[key, value as string[]]] : [],
+    ),
+  );
+  if (Object.keys(eligibleActionsByConstruct).length === 0) return null;
+  return {
+    minimumDistinctActions: finiteNumber(raw.minimumDistinctActions, 2),
+    minimumSessionsPerAction: finiteNumber(raw.minimumSessionsPerAction, 2),
+    minimumConfidence: finiteNumber(raw.minimumConfidence, 0.65),
+    maximumCaptureScoreDifference: finiteNumber(raw.maximumCaptureScoreDifference, 15),
+    maximumLimiterMedianScore: finiteNumber(raw.maximumLimiterMedianScore, 78),
+    eligibleActionsByConstruct,
+  };
+}
+
+async function persistSharedRootDevelopment(
+  supabase: SupabaseClient,
+  input: { userId: string; sessionId: string; sportId: string; result: LongitudinalAnalysisResult },
+) {
+  const reasoning = isRecord(input.result.ontology_reasoning) ? input.result.ontology_reasoning : null;
+  const contract = parseCrossStrokeContract(reasoning);
+  if (!contract) return;
+
+  const [{ data: rows, error: rowsError }, { data: states, error: statesError }] = await Promise.all([
+    supabase
+      .from("construct_session_distributions")
+      .select("analysis_session_id, action_type, construct_id, context_signature, context_dimensions, median_score, confidence, capture_score, recorded_at")
+      .eq("user_id", input.userId)
+      .eq("sport_id", input.sportId)
+      .order("recorded_at", { ascending: false })
+      .limit(120),
+    supabase
+      .from("player_development_state")
+      .select("action_type, context_signature, primary_construct_id, active_cue, status")
+      .eq("user_id", input.userId)
+      .eq("sport_id", input.sportId)
+      .not("status", "in", "(solved,superseded)"),
+  ]);
+  if (rowsError) throw new Error(rowsError.message);
+  if (statesError) throw new Error(statesError.message);
+
+  const cueByActionConstruct = new Map<string, string | null>();
+  for (const state of states ?? []) {
+    cueByActionConstruct.set(`${state.action_type}::${state.primary_construct_id}::${state.context_signature}`, state.active_cue);
+  }
+  const groups = new Map<string, Array<{
+    sessionId: string; actionType: string; constructId: string; contextSignature: string; contextClass: string;
+    medianScore: number; confidence: number; captureScore: number; recordedAt: string;
+  }>>();
+  for (const row of rows ?? []) {
+    const dimensions = isRecord(row.context_dimensions) ? row.context_dimensions : {};
+    const shotSituation = typeof dimensions.shotSituation === "string" ? dimensions.shotSituation : "unknown";
+    const shotIntent = typeof dimensions.shotIntent === "string" ? dimensions.shotIntent : "unknown";
+    const contextClass = `${shotSituation}:${shotIntent}`;
+    const key = `${row.action_type}::${row.construct_id}::${contextClass}`;
+    groups.set(key, [...(groups.get(key) ?? []), {
+      sessionId: row.analysis_session_id,
+      actionType: row.action_type,
+      constructId: row.construct_id,
+      contextSignature: row.context_signature,
+      contextClass,
+      medianScore: Number(row.median_score),
+      confidence: Number(row.confidence),
+      captureScore: Number(row.capture_score),
+      recordedAt: row.recorded_at,
+    }]);
+  }
+  const evidence = [...groups.values()].map((items) => {
+    const recent = items
+      .sort((a, b) => Date.parse(b.recordedAt) - Date.parse(a.recordedAt))
+      .slice(0, 3);
+    const first = recent[0];
+    return {
+      actionType: first.actionType,
+      constructId: first.constructId,
+      contextClass: first.contextClass,
+      sessionIds: recent.map((item) => item.sessionId),
+      medianScore: numericMedian(recent.map((item) => item.medianScore)),
+      confidence: Math.min(...recent.map((item) => item.confidence)),
+      captureScore: numericMedian(recent.map((item) => item.captureScore)),
+      cue: cueByActionConstruct.get(`${first.actionType}::${first.constructId}::${first.contextSignature}`) ?? null,
+    };
+  });
+  const insight = reduceSharedRootConstruct(evidence, contract);
+
+  if (!insight) {
+    const { error: deactivateError } = await supabase.rpc("deactivate_shared_root_insights_v620", {
+      p_user_id: input.userId,
+      p_sport_id: input.sportId,
+      p_last_observed_session_id: input.sessionId,
+    });
+    if (deactivateError) throw new Error(deactivateError.message);
+    return;
+  }
+
+  const { error: upsertError } = await supabase.rpc("upsert_shared_root_insight_v620", {
+    p_user_id: input.userId,
+    p_sport_id: input.sportId,
+    p_construct_id: insight.constructId,
+    p_context_class: insight.contextClass,
+    p_action_types: insight.actionTypes,
+    p_supporting_session_ids: insight.sessionIds,
+    p_confidence: insight.confidence,
+    p_shared_cue: insight.sharedCue,
+    p_stroke_specific_cues: insight.strokeSpecificCues,
+    p_evidence_summary: { archetype: insight.archetype, reason: insight.reason },
+    p_ontology_version: input.result.engine_manifest.ontologyVersion ?? "unknown",
+    p_last_observed_session_id: input.sessionId,
+  });
+  if (upsertError) throw new Error(upsertError.message);
+}
+
+function longitudinalPayload(result: AnalysisApiResponse): LongitudinalAnalysisResult {
+  return {
+    overall_score: result.overall_score,
+    confidence: result.confidence,
+    capture_quality: result.capture_quality,
+    quality_gate: result.quality_gate,
+    priorities: result.priorities,
+    next_session: result.next_session,
+    repetition_insights: result.repetition_insights,
+    engine_manifest: result.engine_manifest,
+    repetitions: result.repetitions,
+    ontology_reasoning: result.ontology_reasoning,
+  };
+}
+
+function isLongitudinalPayload(value: unknown): value is LongitudinalAnalysisResult {
+  if (!isRecord(value)) return false;
+  return typeof value.confidence === "number"
+    && isRecord(value.capture_quality)
+    && isRecord(value.quality_gate)
+    && Array.isArray(value.priorities)
+    && isRecord(value.next_session)
+    && isRecord(value.repetition_insights)
+    && isRecord(value.engine_manifest)
+    && Array.isArray(value.repetitions);
+}
+
+async function processLongitudinalJob(
+  supabase: SupabaseClient,
+  input: {
+    userId: string;
+    sessionId: string;
+    sportId: string;
+    actionType: string;
+    captureContext: ReturnType<typeof normalizeCaptureContext>;
+    result: LongitudinalAnalysisResult;
+  },
+) {
+  const { data: job, error: jobError } = await supabase
+    .from("analysis_postprocessing_jobs")
+    .select("attempts")
+    .eq("session_id", input.sessionId)
+    .eq("user_id", input.userId)
+    .single();
+  if (jobError) throw new Error(jobError.message);
+  const { error: processingError } = await supabase
+    .from("analysis_postprocessing_jobs")
+    .update({ status: "processing", attempts: Number(job.attempts) + 1, last_error: null, updated_at: new Date().toISOString() })
+    .eq("session_id", input.sessionId)
+    .eq("user_id", input.userId);
+  if (processingError) throw new Error(processingError.message);
+
+  try {
+    await persistLongitudinalDevelopment(supabase, input);
+    await persistSharedRootDevelopment(supabase, input);
+    const { error } = await supabase
+      .from("analysis_postprocessing_jobs")
+      .update({ status: "completed", completed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+      .eq("session_id", input.sessionId)
+      .eq("user_id", input.userId);
+    if (error) throw new Error(error.message);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown longitudinal persistence failure";
+    const nextAttemptAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
+    await supabase
+      .from("analysis_postprocessing_jobs")
+      .update({ status: "failed", last_error: message.slice(0, 2000), next_attempt_at: nextAttemptAt, updated_at: new Date().toISOString() })
+      .eq("session_id", input.sessionId)
+      .eq("user_id", input.userId);
+    throw error;
+  }
+}
+
 async function executeAnalysis({
   supabase,
   user,
@@ -581,6 +957,36 @@ async function executeAnalysis({
     );
 
     if (reportError) throw new Error(reportError.message);
+
+    const postprocessingResult = longitudinalPayload(result);
+    const { error: jobError } = await supabase.from("analysis_postprocessing_jobs").upsert({
+      session_id: sessionId,
+      user_id: user.id,
+      sport_id: sportId,
+      action_type: analysisAction,
+      capture_context: captureContext,
+      payload: postprocessingResult,
+      status: "pending",
+      attempts: 0,
+      last_error: null,
+      next_attempt_at: new Date().toISOString(),
+      completed_at: null,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "session_id" });
+    if (jobError) throw new Error(jobError.message);
+
+    try {
+      await processLongitudinalJob(supabase, {
+        userId: user.id,
+        sessionId,
+        sportId,
+        actionType: analysisAction,
+        captureContext,
+        result: postprocessingResult,
+      });
+    } catch (error) {
+      console.warn("[analysis] longitudinal post-processing queued for retry", error);
+    }
 
     if (result.quality_gate.movementConfirmed && result.practice_plan.sessions.length > 0) {
       const completion = Object.fromEntries(
@@ -1044,6 +1450,34 @@ export async function markAnalysisReviewed(sessionId: string) {
   revalidatePath("/dashboard");
   revalidatePath(`/analysis/${sessionId}`);
     revalidatePath(`/report/${sessionId}`);
+}
+
+export async function retryAnalysisPostprocessing(sessionId: string) {
+  const user = await requireUser();
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(sessionId)) {
+    throw new Error("Invalid analysis session identifier.");
+  }
+  const supabase = createAdminClient();
+  const { data: job, error } = await supabase
+    .from("analysis_postprocessing_jobs")
+    .select("session_id, user_id, sport_id, action_type, capture_context, payload, status")
+    .eq("session_id", sessionId)
+    .eq("user_id", user.id)
+    .single();
+  if (error || !job) throw new Error(error?.message ?? "Post-processing job not found.");
+  if (job.status === "processing") throw new Error("Post-processing is already running.");
+  if (!isLongitudinalPayload(job.payload)) throw new Error("Stored post-processing evidence is invalid.");
+
+  await processLongitudinalJob(supabase, {
+    userId: user.id,
+    sessionId: job.session_id,
+    sportId: job.sport_id,
+    actionType: job.action_type,
+    captureContext: normalizeCaptureContext(isRecord(job.capture_context) ? job.capture_context : null),
+    result: job.payload,
+  });
+  revalidatePath("/progress");
+  revalidatePath(`/report/${sessionId}`);
 }
 
 

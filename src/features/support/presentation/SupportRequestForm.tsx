@@ -1,11 +1,12 @@
 "use client";
 
 import { CheckCircle2, LifeBuoy, LoaderCircle } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 
 import { createSupportRequest } from "@/app/actions/support-actions";
 
 export default function SupportRequestForm() {
+  const formRef = useRef<HTMLFormElement>(null);
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -13,10 +14,21 @@ export default function SupportRequestForm() {
   function submit(formData: FormData) {
     setMessage(null);
     setError(null);
-    formData.set("browser", typeof navigator === "undefined" ? "server" : `${navigator.userAgent} | ${window.innerWidth}x${window.innerHeight}`);
-    startTransition(() => void createSupportRequest(formData).then(() => setMessage("Support request received. Your diagnostic references were saved without video content or secrets.")).catch((cause) => setError(cause instanceof Error ? cause.message : "Unable to submit the request.")));
+    if (typeof navigator !== "undefined") formData.set("browser", `${navigator.userAgent} | ${window.innerWidth}x${window.innerHeight} | ${window.location.pathname}`);
+    startTransition(() => void createSupportRequest(formData).then(() => { formRef.current?.reset(); setMessage("Thanks — your message has been sent."); }).catch((cause) => setError(cause instanceof Error ? cause.message : "We could not send your message. Please try again.")));
   }
 
-  const input = "w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none focus:border-emerald-400/60";
-  return <form action={submit} className="rounded-[1.75rem] border border-white/10 bg-slate-900/70 p-6"><div className="flex items-center gap-3"><LifeBuoy className="h-5 w-5 text-emerald-300" /><h2 className="text-xl font-semibold text-white">Report an issue</h2></div><div className="mt-5 grid gap-4 md:grid-cols-2"><label className="text-sm text-slate-300">Issue category<select name="category" required className={`${input} mt-2`} defaultValue="processing"><option value="upload">Upload</option><option value="processing">Processing</option><option value="movement">Movement detection</option><option value="report">Report or video playback</option><option value="practice">Practice or progress</option><option value="billing">Pricing or billing</option><option value="account">Account</option><option value="other">Other</option></select></label><label className="text-sm text-slate-300">Last processing stage<input name="lastStage" className={`${input} mt-2`} placeholder="Example: classifying movement" /></label><label className="text-sm text-slate-300">Session reference<input name="sessionId" className={`${input} mt-2`} placeholder="Optional" /></label><label className="text-sm text-slate-300">Job reference<input name="jobId" className={`${input} mt-2`} placeholder="Optional" /></label></div><label className="mt-4 block text-sm text-slate-300">What happened?<textarea name="description" required minLength={10} maxLength={2000} className={`${input} mt-2 min-h-36`} placeholder="Describe what you expected, what happened, and whether retrying changed the result." /></label>{message ? <div className="mt-4 flex gap-2 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm text-emerald-100"><CheckCircle2 className="h-4 w-4 shrink-0" />{message}</div> : null}{error ? <div role="alert" className="mt-4 rounded-xl border border-rose-400/20 bg-rose-400/10 p-4 text-sm text-rose-100">{error}</div> : null}<button type="submit" disabled={pending} className="mt-5 flex items-center gap-2 rounded-xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-slate-950 disabled:opacity-60">{pending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <LifeBuoy className="h-4 w-4" />}{pending ? "Sending…" : "Send support request"}</button><p className="mt-4 text-xs leading-5 text-slate-500">AceCoach stores the app version, browser summary, optional references, and your description. It does not attach raw video, signed URLs, pose frames, or service keys.</p></form>;
+  const fieldClass = "mt-2 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-950 outline-none transition placeholder:text-slate-500 focus:border-blue-600 focus:ring-2 focus:ring-blue-100";
+  return (
+    <form ref={formRef} action={submit} className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <div className="flex items-start gap-3"><span className="rounded-2xl bg-blue-50 p-2.5"><LifeBuoy className="h-5 w-5 text-blue-700" /></span><div><h2 className="text-xl font-semibold text-slate-950">Send us a message</h2><p className="mt-1 text-sm leading-6 text-slate-600">Choose the closest topic and describe what you expected to happen.</p></div></div>
+      <div className="mt-6 space-y-5">
+        <label className="block text-sm font-medium text-slate-700">What do you need help with?<select name="category" required className={fieldClass} defaultValue=""><option value="" disabled>Choose a topic</option><option value="upload">Uploading a video</option><option value="processing">Analysis taking too long</option><option value="movement">Movement identified incorrectly</option><option value="report">Report or video playback</option><option value="practice">Practice or progress</option><option value="billing">Plans or payments</option><option value="account">Account or privacy</option><option value="other">Something else</option></select></label>
+        <label className="block text-sm font-medium text-slate-700">What happened?<textarea name="description" required minLength={10} maxLength={2000} rows={6} className={fieldClass} placeholder="For example: I uploaded a forehand video, but the analysis has not finished." /><span className="mt-2 block text-xs leading-5 text-slate-500">Do not include passwords, payment details, or private medical information.</span></label>
+      </div>
+      {message ? <div role="status" className="mt-5 flex gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800"><CheckCircle2 className="h-4 w-4 shrink-0" />{message}</div> : null}
+      {error ? <div role="alert" className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{error}</div> : null}
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4"><p className="max-w-xl text-xs leading-5 text-slate-500">Basic page and device details are included automatically to help us investigate. Your video is not attached.</p><button type="submit" disabled={pending} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[#173F6A] px-5 py-3 text-sm font-semibold text-white hover:bg-[#103554] disabled:cursor-not-allowed disabled:opacity-60">{pending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <LifeBuoy className="h-4 w-4" />}{pending ? "Sending…" : "Send message"}</button></div>
+    </form>
+  );
 }
