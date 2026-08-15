@@ -19,7 +19,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces positioning time",
     "player_message": "Recognize the lob and turn immediately.",
-    "coach_message_template": "Late lob recognition: {evidence_summary}.",
     "overlay_markers": [
       "BALL_TRAIL",
       "TIMING_DELTA"
@@ -111,7 +110,8 @@
       "required_when_player_baseline_available": true,
       "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
       "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
-    }
+    },
+    "capability_status": "dormant_pending_validated_ball_tracking"
   },
   {
     "fault_id": "OVH-FOOT-01",
@@ -133,7 +133,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "makes tracking and positioning less stable",
     "player_message": "Turn and use crossover steps to get behind the ball.",
-    "coach_message_template": "Inefficient backward movement: {evidence_summary}.",
     "overlay_markers": [
       "FOOT_TRAIL",
       "CORRECTION_ARROW"
@@ -247,7 +246,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "removes room for a full swing",
     "player_message": "Move slightly behind and beside the ball.",
-    "coach_message_template": "Player moves directly under ball: {evidence_summary}.",
     "overlay_markers": [
       "PROJECTED_BALL_PATH",
       "TRUNK_AXIS",
@@ -362,7 +360,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces leverage and put-away potential",
     "player_message": "Take the ball higher.",
-    "coach_message_template": "Ball allowed to drop: {evidence_summary}.",
     "overlay_markers": [
       "CONTACT_POINT",
       "CONTACT_WINDOW"
@@ -476,7 +473,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces tracking and shoulder-set support",
     "player_message": "Keep the pointing arm up longer.",
-    "coach_message_template": "Pointing arm drops early: {evidence_summary}.",
     "overlay_markers": [
       "BODY_SKELETON",
       "TIMING_DELTA"
@@ -590,7 +586,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces body contribution and timing",
     "player_message": "Turn side-on and set the racket early.",
-    "coach_message_template": "No side-on set position: {evidence_summary}.",
     "overlay_markers": [
       "SHOULDER_LINE",
       "RACKET_PATH",
@@ -705,7 +700,6 @@
     "measurement_class": "INFERRED",
     "performance_consequence": "makes power effortful and less repeatable",
     "player_message": "Use your legs and body before the arm releases.",
-    "coach_message_template": "Arm-only acceleration: {evidence_summary}.",
     "overlay_markers": [
       "SEQUENCE_RIBBON",
       "RACKET_PATH"
@@ -819,7 +813,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces tracking accuracy",
     "player_message": "Keep looking at the ball through contact.",
-    "coach_message_template": "Head releases before contact: {evidence_summary}.",
     "overlay_markers": [
       "HEAD_AXIS",
       "STABILITY_HALO"
@@ -933,7 +926,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces control and downward trajectory",
     "player_message": "Get behind the ball and contact in front.",
-    "coach_message_template": "Contact beside or behind head: {evidence_summary}.",
     "overlay_markers": [
       "CONTACT_POINT",
       "CONTACT_WINDOW",
@@ -1047,7 +1039,6 @@
     "measurement_class": "INFERRED",
     "performance_consequence": "may limit racket-head speed; view may be insufficient",
     "player_message": "Lead with the edge and let the racket turn through contact.",
-    "coach_message_template": "Forearm-racket rotation not visible or appears limited: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_AXIS",
       "CONFIDENCE_BADGE"
@@ -1156,7 +1147,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces natural deceleration and direction",
     "player_message": "Let the racket finish across your body.",
-    "coach_message_template": "Abrupt follow-through: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "PATH_CORRIDOR"
@@ -1265,7 +1255,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces control and next-ball readiness",
     "player_message": "Land balanced and recover.",
-    "coach_message_template": "Unbalanced landing: {evidence_summary}.",
     "overlay_markers": [
       "COM_ESTIMATE",
       "BASE_OF_SUPPORT",
@@ -1380,7 +1369,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces readiness for the next shot",
     "player_message": "Recover to the right position as soon as you land.",
-    "coach_message_template": "Incorrect or delayed recovery: {evidence_summary}.",
     "overlay_markers": [
       "RECOVERY_TARGET",
       "PLAYER_COURT_POSITION"

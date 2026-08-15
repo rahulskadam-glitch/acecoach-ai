@@ -11,7 +11,7 @@ export default function CTA() {
         </p>
         <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <a
-            href="/upload"
+            href="/start"
             className="inline-flex rounded-full bg-emerald-500 px-8 py-4 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400"
           >
             Start Free Analysis

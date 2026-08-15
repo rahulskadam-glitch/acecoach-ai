@@ -1,5 +1,5 @@
 import PlayerProfileForm from "@/components/profile/PlayerProfileForm";
-import JourneyShell from "@/features/journey/presentation/JourneyShell";
+import AthleteWorkspaceShell from "@/components/layout/AthleteWorkspaceShell";
 import { createClient, requireUser } from "@/lib/supabase/server";
 
 export default async function ProfilePage() {
@@ -68,11 +68,11 @@ export default async function ProfilePage() {
   };
 
   return (
-    <JourneyShell current="coach" showProgress={false}>
+    <AthleteWorkspaceShell>
       <section className="space-y-6">
         <header className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"><p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-800">Athlete profile</p><h1 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl">Coaching that fits your game</h1><p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">Essential context is versioned with each analysis. Optional details can be added gradually and are never required for access.</p></header>
         <PlayerProfileForm initialProfile={initialProfile} />
       </section>
-    </JourneyShell>
+    </AthleteWorkspaceShell>
   );
 }

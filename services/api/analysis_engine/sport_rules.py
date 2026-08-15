@@ -463,6 +463,22 @@ ACTION_DRILL_OVERRIDES: dict[str, dict[str, dict[str, Any]]] = {
             "successMetric": "Show the lead elbow above the nose line and recover without a balance leak on 5 of 6 fed balls.",
         },
     },
+    "serve": {
+        "ending_position": {
+            "name": "Release-and-land deceleration drill",
+            "purpose": "Let the racket arm decelerate down and across the body while the landing leg absorbs the jump before the next split step.",
+            "cue": "Release across; land soft; reset.",
+            "successMetric": "Show a controlled arm deceleration and a balanced landing on the front leg, without stopping the motion abruptly, on 5 of 6 serves.",
+        },
+    },
+    "overhead": {
+        "ending_position": {
+            "name": "Land-and-recover smash drill",
+            "purpose": "Let the racket arm finish down and across after contact while landing in balance and recovering to a court-ready position, mirroring the serve's deceleration pattern under a moving ball.",
+            "cue": "Across, land, recover.",
+            "successMetric": "Show a balanced landing and begin recovery toward the court within one step on 5 of 6 overheads.",
+        },
+    },
 }
 
 
@@ -473,37 +489,18 @@ def _phase_timestamp(timeline: list[dict[str, Any]], phase: str) -> tuple[int | 
     return int(item["frameIndex"]), float(item["timestampSeconds"])
 
 
-def _benchmark_status(age_band: str | None, playing_level: str | None) -> dict[str, Any]:
-    age_labels = {
-        "under_10": "Under 10",
-        "10_12": "Age 10–12",
-        "13_15": "Age 13–15",
-        "16_18": "Age 16–18",
-        "19_29": "Age 19–29",
-        "30_39": "Age 30–39",
-        "40_49": "Age 40–49",
-        "50_59": "Age 50–59",
-        "60_plus": "Age 60+",
-        "under_13": "Under 13",
-        "13_17": "Age 13–17",
-        "18_24": "Age 18–24",
-        "25_34": "Age 25–34",
-        "35_44": "Age 35–44",
-        "45_54": "Age 45–54",
-        "55_plus": "Age 55+",
-    }
-    age = age_labels.get(age_band or "", "Age not provided")
-    level = (playing_level or "Level not provided").strip().title()
+def _benchmark_status(control_policy: dict[str, Any]) -> dict[str, Any]:
+    definition = control_policy["benchmarks"]["unreleased_reference"]
     return {
-        "cohortLabel": f"{age} · {level}",
-        "comparisonType": "category_matched_development_reference",
-        "status": "statistical_percentile_not_available",
-        "disclaimer": (
-            "This is a category-matched development lens using transparent coaching criteria and a curated visual reference. "
-            "It is not a statistical comparison with other players and does not claim an age-group percentile."
-        ),
+        "cohortLabel": definition["cohort_label"],
+        "comparisonType": definition["comparison_type"],
+        "status": definition["status"],
+        "disclaimer": definition["disclaimer"],
         "areas": [],
-        "nextStep": "Practise the first priority, then record the same drill from the same camera position. True peer percentiles will only be introduced after a consented, quality-controlled cohort is validated.",
+        "nextStep": definition["next_step"],
+        "policyId": control_policy["benchmarks"]["policy_id"],
+        "policyVersion": control_policy["version"],
+        "knowledgeControlled": True,
     }
 
 
@@ -603,7 +600,7 @@ def _performance_story(
     }
 
 
-def _practice_plan(
+def build_practice_plan(
     action_type: str,
     priorities: list[dict[str, Any]],
     drills: list[dict[str, Any]],
@@ -622,6 +619,7 @@ def _practice_plan(
                 "day": "Session 1",
                 "title": "Learn the shape",
                 "duration": "20 minutes",
+                "cue": cue,
                 "objective": primary.get("nextStep") if primary else "Build a stable repeatable movement.",
                 "drillName": drill_one.get("name") if drill_one else "Controlled shadow repetitions",
                 "dosage": drill_one.get("dosage") if drill_one else "3 sets of 8 repetitions.",
@@ -632,6 +630,7 @@ def _practice_plan(
                 "day": "Session 2",
                 "title": "Stabilize under a feed",
                 "duration": "25 minutes",
+                "cue": cue,
                 "objective": f"Use only the cue: {cue}",
                 "drillName": drill_two.get("name") if drill_two else "Controlled feed progression",
                 "dosage": drill_two.get("dosage") if drill_two else "4 sets of 6 repetitions.",
@@ -642,6 +641,7 @@ def _practice_plan(
                 "day": "Session 3",
                 "title": "Transfer to live movement",
                 "duration": "25 minutes",
+                "cue": cue,
                 "objective": "Preserve the main cue at moderate pace without consciously controlling every body part.",
                 "drillName": "Constraint-to-rally transfer",
                 "dosage": "3 rounds of 8 controlled balls, then 3 minutes of cooperative rallying.",
@@ -652,6 +652,7 @@ def _practice_plan(
                 "day": "Day 7",
                 "title": "Record and reassess",
                 "duration": "10 minutes",
+                "cue": cue,
                 "objective": f"Record 8–12 comparable {action_type.replace('_', ' ')} repetitions.",
                 "drillName": "Same-drill reassessment",
                 "dosage": "Use the same camera position, drill, intensity, and intended shot.",
@@ -670,8 +671,16 @@ def build_coaching(
     score_status: str,
     age_band: str | None = None,
     playing_level: str | None = None,
+    *,
+    control_policy: dict[str, Any],
 ) -> tuple[list[dict], list[dict], list[dict], dict, list[str], list[dict], dict, dict, dict, list[dict], dict, dict, list[dict]]:
-    reference = _benchmark_status(age_band, playing_level)
+    del age_band, playing_level
+    if control_policy.get("fail_closed") is not True:
+        raise ValueError("Coaching interpretation requires a fail-closed knowledge-control policy.")
+    scoring_policy = control_policy["scoring"]
+    area_status_policy = scoring_policy["coaching_area_status"]
+    candidate_policy = control_policy["recommendations"]["candidate_ranking"]
+    reference = _benchmark_status(control_policy)
     evidence = evidence_for(sport_id, action_type)
 
     if score_status == "pending_movement_confirmation":
@@ -716,8 +725,18 @@ def build_coaching(
         score = _score_value(metric)
         if score is None:
             continue
+        if (
+            metric.get("knowledgeControlled") is not True
+            or metric.get("policyId") != scoring_policy["policy_id"]
+            or metric.get("policyVersion") != control_policy["version"]
+        ):
+            raise ValueError(f"Coaching area {area_id} bypassed the knowledge-owned score contract.")
         frame_index, timestamp = _phase_timestamp(timeline, definition["phase"])
-        status = "strength" if score >= 78 else "developing" if score >= 62 else "priority"
+        status = (
+            "strength" if score >= int(area_status_policy["strength_minimum"])
+            else "developing" if score >= int(area_status_policy["developing_minimum"])
+            else "priority"
+        )
         coaching_areas.append({
             "id": area_id,
             "label": definition["label"],
@@ -732,6 +751,9 @@ def build_coaching(
             "confidence": float(metric.get("confidence", confidence)),
             "measurementBasis": metric.get("basis", "development_rule"),
             "evidenceRecords": metric.get("evidenceRecords", []),
+            "policyId": scoring_policy["policy_id"],
+            "policyVersion": control_policy["version"],
+            "knowledgeControlled": True,
         })
 
     strongest = sorted(coaching_areas, key=lambda item: (-item["score"], item["id"]))[:2]
@@ -748,25 +770,16 @@ def build_coaching(
 
     # Prioritization balances score, impact, and measurement confidence. It does not
     # pretend that the lowest numerical value is always the correct first fix.
-    impact_weight = {
-        "footwork_base": 1.12,
-        "backlift_preparation": 1.10,
-        "contact_spacing": 1.08,
-        "body_position": 1.05,
-        "lower_body_loading": 1.02,
-        "lower_body_extension": 1.04,
-        "hand_swing_path": 1.00,
-        "ending_position": 0.96,
-        "repeatability": 0.94,
-    }
+    impact_weight = candidate_policy["impact_weights"]
+    minimum_confidence_factor = float(candidate_policy["minimum_confidence_factor"])
     ranked = sorted(
         coaching_areas,
         key=lambda item: (
-            -((100 - item["score"]) * impact_weight.get(item["id"], 1.0) * max(0.35, item["confidence"])),
+            -((100 - item["score"]) * float(impact_weight[item["id"]]) * max(minimum_confidence_factor, item["confidence"])),
             item["id"],
         ),
     )
-    weakest = ranked[:3]
+    weakest = ranked[:int(candidate_policy["maximum_candidates"])]
     priorities: list[dict[str, Any]] = []
     drills: list[dict[str, Any]] = []
     for index, item in enumerate(weakest):
@@ -785,21 +798,6 @@ def build_coaching(
         drill = dict(DRILLS[item["id"]])
         drill.update(ACTION_DRILL_OVERRIDES.get(action_type, {}).get(item["id"], {}))
         drills.append(drill)
-
-    reference["status"] = "development_reference_available"
-    reference["areas"] = [
-        {
-            "id": item["id"],
-            "label": item["label"],
-            "assessment": (
-                "within_reference" if item["score"] >= 78
-                else "slightly_below_reference" if item["score"] >= 62
-                else "below_reference"
-            ),
-            "note": item["observation"],
-        }
-        for item in coaching_areas
-    ]
 
     primary = priorities[0] if priorities else None
     coach_summary = {
@@ -847,13 +845,13 @@ def build_coaching(
         "The execution index is a transparent development heuristic, not a medical assessment or a peer percentile.",
         "Scores should only be compared when the video, engine versions, camera setup, movement label, and athlete context are unchanged.",
     ]
-    if confidence < 0.60:
+    if confidence < float(control_policy["reliability"]["low_measurement_confidence_notice"]):
         limitations.insert(0, "Measurement confidence is limited; improve lighting, framing, and full-body visibility before making major technical decisions.")
 
     performance_story = _performance_story(action_type, strengths, priorities, drills)
     visual_moments = _visual_moments(strengths, priorities, timeline)
     measurement_coverage = _measurement_coverage()
-    practice_plan = _practice_plan(action_type, priorities, drills)
+    practice_plan = build_practice_plan(action_type, priorities, drills)
 
     return (
         strengths,

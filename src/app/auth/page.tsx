@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import AuthExperience from "@/features/authentication/presentation/AuthExperience";
 import JourneyShell from "@/features/journey/presentation/JourneyShell";
 import { getSport } from "@/lib/sports";
+import { getAvailableAuthProviders } from "@/lib/supabase/auth-providers";
 import { getAuthenticatedUser } from "@/lib/supabase/server";
 
 function safeNext(value: string | undefined) {
@@ -17,13 +18,13 @@ const PROVIDERS = [
   { id: "facebook" as const, label: "Facebook", monogram: "f" },
 ];
 
-export default async function AuthPage({ searchParams }: { searchParams: Promise<{ sport?: string; next?: string; message?: string; error?: string }> }) {
+export default async function AuthPage({ searchParams }: { searchParams: Promise<{ sport?: string; next?: string; message?: string; error?: string; mode?: string }> }) {
   const params = await searchParams;
   const sport = getSport(params.sport);
   const next = safeNext(params.next);
   const { user } = await getAuthenticatedUser();
   if (user) redirect(`${next}${next.includes("?") ? "&" : "?"}sport=${encodeURIComponent(sport.id)}`);
-  const enabled = new Set((process.env.NEXT_PUBLIC_AUTH_PROVIDERS ?? "").split(",").map((item) => item.trim().toLowerCase()).filter(Boolean));
-  const providers = PROVIDERS.filter((provider) => enabled.has(provider.id) || (provider.id === "azure" && enabled.has("microsoft")));
-  return <JourneyShell current="auth"><AuthExperience sportName={sport.name} sportId={sport.id} next={next} providers={providers} message={params.message ?? params.error ?? null} /></JourneyShell>;
+  const available = new Set(await getAvailableAuthProviders());
+  const providers = PROVIDERS.filter((provider) => available.has(provider.id));
+  return <JourneyShell current="auth" showProgress={false}><AuthExperience sportName={sport.name} sportId={sport.id} next={next} providers={providers} initialMode={params.mode === "signup" ? "signup" : "signin"} message={params.message ?? params.error ?? null} /></JourneyShell>;
 }

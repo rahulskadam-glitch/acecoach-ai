@@ -13,13 +13,19 @@ import {
   type ConstructDistribution,
   type CrossStrokeContract,
   type DevelopmentState,
+  type LongitudinalRequirements,
 } from "@/modules/analysis/longitudinal";
 
 const ANALYSIS_API_URL = process.env.ANALYSIS_API_URL ?? "http://127.0.0.1:8000";
-const ENGINE_VERSION = "movement-intelligence-v1.11.0";
+const ENGINE_VERSION = "movement-intelligence-v1.13.0";
 const ANALYSIS_API_KEY = process.env.ANALYSIS_API_KEY;
 const MAX_ANALYSIS_RESPONSE_BYTES = 15 * 1024 * 1024;
 const CONTEXT_PERSISTENCE_DEBUG = process.env.CONTEXT_PERSISTENCE_DEBUG === "1";
+const ANALYSIS_API_TIMEOUT_MS = Number(process.env.ANALYSIS_API_TIMEOUT_MS ?? 120_000);
+
+class RetryableAnalysisError extends Error {
+  retryable = true as const;
+}
 
 type AnalysisApiResponse = {
   input_fingerprint: string;
@@ -55,6 +61,7 @@ type AnalysisApiResponse = {
   reference_comparison: NonNullable<AnalysisReport["referenceComparison"]>;
   next_generation_story?: AnalysisReport["nextGenerationStory"] | null;
   ontology_reasoning?: Record<string, unknown> | null;
+  knowledge_control: NonNullable<AnalysisReport["knowledgeControl"]>;
 };
 
 type LongitudinalAnalysisResult = Pick<AnalysisApiResponse,
@@ -68,6 +75,7 @@ type LongitudinalAnalysisResult = Pick<AnalysisApiResponse,
   | "engine_manifest"
   | "repetitions"
   | "ontology_reasoning"
+  | "knowledge_control"
 >;
 
 
@@ -119,6 +127,7 @@ function validateAnalysisApiResponse(value: unknown): asserts value is AnalysisA
     "capture_quality", "quality_gate", "next_session", "coach_summary", "performance_story",
     "measurement_coverage", "practice_plan", "coaching_playbook", "repetition_insights",
     "engine_manifest", "frame_summary", "movement_classification", "reference_comparison",
+    "knowledge_control",
   ] as const;
   for (const key of requiredObjects) {
     if (!isRecord(value[key])) throw new Error(`Analysis service response is missing ${key}.`);
@@ -178,6 +187,55 @@ function validateAnalysisApiResponse(value: unknown): asserts value is AnalysisA
   }
   const plan = value.practice_plan as Record<string, unknown>;
   if (!Array.isArray(plan.sessions)) throw new Error("Analysis service returned an invalid practice plan.");
+  const control = value.knowledge_control as Record<string, unknown>;
+  if (
+    control.status !== "CONTROLLED"
+    || control.failClosed !== true
+    || typeof control.policyVersion !== "string"
+    || typeof control.ontologyVersion !== "string"
+    || typeof control.manifestHash !== "string"
+    || control.manifestHash !== manifest.ontologyManifestHash
+    || control.ontologyVersion !== manifest.ontologyVersion
+    || control.reportFallbacksAllowed !== false
+    || !isRecord(control.domains)
+  ) {
+    throw new Error("Analysis service returned an invalid knowledge-control trace.");
+  }
+  for (const domain of ["calculations", "insights", "recommendations", "benchmarks", "records", "report"]) {
+    const authorization = (control.domains as Record<string, unknown>)[domain];
+    if (
+      !isRecord(authorization)
+      || authorization.authorized !== true
+      || typeof authorization.decision !== "string"
+      || authorization.decision.length === 0
+      || !Array.isArray(authorization.policyIds)
+      || authorization.policyIds.length === 0
+      || !authorization.policyIds.every((item) => typeof item === "string" && item.length > 0)
+    ) {
+      throw new Error(`Analysis service did not authorize the ${domain} domain.`);
+    }
+  }
+  const contracts = control.contracts;
+  if (!isRecord(contracts) || !isRecord(contracts.comparisons) || !isRecord(contracts.longitudinal)) {
+    throw new Error("Analysis service did not provide knowledge-controlled calculation contracts.");
+  }
+  const comparisons = contracts.comparisons;
+  const longitudinal = contracts.longitudinal;
+  for (const key of ["maximumCaptureScoreDifference", "improvedScoreDelta", "unchangedLowerScoreDelta"]) {
+    if (typeof comparisons[key] !== "number" || !Number.isFinite(comparisons[key])) {
+      throw new Error(`Analysis service returned an invalid comparison contract field: ${key}.`);
+    }
+  }
+  for (const key of ["requireSameEngine", "requireSameRuntime", "requireSameContext", "requireSameKnowledgePolicy", "requireSameManifestHash"]) {
+    if (typeof comparisons[key] !== "boolean") {
+      throw new Error(`Analysis service returned an invalid comparison contract field: ${key}.`);
+    }
+  }
+  for (const key of ["distributionSpreadDivisor", "minimumHistorySessions", "historyWindowSessions", "meaningfulShiftPoints"]) {
+    if (typeof longitudinal[key] !== "number" || !Number.isFinite(longitudinal[key])) {
+      throw new Error(`Analysis service returned an invalid longitudinal contract field: ${key}.`);
+    }
+  }
 }
 
 function athleteContextFingerprint(
@@ -266,7 +324,7 @@ async function callAnalysisApi(payload: Record<string, unknown>): Promise<Analys
     throw new Error("ANALYSIS_API_KEY must be configured as a secret of at least 32 characters in both services.");
   }
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10 * 60 * 1000);
+  const timeout = setTimeout(() => controller.abort(), ANALYSIS_API_TIMEOUT_MS);
 
   try {
     const response = await fetch(`${ANALYSIS_API_URL}/analysis`, {
@@ -282,7 +340,11 @@ async function callAnalysisApi(payload: Record<string, unknown>): Promise<Analys
 
     if (!response.ok) {
       const detail = (await response.json().catch(() => null)) as { detail?: string } | null;
-      throw new Error(detail?.detail ?? `Analysis service returned HTTP ${response.status}.`);
+      const message = detail?.detail ?? `Analysis service returned HTTP ${response.status}.`;
+      if (response.status === 429 || response.status >= 500) {
+        throw new RetryableAnalysisError(message);
+      }
+      throw new Error(message);
     }
 
     const declaredLength = Number(response.headers.get("content-length") ?? 0);
@@ -302,12 +364,13 @@ async function callAnalysisApi(payload: Record<string, unknown>): Promise<Analys
     validateAnalysisApiResponse(body);
     return body;
   } catch (error) {
+    if (error instanceof RetryableAnalysisError) throw error;
     if (error instanceof Error && error.name === "AbortError") {
-      throw new Error("Analysis timed out. Try a shorter clip with the full body clearly visible.");
+      throw new RetryableAnalysisError("Analysis timed out. Retrying automatically.");
     }
     if (error instanceof TypeError) {
-      throw new Error(
-        `The analysis service is not reachable at ${ANALYSIS_API_URL}. Start the Python analysis API before analyzing a video.`,
+      throw new RetryableAnalysisError(
+        `The analysis service is not reachable at ${ANALYSIS_API_URL}. Retrying automatically.`,
       );
     }
     throw error;
@@ -462,8 +525,8 @@ function longitudinalContextSignature(
   })).digest("hex");
 }
 
-function finiteNumber(value: unknown, fallback: number) {
-  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+function finiteNumberOrNull(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 async function persistLongitudinalDevelopment(
@@ -477,10 +540,47 @@ async function persistLongitudinalDevelopment(
     result: LongitudinalAnalysisResult;
   },
 ) {
+  const control = input.result.knowledge_control;
+  if (control.status !== "CONTROLLED" || control.domains.records.authorized !== true) {
+    throw new Error("Knowledge control did not authorize longitudinal record creation.");
+  }
   if (!input.result.quality_gate.movementConfirmed || input.result.repetitions.length === 0) return;
 
   const contextSignature = longitudinalContextSignature(input.sportId, input.actionType, input.captureContext);
   const reasoning = isRecord(input.result.ontology_reasoning) ? input.result.ontology_reasoning : null;
+  if (!reasoning) return;
+  const knowledgeLayerStatus = isRecord(reasoning.knowledgeLayerStatus) ? reasoning.knowledgeLayerStatus : null;
+  const personalBaseline = knowledgeLayerStatus && isRecord(knowledgeLayerStatus.personalBaseline)
+    ? knowledgeLayerStatus.personalBaseline
+    : null;
+  const minimumPriorSessions = finiteNumberOrNull(personalBaseline?.minimumPriorContextMatchedSessions);
+  const minimumPriorRepetitions = finiteNumberOrNull(personalBaseline?.minimumTotalRepetitions);
+  const minimumMeasurementConfidence = finiteNumberOrNull(personalBaseline?.minimumMeasurementConfidence);
+  const maximumCaptureScoreDifference = finiteNumberOrNull(personalBaseline?.maximumCaptureScoreDifference);
+  const longitudinalContract = control.contracts?.longitudinal;
+  if (
+    minimumPriorSessions === null || minimumPriorSessions < 1
+    || minimumPriorRepetitions === null || minimumPriorRepetitions < 1
+    || minimumMeasurementConfidence === null || minimumMeasurementConfidence < 0 || minimumMeasurementConfidence > 1
+    || maximumCaptureScoreDifference === null || maximumCaptureScoreDifference < 0
+    || !longitudinalContract
+    || !Number.isFinite(longitudinalContract.distributionSpreadDivisor) || longitudinalContract.distributionSpreadDivisor <= 0
+    || !Number.isFinite(longitudinalContract.minimumHistorySessions) || longitudinalContract.minimumHistorySessions < 1
+    || !Number.isFinite(longitudinalContract.historyWindowSessions)
+    || longitudinalContract.historyWindowSessions < longitudinalContract.minimumHistorySessions
+    || !Number.isFinite(longitudinalContract.meaningfulShiftPoints) || longitudinalContract.meaningfulShiftPoints <= 0
+  ) {
+    throw new Error("Knowledge control did not provide a valid longitudinal calculation contract.");
+  }
+  const longitudinalRequirements: LongitudinalRequirements = {
+    minimumPriorSessions,
+    minimumPriorRepetitions,
+    minimumMeasurementConfidence,
+    maximumCaptureScoreDifference,
+    minimumHistorySessions: longitudinalContract.minimumHistorySessions,
+    historyWindowSessions: longitudinalContract.historyWindowSessions,
+    meaningfulShiftPoints: longitudinalContract.meaningfulShiftPoints,
+  };
   const findings = reasoning && Array.isArray(reasoning.findings)
     ? reasoning.findings.filter(isRecord)
     : [];
@@ -494,11 +594,13 @@ async function persistLongitudinalDevelopment(
 
   const { data: stateRow, error: stateError } = await supabase
     .from("player_development_state")
-    .select("primary_construct_id, active_cue, success_metric, status")
+    .select("primary_construct_id, active_cue, success_metric, status, knowledge_policy_version, knowledge_manifest_hash")
     .eq("user_id", input.userId)
     .eq("sport_id", input.sportId)
     .eq("action_type", input.actionType)
     .eq("context_signature", contextSignature)
+    .eq("knowledge_policy_version", control.policyVersion)
+    .eq("knowledge_manifest_hash", control.manifestHash)
     .maybeSingle();
   if (stateError) throw new Error(stateError.message);
 
@@ -518,6 +620,7 @@ async function persistLongitudinalDevelopment(
     measurement?.score,
     input.result.repetition_insights.consistencyScore,
     input.result.capture_quality.score,
+    longitudinalContract.distributionSpreadDivisor,
   );
   if (!measured) return;
   const medianScore = measured.medianScore;
@@ -539,17 +642,59 @@ async function persistLongitudinalDevelopment(
     captureScore: measured.captureScore,
     engineVersion: manifest.engineVersion,
     runtimeSignature: manifest.runtimeSignature ?? null,
+    knowledgePolicyVersion: control.policyVersion,
+    knowledgeManifestHash: control.manifestHash,
     recordedAt: new Date().toISOString(),
   };
 
+  const constructObservations = movementChain.flatMap((item) => {
+    const constructScore = typeof item.score === "number" && Number.isFinite(item.score)
+      ? Math.max(0, Math.min(100, item.score))
+      : null;
+    if (constructScore === null || item.assessmentBasis === "INSUFFICIENT_MEASUREMENT_CONFIDENCE") return [];
+    const itemEvidence = Array.isArray(item.evidence) ? item.evidence.filter(isRecord) : [];
+    const confidences = itemEvidence
+      .map((entry) => typeof entry.confidence === "number" && Number.isFinite(entry.confidence) ? entry.confidence : null)
+      .filter((value): value is number => value !== null);
+    const constructConfidence = confidences.length > 0 ? Math.min(...confidences) : input.result.confidence;
+    if (constructConfidence < minimumMeasurementConfidence || typeof item.id !== "string") return [];
+    return [{
+      constructId: item.id,
+      medianScore: constructScore,
+      confidence: constructConfidence,
+      evidenceIds: itemEvidence.flatMap((entry) => typeof entry.areaId === "string" ? [`area:${entry.areaId}`] : []),
+    }];
+  });
+  if (constructObservations.length > 0) {
+    const { error: distributionsError } = await supabase.rpc("upsert_construct_session_distributions_v650", {
+      p_user_id: input.userId,
+      p_session_id: input.sessionId,
+      p_sport_id: input.sportId,
+      p_action_type: input.actionType,
+      p_context_signature: contextSignature,
+      p_context_dimensions: current.contextDimensions,
+      p_sample_count: current.sampleCount,
+      p_spread: current.spread,
+      p_capture_score: current.captureScore,
+      p_engine_version: current.engineVersion,
+      p_runtime_signature: current.runtimeSignature,
+      p_observations: constructObservations,
+      p_knowledge_policy_version: control.policyVersion,
+      p_knowledge_manifest_hash: control.manifestHash,
+    });
+    if (distributionsError) throw new Error(distributionsError.message);
+  }
+
   const { data: historyRows, error: historyError } = await supabase
     .from("construct_session_distributions")
-    .select("analysis_session_id, construct_id, context_signature, sample_count, median_score, spread, success_rate, confidence, capture_score, engine_version, runtime_signature, recorded_at")
+    .select("analysis_session_id, construct_id, context_signature, sample_count, median_score, spread, success_rate, confidence, capture_score, engine_version, runtime_signature, knowledge_policy_version, knowledge_manifest_hash, recorded_at")
     .eq("user_id", input.userId)
     .eq("sport_id", input.sportId)
     .eq("action_type", input.actionType)
     .eq("construct_id", constructId)
     .eq("context_signature", contextSignature)
+    .eq("knowledge_policy_version", control.policyVersion)
+    .eq("knowledge_manifest_hash", control.manifestHash)
     .order("recorded_at", { ascending: false })
     .limit(6);
   if (historyError) throw new Error(historyError.message);
@@ -566,6 +711,8 @@ async function persistLongitudinalDevelopment(
     captureScore: Number(row.capture_score),
     engineVersion: row.engine_version,
     runtimeSignature: row.runtime_signature,
+    knowledgePolicyVersion: row.knowledge_policy_version,
+    knowledgeManifestHash: row.knowledge_manifest_hash,
     recordedAt: row.recorded_at,
   }));
   const decision = reduceDevelopmentState(
@@ -574,8 +721,9 @@ async function persistLongitudinalDevelopment(
     existing,
     input.result.priorities[0]?.cue ?? null,
     input.result.next_session.successCriteria[0] ?? null,
+    longitudinalRequirements,
   );
-  const { error: applyError } = await supabase.rpc("apply_player_development_observation_v610", {
+  const { error: applyError } = await supabase.rpc("apply_player_development_observation_v650", {
     p_user_id: input.userId,
     p_session_id: input.sessionId,
     p_sport_id: input.sportId,
@@ -604,6 +752,8 @@ async function persistLongitudinalDevelopment(
     },
     p_ontology_version: manifest.ontologyVersion ?? "unknown",
     p_cue_change_reason: decision.cueChangeReason,
+    p_knowledge_policy_version: control.policyVersion,
+    p_knowledge_manifest_hash: control.manifestHash,
   });
   if (applyError) throw new Error(applyError.message);
 }
@@ -623,12 +773,24 @@ function parseCrossStrokeContract(reasoning: Record<string, unknown> | null): Cr
     ),
   );
   if (Object.keys(eligibleActionsByConstruct).length === 0) return null;
+  const minimumDistinctActions = finiteNumberOrNull(raw.minimumDistinctActions);
+  const minimumSessionsPerAction = finiteNumberOrNull(raw.minimumSessionsPerAction);
+  const minimumConfidence = finiteNumberOrNull(raw.minimumConfidence);
+  const maximumCaptureScoreDifference = finiteNumberOrNull(raw.maximumCaptureScoreDifference);
+  const maximumLimiterMedianScore = finiteNumberOrNull(raw.maximumLimiterMedianScore);
+  if (
+    minimumDistinctActions === null || minimumDistinctActions < 2
+    || minimumSessionsPerAction === null || minimumSessionsPerAction < 1
+    || minimumConfidence === null || minimumConfidence < 0 || minimumConfidence > 1
+    || maximumCaptureScoreDifference === null || maximumCaptureScoreDifference < 0
+    || maximumLimiterMedianScore === null || maximumLimiterMedianScore < 0 || maximumLimiterMedianScore > 100
+  ) return null;
   return {
-    minimumDistinctActions: finiteNumber(raw.minimumDistinctActions, 2),
-    minimumSessionsPerAction: finiteNumber(raw.minimumSessionsPerAction, 2),
-    minimumConfidence: finiteNumber(raw.minimumConfidence, 0.65),
-    maximumCaptureScoreDifference: finiteNumber(raw.maximumCaptureScoreDifference, 15),
-    maximumLimiterMedianScore: finiteNumber(raw.maximumLimiterMedianScore, 78),
+    minimumDistinctActions,
+    minimumSessionsPerAction,
+    minimumConfidence,
+    maximumCaptureScoreDifference,
+    maximumLimiterMedianScore,
     eligibleActionsByConstruct,
   };
 }
@@ -637,6 +799,10 @@ async function persistSharedRootDevelopment(
   supabase: SupabaseClient,
   input: { userId: string; sessionId: string; sportId: string; result: LongitudinalAnalysisResult },
 ) {
+  const control = input.result.knowledge_control;
+  if (control.status !== "CONTROLLED" || control.domains.records.authorized !== true) {
+    throw new Error("Knowledge control did not authorize shared-root record creation.");
+  }
   const reasoning = isRecord(input.result.ontology_reasoning) ? input.result.ontology_reasoning : null;
   const contract = parseCrossStrokeContract(reasoning);
   if (!contract) return;
@@ -644,16 +810,20 @@ async function persistSharedRootDevelopment(
   const [{ data: rows, error: rowsError }, { data: states, error: statesError }] = await Promise.all([
     supabase
       .from("construct_session_distributions")
-      .select("analysis_session_id, action_type, construct_id, context_signature, context_dimensions, median_score, confidence, capture_score, recorded_at")
+      .select("analysis_session_id, action_type, construct_id, context_signature, context_dimensions, median_score, confidence, capture_score, knowledge_policy_version, knowledge_manifest_hash, recorded_at")
       .eq("user_id", input.userId)
       .eq("sport_id", input.sportId)
+      .eq("knowledge_policy_version", control.policyVersion)
+      .eq("knowledge_manifest_hash", control.manifestHash)
       .order("recorded_at", { ascending: false })
       .limit(120),
     supabase
       .from("player_development_state")
-      .select("action_type, context_signature, primary_construct_id, active_cue, status")
+      .select("action_type, context_signature, primary_construct_id, active_cue, status, knowledge_policy_version, knowledge_manifest_hash")
       .eq("user_id", input.userId)
       .eq("sport_id", input.sportId)
+      .eq("knowledge_policy_version", control.policyVersion)
+      .eq("knowledge_manifest_hash", control.manifestHash)
       .not("status", "in", "(solved,superseded)"),
   ]);
   if (rowsError) throw new Error(rowsError.message);
@@ -713,7 +883,7 @@ async function persistSharedRootDevelopment(
     return;
   }
 
-  const { error: upsertError } = await supabase.rpc("upsert_shared_root_insight_v620", {
+  const { error: upsertError } = await supabase.rpc("upsert_shared_root_insight_v650", {
     p_user_id: input.userId,
     p_sport_id: input.sportId,
     p_construct_id: insight.constructId,
@@ -726,6 +896,8 @@ async function persistSharedRootDevelopment(
     p_evidence_summary: { archetype: insight.archetype, reason: insight.reason },
     p_ontology_version: input.result.engine_manifest.ontologyVersion ?? "unknown",
     p_last_observed_session_id: input.sessionId,
+    p_knowledge_policy_version: control.policyVersion,
+    p_knowledge_manifest_hash: control.manifestHash,
   });
   if (upsertError) throw new Error(upsertError.message);
 }
@@ -742,6 +914,7 @@ function longitudinalPayload(result: AnalysisApiResponse): LongitudinalAnalysisR
     engine_manifest: result.engine_manifest,
     repetitions: result.repetitions,
     ontology_reasoning: result.ontology_reasoning,
+    knowledge_control: result.knowledge_control,
   };
 }
 
@@ -754,6 +927,7 @@ function isLongitudinalPayload(value: unknown): value is LongitudinalAnalysisRes
     && isRecord(value.next_session)
     && isRecord(value.repetition_insights)
     && isRecord(value.engine_manifest)
+    && isRecord(value.knowledge_control)
     && Array.isArray(value.repetitions);
 }
 
@@ -881,6 +1055,17 @@ async function executeAnalysis({
       .eq("id", sessionId)
       .eq("user_id", user.id);
 
+    const { data: validatedOutcomeRows, error: validatedOutcomesError } = await supabase
+      .from("analysis_rep_outcomes")
+      .select("repetition_index, outcome_source, validation_status, execution_result, depth_zone, direction, placement_zone, net_clearance_cm, bounce_x_normalized, bounce_y_normalized, model_version")
+      .eq("analysis_session_id", sessionId)
+      .eq("user_id", user.id)
+      .in("validation_status", ["coach_verified", "sensor_verified", "tracker_verified"])
+      .not("execution_result", "is", null)
+      .order("repetition_index", { ascending: true })
+      .limit(12);
+    if (validatedOutcomesError) throw new Error(validatedOutcomesError.message);
+
     const result = await callAnalysisApi({
       user_id: user.id,
       video_id: video.id,
@@ -899,6 +1084,7 @@ async function executeAnalysis({
       shot_situation: captureContext.shotSituation,
       shot_intent: captureContext.shotIntent,
       athlete_question: captureContext.specificQuestion || null,
+      validated_outcomes: validatedOutcomeRows ?? [],
     });
 
     const manifest = result.engine_manifest;
@@ -952,6 +1138,9 @@ async function executeAnalysis({
         reference_comparison: result.reference_comparison,
         input_fingerprint: result.input_fingerprint,
         athlete_context_fingerprint: contextFingerprint,
+        knowledge_control: result.knowledge_control,
+        knowledge_policy_version: result.knowledge_control.policyVersion,
+        knowledge_manifest_hash: result.knowledge_control.manifestHash,
       },
       { onConflict: "session_id" },
     );
@@ -993,7 +1182,7 @@ async function executeAnalysis({
         result.practice_plan.sessions.map((item) => [item.id, false]),
       );
       const reassessmentDue = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-      const { error: planError } = await supabase.rpc("upsert_active_practice_plan_v30", {
+      const { error: planError } = await supabase.rpc("upsert_active_practice_plan_v650", {
         p_user_id: user.id,
         p_session_id: sessionId,
         p_sport_id: sportId,
@@ -1004,6 +1193,8 @@ async function executeAnalysis({
         p_plan: result.practice_plan,
         p_completion: completion,
         p_reassessment_due_at: reassessmentDue,
+        p_knowledge_policy_version: result.knowledge_control.policyVersion,
+        p_knowledge_manifest_hash: result.knowledge_control.manifestHash,
       });
       if (planError) throw new Error(planError.message);
     }
@@ -1056,6 +1247,7 @@ async function executeAnalysis({
     return { sessionId };
   } catch (error) {
     const message = error instanceof Error ? error.message : "Analysis failed.";
+    const retryable = error instanceof RetryableAnalysisError;
     await supabase
       .from("analysis_sessions")
       .update(hadCompletedReport
@@ -1070,13 +1262,21 @@ async function executeAnalysis({
             athlete_context_fingerprint: previousSession.athlete_context_fingerprint,
             updated_at: new Date().toISOString(),
           }
-        : {
-            status: "failed",
-            current_stage: "failed",
-            error_message: message,
-            score_status: "failed",
-            updated_at: new Date().toISOString(),
-          })
+        : retryable
+          ? {
+              status: "queued",
+              current_stage: "queued",
+              progress: 0,
+              error_message: `Retrying automatically. ${message}`,
+              updated_at: new Date().toISOString(),
+            }
+          : {
+              status: "failed",
+              current_stage: "failed",
+              error_message: message,
+              score_status: "failed",
+              updated_at: new Date().toISOString(),
+            })
       .eq("id", sessionId)
       .eq("user_id", user.id);
     throw error;
@@ -1241,7 +1441,7 @@ export async function runAnalysisSession(sessionId: string) {
   if (session.status === "processing") {
     const updatedAt = session.updated_at ? new Date(session.updated_at).getTime() : Date.now();
     if (Date.now() - updatedAt < 12 * 60 * 1000) return { sessionId, status: "processing" as const };
-    await supabase.from("analysis_sessions").update({ status: "queued", current_stage: "queued", progress: 0, error_message: "The previous worker stopped responding. AceCoach restarted the analysis safely.", updated_at: new Date().toISOString() }).eq("id", sessionId).eq("user_id", user.id);
+    await supabase.from("analysis_sessions").update({ status: "queued", current_stage: "queued", progress: 0, error_message: "The previous worker stopped responding. Athlentra restarted the analysis safely.", updated_at: new Date().toISOString() }).eq("id", sessionId).eq("user_id", user.id);
   }
 
   const { data: video, error: videoError } = await supabase

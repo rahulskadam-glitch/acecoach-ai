@@ -97,11 +97,11 @@ export default function ForgotPasswordForm() {
         >
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div className="space-y-1.5">
-              <label htmlFor="reset-email" className="block text-sm font-medium text-slate-300">
+              <label htmlFor="reset-email" className="block text-sm font-medium text-slate-700">
                 Email address
               </label>
-              <div className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 transition-all duration-200 focus-within:border-emerald-500/50 focus-within:ring-1 focus-within:ring-emerald-500/20">
-                <Mail className="h-4 w-4 shrink-0 text-slate-500 transition-colors group-focus-within:text-emerald-400" />
+              <div className="group flex items-center gap-3 rounded-2xl border border-slate-300 bg-white px-4 py-3 transition-all duration-200 focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100">
+                <Mail className="h-4 w-4 shrink-0 text-slate-400 transition-colors group-focus-within:text-blue-700" />
                 <input
                   id="reset-email"
                   name="email"
@@ -110,7 +110,7 @@ export default function ForgotPasswordForm() {
                   autoComplete="email"
                   autoFocus
                   required
-                  className="w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-600"
+                  className="w-full bg-transparent text-sm text-slate-950 outline-none placeholder:text-slate-500"
                 />
               </div>
             </div>
@@ -126,7 +126,7 @@ export default function ForgotPasswordForm() {
                 >
                   <div className="flex items-start gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-2.5">
                     <span className="text-rose-400" aria-hidden="true">!</span>
-                    <p role="alert" className="text-sm text-rose-300">{error}</p>
+                    <p role="alert" className="text-sm text-rose-800">{error}</p>
                   </div>
                 </motion.div>
               )}
@@ -135,7 +135,7 @@ export default function ForgotPasswordForm() {
             <Button
               type="submit"
               disabled={loading}
-              className="h-11 w-full rounded-2xl bg-emerald-500 font-semibold text-slate-950 hover:bg-emerald-400 disabled:opacity-60"
+              className="h-11 w-full rounded-2xl bg-[#071b2d] font-semibold text-white hover:bg-[#0d2b42] disabled:opacity-60"
             >
               {loading ? (
                 <span className="flex items-center gap-2"><Spinner /> Sending link...</span>
@@ -168,10 +168,10 @@ export default function ForgotPasswordForm() {
 
           {/* Copy */}
           <div className="text-center">
-            <p className="font-semibold text-white">Check your inbox</p>
-            <p className="mt-1.5 text-sm text-slate-400">
+            <p className="font-semibold text-slate-950">Check your inbox</p>
+            <p className="mt-1.5 text-sm text-slate-600">
               We prepared a reset request for{" "}
-              <span className="font-medium text-slate-200">{submittedEmail}</span>
+              <span className="font-medium text-slate-900">{submittedEmail}</span>
             </p>
             <p className="mt-3 text-xs text-slate-500">
               In this local setup, the email delivery backend isn&apos;t configured, so no message will be sent until Supabase email delivery is enabled.
@@ -202,7 +202,7 @@ export default function ForgotPasswordForm() {
             variant="outline"
             onClick={handleResend}
             disabled={cooldown > 0 || resendLoading}
-            className="h-10 w-full rounded-2xl border-white/10 bg-white/5 text-sm text-white hover:bg-white/10 disabled:opacity-50"
+            className="h-10 w-full rounded-2xl border-slate-300 bg-white text-sm text-slate-800 hover:bg-slate-50 disabled:opacity-50"
           >
             {resendLoading ? (
               <span className="flex items-center gap-2"><Spinner /> Resending...</span>

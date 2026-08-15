@@ -82,8 +82,8 @@ export default function UpdatePasswordForm() {
           <CheckCircle2 className="h-8 w-8 text-emerald-400" />
         </motion.div>
         <div>
-          <p className="font-semibold text-white">Password updated!</p>
-          <p className="mt-1 text-sm text-slate-400">Redirecting you to sign in...</p>
+          <p className="font-semibold text-slate-950">Password updated</p>
+          <p className="mt-1 text-sm text-slate-600">Redirecting you to sign in...</p>
         </div>
         <div className="mt-1 flex gap-1">
           {[0, 1, 2].map((i) => (
@@ -102,7 +102,7 @@ export default function UpdatePasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <div className="space-y-2">
-        <label htmlFor="password" className="block text-sm font-medium text-slate-300">
+        <label htmlFor="password" className="block text-sm font-medium text-slate-700">
           New password
         </label>
         <PasswordInput
@@ -120,7 +120,7 @@ export default function UpdatePasswordForm() {
 
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <label htmlFor="confirm" className="text-sm font-medium text-slate-300">
+          <label htmlFor="confirm" className="text-sm font-medium text-slate-700">
             Confirm password
           </label>
           <AnimatePresence mode="wait">
@@ -169,7 +169,7 @@ export default function UpdatePasswordForm() {
           >
             <div className="flex items-start gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 px-3 py-2.5">
               <span className="text-rose-400" aria-hidden="true">!</span>
-              <p role="alert" className="text-sm text-rose-300">{error}</p>
+              <p role="alert" className="text-sm text-rose-800">{error}</p>
             </div>
           </motion.div>
         )}
@@ -178,7 +178,7 @@ export default function UpdatePasswordForm() {
       <Button
         type="submit"
         disabled={loading || passwordsMismatch || password.length < 8}
-        className="h-11 w-full rounded-2xl bg-emerald-500 font-semibold text-slate-950 hover:bg-emerald-400 disabled:opacity-60"
+        className="h-11 w-full rounded-2xl bg-[#071b2d] font-semibold text-white hover:bg-[#0d2b42] disabled:opacity-60"
       >
         {loading ? (
           <span className="flex items-center gap-2"><Spinner /> Updating password...</span>
@@ -188,8 +188,8 @@ export default function UpdatePasswordForm() {
       </Button>
 
       <Link
-        href="/login"
-        className="flex w-full items-center justify-center gap-1.5 text-xs text-slate-500 transition-colors hover:text-slate-300"
+        href="/auth"
+        className="flex w-full items-center justify-center gap-1.5 text-xs text-slate-500 transition-colors hover:text-slate-950"
       >
         <ArrowLeft className="h-3.5 w-3.5" />
         Back to sign in

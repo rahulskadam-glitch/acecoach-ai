@@ -17,6 +17,10 @@ function cleanText(value: FormDataEntryValue | null, maxLength: number) {
   return text ? text.slice(0, maxLength) : null;
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 export async function saveAnalysisFeedback(sessionId: string, formData: FormData) {
   const user = await requireUser();
   const supabase = createAdminClient();
@@ -112,13 +116,27 @@ export async function createCoachShare(sessionId: string) {
 
   const { data: session, error: sessionError } = await supabase
     .from("analysis_sessions")
-    .select("id, status")
+    .select("id, status, analysis_reports(knowledge_control, priorities, drills)")
     .eq("id", sessionId)
     .eq("user_id", user.id)
     .single();
 
   if (sessionError || !session) throw new Error(sessionError?.message ?? "Analysis session not found.");
   if (session.status !== "completed") throw new Error("Only completed reports can be shared.");
+  const report = Array.isArray(session.analysis_reports) ? session.analysis_reports[0] : session.analysis_reports;
+  const control = report && isRecord(report.knowledge_control) ? report.knowledge_control : null;
+  const domains = control && isRecord(control.domains) ? control.domains : null;
+  const recommendation = domains && isRecord(domains.recommendations) ? domains.recommendations : null;
+  if (
+    control?.status !== "CONTROLLED"
+    || recommendation?.decision !== "ontology_fault_links"
+    || !Array.isArray(report?.priorities)
+    || report.priorities.length === 0
+    || !Array.isArray(report.drills)
+    || report.drills.length === 0
+  ) {
+    throw new Error("Only a knowledge-controlled report with a traced coaching recommendation can be shared.");
+  }
 
   const { error: revokeError } = await supabase
     .from("report_shares")

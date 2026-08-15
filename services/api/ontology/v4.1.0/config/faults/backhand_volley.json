@@ -19,7 +19,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "delays reaction and preparation",
     "player_message": "Split as your opponent hits.",
-    "coach_message_template": "Missing or mistimed split step: {evidence_summary}.",
     "overlay_markers": [
       "FOOT_TRAIL",
       "TIMING_DELTA"
@@ -113,7 +112,8 @@
       "required_when_player_baseline_available": true,
       "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
       "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
-    }
+    },
+    "capability_status": "dormant_pending_validated_ball_tracking"
   },
   {
     "fault_id": "BHV-PREP-01",
@@ -135,7 +135,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "forces rushed contact",
     "player_message": "Set the racket earlier.",
-    "coach_message_template": "Late preparation: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "TIMING_DELTA"
@@ -251,7 +250,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces timing and control",
     "player_message": "Keep the backhand volley compact.",
-    "coach_message_template": "Oversized backswing: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "TRUNK_AXIS"
@@ -367,7 +365,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces racket stability during setup",
     "player_message": "Support the racket until it is set.",
-    "coach_message_template": "Support hand releases too early: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_THROAT",
       "BODY_SKELETON",
@@ -484,7 +481,6 @@
     "measurement_class": "INFERRED",
     "performance_consequence": "can require last-second face correction",
     "player_message": "Use a continental volley grip.",
-    "coach_message_template": "Suspected grip mismatch: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_HANDLE",
       "RACKET_FACE_ESTIMATE",
@@ -596,7 +592,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces control and penetration",
     "player_message": "Step in and stay balanced.",
-    "coach_message_template": "Leaning backward: {evidence_summary}.",
     "overlay_markers": [
       "TRUNK_AXIS",
       "COM_ESTIMATE",
@@ -713,7 +708,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces racket stability and control",
     "player_message": "Meet the ball farther in front.",
-    "coach_message_template": "Late contact: {evidence_summary}.",
     "overlay_markers": [
       "CONTACT_POINT",
       "CONTACT_WINDOW"
@@ -829,7 +823,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces stable reach and punch",
     "player_message": "Keep the arm structure firm through contact.",
-    "coach_message_template": "Elbow collapse: {evidence_summary}.",
     "overlay_markers": [
       "ELBOW_ANGLE_L",
       "ELBOW_ANGLE_R"
@@ -945,7 +938,6 @@
     "measurement_class": "INFERRED",
     "performance_consequence": "reduces directional control",
     "player_message": "Keep the wrist and racket stable.",
-    "coach_message_template": "Racket-face instability: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_FACE_ESTIMATE",
       "CONFIDENCE_BADGE"
@@ -1056,7 +1048,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces readiness for the next ball",
     "player_message": "Reset the racket and feet immediately.",
-    "coach_message_template": "Failure to reset: {evidence_summary}.",
     "overlay_markers": [
       "RECOVERY_TARGET",
       "RACKET_PATH",

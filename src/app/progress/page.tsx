@@ -16,6 +16,9 @@ type AnalysisSessionRow = {
     confidence?: number | null;
     capture_quality?: { score?: number | null } | null;
     repetition_insights?: { consistencyScore?: number | null } | null;
+    knowledge_control?: { status?: string; policyVersion?: string; manifestHash?: string } | null;
+    knowledge_policy_version?: string | null;
+    knowledge_manifest_hash?: string | null;
   }> | null;
 };
 
@@ -34,6 +37,8 @@ type DevelopmentStateRow = {
   active_cue: string | null;
   status: string;
   evidence_summary: Record<string, unknown> | null;
+  knowledge_policy_version: string | null;
+  knowledge_manifest_hash: string | null;
 };
 
 type ConstructDistributionRow = {
@@ -45,6 +50,8 @@ type ConstructDistributionRow = {
   median_score: number;
   spread: number;
   recorded_at: string;
+  knowledge_policy_version: string | null;
+  knowledge_manifest_hash: string | null;
 };
 
 type SharedRootRow = {
@@ -56,6 +63,8 @@ type SharedRootRow = {
   shared_cue: string | null;
   stroke_specific_cues: Record<string, string | null> | null;
   evidence_summary: Record<string, unknown> | null;
+  knowledge_policy_version: string | null;
+  knowledge_manifest_hash: string | null;
 };
 
 type PracticeCheckinRow = {
@@ -71,11 +80,11 @@ export default async function ProgressPage() {
   const supabase = await createClient();
   const admin = createAdminClient();
   const [sessionsResult, plansResult, developmentStatesResult, distributionsResult, sharedRootsResult, checkinsResult, postprocessingResult] = await Promise.all([
-    supabase.from("analysis_sessions").select("id, sport_id, created_at, analysis_action_type, action_type, status, analysis_reports(overall_score, score_status, confidence, capture_quality, repetition_insights)").eq("user_id", user.id).eq("status", "completed").order("created_at", { ascending: true }).limit(60),
+    supabase.from("analysis_sessions").select("id, sport_id, created_at, analysis_action_type, action_type, status, analysis_reports(overall_score, score_status, confidence, capture_quality, repetition_insights, knowledge_control, knowledge_policy_version, knowledge_manifest_hash)").eq("user_id", user.id).eq("status", "completed").order("created_at", { ascending: true }).limit(60),
     supabase.from("practice_plans").select("completion, plan").eq("user_id", user.id),
-    supabase.from("player_development_state").select("sport_id, action_type, context_signature, primary_construct_id, active_cue, status, evidence_summary, updated_at").eq("user_id", user.id).not("status", "in", "(solved,superseded)").order("updated_at", { ascending: false }),
-    supabase.from("construct_session_distributions").select("analysis_session_id, sport_id, action_type, construct_id, context_signature, median_score, spread, recorded_at").eq("user_id", user.id).order("recorded_at", { ascending: true }).limit(120),
-    supabase.from("shared_root_insights").select("sport_id, construct_id, context_class, action_types, confidence, shared_cue, stroke_specific_cues, evidence_summary").eq("user_id", user.id).eq("active", true).order("updated_at", { ascending: false }),
+    supabase.from("player_development_state").select("sport_id, action_type, context_signature, primary_construct_id, active_cue, status, evidence_summary, knowledge_policy_version, knowledge_manifest_hash, updated_at").eq("user_id", user.id).not("status", "in", "(solved,superseded)").not("knowledge_policy_version", "is", null).not("knowledge_manifest_hash", "is", null).order("updated_at", { ascending: false }),
+    supabase.from("construct_session_distributions").select("analysis_session_id, sport_id, action_type, construct_id, context_signature, median_score, spread, knowledge_policy_version, knowledge_manifest_hash, recorded_at").eq("user_id", user.id).not("knowledge_policy_version", "is", null).not("knowledge_manifest_hash", "is", null).order("recorded_at", { ascending: true }).limit(120),
+    supabase.from("shared_root_insights").select("sport_id, construct_id, context_class, action_types, confidence, shared_cue, stroke_specific_cues, evidence_summary, knowledge_policy_version, knowledge_manifest_hash").eq("user_id", user.id).eq("active", true).not("knowledge_policy_version", "is", null).not("knowledge_manifest_hash", "is", null).order("updated_at", { ascending: false }),
     supabase.from("practice_checkins").select("id, attempts, effort, created_at, practice_plans(sport_id, action_type)").eq("user_id", user.id).not("attempts", "is", null).order("created_at", { ascending: false }).limit(120),
     admin.from("analysis_postprocessing_jobs").select("session_id").eq("user_id", user.id).eq("status", "failed").order("updated_at", { ascending: false }).limit(5),
   ]);
@@ -94,12 +103,24 @@ export default async function ProgressPage() {
     ["practice load", checkinsResult.error],
     ["development processing status", postprocessingResult.error],
   ].flatMap(([label, error]) => error ? [`Could not load ${label}.`] : []);
-  const points: ProgressPoint[] = ((sessions ?? []) as AnalysisSessionRow[]).map((session) => {
+  const latestControlledReport = [...((sessions ?? []) as AnalysisSessionRow[])].reverse().flatMap((session) => {
+    const report = Array.isArray(session.analysis_reports) ? session.analysis_reports[0] : session.analysis_reports;
+    return report?.knowledge_control?.status === "CONTROLLED" ? [report] : [];
+  })[0];
+  const currentPolicyVersion = latestControlledReport?.knowledge_policy_version ?? latestControlledReport?.knowledge_control?.policyVersion ?? null;
+  const currentManifestHash = latestControlledReport?.knowledge_manifest_hash ?? latestControlledReport?.knowledge_control?.manifestHash ?? null;
+  const matchesCurrentKnowledge = (policyVersion: string | null | undefined, manifestHash: string | null | undefined) => (
+    Boolean(currentPolicyVersion && currentManifestHash)
+    && policyVersion === currentPolicyVersion
+    && manifestHash === currentManifestHash
+  );
+  const points: ProgressPoint[] = ((sessions ?? []) as AnalysisSessionRow[]).flatMap((session) => {
     const raw = Array.isArray(session.analysis_reports) ? session.analysis_reports[0] : session.analysis_reports;
+    if (!raw || raw.knowledge_control?.status !== "CONTROLLED" || !matchesCurrentKnowledge(raw.knowledge_policy_version, raw.knowledge_manifest_hash)) return [];
     const score = raw?.score_status === "provisional_criterion_index" && typeof raw.overall_score === "number" ? raw.overall_score : null;
     const consistency = typeof raw?.repetition_insights?.consistencyScore === "number" ? raw.repetition_insights.consistencyScore : null;
     const movement = session.analysis_action_type ?? session.action_type ?? "movement";
-    return { sessionId: session.id, sportId: session.sport_id ?? "unknown", date: new Date(session.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }), score, consistency, confidence: Number(raw?.confidence ?? 0), capture: Number(raw?.capture_quality?.score ?? 0), movement };
+    return [{ sessionId: session.id, sportId: session.sport_id ?? "unknown", date: new Date(session.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }), score, consistency, confidence: Number(raw?.confidence ?? 0), capture: Number(raw?.capture_quality?.score ?? 0), movement }];
   });
   let completedPractice = 0;
   let totalPractice = 0;
@@ -109,12 +130,12 @@ export default async function ProgressPage() {
     const completion = (plan.completion ?? {}) as Record<string, boolean>;
     completedPractice += sessionsInPlan.filter((item) => Boolean(item.id) && completion[item.id ?? ""]).length;
   }
-  const developmentTrends: DevelopmentTrend[] = ((developmentStates ?? []) as DevelopmentStateRow[]).map((state) => {
+  const developmentTrends: DevelopmentTrend[] = ((developmentStates ?? []) as DevelopmentStateRow[]).filter((state) => matchesCurrentKnowledge(state.knowledge_policy_version, state.knowledge_manifest_hash)).map((state) => {
     const evidence = state.evidence_summary && typeof state.evidence_summary === "object" && !Array.isArray(state.evidence_summary)
       ? state.evidence_summary as Record<string, unknown>
       : {};
     const trendPoints = ((distributions ?? []) as ConstructDistributionRow[])
-      .filter((item) => item.sport_id === state.sport_id && item.action_type === state.action_type && item.construct_id === state.primary_construct_id && item.context_signature === state.context_signature)
+      .filter((item) => matchesCurrentKnowledge(item.knowledge_policy_version, item.knowledge_manifest_hash) && item.sport_id === state.sport_id && item.action_type === state.action_type && item.construct_id === state.primary_construct_id && item.context_signature === state.context_signature)
       .map((item) => {
         const median = Number(item.median_score);
         const spread = Number(item.spread);
@@ -131,7 +152,7 @@ export default async function ProgressPage() {
       points: trendPoints,
     };
   });
-  const sharedRoots: SharedRootSummary[] = ((sharedRootRows ?? []) as SharedRootRow[]).map((row) => ({
+  const sharedRoots: SharedRootSummary[] = ((sharedRootRows ?? []) as SharedRootRow[]).filter((row) => matchesCurrentKnowledge(row.knowledge_policy_version, row.knowledge_manifest_hash)).map((row) => ({
     sportId: row.sport_id,
     constructId: row.construct_id,
     contextClass: row.context_class,

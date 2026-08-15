@@ -28,6 +28,11 @@
     "title": {
       "type": "string"
     },
+    "capability_status": {
+      "type": "string",
+      "description": "Set when this fault's primary evidence depends on a capability the engine does not yet implement (e.g. ball tracking), so it cannot realistically reach FAULT_CONFIRMED from real footage today.",
+      "enum": ["dormant_pending_validated_ball_tracking"]
+    },
     "domain": {
       "type": "string"
     },
@@ -72,9 +77,6 @@
       "type": "string"
     },
     "player_message": {
-      "type": "string"
-    },
-    "coach_message_template": {
       "type": "string"
     },
     "overlay_markers": {

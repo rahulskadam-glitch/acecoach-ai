@@ -45,7 +45,7 @@ export default function Pricing() {
         </div>
         <h2 className="mt-6 text-3xl font-semibold tracking-tight text-white sm:text-4xl">Know what is available now—and what is still planned.</h2>
         <p className="mt-4 text-lg leading-8 text-slate-400">No payment is collected in this research build. Planned prices are shown early so the eventual product does not surprise athletes with a hidden paywall.</p>
-        <div className="mt-5 flex items-start gap-3 rounded-2xl border border-sky-400/20 bg-sky-400/[0.06] p-4 text-sm leading-6 text-sky-100/80"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-sky-300" /><p>Before paid launch, AceCoach will add clear usage limits, in-app plan management, cancellation controls, and regional pricing.</p></div>
+        <div className="mt-5 flex items-start gap-3 rounded-2xl border border-sky-400/20 bg-sky-400/[0.06] p-4 text-sm leading-6 text-sky-100/80"><ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-sky-300" /><p>Before paid launch, Athlentra will add clear usage limits, in-app plan management, cancellation controls, and regional pricing.</p></div>
       </div>
 
       <div className="mt-10 grid gap-6 lg:grid-cols-3">

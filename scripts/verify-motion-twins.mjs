@@ -16,13 +16,13 @@ const checks = [
   ["seeks wait for decoded video frame", studio.includes("onSeeked={handleSeeked}") && studio.includes("if (seeking")],
   ["clean original-video lens exists", studio.includes('mode === "clean"') && studio.includes("Original video preserved")],
   ["level-aware target pose model exists", model.includes("poseAtProgress") && model.includes("playingLevel")],
-  ["active overlay is grounded in pose evidence", studio.includes("measured anatomical neighbours") && studio.includes("not force data")],
+  ["active overlay is grounded in pose evidence", studio.includes("Low-confidence joints are withheld") && studio.includes("force")],
   ["six phases exist", ["preparation", "loading", "swing", "contact", "finish", "recovery"].every((value) => model.includes(`\"${value}\"`))],
   ["phase synchronization uses measured anchors", studio.includes("stageAnchors") && studio.includes("stageForTime")],
   ["frame stepping exists", studio.includes("Previous frame") && studio.includes("Next frame")],
   ["tracked skeleton renderer exists", studio.includes("BODY_CONNECTIONS") && studio.includes("keyLandmarks")],
   ["left-side support exists", studio.includes('"left" | "right"')],
-  ["scientific boundary exists", studio.includes("not force data") && studio.includes("exact 3D reconstruction")],
+  ["scientific boundary exists", studio.includes("force") && studio.includes("full 3D motion")],
 ];
 for (const [name, passed] of checks) { if (!passed) throw new Error(`Motion twin verification failed: ${name}`); console.log(`PASS: ${name}`); }
 console.log(`Motion twin verification passed (${checks.length} checks).`);

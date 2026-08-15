@@ -53,7 +53,7 @@ export default function Features() {
           Understand the correction. Practise it. Prove it improved.
         </h2>
         <p className="mt-4 text-lg leading-8 text-slate-400">
-          AceCoach turns video into an explainable improvement loop rather than a score-only report.
+          Athlentra turns video into an explainable improvement loop rather than a score-only report.
         </p>
       </div>
 

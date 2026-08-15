@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 
 import { supportedSports } from "@/lib/sports";
 import { createAdminClient, requireUser } from "@/lib/supabase/server";
+import { normalizePlayerAgeBand, requiresGuardianConfirmation } from "@/lib/athlete/age-bands";
 
 const JOURNEY_COOKIE = "acecoach_journey_token";
 const SPORT_COOKIE = "acecoach_selected_sport";
@@ -64,7 +65,7 @@ export async function saveJourneyIntake(payload: {
   dominantSide: string;
   primaryGoal?: string;
   silhouettePreference?: string;
-  heightCm?: number | null;
+  heightCm: number;
   serviceProcessing: boolean;
   guardianConsent?: boolean;
   actionType: string;
@@ -76,7 +77,7 @@ export async function saveJourneyIntake(payload: {
   const user = await requireUser();
   const admin = createAdminClient();
   const sportId = validSport(payload.sportId);
-  const ageBands = new Set(["under_10", "10_12", "13_15", "16_18", "19_29", "30_39", "40_49", "50_59", "60_plus", "under_13", "13_17", "18_24", "25_34", "35_44", "45_54", "55_plus"]);
+  const normalizedAgeBand = normalizePlayerAgeBand(payload.ageBand);
   const levels = new Set(["new", "beginner", "developing", "intermediate", "advanced", "competitive", "coach_professional"]);
   const dominantSides = new Set(["left", "right"]);
   const silhouettes = new Set(["player-matched", "neutral", "female", "male"]);
@@ -84,8 +85,8 @@ export async function saveJourneyIntake(payload: {
   const shotSituations = new Set(["controlled_practice", "neutral_rally", "attacking", "defensive_on_run", "return_of_serve", "unknown"]);
   const shotIntents = new Set(["consistency", "depth", "heavy_topspin", "flatter_drive", "angle", "approach", "defensive_height", "unknown"]);
   const sport = supportedSports.find((item) => item.id === sportId);
-  if (!ageBands.has(payload.ageBand)) throw new Error("Choose an age band.");
-  if (["under_10", "10_12", "under_13"].includes(payload.ageBand) && !payload.guardianConsent) throw new Error("A parent or guardian must confirm this analysis for an athlete under 13.");
+  if (!normalizedAgeBand) throw new Error("Choose an age band.");
+  if (requiresGuardianConfirmation(normalizedAgeBand) && !payload.guardianConsent) throw new Error("Parent or guardian approval is required for players aged 13–17.");
   if (!levels.has(payload.playingLevel)) throw new Error("Choose your playing level.");
   if (!dominantSides.has(payload.dominantSide)) throw new Error("Choose a dominant side.");
   if (!sport?.actions.some((action) => action.id === payload.actionType)) throw new Error("Choose a supported movement for this sport.");
@@ -96,9 +97,9 @@ export async function saveJourneyIntake(payload: {
   const silhouette = silhouettes.has(payload.silhouettePreference ?? "") ? payload.silhouettePreference! : "player-matched";
   const profileGender = silhouette === "female" || silhouette === "male" || silhouette === "neutral" ? silhouette : "neutral";
   const goal = (payload.primaryGoal ?? "Improve technique").trim().slice(0, 180) || "Improve technique";
-  const heightCm = payload.heightCm === null || payload.heightCm === undefined ? null : Number(payload.heightCm);
-  if (heightCm !== null && (!Number.isFinite(heightCm) || heightCm < 80 || heightCm > 230)) {
-    throw new Error("Enter a height between 80 and 230 cm, or leave it blank.");
+  const heightCm = Number(payload.heightCm);
+  if (!Number.isFinite(heightCm) || heightCm < 80 || heightCm > 230) {
+    throw new Error("Enter a height between 80 and 230 cm.");
   }
 
   const { data: verifiedIdentity, error: identityError } = await admin.auth.admin.getUserById(user.id);
@@ -123,7 +124,7 @@ export async function saveJourneyIntake(payload: {
   if (ensureProfileError) throw new Error(ensureProfileError.message);
 
   const { data: savedProfile, error: profileError } = await admin.from("profiles").update({
-    age_band: payload.ageBand,
+    age_band: normalizedAgeBand,
     playing_level: payload.playingLevel,
     dominant_hand: payload.dominantSide,
     primary_sport_id: sportId,
@@ -146,14 +147,12 @@ export async function saveJourneyIntake(payload: {
   }, { onConflict: "profile_id,sport_id" });
   if (sportError) throw new Error(sportError.message);
 
-  if (heightCm !== null) {
-    const { error: physicalError } = await admin.from("physical_profiles").upsert({
-      profile_id: user.id,
-      height_cm: heightCm,
-      updated_at: new Date().toISOString(),
-    }, { onConflict: "profile_id" });
-    if (physicalError) throw new Error(physicalError.message);
-  }
+  const { error: physicalError } = await admin.from("physical_profiles").upsert({
+    profile_id: user.id,
+    height_cm: heightCm,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: "profile_id" });
+  if (physicalError) throw new Error(physicalError.message);
 
   const { error: consentError } = await admin.from("consents").upsert({
     profile_id: user.id,
@@ -173,7 +172,7 @@ export async function saveJourneyIntake(payload: {
       current_step: "upload",
       draft_intake: {
         actionType: payload.actionType,
-        ageBand: payload.ageBand,
+        ageBand: normalizedAgeBand,
         playingLevel: payload.playingLevel,
         dominantSide: payload.dominantSide,
         primaryGoal: goal,

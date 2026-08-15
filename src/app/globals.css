@@ -49,13 +49,25 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --ath-canvas: #f3f6f2;
+  --ath-surface: #ffffff;
+  --ath-surface-muted: #eaf0ec;
+  --ath-ink: #071b2d;
+  --ath-ink-soft: #425466;
+  --ath-navy: #071b2d;
+  --ath-navy-raised: #0d2b42;
+  --ath-green: #08715b;
+  --ath-lime: #d8ff52;
+  --ath-sky: #79d5ff;
+  --ath-line: #dce5df;
+  --ath-shadow: 0 18px 55px rgba(7, 27, 45, 0.08);
+  --background: oklch(0.972 0.008 145);
+  --foreground: oklch(0.23 0.04 240);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: oklch(0.31 0.065 235);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -64,15 +76,15 @@
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --border: oklch(0.9 0.012 155);
+  --input: oklch(0.9 0.012 155);
+  --ring: oklch(0.52 0.14 168);
+  --chart-1: oklch(0.52 0.14 168);
+  --chart-2: oklch(0.77 0.13 220);
+  --chart-3: oklch(0.9 0.2 115);
+  --chart-4: oklch(0.67 0.18 45);
+  --chart-5: oklch(0.55 0.2 25);
+  --radius: 0.875rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -123,6 +135,9 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+    font-feature-settings: "kern", "liga", "calt";
+    text-rendering: optimizeLegibility;
   }
   html {
     @apply font-sans;
@@ -159,18 +174,61 @@
 }
 
 html {
-  background: #f6f8fb;
+  background: var(--ath-canvas);
   scroll-behavior: smooth;
 }
 
 body {
-  background: #f6f8fb;
-  color: #171a1f;
+  background: var(--ath-canvas);
+  color: var(--ath-ink);
 }
 
 ::selection {
-  background: #dbeafe;
-  color: #172554;
+  background: var(--ath-lime);
+  color: var(--ath-navy);
+}
+
+@layer components {
+  .ath-app-canvas {
+    background:
+      radial-gradient(circle at 92% 0%, rgba(121, 213, 255, 0.14), transparent 26rem),
+      radial-gradient(circle at 4% 38%, rgba(8, 113, 91, 0.07), transparent 28rem),
+      var(--ath-canvas);
+  }
+
+  .ath-card {
+    border: 1px solid var(--ath-line);
+    border-radius: 1.5rem;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 1px 2px rgba(7, 27, 45, 0.03), 0 14px 40px rgba(7, 27, 45, 0.05);
+  }
+
+  .ath-glass {
+    border: 1px solid rgba(220, 229, 223, 0.9);
+    background: rgba(255, 255, 255, 0.86);
+    box-shadow: 0 12px 40px rgba(7, 27, 45, 0.08);
+    backdrop-filter: blur(18px) saturate(145%);
+  }
+
+  .ath-primary {
+    background: var(--ath-navy);
+    color: white;
+    box-shadow: 0 10px 24px rgba(7, 27, 45, 0.18);
+    transition: transform 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+  }
+
+  .ath-primary:hover { background: var(--ath-navy-raised); box-shadow: 0 13px 30px rgba(7, 27, 45, 0.22); }
+  .ath-primary:active { transform: scale(0.985); }
+
+  .ath-focus-ring:focus-visible,
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid var(--ath-sky);
+    outline-offset: 3px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

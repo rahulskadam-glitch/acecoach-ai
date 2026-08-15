@@ -1,0 +1,70 @@
+{
+  "version": "1.0.0",
+  "reviewed_at": "2026-08-15",
+  "principle": "Sources establish coaching questions, qualitative patterns, language and study hypotheses. They do not create player percentiles, ideal angles or causal diagnoses.",
+  "minimum_coverage": {
+    "authority_tier_a_sources_per_stroke": 2,
+    "governing_body_source_per_stroke": 1,
+    "peer_reviewed_or_coaching_science_source_per_stroke": 1
+  },
+  "claim_routes": {
+    "pose_observable": {
+      "allowed_when": ["metric_recipe_exists", "camera_supported", "measurement_confidence_gate_passed"],
+      "examples": ["preparation timing", "body-scaled spacing", "balance proxy", "segment timing proxy"]
+    },
+    "ball_or_racket_observable": {
+      "allowed_when": ["validated_tracker_present", "held_out_quality_gate_passed", "capture_suitable"],
+      "otherwise": "athlete_or_coach_confirmation_only"
+    },
+    "outcome_association": {
+      "allowed_when": ["validated_outcome_label", "context_matched", "minimum_repetition_count_met"],
+      "forbidden": ["cause claim from correlation", "outcome inferred from pose alone"]
+    },
+    "numeric_benchmark": {
+      "allowed_when": ["validated_cohort_version", "matching_cohort_cell", "minimum_sample_size_met", "uncertainty_reported"],
+      "otherwise": "withhold"
+    }
+  },
+  "strokes": {
+    "forehand": {
+      "source_ids": ["SCI-REID-2013", "SCI-LANDLINGER-2010", "SCI-HE-2022-FOREHAND-LOWER-LIMB", "ORG-ITF-SKILL-PHASES-2023", "ORG-USTA-GPS", "ORG-TENNIS-AU-TECH-FUNDAMENTALS-2013", "ORG-LTA-STROKE-GUIDES", "VID-MOURATOGLOU-FOREHAND"],
+      "qualitative_constructs": ["preparation timing", "spacing and stance adaptation", "whole-body sequencing", "contact organization", "recovery"],
+      "variation_warnings": ["incoming height", "direction", "stance", "spin intent", "movement state", "technique family"]
+    },
+    "two_handed_backhand": {
+      "source_ids": ["SCI-REID-BH-2002", "SCI-GENEVOIS-2015", "SCI-STEPien-2011", "ORG-ITF-SKILL-PHASES-2023", "ORG-USTA-GPS", "ORG-TENNIS-AU-TECH-FUNDAMENTALS-2013", "VID-MOURATOGLOU-2HB"],
+      "qualitative_constructs": ["early shoulder organization", "hitting radius", "trunk and arm contribution", "contact stability", "recovery"],
+      "variation_warnings": ["arm configuration", "hand contribution", "stance", "incoming height", "direction", "player laterality"]
+    },
+    "one_handed_backhand": {
+      "source_ids": ["SCI-REID-BH-2002", "SCI-GENEVOIS-2015", "SCI-STEPien-2011", "ORG-ITF-SKILL-PHASES-2023", "ORG-USTA-GPS", "ORG-TENNIS-AU-TECH-FUNDAMENTALS-2013", "VID-MOURATOGLOU-1HB"],
+      "qualitative_constructs": ["preparation reserve", "forward spacing", "trunk contribution", "contact organization", "recovery"],
+      "variation_warnings": ["topspin versus drive", "incoming height", "reach", "stance", "grip", "player strength and development"]
+    },
+    "slice_backhand": {
+      "source_ids": ["SCI-ELLIOTT-2006", "ORG-ITF-SKILL-PHASES-2023", "ORG-USTA-SLICE-2018", "ORG-TENNIS-AU-ACTIVITY-MANUAL", "VID-MOURATOGLOU-SLICE"],
+      "qualitative_constructs": ["early organization", "usable spacing", "through-ball path rather than chop", "stable redirection", "recovery"],
+      "variation_warnings": ["drive slice", "defensive slice", "approach", "drop intent", "incoming pace", "ball height"]
+    },
+    "serve": {
+      "source_ids": ["SCI-KOVACS-2011", "SCI-BRITO-2024", "SCI-ELLIOTT-2006", "ORG-ITF-SKILL-PHASES-2023", "ORG-USTA-GPS", "ORG-TENNIS-AU-TECH-FUNDAMENTALS-2013", "ORG-LTA-STROKE-GUIDES", "VID-MOURATOGLOU-SERVE"],
+      "qualitative_constructs": ["toss organization", "loading", "upward sequence", "contact organization", "landing and first-ball readiness"],
+      "variation_warnings": ["serve type", "target", "first versus second serve", "platform versus pinpoint", "anthropometrics", "mobility"]
+    },
+    "forehand_volley": {
+      "source_ids": ["SCI-FURUYA-2021", "SCI-CHOW-2007", "SCI-ELLIOTT-2006", "ORG-ITF-SKILL-PHASES-2023", "ORG-USTA-VOLLEY-2017", "ORG-USTA-GPS", "ORG-TENNIS-AU-TECH-FUNDAMENTALS-2013"],
+      "qualitative_constructs": ["compact set", "stable redirection", "body support", "placement intent", "rapid reset"],
+      "variation_warnings": ["block", "drive", "drop", "stretch", "incoming pace", "ball height"]
+    },
+    "backhand_volley": {
+      "source_ids": ["SCI-FURUYA-2021", "SCI-CHOW-2007", "SCI-ELLIOTT-2006", "ORG-ITF-SKILL-PHASES-2023", "ORG-USTA-VOLLEY-2017", "ORG-USTA-GPS", "ORG-TENNIS-AU-TECH-FUNDAMENTALS-2013"],
+      "qualitative_constructs": ["compact set", "backhand-side spacing", "stable redirection", "body support", "rapid reset"],
+      "variation_warnings": ["block", "drive", "drop", "stretch", "one versus two hands", "incoming pace", "ball height"]
+    },
+    "overhead": {
+      "source_ids": ["SCI-ELLIOTT-2006", "ORG-ITF-SKILL-PHASES-2023", "ORG-USTA-OVERHEAD-CURRICULUM", "ORG-TENNIS-AU-ACTIVITY-MANUAL"],
+      "qualitative_constructs": ["early recognition", "movement behind the ball", "upward striking sequence", "balance", "recovery"],
+      "variation_warnings": ["stationary", "moving backward", "scissor kick", "bounce smash", "lob depth", "court position"]
+    }
+  }
+}

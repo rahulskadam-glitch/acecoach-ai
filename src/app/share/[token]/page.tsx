@@ -26,13 +26,23 @@ export default async function SharedCoachReportPage({ params }: PageProps) {
 
   const { data: session } = await supabase
     .from("analysis_sessions")
-    .select("sport_id, action_type, analysis_action_type, created_at, analysis_reports(coach_summary, priorities, drills, next_session, confidence, score_status, score_label, overall_score, coaching_playbook, repetition_insights, limitations)")
+    .select("sport_id, action_type, analysis_action_type, created_at, analysis_reports(coach_summary, priorities, drills, next_session, confidence, score_status, score_label, overall_score, coaching_playbook, repetition_insights, limitations, knowledge_control)")
     .eq("id", share.session_id)
     .eq("status", "completed")
     .maybeSingle();
   if (!session) notFound();
   const report = Array.isArray(session.analysis_reports) ? session.analysis_reports[0] : session.analysis_reports;
   if (!report) notFound();
+  const control = report.knowledge_control && typeof report.knowledge_control === "object" && !Array.isArray(report.knowledge_control)
+    ? report.knowledge_control as Record<string, unknown>
+    : null;
+  const domains = control?.domains && typeof control.domains === "object" && !Array.isArray(control.domains)
+    ? control.domains as Record<string, unknown>
+    : null;
+  const recommendation = domains?.recommendations && typeof domains.recommendations === "object" && !Array.isArray(domains.recommendations)
+    ? domains.recommendations as Record<string, unknown>
+    : null;
+  if (control?.status !== "CONTROLLED" || recommendation?.decision !== "ontology_fault_links") notFound();
 
   await supabase.rpc("record_report_share_view_v30", { p_share_id: share.id });
 
@@ -63,7 +73,7 @@ export default async function SharedCoachReportPage({ params }: PageProps) {
           <div className="rounded-[1.75rem] border border-violet-500/20 bg-violet-500/[0.05] p-6"><div className="flex items-center gap-3"><Dumbbell className="h-5 w-5 text-violet-300" /><h2 className="text-xl font-semibold">Practice</h2></div><div className="mt-4 space-y-3">{drills.slice(0, 2).map((drill: Record<string, unknown>) => <div key={String(drill.id)} className="rounded-2xl border border-white/10 bg-slate-950/60 p-4"><p className="font-semibold text-white">{String(drill.name)}</p><p className="mt-2 text-sm text-slate-400">{String(drill.dosage)}</p><p className="mt-2 text-sm text-violet-200">Success: {String(drill.successMetric)}</p></div>)}</div></div>
         </section>
 
-        <section className="rounded-[1.75rem] border border-white/10 bg-slate-900/75 p-6"><div className="flex items-center gap-3"><CalendarDays className="h-5 w-5 text-emerald-300" /><h2 className="text-xl font-semibold">Next reassessment</h2></div><p className="mt-4 text-sm leading-7 text-slate-300">{report.next_session?.recordingPlan ?? "Repeat the same drill and camera setup to create a comparable reassessment."}</p><div className="mt-5 flex items-center gap-2 text-xs text-slate-500"><BadgeCheck className="h-4 w-4" />AceCoach research beta · interpretation should be reviewed alongside a qualified coach.</div></section>
+        <section className="rounded-[1.75rem] border border-white/10 bg-slate-900/75 p-6"><div className="flex items-center gap-3"><CalendarDays className="h-5 w-5 text-emerald-300" /><h2 className="text-xl font-semibold">Next reassessment</h2></div><p className="mt-4 text-sm leading-7 text-slate-300">{report.next_session?.recordingPlan ?? "Repeat the same drill and camera setup to create a comparable reassessment."}</p><div className="mt-5 flex items-center gap-2 text-xs text-slate-500"><BadgeCheck className="h-4 w-4" />Athlentra research beta · interpretation should be reviewed alongside a qualified coach.</div></section>
       </div>
     </main>
   );

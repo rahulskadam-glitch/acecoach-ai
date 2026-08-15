@@ -681,7 +681,7 @@ export default function ReferenceComparisonStudio({
               The athlete video is the master clock. The category and best-in-class silhouettes advance through preparation, loading, contact, and recovery at the same normalized moment. Red arrows highlight the most useful directional correction on your measured pose.
             </p>
             <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-violet-400/30 bg-violet-400/10 px-3 py-1.5 text-xs font-semibold text-violet-100">
-              AceCoach v3.4.0 · deterministic phase-aligned simulation
+              Athlentra v3.4.0 · deterministic phase-aligned simulation
             </div>
           </div>
           <div className="rounded-2xl border border-sky-400/20 bg-sky-400/10 px-4 py-3">
@@ -891,7 +891,7 @@ export default function ReferenceComparisonStudio({
             Synchronization method
           </div>
           <p className="mt-2 text-xs leading-5 text-slate-500">
-            AceCoach identifies the primary measured repetition, preserves its measured phase anchors, maps each phase interval to a normalized reference interval, and drives both simulated references from the same clock. This preserves stage alignment even when preparation, loading, contact, and recovery occupy different shares of the athlete’s stroke.
+            Athlentra identifies the primary measured repetition, preserves its measured phase anchors, maps each phase interval to a normalized reference interval, and drives both simulated references from the same clock. This preserves stage alignment even when preparation, loading, contact, and recovery occupy different shares of the athlete’s stroke.
           </p>
         </div>
       </div>

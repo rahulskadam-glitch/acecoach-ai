@@ -1,0 +1,385 @@
+{
+  "version": "1.0.0",
+  "ontology_version": "4.1.0",
+  "default_state": "fail_closed",
+  "fail_closed": true,
+  "required_domains": [
+    "calculations",
+    "insights",
+    "recommendations",
+    "benchmarks",
+    "records",
+    "report"
+  ],
+  "domains": {
+    "calculations": {
+      "policy_ids": [
+        "AC-SCORE-001",
+        "AC-RELIABILITY-001"
+      ],
+      "rule": "Every derived score must use the versioned scoring policy and carry its policy identifier. Raw models may measure signals but may not assign coaching meaning."
+    },
+    "insights": {
+      "policy_ids": [
+        "AC-INSIGHT-001"
+      ],
+      "rule": "A player-facing insight requires an ontology evidence decision. No report or UI fallback may invent a cause, correction, or priority."
+    },
+    "recommendations": {
+      "policy_ids": [
+        "AC-RECOMMEND-001"
+      ],
+      "rule": "A technical cue or drill requires a supported ontology fault and a configured fault-to-drill link. Only one cue may be active in a practice block."
+    },
+    "benchmarks": {
+      "policy_ids": [
+        "AC-BENCHMARK-001"
+      ],
+      "rule": "Numeric comparisons require a released personal baseline or a validated, context-matched cohort. Qualitative research patterns must not be presented as percentiles or ideal numbers."
+    },
+    "records": {
+      "policy_ids": [
+        "AC-RECORD-001"
+      ],
+      "rule": "Completed reports and derived development records must persist the control policy version, ontology manifest hash, and authorization trace. Legacy untraced records are read-only and excluded from comparison."
+    },
+    "report": {
+      "policy_ids": [
+        "AC-REPORT-001"
+      ],
+      "rule": "The report renders only authorized engine output. Missing authorization suppresses the affected section and requests a governed reanalysis."
+    }
+  },
+  "scoring": {
+    "policy_id": "AC-SCORE-001",
+    "capture_quality": {
+      "core_landmark_visibility_minimum": 0.55,
+      "score_scale": 100.0,
+      "framing_clipping_penalty": 130.0,
+      "body_height_floor": 0.18,
+      "body_height_span": 0.42,
+      "brightness_target": 0.52,
+      "brightness_penalty": 220.0,
+      "contrast_multiplier": 82.0,
+      "blur_log_ceiling": 401.0,
+      "weights": {
+        "visibility": 0.34,
+        "framing": 0.24,
+        "body_scale": 0.16,
+        "brightness": 0.10,
+        "contrast": 0.06,
+        "blur": 0.10
+      },
+      "grade_minimums": {
+        "excellent": 85,
+        "good": 72,
+        "usable": 58,
+        "limited": 42
+      },
+      "feedback_thresholds": {
+        "core_coverage_good": 0.85,
+        "edge_clipping_good_maximum": 0.05,
+        "body_height_good_minimum": 0.38,
+        "brightness_low": 0.20,
+        "brightness_high": 0.88,
+        "blur_low": 35.0
+      }
+    },
+    "supported_sports": [
+      "tennis"
+    ],
+    "supported_actions": [
+      "forehand",
+      "two_handed_backhand",
+      "one_handed_backhand",
+      "slice_backhand",
+      "serve",
+      "forehand_volley",
+      "backhand_volley",
+      "overhead"
+    ],
+    "measurement_confidence": {
+      "capture_scale": 0.88,
+      "repeatability_three_plus_cap": 0.85,
+      "repeatability_under_three_cap": 0.55
+    },
+    "evidence_direction_score_boundary": 78,
+    "coaching_area_status": {
+      "strength_minimum": 78,
+      "developing_minimum": 62
+    },
+    "repetition_analysis": {
+      "duration_floor_seconds": 0.001,
+      "mean_epsilon": 0.000001,
+      "outlier_penalty_cap": 22.0,
+      "outlier_penalty_each": 7.0,
+      "consistency_base": 100.0,
+      "duration_cv_weight": 58.0,
+      "peak_cv_weight": 32.0,
+      "percentage_scale": 100.0,
+      "stable_minimum": 80,
+      "developing_minimum": 62,
+      "review_visibility_weight": 55.0,
+      "review_duration_fit_weight": 30.0,
+      "review_peak_fit_weight": 15.0,
+      "clear_visibility_minimum": 0.85,
+      "typical_duration_fit_minimum": 0.82,
+      "quiet_head_range_maximum": 0.09,
+      "minimum_repetitions_for_consistency": 2
+    },
+    "score_band": {
+      "anchor": 88.0,
+      "penalty_span": 38.0
+    },
+    "components": {
+      "head_control": {
+        "default": {
+          "base": 92.0,
+          "movement_penalty": 165.0,
+          "measurement": "primary_repetition_head_range"
+        },
+        "two_handed_backhand": {
+          "base": 94.0,
+          "movement_penalty": 240.0,
+          "measurement": "acceleration_to_follow_through_head_range"
+        }
+      },
+      "base_control": {
+        "ideal_low": 0.75,
+        "ideal_high": 2.35,
+        "tolerance": 1.0
+      },
+      "repeatability": {
+        "missing_multi_rep_score": 58.0,
+        "single_rep_score": 55.0,
+        "multi_rep_base": 96.0,
+        "duration_cv_penalty": 125.0,
+        "peak_cv_penalty": 105.0
+      },
+      "loading_control": {
+        "base": 52.0,
+        "change_cap": 36.0,
+        "change_multiplier": 1.55,
+        "capture_multiplier": 0.08
+      },
+      "extension_control": {
+        "base": 50.0,
+        "change_cap": 38.0,
+        "change_multiplier": 1.45,
+        "capture_multiplier": 0.08
+      },
+      "preparation_control": {
+        "ideal_low": 0.48,
+        "ideal_high": 0.82,
+        "tolerance": 0.3
+      },
+      "acceleration_control": {
+        "base": 46.0,
+        "prominence_cap": 38.0,
+        "prominence_multiplier": 9.5,
+        "capture_multiplier": 0.08,
+        "two_handed_backhand_blend": {
+          "acceleration": 0.68,
+          "extension": 0.32
+        }
+      },
+      "contact_spacing": {
+        "default": {
+          "low": 0.85,
+          "high": 2.75
+        },
+        "serve": {
+          "low": 1.25,
+          "high": 3.4
+        },
+        "overhead": {
+          "low": 1.15,
+          "high": 3.2
+        },
+        "forehand_volley": {
+          "low": 0.75,
+          "high": 2.3
+        },
+        "backhand_volley": {
+          "low": 0.75,
+          "high": 2.3
+        },
+        "tolerance": 1.0,
+        "blend": {
+          "spacing": 0.62,
+          "head": 0.25,
+          "capture": 0.13
+        }
+      },
+      "recovery_control": {
+        "base": 88.0,
+        "motion_penalty_cap": 44.0,
+        "motion_penalty_multiplier": 38.0,
+        "head_multiplier": 0.1
+      },
+      "finish_control": {
+        "head": 0.4,
+        "recovery": 0.38,
+        "repeatability": 0.22
+      }
+    },
+    "phases": [
+      {
+        "id": "readiness",
+        "label": "Ready position & footwork",
+        "weight": 0.1,
+        "component_weights": {
+          "base_control": 0.55,
+          "head_control": 0.45
+        },
+        "note": "Body-scaled base width and head stability before the stroke.",
+        "basis": "2d_pose_control_proxy"
+      },
+      {
+        "id": "preparation",
+        "label": "Preparation & backlift",
+        "weight": 0.16,
+        "component": "preparation_control",
+        "note": "Relative time allocated to preparation before forward acceleration.",
+        "basis": "temporal_phase_proxy"
+      },
+      {
+        "id": "loading",
+        "label": "Body loading & positioning",
+        "weight": 0.15,
+        "component": "loading_control",
+        "note": "The visible knee-bend load before the forward swing; leg drive is scored separately.",
+        "basis": "world_pose_angle_proxy"
+      },
+      {
+        "id": "acceleration",
+        "label": "Forward swing rhythm",
+        "weight": 0.17,
+        "component": "acceleration_control",
+        "note": "Whole-chain motion shape, with post-load knee drive included where the stroke policy supports it.",
+        "basis": "smoothed_pose_motion_signal"
+      },
+      {
+        "id": "contact",
+        "label": "Contact-position proxy",
+        "weight": 0.18,
+        "component": "contact_control",
+        "confidence_multiplier": 0.82,
+        "note": "Body-scaled hand spacing and head control at peak whole-chain motion; the ball is not detected.",
+        "basis": "peak_motion_proxy"
+      },
+      {
+        "id": "follow_through",
+        "label": "Follow-through & finish",
+        "weight": 0.13,
+        "component": "finish_control",
+        "note": "Post-peak body control, head stability, and repeatability.",
+        "basis": "post_peak_control_proxy"
+      },
+      {
+        "id": "recovery",
+        "label": "Recovery",
+        "weight": 0.11,
+        "component": "recovery_control",
+        "note": "Post-peak motion decay, body-relative head control, and reset timing; court recovery is not directly measured.",
+        "basis": "post_peak_motion_decay_proxy"
+      }
+    ]
+  },
+  "reliability": {
+    "policy_id": "AC-RELIABILITY-001",
+    "minimum_capture_score": 58,
+    "minimum_pose_coverage": 0.7,
+    "maximum_edge_clipping_ratio": 0.2,
+    "minimum_body_height_ratio": 0.28,
+    "minimum_repetitions_for_score": 2,
+    "low_measurement_confidence_notice": 0.60,
+    "unknown_classification_confidence": 0.35,
+    "classification_confidence_floor": 0.3
+  },
+  "comparisons": {
+    "maximum_capture_score_difference": 15,
+    "improved_score_delta": 4,
+    "unchanged_lower_score_delta": -4,
+    "require_same_engine": true,
+    "require_same_runtime": true,
+    "require_same_context": true,
+    "require_same_knowledge_policy": true,
+    "require_same_manifest_hash": true
+  },
+  "longitudinal": {
+    "distribution_spread_divisor": 2,
+    "minimum_history_sessions": 2,
+    "history_window_sessions": 3,
+    "meaningful_shift_points": 4
+  },
+  "recommendations": {
+    "policy_id": "AC-RECOMMEND-001",
+    "require_supported_fault": true,
+    "require_configured_drill_link": true,
+    "maximum_active_cues": 1,
+    "maximum_drills": 3,
+    "candidate_ranking": {
+      "maximum_candidates": 3,
+      "minimum_confidence_factor": 0.35,
+      "impact_weights": {
+        "footwork_base": 1.12,
+        "backlift_preparation": 1.10,
+        "contact_spacing": 1.08,
+        "body_position": 1.05,
+        "lower_body_loading": 1.02,
+        "lower_body_extension": 1.04,
+        "hand_swing_path": 1.00,
+        "ending_position": 0.96,
+        "repeatability": 0.94
+      }
+    },
+    "no_supported_fault": {
+      "headline": "No specific technique fault is supported by this recording",
+      "main_priority": "Record a few more clear swings before choosing a technique change.",
+      "why_it_matters": "The measured pattern is not specific enough to choose one technical correction responsibly.",
+      "practice_focus": [
+        "Keep the same camera view and shot intention.",
+        "Record at least six complete repetitions.",
+        "Change no more than one practice constraint before reassessment."
+      ],
+      "cue": "Same setup. Complete strokes. Clear video."
+    }
+  },
+  "benchmarks": {
+    "policy_id": "AC-BENCHMARK-001",
+    "require_runtime_release": true,
+    "personal_baseline_policy": "knowledge_validation_policy.personal_baseline",
+    "matched_cohort_policy": "knowledge_validation_policy.matched_cohort",
+    "forbid_unreleased_numeric_reference": true,
+    "legacy_records_eligible": false,
+    "unreleased_reference": {
+      "cohort_label": "No validated matched cohort",
+      "comparison_type": "none",
+      "status": "withheld_no_released_numeric_reference",
+      "disclaimer": "No numeric peer or elite benchmark is released for this context. The report uses governed movement evidence and, when enough matching history exists, the player's own reliable baseline.",
+      "next_step": "Record comparable repetitions to build a personal baseline. Peer benchmarks remain hidden until a consented, context-matched cohort passes validation and release governance."
+    }
+  },
+  "records": {
+    "policy_id": "AC-RECORD-001",
+    "required_trace_fields": [
+      "status",
+      "policyVersion",
+      "ontologyVersion",
+      "manifestHash",
+      "domains"
+    ],
+    "legacy_mode": "read_only_excluded_from_derived_records",
+    "require_controlled_source_for_longitudinal_state": true,
+    "require_same_policy_version_for_comparison": true,
+    "require_same_manifest_hash_for_comparison": true
+  },
+  "report": {
+    "policy_id": "AC-REPORT-001",
+    "require_control_trace": true,
+    "legacy_mode": "reanalyze_to_unlock_coaching",
+    "allow_ui_inference": false,
+    "withhold_unreleased_benchmarks": true
+  }
+}

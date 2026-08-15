@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient, createClient } from "@/lib/supabase/server";
 
 function getSafeNext(raw: string | null) {
   if (!raw) return "/start";
@@ -134,7 +134,7 @@ export async function updatePassword(formData: FormData) {
     return { ok: false, message: error.message };
   }
 
-  return { ok: true, next: "/login?message=password_updated" };
+  return { ok: true, next: "/auth?message=password_updated" };
 }
 
 export async function signOutUser() {
@@ -145,4 +145,37 @@ export async function signOutUser() {
   }
 
   return { ok: true, next: "/auth" };
+}
+
+export async function deleteCurrentAccount() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
+
+  if (userError || !user) return { ok: false, message: "Your session has expired. Sign in again before deleting the account." };
+
+  const admin = createAdminClient();
+  const { data: videos, error: videoError } = await admin
+    .from("videos")
+    .select("storage_path")
+    .eq("user_id", user.id);
+
+  if (videoError) return { ok: false, message: "Athlentra could not verify all owned videos. Nothing was deleted." };
+
+  const storagePaths = (videos ?? [])
+    .map((video) => video.storage_path)
+    .filter((path): path is string => typeof path === "string" && path.startsWith(`${user.id}/`) && !path.includes(".."));
+
+  for (let index = 0; index < storagePaths.length; index += 100) {
+    const { error } = await admin.storage.from("videos").remove(storagePaths.slice(index, index + 100));
+    if (error) return { ok: false, message: "Athlentra could not remove all owned videos. The account was kept so you can retry or contact support." };
+  }
+
+  const { error: deleteError } = await admin.auth.admin.deleteUser(user.id, false);
+  if (deleteError) return { ok: false, message: "The account could not be deleted. Please try again or contact support." };
+
+  await supabase.auth.signOut().catch(() => null);
+  return { ok: true, next: "/?message=account_deleted" };
 }

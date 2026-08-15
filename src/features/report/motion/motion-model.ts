@@ -363,9 +363,10 @@ export function interpolatedFrameAtTime(frames: FrameMetric[], time: number) {
   return result;
 }
 
-type FilterState = { x: number; y: number; dx: number; dy: number; timestampSeconds: number };
+type FilterState = { x: number; y: number; dx: number; dy: number; timestampSeconds: number; visibility: number };
 
 export const ANNOTATION_VISIBILITY_THRESHOLD = 0.58;
+export const LANDMARK_CONTINUITY_HOLD_SECONDS = 0.2;
 
 function smoothingAlpha(cutoff: number, deltaTime: number) {
   const tau = 1 / (2 * Math.PI * cutoff);
@@ -375,11 +376,18 @@ function smoothingAlpha(cutoff: number, deltaTime: number) {
 /** A causal One Euro filter: it uses current and past samples only and never predicts ahead. */
 export class CausalLandmarkStabilizer {
   private readonly states = new Map<string, FilterState>();
+  private readonly heldNames = new Set<string>();
   private lastTimestamp: number | null = null;
 
   reset() {
     this.states.clear();
+    this.heldNames.clear();
     this.lastTimestamp = null;
+  }
+
+  /** True when a joint is being held briefly at its last measured position to prevent one-frame overlay gaps. */
+  isContinuityHeld(name: string) {
+    return this.heldNames.has(name);
   }
 
   update(frame: FrameMetric | undefined) {
@@ -393,15 +401,22 @@ export class CausalLandmarkStabilizer {
       ? Math.max(0.04, Math.hypot(rightShoulder.x - leftShoulder.x, rightShoulder.y - leftShoulder.y))
       : 0.12;
     const filtered: NonNullable<FrameMetric["keyLandmarks"]> = {};
+    this.heldNames.clear();
 
-    for (const [name, point] of Object.entries(frame.keyLandmarks)) {
-      if (point.visibility < ANNOTATION_VISIBILITY_THRESHOLD) {
-        this.states.delete(name);
+    for (const name of new Set([...Object.keys(frame.keyLandmarks), ...this.states.keys()])) {
+      const point = frame.keyLandmarks[name];
+      const state = this.states.get(name);
+      if (!point || point.visibility < ANNOTATION_VISIBILITY_THRESHOLD) {
+        if (state && frame.timestampSeconds - state.timestampSeconds <= LANDMARK_CONTINUITY_HOLD_SECONDS) {
+          filtered[name] = { x: state.x, y: state.y, visibility: ANNOTATION_VISIBILITY_THRESHOLD };
+          this.heldNames.add(name);
+        } else {
+          this.states.delete(name);
+        }
         continue;
       }
-      const state = this.states.get(name);
       if (!state) {
-        this.states.set(name, { x: point.x, y: point.y, dx: 0, dy: 0, timestampSeconds: frame.timestampSeconds });
+        this.states.set(name, { x: point.x, y: point.y, dx: 0, dy: 0, timestampSeconds: frame.timestampSeconds, visibility: point.visibility });
         filtered[name] = { ...point };
         continue;
       }
@@ -409,7 +424,8 @@ export class CausalLandmarkStabilizer {
       const jumpInShoulderWidths = Math.hypot(point.x - state.x, point.y - state.y) / shoulderWidth;
       const speedAllowance = name.includes("wrist") ? 9 : name.includes("ankle") ? 7 : 5;
       if (jumpInShoulderWidths > 0.28 + deltaTime * speedAllowance) {
-        this.states.set(name, { x: point.x, y: point.y, dx: 0, dy: 0, timestampSeconds: frame.timestampSeconds });
+        this.states.set(name, { x: point.x, y: point.y, dx: 0, dy: 0, timestampSeconds: frame.timestampSeconds, visibility: point.visibility });
+        filtered[name] = { ...point };
         continue;
       }
       const rawDx = (point.x - state.x) / deltaTime;
@@ -422,7 +438,7 @@ export class CausalLandmarkStabilizer {
       const alpha = smoothingAlpha(cutoff, deltaTime);
       const x = lerp(state.x, point.x, alpha);
       const y = lerp(state.y, point.y, alpha);
-      this.states.set(name, { x, y, dx, dy, timestampSeconds: frame.timestampSeconds });
+      this.states.set(name, { x, y, dx, dy, timestampSeconds: frame.timestampSeconds, visibility: point.visibility });
       filtered[name] = { x, y, visibility: point.visibility };
     }
     this.lastTimestamp = frame.timestampSeconds;

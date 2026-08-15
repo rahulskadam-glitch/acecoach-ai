@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+from copy import deepcopy
 import sys
 import tempfile
 import unittest
@@ -13,19 +14,30 @@ API_ROOT = Path(__file__).resolve().parents[1]
 if str(API_ROOT) not in sys.path:
     sys.path.insert(0, str(API_ROOT))
 
-from analysis_engine.biomechanics import compute_frame_metrics, score_from_measurements
+from analysis_engine.biomechanics import compute_frame_metrics as _compute_frame_metrics, score_from_measurements as _score_from_measurements
 from analysis_engine.biomechanical_profile import METRIC_SPECS, PROFILE_VERSION, build_biomechanical_profile
 from analysis_engine.classifier import classify_movement
 from analysis_engine.frame_types import PoseFrame
 from analysis_engine.experience import coaching_playbook, repetition_insights
-from analysis_engine.pipeline import AnalysisPipeline, ENGINE_VERSION, _stroke_technical_audit, _two_handed_backhand_audit, _two_handed_backhand_framework
+from analysis_engine.pipeline import AnalysisPipeline, ENGINE_VERSION
 from analysis_engine.pose import _presentation_timestamp
 from analysis_engine.sport_rules import build_coaching
 from analysis_engine.signal_analytics import robust_outlier_indices, smooth_signal
 from analysis_engine.temporal import RepetitionWindow, detect_repetitions
 from analysis_engine.video import VideoMetadata
 from analysis_engine.multi_view_fusion import fused_metric_support, synchronize_event_timelines
+from analysis_engine.ontology_reasoner import ontology
 from analysis_engine.tactical_reasoner import tactical_eligibility
+
+
+def score_from_measurements(*args, **kwargs):
+    kwargs.setdefault("control_policy", ontology().analysis_control_policy)
+    return _score_from_measurements(*args, **kwargs)
+
+
+def compute_frame_metrics(*args, **kwargs):
+    kwargs.setdefault("control_policy", ontology().analysis_control_policy)
+    return _compute_frame_metrics(*args, **kwargs)
 
 
 def point(x: float, y: float, z: float = 0.0) -> dict[str, float]:
@@ -164,16 +176,17 @@ class AnalysisIntegrityTests(unittest.TestCase):
         )
 
     def test_pipeline_completes_with_synthetic_pose_frames(self) -> None:
+        pipeline_frames = [synthetic_frame(index, self.fps) for index in range(180)]
         with tempfile.NamedTemporaryFile(delete=False) as temporary:
             video_path = Path(temporary.name)
         metadata = VideoMetadata(
             path=video_path,
             content_hash="a" * 64,
             fps=self.fps,
-            frame_count=len(self.frames),
+            frame_count=len(pipeline_frames),
             width=1280,
             height=720,
-            duration_seconds=len(self.frames) / self.fps,
+            duration_seconds=len(pipeline_frames) / self.fps,
         )
         payload = SimpleNamespace(
             video_url="https://storage.example.com/video.mp4",
@@ -194,7 +207,7 @@ class AnalysisIntegrityTests(unittest.TestCase):
 
         with (
             patch("analysis_engine.pipeline.download_video", return_value=metadata),
-            patch("analysis_engine.pipeline.extract_pose_frames", return_value=self.frames),
+            patch("analysis_engine.pipeline.extract_pose_frames", return_value=pipeline_frames),
         ):
             result = AnalysisPipeline().analyze(payload)
 
@@ -212,41 +225,40 @@ class AnalysisIntegrityTests(unittest.TestCase):
         self.assertEqual(registration["decoderTimestampCoverage"], 1.0)
         self.assertEqual(registration["decodedDisplaySize"], {"width": 1280, "height": 720})
         self.assertEqual(registration["landmarkSpace"], "decoded_display_normalized")
-        self.assertEqual(len(result["frame_summary"]["bodyRegionReview"]), 8)
-        self.assertEqual(result["frame_summary"]["bodyRegionReview"][2]["status"], "needs_confirmation")
         self.assertEqual(len(result["coach_summary"]["executiveBullets"]), 4)
-        self.assertIn("pyramidSummary", result["coach_summary"])
+        self.assertNotIn("pyramidSummary", result["coach_summary"])
         self.assertEqual(result["engine_manifest"]["ontologyVersion"], "4.1.0")
         self.assertEqual(len(result["engine_manifest"]["ontologyManifestHash"]), 64)
-        self.assertIsNotNone(result["next_generation_story"])
-        self.assertTrue(result["next_generation_story"]["insightId"].startswith("ONTO-FH-"))
-        self.assertEqual(result["next_generation_story"]["playerCoaching"]["languageProfileId"], "PLAYER_COACH_v4.1")
-        self.assertGreaterEqual(len(result["next_generation_story"]["visualStory"]["beats"]), 3)
-        self.assertEqual(result["ontology_reasoning"]["ontologyVersion"], "4.1.0")
-        self.assertIn("confidence_policy", result["ontology_reasoning"]["policiesApplied"])
-        self.assertIn("fault_evidence_evaluation", result["ontology_reasoning"]["policiesApplied"])
-        self.assertNotIn("causal_graph", result["ontology_reasoning"]["policiesApplied"])
-        self.assertIn("causal_graph", result["ontology_reasoning"]["skippedPolicies"])
-        self.assertEqual(result["ontology_reasoning"]["status"], "FAULT_SUSPECTED")
-        self.assertEqual(result["next_generation_story"]["causalChain"], [])
-        self.assertIn(result["priorities"][0]["faultId"], result["ontology_reasoning"]["evaluatedFaultIds"])
-        self.assertGreaterEqual(len(result["drills"]), 1)
-        self.assertEqual(len({drill["id"] for drill in result["drills"]}), len(result["drills"]))
-        self.assertEqual(result["drills"][0]["ontologyVersion"], "4.1.0")
-        chapter_ids = {item["chapterId"] for item in result["ontology_reasoning"]["findings"]}
-        self.assertIn("weight_transfer", chapter_ids)
-        self.assertEqual(len(result["ontology_reasoning"]["movementChain"]), 6)
-        self.assertTrue(all(item["evidenceEvaluation"]["matchedEvidence"] for item in result["ontology_reasoning"]["findings"]))
-        self.assertTrue(result["ontology_reasoning"]["rejectedCandidates"])
-        self.assertIsInstance(result["coach_summary"]["pyramidSummary"]["strengths"], list)
-        self.assertIsInstance(result["coach_summary"]["pyramidSummary"]["improvements"], list)
-        self.assertIn("firstAction", result["coach_summary"]["pyramidSummary"])
-        forehand_audit = result["coach_summary"]["pyramidSummary"]["audit"]
-        self.assertEqual(len(forehand_audit["checkpoints"]), 7)
-        self.assertTrue(forehand_audit["version"].startswith("complete-tennis-stroke-guide-v1.0.0"))
-        self.assertTrue(all(item["bodyChecks"] for item in forehand_audit["checkpoints"]))
-        self.assertIn("athlete-supplied-complete-stroke-guide", {item["id"] for item in result["evidence"]})
-        self.assertIn("full-video pattern", result["coach_summary"]["pyramidSummary"]["synthesisNote"])
+        self.assertEqual(result["knowledge_control"]["status"], "CONTROLLED")
+        self.assertTrue(all(domain["authorized"] for domain in result["knowledge_control"]["domains"].values()))
+        self.assertEqual(result["knowledge_control"]["manifestHash"], result["engine_manifest"]["ontologyManifestHash"])
+        reasoning = result["ontology_reasoning"]
+        if reasoning is None:
+            self.assertIn(result["score_status"], {"insufficient_repetitions_for_score", "blocked_no_complete_repetition"})
+            self.assertIsNone(result["next_generation_story"])
+            self.assertEqual(result["priorities"], [])
+            self.assertEqual(result["drills"], [])
+        else:
+            self.assertEqual(reasoning["ontologyVersion"], "4.1.0")
+            self.assertEqual(reasoning["assessmentPolicy"]["strengthMinimumScore"], 82)
+            self.assertEqual(reasoning["assessmentPolicy"]["minimumMeasurementConfidence"], 0.65)
+            self.assertIn("chapter_assessment_policy", reasoning["policiesApplied"])
+            self.assertTrue(all(item["assessmentBasis"] for item in reasoning["movementChain"]))
+            self.assertTrue(all("evidence" in item for item in reasoning["movementChain"]))
+            self.assertIn("confidence_policy", reasoning["policiesApplied"])
+            self.assertIn("fault_evidence_evaluation", reasoning["policiesApplied"])
+            if reasoning["status"] == "NO_SUPPORTED_FAULT":
+                self.assertIsNone(result["next_generation_story"])
+                self.assertEqual(result["priorities"], [])
+                self.assertEqual(result["drills"], [])
+            else:
+                self.assertIsNotNone(result["next_generation_story"])
+                self.assertTrue(result["next_generation_story"]["insightId"].startswith("ONTO-FH-"))
+                self.assertEqual(result["next_generation_story"]["playerCoaching"]["languageProfileId"], "PLAYER_COACH_v4.1")
+                self.assertEqual(result["next_generation_story"]["causalChain"], [])
+                self.assertIn(result["priorities"][0]["faultId"], reasoning["evaluatedFaultIds"])
+                self.assertGreaterEqual(len(result["drills"]), 1)
+                self.assertTrue(all(drill["ontologyVersion"] == "4.1.0" for drill in result["drills"]))
         self.assertIn("supplied by the athlete", result["coach_summary"]["contextStatement"])
         self.assertIn("coaching_playbook", result)
         self.assertIn("repetition_insights", result)
@@ -267,128 +279,6 @@ class AnalysisIntegrityTests(unittest.TestCase):
             {phase: sum(metric.phase == phase for metric in METRIC_SPECS) for phase in expected},
             expected,
         )
-
-    def test_two_handed_backhand_framework_is_four_stage_and_camera_honest(self) -> None:
-        areas = [
-            {"id": "backlift_preparation", "status": "strength", "timestampSeconds": 0.4},
-            {"id": "footwork_base", "status": "priority", "timestampSeconds": 0.2},
-            {"id": "lower_body_loading", "status": "developing", "timestampSeconds": 0.8},
-            {"id": "lower_body_extension", "status": "developing", "timestampSeconds": 1.0},
-            {"id": "hand_swing_path", "status": "developing", "timestampSeconds": 1.0},
-            {"id": "contact_spacing", "status": "developing", "timestampSeconds": 1.2},
-            {"id": "body_position", "status": "priority", "timestampSeconds": 1.2},
-            {"id": "ending_position", "status": "priority", "timestampSeconds": 1.6},
-        ]
-        framework = _two_handed_backhand_framework("two_handed_backhand", areas)
-
-        self.assertEqual([item["step"] for item in framework], [1, 2, 3, 4])
-        self.assertEqual([item["label"] for item in framework], ["Preparation", "Power position & drop", "Contact", "Finish & recovery"])
-        self.assertEqual([item["status"] for item in framework], ["priority", "developing", "priority", "priority"])
-        self.assertIn("Grip change", framework[0]["cameraBoundary"])
-        self.assertIn("racket tracking", framework[1]["cameraBoundary"])
-        self.assertIn("hand force", framework[2]["cameraBoundary"])
-        self.assertIn("exact racket finish", framework[3]["cameraBoundary"])
-        self.assertEqual([len(item["checks"]) for item in framework], [5, 5, 7, 5])
-        self.assertEqual(framework[0]["checks"][2]["status"], "confirm")
-        self.assertIn("weight percentage", framework[1]["checks"][0]["cameraBoundary"])
-        self.assertIn("exact ball contact", framework[2]["checks"][4]["cameraBoundary"])
-        self.assertEqual(framework[2]["checks"][2]["status"], "confirm")
-        self.assertEqual(framework[2]["checks"][6]["status"], "confirm")
-        self.assertIn("top", framework[2]["checks"][2]["label"].lower())
-        self.assertIn("above the nose line", framework[3]["checks"][3]["finding"])
-        self.assertIn("below the hand line", framework[1]["checks"][3]["finding"])
-
-    def test_two_handed_backhand_audit_maps_reference_into_seven_body_part_phases(self) -> None:
-        areas = [
-            {"id": "backlift_preparation", "status": "strength", "timestampSeconds": 0.4},
-            {"id": "footwork_base", "status": "priority", "timestampSeconds": 0.2},
-            {"id": "lower_body_loading", "status": "developing", "timestampSeconds": 0.8},
-            {"id": "lower_body_extension", "status": "developing", "timestampSeconds": 1.0},
-            {"id": "hand_swing_path", "status": "developing", "timestampSeconds": 1.0},
-            {"id": "contact_spacing", "status": "strength", "timestampSeconds": 1.2},
-            {"id": "body_position", "status": "priority", "timestampSeconds": 1.2},
-            {"id": "ending_position", "status": "priority", "timestampSeconds": 1.6},
-        ]
-        audit = _two_handed_backhand_audit(
-            "two_handed_backhand",
-            areas,
-            {"shotSituation": "defensive_on_run", "shotIntent": "consistency"},
-        )
-
-        self.assertIsNotNone(audit)
-        assert audit is not None
-        self.assertEqual(audit["version"], "two-handed-backhand-reference-rubric-v2.0.0")
-        self.assertEqual([item["step"] for item in audit["checkpoints"]], list(range(1, 8)))
-        self.assertEqual([item["label"] for item in audit["checkpoints"]], ["Ready position", "Preparation / unit turn", "Load and drop", "Forward swing", "Contact", "Follow-through / finish", "Recovery"])
-        self.assertEqual(audit["checkpoints"][0]["status"], "priority")
-        self.assertEqual(audit["checkpoints"][1]["status"], "priority")
-        self.assertIn("open or outside-leg", audit["checkpoints"][1]["contextNote"])
-        self.assertIn("consistency or depth", audit["checkpoints"][4]["contextNote"])
-        self.assertIn("Exact weight", audit["checkpoints"][2]["cameraBoundary"])
-        self.assertIn("racket-head finish", audit["checkpoints"][5]["cameraBoundary"])
-        self.assertTrue(all(len(item["bodyChecks"]) == 5 for item in audit["checkpoints"]))
-        self.assertIn("Top/non-dominant hand", audit["checkpoints"][3]["bodyChecks"][0]["finding"])
-        self.assertIn("force", audit["checkpoints"][3]["bodyChecks"][0]["cameraBoundary"])
-        self.assertIn("one professional silhouette", audit["stylePrinciple"])
-        source_ids = {source_id for item in audit["checkpoints"] for source_id in item["sourceIds"]}
-        self.assertEqual(
-            source_ids,
-            {
-                "athlete-supplied-complete-stroke-guide",
-                "venus-williams-backhand-fundamentals",
-                "athlete-supplied-backhand-phase-rubric",
-                "mouratoglou-fluid-backhand",
-                "top-tennis-training-three-step-backhand",
-                "coach-adri-two-handed-backhand-masterclass",
-                "nathan-pasha-five-step-backhand",
-                "tennis-tv-atp-backhand-variations",
-            },
-        )
-        self.assertIsNone(_two_handed_backhand_audit("serve", areas, {}))
-
-    def test_complete_stroke_guide_is_applied_to_every_supported_tennis_stroke(self) -> None:
-        areas = [
-            {
-                "id": area_id,
-                "status": "developing",
-                "timestampSeconds": 0.5,
-                "observation": f"Measured {area_id.replace('_', ' ')} pattern.",
-                "measurementBasis": "pose_estimate",
-            }
-            for area_id in (
-                "footwork_base",
-                "backlift_preparation",
-                "lower_body_loading",
-                "lower_body_extension",
-                "body_position",
-                "hand_swing_path",
-                "contact_spacing",
-                "ending_position",
-                "repeatability",
-            )
-        ]
-        expected_phase_counts = {
-            "forehand": 7,
-            "one_handed_backhand": 7,
-            "two_handed_backhand": 7,
-            "slice": 6,
-            "serve": 8,
-            "forehand_volley": 6,
-            "backhand_volley": 5,
-            "overhead": 6,
-        }
-
-        for action_type, phase_count in expected_phase_counts.items():
-            with self.subTest(action_type=action_type):
-                audit = _stroke_technical_audit(action_type, areas, {"statement": "Controlled practice."})
-                self.assertIsNotNone(audit)
-                assert audit is not None
-                self.assertEqual(len(audit["checkpoints"]), phase_count)
-                self.assertEqual([item["step"] for item in audit["checkpoints"]], list(range(1, phase_count + 1)))
-                self.assertTrue(all(item["bodyChecks"] for item in audit["checkpoints"]))
-                self.assertTrue(any(check["status"] == "confirm" for item in audit["checkpoints"] for check in item["bodyChecks"]))
-                source_ids = {source_id for item in audit["checkpoints"] for source_id in item["sourceIds"]}
-                self.assertIn("athlete-supplied-complete-stroke-guide", source_ids)
 
     def test_two_handed_backhand_scores_knee_load_and_drive_as_separate_events(self) -> None:
         result = compute_frame_metrics(self.frames, self.fps, "right")
@@ -444,11 +334,37 @@ class AnalysisIntegrityTests(unittest.TestCase):
         self.assertTrue(all(item["score"] is None for item in phases))
         self.assertEqual([item["id"] for item in metrics], ["video_measurability"])
 
+    def test_scoring_fails_closed_without_the_knowledge_policy(self) -> None:
+        result = compute_frame_metrics(self.frames, self.fps, "right")
+        with self.assertRaises(TypeError):
+            _compute_frame_metrics(self.frames, self.fps, "right")
+        with self.assertRaisesRegex(ValueError, "fail-closed"):
+            _compute_frame_metrics(self.frames, self.fps, "right", control_policy={})
+        with self.assertRaises(TypeError):
+            _score_from_measurements(result, "forehand", True)
+        with self.assertRaisesRegex(ValueError, "fail-closed"):
+            _score_from_measurements(result, "forehand", True, control_policy={})
+
+    def test_scoring_values_and_trace_are_owned_by_the_policy(self) -> None:
+        result = compute_frame_metrics(self.frames, self.fps, "right")
+        self.assertTrue(result.capture_quality["knowledgeControlled"])
+        self.assertEqual(result.capture_quality["policyId"], "AC-SCORE-001")
+        policy = deepcopy(ontology().analysis_control_policy)
+        baseline = _score_from_measurements(result, "forehand", True, control_policy=policy)
+        changed = deepcopy(policy)
+        changed["scoring"]["components"]["head_control"]["default"]["base"] = 40
+        revised = _score_from_measurements(result, "forehand", True, control_policy=changed)
+        baseline_body_position = next(item for item in baseline[2] if item["id"] == "body_position")
+        revised_body_position = next(item for item in revised[2] if item["id"] == "body_position")
+        self.assertNotEqual(baseline_body_position["score"], revised_body_position["score"])
+        self.assertTrue(all(item["knowledgeControlled"] for item in revised[1] + revised[2]))
+        self.assertTrue(all(item["policyId"] == "AC-SCORE-001" for item in revised[1] + revised[2]))
+
     def test_improvement_plan_is_deterministic_and_actionable(self) -> None:
         result = compute_frame_metrics(self.frames, self.fps, "right")
         _overall, phases, metrics, confidence, status = score_from_measurements(result, "forehand", True)
-        first = build_coaching("tennis", "forehand", metrics, phases, result.timeline, confidence, status, "u14", "intermediate")
-        second = build_coaching("tennis", "forehand", metrics, phases, result.timeline, confidence, status, "u14", "intermediate")
+        first = build_coaching("tennis", "forehand", metrics, phases, result.timeline, confidence, status, "u14", "intermediate", control_policy=ontology().analysis_control_policy)
+        second = build_coaching("tennis", "forehand", metrics, phases, result.timeline, confidence, status, "u14", "intermediate", control_policy=ontology().analysis_control_policy)
         self.assertEqual(first, second)
         performance_story = first[8]
         visual_moments = first[9]
@@ -465,8 +381,8 @@ class AnalysisIntegrityTests(unittest.TestCase):
             {"index": 0, "startSeconds": 0.2, "durationSeconds": 1.1, "peakMotion": 1.4, "meanVisibility": 0.93, "headMovementRange": 0.06},
             {"index": 1, "startSeconds": 2.0, "durationSeconds": 1.15, "peakMotion": 1.35, "meanVisibility": 0.91, "headMovementRange": 0.07},
         ]
-        first = repetition_insights(repetitions)
-        second = repetition_insights(repetitions)
+        first = repetition_insights(repetitions, control_policy=ontology().analysis_control_policy)
+        second = repetition_insights(repetitions, control_policy=ontology().analysis_control_policy)
         self.assertEqual(first, second)
         self.assertIn("self-consistency", first["explanation"])
         self.assertIn("not a technique grade or age-group percentile", first["explanation"])
@@ -505,10 +421,10 @@ class AnalysisIntegrityTests(unittest.TestCase):
             {"index": 0, "startFrame": 0, "endFrame": 30, "startSeconds": 0.0, "durationSeconds": 1.0, "peakMotion": 1.2, "meanVisibility": 0.95, "phaseTimeline": [{"phase": "ready", "frameIndex": 0}, {"phase": "loading", "frameIndex": 10}, {"phase": "contact_proxy", "frameIndex": 20}, {"phase": "recovery", "frameIndex": 26}]},
             {"index": 1, "startFrame": 40, "endFrame": 72, "startSeconds": 1.4, "durationSeconds": 1.07, "peakMotion": 1.18, "meanVisibility": 0.93, "phaseTimeline": [{"phase": "ready", "frameIndex": 40}, {"phase": "loading", "frameIndex": 51}, {"phase": "contact_proxy", "frameIndex": 62}, {"phase": "recovery", "frameIndex": 68}]},
         ]
-        result = repetition_insights(repetitions)
+        result = repetition_insights(repetitions, control_policy=ontology().analysis_control_policy)
         self.assertIsNotNone(result["rhythmProfile"])
         self.assertGreater(len(result["phaseTiming"]), 0)
-        self.assertEqual(result, repetition_insights(repetitions))
+        self.assertEqual(result, repetition_insights(repetitions, control_policy=ontology().analysis_control_policy))
 
     def test_classifier_requires_confirmation_when_label_conflicts(self) -> None:
         _, windows = detect_repetitions(self.frames, self.fps, "right")

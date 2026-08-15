@@ -1,5 +1,5 @@
 {
-  "name": "acecoach-ai",
+  "name": "athlentra-tennis",
   "version": "6.0.0",
   "private": true,
   "scripts": {
@@ -21,10 +21,19 @@
     "verify:overlay-registration": "node --experimental-strip-types scripts/verify-overlay-registration.mjs",
     "verify:human-report": "node scripts/verify-human-report.mjs",
     "verify:v5": "node scripts/verify-v500.mjs",
-    "verify:v6": "node scripts/verify-v600.mjs"
+    "verify:v6": "node scripts/verify-v600.mjs",
+    "mobile:sync": "cap sync",
+    "mobile:sync:store": "node scripts/validate-mobile-env.mjs && cap sync",
+    "mobile:open:ios": "cap open ios",
+    "mobile:open:android": "cap open android"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/browser": "^8.0.4",
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/ios": "^8.5.0",
     "@hookform/resolvers": "^5.4.0",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.111.0",
@@ -38,6 +47,7 @@
     "react-dropzone": "^15.0.0",
     "react-hook-form": "^7.81.0",
     "recharts": "^3.9.2",
+    "resend": "^6.20.0",
     "shadcn": "^4.13.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.6.0",
@@ -45,6 +55,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

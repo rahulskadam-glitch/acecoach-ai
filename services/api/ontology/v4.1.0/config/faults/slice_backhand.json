@@ -19,7 +19,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "creates a rushed chop and late contact",
     "player_message": "Prepare the racket earlier and above the ball.",
-    "coach_message_template": "Late preparation: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "TIMING_DELTA"
@@ -133,7 +132,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces control and forward penetration",
     "player_message": "Meet the ball in front with room to extend.",
-    "coach_message_template": "Late or crowded contact: {evidence_summary}.",
     "overlay_markers": [
       "CONTACT_POINT",
       "CONTACT_WINDOW"
@@ -247,7 +245,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "causes floating contact and unstable direction",
     "player_message": "Move your weight through the ball.",
-    "coach_message_template": "Leaning backward: {evidence_summary}.",
     "overlay_markers": [
       "COM_ESTIMATE",
       "TRUNK_AXIS",
@@ -362,7 +359,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces stable carving path and low trajectory",
     "player_message": "Stay more side-on through contact.",
-    "coach_message_template": "Excessive torso opening: {evidence_summary}.",
     "overlay_markers": [
       "SHOULDER_LINE",
       "PELVIS_LINE"
@@ -476,7 +472,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "creates a floating or short slice",
     "player_message": "Drive forward as you move down through the ball.",
-    "coach_message_template": "Vertical chop with little penetration: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "PATH_CORRIDOR",
@@ -591,7 +586,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces underspin and control",
     "player_message": "Start above the ball and carve through it.",
-    "coach_message_template": "Path too flat: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "PATH_CORRIDOR"
@@ -705,7 +699,6 @@
     "measurement_class": "INFERRED",
     "performance_consequence": "causes a high floating ball",
     "player_message": "Keep the face slightly open, not pointing upward.",
-    "coach_message_template": "Racket face excessively open: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_FACE_ESTIMATE",
       "CONFIDENCE_BADGE"
@@ -814,7 +807,6 @@
     "measurement_class": "INFERRED",
     "performance_consequence": "reduces directional control",
     "player_message": "Keep the wrist and racket stable through contact.",
-    "coach_message_template": "Wrist-racket instability: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_AXIS",
       "ANGLE_ARC"
@@ -923,7 +915,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces penetration and control",
     "player_message": "Keep the hitting arm long through the finish.",
-    "coach_message_template": "Hitting arm collapses: {evidence_summary}.",
     "overlay_markers": [
       "ELBOW_ANGLE_L",
       "ELBOW_ANGLE_R",
@@ -1033,7 +1024,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces trunk stability",
     "player_message": "Let the other arm reach back for balance.",
-    "coach_message_template": "Insufficient non-dominant-arm counterbalance: {evidence_summary}.",
     "overlay_markers": [
       "BODY_SKELETON",
       "CAUSE_ARROW"
@@ -1147,7 +1137,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces depth and control",
     "player_message": "Continue the racket toward your target.",
-    "coach_message_template": "Follow-through stops immediately: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "CORRECTION_ARROW"
@@ -1256,7 +1245,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces readiness for the next ball",
     "player_message": "Finish, then reset your feet and racket.",
-    "coach_message_template": "Recovery delayed: {evidence_summary}.",
     "overlay_markers": [
       "RECOVERY_TARGET",
       "FOOT_TRAIL"

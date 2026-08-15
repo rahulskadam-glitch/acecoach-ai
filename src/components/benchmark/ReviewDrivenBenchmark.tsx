@@ -18,7 +18,7 @@ export default function ReviewDrivenBenchmark() {
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div className="max-w-3xl">
             <div className="flex items-center gap-3 text-emerald-300"><MessageSquareText className="h-5 w-5" /><p className="text-sm font-semibold uppercase tracking-[0.2em]">Review-led product benchmark</p></div>
-            <h1 className="mt-4 text-4xl font-semibold text-white">What athletes repeatedly ask for—and how much AceCoach has incorporated</h1>
+            <h1 className="mt-4 text-4xl font-semibold text-white">What athletes repeatedly ask for—and how much Athlentra has incorporated</h1>
             <p className="mt-4 text-sm leading-7 text-slate-300">This scorecard separates product coverage from scientific validation. A theme is counted only when the package contains a concrete mitigation, workflow, test, or disclosure.</p>
           </div>
           <div className="grid min-w-[250px] gap-3 sm:grid-cols-2 lg:grid-cols-1">
@@ -32,7 +32,7 @@ export default function ReviewDrivenBenchmark() {
         <div className="flex items-center gap-3"><CircleGauge className="h-5 w-5 text-sky-300" /><div><p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-300">Competitive capability scorecard</p><h2 className="mt-1 text-2xl font-semibold text-white">Honest position after v3.2</h2></div></div>
         <div className="mt-6 overflow-x-auto">
           <table className="w-full min-w-[800px] border-separate border-spacing-y-2 text-left text-sm">
-            <thead className="text-xs uppercase tracking-[0.14em] text-slate-500"><tr><th className="px-3 py-2">Capability</th><th className="px-3 py-2">AceCoach</th><th className="px-3 py-2">Best</th><th className="px-3 py-2">Assessment</th></tr></thead>
+            <thead className="text-xs uppercase tracking-[0.14em] text-slate-500"><tr><th className="px-3 py-2">Capability</th><th className="px-3 py-2">Athlentra</th><th className="px-3 py-2">Best</th><th className="px-3 py-2">Assessment</th></tr></thead>
             <tbody>{competitiveScorecard.map((row) => <tr key={row.capability} className="bg-slate-950/60"><td className="rounded-l-xl px-3 py-4 font-medium text-white">{row.capability}</td><td className={`px-3 py-4 text-lg font-bold ${tone(row.score)}`}>{row.score.toFixed(1)}</td><td className="px-3 py-4 text-slate-400">{row.benchmark.toFixed(1)}</td><td className="rounded-r-xl px-3 py-4 leading-6 text-slate-400">{row.note}</td></tr>)}</tbody>
           </table>
         </div>

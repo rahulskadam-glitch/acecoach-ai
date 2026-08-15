@@ -1,9 +1,36 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator, model_validator
+
+
+class ValidatedOutcomeLabel(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
+    repetition_index: int = Field(..., ge=0, le=50)
+    outcome_source: Literal["credentialed_coach", "validated_sensor", "validated_ball_tracker"]
+    validation_status: Literal["coach_verified", "sensor_verified", "tracker_verified"]
+    execution_result: Literal["success", "in_target", "weak", "out_of_target"]
+    depth_zone: str | None = Field(default=None, max_length=64)
+    direction: str | None = Field(default=None, max_length=64)
+    placement_zone: str | None = Field(default=None, max_length=64)
+    net_clearance_cm: float | None = None
+    bounce_x_normalized: float | None = Field(default=None, ge=0, le=1)
+    bounce_y_normalized: float | None = Field(default=None, ge=0, le=1)
+    model_version: str | None = Field(default=None, max_length=128)
+
+    @model_validator(mode="after")
+    def source_matches_validation(self) -> "ValidatedOutcomeLabel":
+        expected_status = {
+            "credentialed_coach": "coach_verified",
+            "validated_sensor": "sensor_verified",
+            "validated_ball_tracker": "tracker_verified",
+        }[self.outcome_source]
+        if self.validation_status != expected_status:
+            raise ValueError("validation_status must match outcome_source")
+        return self
 
 
 class AnalysisRequest(BaseModel):
@@ -24,6 +51,7 @@ class AnalysisRequest(BaseModel):
     shot_intent: str | None = Field(default=None, max_length=64)
     athlete_question: str | None = Field(default=None, max_length=500)
     height_cm: float | None = Field(default=None, ge=80, le=230)
+    validated_outcomes: list[ValidatedOutcomeLabel] = Field(default_factory=list, max_length=12)
 
     @field_validator("video_name")
     @classmethod
@@ -86,3 +114,4 @@ class AnalysisResponse(BaseModel):
     quality_gate: dict[str, Any]
     next_generation_story: dict[str, Any] | None = None
     ontology_reasoning: dict[str, Any] | None = None
+    knowledge_control: dict[str, Any]

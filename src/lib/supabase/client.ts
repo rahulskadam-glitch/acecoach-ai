@@ -4,13 +4,13 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database";
 import { getSupabaseConfig, isSupabaseConfigured } from "@/lib/supabase/config";
 
-type AceCoachBrowserClient = SupabaseClient<Database>;
+type AthlentraBrowserClient = SupabaseClient<Database>;
 
 // Turbopack can re-evaluate this module during Fast Refresh. Keep one browser
 // auth client for the lifetime of the page so GoTrue's flow settings are not
 // reconstructed from a partially refreshed dependency graph.
 const browserScope = globalThis as typeof globalThis & {
-  __acecoachSupabaseClient?: AceCoachBrowserClient;
+  __acecoachSupabaseClient?: AthlentraBrowserClient;
 };
 
 function createFallbackClient() {
@@ -26,12 +26,12 @@ function createFallbackClient() {
 
 export function createClient() {
   if (!isSupabaseConfigured()) {
-    return createFallbackClient() as unknown as AceCoachBrowserClient;
+    return createFallbackClient() as unknown as AthlentraBrowserClient;
   }
 
   const { supabaseUrl, supabaseAnonKey } = getSupabaseConfig();
   if (!supabaseUrl || !supabaseAnonKey) {
-    return createFallbackClient() as unknown as AceCoachBrowserClient;
+    return createFallbackClient() as unknown as AthlentraBrowserClient;
   }
 
   if (typeof window !== "undefined" && browserScope.__acecoachSupabaseClient) {

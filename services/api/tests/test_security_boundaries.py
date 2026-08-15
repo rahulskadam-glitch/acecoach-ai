@@ -63,6 +63,31 @@ class SecurityBoundaryTests(unittest.TestCase):
                 action_type="forehand",
             )
 
+    def test_analysis_contract_rejects_mislabeled_validated_outcomes(self) -> None:
+        base = {
+            "user_id": "11111111-1111-4111-8111-111111111111",
+            "video_id": "22222222-2222-4222-8222-222222222222",
+            "video_url": "https://storage.example.com/video.mp4",
+            "video_name": "clip.mp4",
+            "sport_id": "tennis",
+            "action_type": "forehand",
+        }
+        with self.assertRaises(ValidationError):
+            AnalysisRequest(**base, validated_outcomes=[{
+                "repetition_index": 0,
+                "outcome_source": "credentialed_coach",
+                "validation_status": "tracker_verified",
+                "execution_result": "success",
+            }])
+
+        request = AnalysisRequest(**base, validated_outcomes=[{
+            "repetition_index": 0,
+            "outcome_source": "credentialed_coach",
+            "validation_status": "coach_verified",
+            "execution_result": "success",
+        }])
+        self.assertEqual(len(request.validated_outcomes), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

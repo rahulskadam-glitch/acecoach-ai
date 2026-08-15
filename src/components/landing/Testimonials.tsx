@@ -7,7 +7,7 @@ const testimonials = [
   {
     name: "Ava Martinez",
     role: "Competitive Player",
-    quote: "AceCoach AI transformed my footwork and timing with insights that feel like a coach in my pocket.",
+    quote: "Athlentra Tennis transformed my footwork and timing with insights that feel like a coach in my pocket.",
     rating: 5,
   },
   {
@@ -30,7 +30,7 @@ export default function Testimonials() {
       <div className="max-w-3xl text-center">
         <p className="text-sm uppercase tracking-[0.28em] text-emerald-300">Testimonials</p>
         <h2 className="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-          Athletes and coaches trust AceCoach AI for better training.
+          Athletes and coaches trust Athlentra Tennis for better training.
         </h2>
       </div>
 

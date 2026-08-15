@@ -30,8 +30,9 @@ function shortCue(value: string) {
 }
 
 export function buildNextGenerationStory(report: AnalysisReport): NextGenerationStory {
-  if (report.nextGenerationStory) {
-    const supplied = report.nextGenerationStory;
+  const suppliedStory = report.nextGenerationStory;
+  if (suppliedStory && typeof suppliedStory === "object") {
+    const supplied = suppliedStory;
     return {
       ...supplied,
       ontologyVersion: "4.1.0",
@@ -96,7 +97,7 @@ export function buildNextGenerationStory(report: AnalysisReport): NextGeneration
       feel: cue,
       watch: `Pause near ${effect.toFixed(2)} seconds and follow the highlighted body part.`,
       train: plainLanguage(drill ? `${drill.name}: ${drill.dosage}` : report.nextSession.objective),
-      success: plainLanguage(drill?.successMetric ?? report.nextSession.successCriteria[0] ?? "The change holds in the next comparable clip."),
+      success: plainLanguage(drill?.successMetric ?? report.nextSession.successCriteria[0] ?? "The change holds in the next practice video."),
       languageProfileId: "PLAYER_COACH_v4.1",
       surface: "PLAYER_COACH",
     },

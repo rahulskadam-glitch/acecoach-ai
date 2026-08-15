@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from ontology_runtime.acecoach_ontology.coaching_engine import compile_visual_story, earliest_meaningful_divergence, rank_insights
+from ontology_runtime.acecoach_ontology.knowledge_governance import knowledge_layer_status, outcome_label_release_decision
 from ontology_runtime.acecoach_ontology.loader import OntologyBundle
 
 
@@ -84,7 +85,14 @@ def ontology() -> OntologyBundle:
 
 
 def ontology_manifest_hash() -> str:
-    return hashlib.sha256((ONTOLOGY_ROOT / "manifest.json").read_bytes()).hexdigest()
+    """Fingerprint every ontology JSON artifact, not only the routing manifest."""
+    digest = hashlib.sha256()
+    for path in sorted(ONTOLOGY_ROOT.rglob("*.json")):
+        digest.update(path.relative_to(ONTOLOGY_ROOT).as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(path.read_bytes())
+        digest.update(b"\0")
+    return digest.hexdigest()
 
 
 def _timestamp(timeline: list[dict[str, Any]], phase_code: str, fallback: float = 0.0) -> float:
@@ -108,6 +116,7 @@ def _dosage(drill: dict[str, Any], canonical_level: str | None = None) -> str:
 
 def _chapter_evaluations(action_type: str, areas: list[dict[str, Any]]) -> list[dict[str, Any]]:
     bundle = ontology()
+    minimum_measurement_confidence = float(bundle.confidence_policy["confirmation_rule"]["minimum_measurement_confidence"])
     action = ACTION_ALIASES.get(action_type, action_type)
     prefix = bundle.strokes.get(action, {}).get("code", "") + "-"
     faults = [fault for fault in bundle.faults.values() if fault["fault_id"].startswith(prefix)]
@@ -116,7 +125,7 @@ def _chapter_evaluations(action_type: str, areas: list[dict[str, Any]]) -> list[
     for chapter in MOVEMENT_CHAPTERS:
         matches = [by_id[area_id] for area_id in chapter["area_ids"] if area_id in by_id]
         if not matches:
-            evaluations.append({"chapter": chapter, "areas": [], "area": None, "faults": [], "score": None})
+            evaluations.append({"chapter": chapter, "areas": [], "area": None, "faults": [], "score": None, "reliably_assessed": False})
             continue
         representative = min(matches, key=lambda item: float(item.get("score", 100)))
         evaluations.append({
@@ -125,6 +134,7 @@ def _chapter_evaluations(action_type: str, areas: list[dict[str, Any]]) -> list[
             "area": representative,
             "faults": [fault for fault in faults if fault.get("domain") in chapter["domains"]],
             "score": round(sum(float(item.get("score", 100)) for item in matches) / len(matches)),
+            "reliably_assessed": all(float(item.get("confidence") or 0.0) >= minimum_measurement_confidence for item in matches),
         })
     return evaluations
 
@@ -139,7 +149,12 @@ def _direction_supported(fault: dict[str, Any], deviations: set[str]) -> bool:
     return (wants_low and "low" in deviations) or (wants_high and "high" in deviations) or (not wants_low and not wants_high)
 
 
-def _evaluate_fault_evidence(fault: dict[str, Any], areas: list[dict[str, Any]], camera_angle: str) -> dict[str, Any]:
+def _evaluate_fault_evidence(
+    fault: dict[str, Any],
+    areas: list[dict[str, Any]],
+    camera_angle: str,
+    interpretation_confidence: float = 1.0,
+) -> dict[str, Any]:
     available = [
         {**record, "areaId": area.get("id"), "areaScore": area.get("score"), "confidence": area.get("confidence"), "measurementBasis": area.get("measurementBasis")}
         for area in areas for record in area.get("evidenceRecords", [])
@@ -150,6 +165,13 @@ def _evaluate_fault_evidence(fault: dict[str, Any], areas: list[dict[str, Any]],
     required_ids = {str(item["metric_id"]) for item in requirements if item.get("required")}
     expected_ids = {str(item["metric_id"]) for item in requirements}
     matched = [by_metric[metric_id] for metric_id in expected_ids if metric_id in by_metric]
+    confirmation_rule = ontology().confidence_policy["confirmation_rule"]
+    minimum_measurement_confidence = float(confirmation_rule["minimum_measurement_confidence"])
+    minimum_interpretation_confidence = float(confirmation_rule["minimum_interpretation_confidence"])
+    low_confidence_metrics = sorted(
+        str(record["metricId"]) for record in matched
+        if float(record.get("confidence") or 0.0) < minimum_measurement_confidence
+    )
     missing_required = sorted(required_ids - set(by_metric))
     camera_supported = camera_angle in fault.get("supported_views", [])
     deviations = {str(item.get("deviation")) for item in matched}
@@ -161,6 +183,10 @@ def _evaluate_fault_evidence(fault: dict[str, Any], areas: list[dict[str, Any]],
         reasons.append("required_evidence_missing")
     if not matched:
         reasons.append("no_compatible_measured_metric")
+    if low_confidence_metrics:
+        reasons.append("measurement_confidence_below_threshold")
+    if interpretation_confidence < minimum_interpretation_confidence:
+        reasons.append("interpretation_confidence_below_threshold")
     if matched and not direction_supported:
         reasons.append("measured_direction_does_not_support_fault")
     eligible = not reasons
@@ -172,6 +198,9 @@ def _evaluate_fault_evidence(fault: dict[str, Any], areas: list[dict[str, Any]],
         "expectedMetricIds": sorted(expected_ids),
         "reasons": reasons,
         "directionSupported": direction_supported,
+        "lowConfidenceMetricIds": low_confidence_metrics,
+        "minimumMeasurementConfidence": minimum_measurement_confidence,
+        "minimumInterpretationConfidence": minimum_interpretation_confidence,
     }
 
 
@@ -189,6 +218,13 @@ def _validated_self_best_contrast(repetitions: list[dict[str, Any]], metric_ids:
         weak: list[float] = []
         event_times: list[float] = []
         for repetition in repetitions:
+            release = outcome_label_release_decision({
+                "outcome_source": repetition.get("outcomeSource"),
+                "validation_status": repetition.get("outcomeValidationStatus"),
+                "execution_result": repetition.get("outcomeLabel"),
+            }, ontology().knowledge_validation_policy["outcome_labels"])
+            if not release["eligible"]:
+                continue
             label = str(repetition.get("outcomeLabel", "")).lower()
             metrics = repetition.get("knowledgeMetrics", {})
             metric = metrics.get(metric_id) if isinstance(metrics, dict) else None
@@ -234,6 +270,7 @@ def _fault_candidates(
     rejected: list[dict[str, Any]] = []
     evaluations = _chapter_evaluations(action_type, areas)
     allowed_chapters = set(level_profile.get("default_chapter_ids", []))
+    strength_minimum_score = float(ontology().insight_reasoner["chapter_assessment_policy"]["strength_minimum_score"])
     for evaluation in evaluations:
         area = evaluation["area"]
         if not area:
@@ -241,12 +278,12 @@ def _fault_candidates(
         if allowed_chapters and evaluation["chapter"]["id"] not in allowed_chapters:
             continue
         score = float(evaluation["score"])
-        deficit = max(0.0, min(1.0, (82.0 - score) / 42.0))
+        deficit = max(0.0, min(1.0, (strength_minimum_score - score) / 42.0))
         if deficit <= 0:
             continue
         eligible_in_chapter: list[dict[str, Any]] = []
         for fault in evaluation["faults"]:
-            evidence_result = _evaluate_fault_evidence(fault, evaluation["areas"], camera_angle)
+            evidence_result = _evaluate_fault_evidence(fault, evaluation["areas"], camera_angle, confidence)
             if not evidence_result["eligible"]:
                 rejected.append({"faultId": fault["fault_id"], "chapterId": evaluation["chapter"]["id"], **evidence_result})
                 continue
@@ -326,6 +363,67 @@ def _tested_causal_chain(selected: dict[str, Any], ranked: list[dict[str, Any]],
     } for edge in edges]
 
 
+def _movement_chain_item(
+    evaluation: dict[str, Any],
+    finding: dict[str, Any] | None = None,
+    strength_item: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Keep the player-facing state consistent with the score actually displayed."""
+    chapter = evaluation["chapter"]
+    score = evaluation.get("score") if evaluation.get("reliably_assessed") else None
+    strength_minimum_score = float(ontology().insight_reasoner["chapter_assessment_policy"]["strength_minimum_score"])
+    evidence = [{
+        "areaId": area.get("id"),
+        "label": area.get("label"),
+        "score": area.get("score"),
+        "confidence": area.get("confidence"),
+        "measurementBasis": area.get("measurementBasis"),
+        "observation": area.get("observation"),
+    } for area in evaluation.get("areas", [])]
+    availability_reason = None
+    coach_explanation = None
+    if finding:
+        status = "priority" if finding.get("role") == "PRIMARY" else "developing"
+        summary = finding["summary"]
+        fault_id = finding.get("faultId")
+        assessment_basis = "EVIDENCE_GATED_FAULT"
+    elif score is None:
+        status = "not_assessed"
+        fault_id = None
+        assessment_basis = "INSUFFICIENT_MEASUREMENT_CONFIDENCE"
+        contributing_areas = evaluation.get("areas", [])
+        if not contributing_areas:
+            availability_reason = "NO_RELIABLE_MEASUREMENT"
+        elif any(float(area.get("confidence") or 0.0) < 0.65 for area in contributing_areas):
+            availability_reason = "LOW_LANDMARK_CONFIDENCE"
+        else:
+            availability_reason = "CAMERA_OR_OCCLUSION_LIMIT"
+        if chapter["id"] == "movement_spacing":
+            coach_explanation = "The feet, base, and body-to-ball spacing were not visible together long enough for a fair coaching judgment. Keep the full body and ball path in frame."
+        else:
+            coach_explanation = "The camera did not show this stage clearly enough for a fair coaching judgment. This is a filming limitation, not a technique fault."
+        summary = coach_explanation
+    elif float(score) >= strength_minimum_score:
+        status = "strength"
+        summary = strength_item["summary"] if strength_item else CHAPTER_LANGUAGE[chapter["id"]]["working"]
+        fault_id = None
+        assessment_basis = "MEASURED_CHAPTER_SCORE"
+    else:
+        status = "developing"
+        summary = "This measured area is below the current strength band, but no specific correction is authorized without a supported fault."
+        fault_id = None
+        assessment_basis = "MEASURED_CHAPTER_SCORE"
+    return {
+        "id": chapter["id"], "label": chapter["label"], "status": status,
+        "score": score, "summary": summary, "faultId": fault_id,
+        "assessmentBasis": assessment_basis,
+        "scoreRule": "mean_of_reliably_measured_contributing_areas" if score is not None else "suppressed_below_measurement_confidence_gate",
+        "availabilityReason": availability_reason,
+        "coachExplanation": coach_explanation,
+        "evidence": evidence,
+    }
+
+
 def ground_report_in_ontology(
     *, action_type: str, camera_angle: str, confidence: float,
     repetition_count: int, timeline: list[dict[str, Any]], areas: list[dict[str, Any]],
@@ -335,23 +433,47 @@ def ground_report_in_ontology(
 ) -> dict[str, Any] | None:
     """Compile v4.1 coaching from measured legacy signals without inventing measurements."""
     bundle = ontology()
+    governed_knowledge = knowledge_layer_status(bundle, ACTION_ALIASES.get(action_type, action_type))
+    assessment_policy = bundle.insight_reasoner["chapter_assessment_policy"]
+    strength_minimum_score = float(assessment_policy["strength_minimum_score"])
     canonical_level = _canonical_level(playing_level, bundle.level_analysis_profiles)
     level_profile = bundle.level_analysis_profiles["profiles"][canonical_level]
     ranked, evaluations, rejected = _fault_candidates(action_type, camera_angle, areas, confidence, repetitions or [], level_profile)
     if not ranked:
+        strength_review = []
+        for evaluation in evaluations:
+            if not evaluation.get("reliably_assessed") or evaluation["score"] is None or float(evaluation["score"]) < strength_minimum_score:
+                continue
+            chapter = evaluation["chapter"]
+            strength_review.append({
+                "chapterId": chapter["id"],
+                "label": chapter["label"],
+                "score": int(evaluation["score"]),
+                "summary": CHAPTER_LANGUAGE[chapter["id"]]["working"],
+                "evidence": [{
+                    "areaId": item.get("id"), "label": item.get("label"),
+                    "observation": item.get("observation"), "score": item.get("score"),
+                    "confidence": item.get("confidence"), "measurementBasis": item.get("measurementBasis"),
+                } for item in evaluation["areas"]],
+            })
         return {
             "status": "NO_SUPPORTED_FAULT", "priorityScore": 0.0, "candidateCount": 0,
-            "evaluatedFaultIds": [], "findings": [], "strengthReview": [],
-            "movementChain": [{
-                "id": evaluation["chapter"]["id"], "label": evaluation["chapter"]["label"],
-                "status": "not_assessed", "score": evaluation["score"],
-                "summary": "Available evidence cannot distinguish a specific knowledge-layer finding.", "faultId": None,
-            } for evaluation in evaluations],
+            "assessmentPolicy": {
+                "strengthMinimumScore": strength_minimum_score,
+                "minimumMeasurementConfidence": float(bundle.confidence_policy["confirmation_rule"]["minimum_measurement_confidence"]),
+                "measuredFocusFallback": assessment_policy["measured_focus_fallback"]["claim_class"],
+            },
+            "evaluatedFaultIds": [], "findings": [], "strengthReview": strength_review,
+            "movementChain": [
+                _movement_chain_item(evaluation)
+                for evaluation in evaluations
+            ],
             "rejectedCandidates": rejected, "cameraSupport": camera_angle, "sourceIds": [],
             "ontologyVersion": bundle.manifest.get("version"),
             "levelAnalysis": {"canonicalLevel": canonical_level, "profileId": level_profile["profile_id"], "fallbackMode": level_profile["fallback_mode"]},
-            "crossStrokePolicy": _cross_stroke_policy(bundle), "manifestHash": ontology_manifest_hash(),
-            "policiesApplied": ["fault_evidence_evaluation", "confidence_policy", "level_analysis_profile", "claim_traceability"],
+            "crossStrokePolicy": _cross_stroke_policy(bundle), "knowledgeLayerStatus": governed_knowledge,
+            "manifestHash": ontology_manifest_hash(),
+            "policiesApplied": ["fault_evidence_evaluation", "confidence_policy", "chapter_assessment_policy", "level_analysis_profile", "stroke_source_registry", "knowledge_validation_policy", "claim_traceability"],
             "skippedPolicies": {
                 "insight_reasoner": "No unambiguous evidence-compatible fault remained after gating.",
                 "earliest_meaningful_divergence": "No eligible fault and validated outcome-labelled contrast were available.",
@@ -497,7 +619,7 @@ def ground_report_in_ontology(
 
     strength_review: list[dict[str, Any]] = []
     for evaluation in evaluations:
-        if evaluation["score"] is None or float(evaluation["score"]) < 82:
+        if not evaluation.get("reliably_assessed") or evaluation["score"] is None or float(evaluation["score"]) < strength_minimum_score:
             continue
         chapter = evaluation["chapter"]
         chapter_copy = CHAPTER_LANGUAGE[chapter["id"]]
@@ -518,15 +640,14 @@ def ground_report_in_ontology(
         chapter = evaluation["chapter"]
         finding = finding_by_chapter.get(chapter["id"])
         strength_item = strength_by_chapter.get(chapter["id"])
-        movement_chain.append({
-            "id": chapter["id"], "label": chapter["label"],
-            "status": "priority" if finding and finding["role"] == "PRIMARY" else "developing" if finding else "strength" if strength_item else "not_assessed",
-            "score": evaluation["score"],
-            "summary": finding["summary"] if finding else strength_item["summary"] if strength_item else "The current camera evidence cannot assess this part reliably.",
-            "faultId": finding["faultId"] if finding else None,
-        })
+        movement_chain.append(_movement_chain_item(evaluation, finding, strength_item))
     return {
         "insight": insight, "fault": fault, "drill": drill, "status": status,
+        "assessmentPolicy": {
+            "strengthMinimumScore": strength_minimum_score,
+            "minimumMeasurementConfidence": float(bundle.confidence_policy["confirmation_rule"]["minimum_measurement_confidence"]),
+            "measuredFocusFallback": assessment_policy["measured_focus_fallback"]["claim_class"],
+        },
         "priorityScore": selected["priority_score"], "candidateCount": len(ranked),
         "evaluatedFaultIds": [item["fault"]["fault_id"] for item in ranked],
         "findings": findings, "strengthReview": strength_review, "movementChain": movement_chain,
@@ -535,8 +656,9 @@ def ground_report_in_ontology(
         "ontologyVersion": bundle.manifest.get("version"),
         "levelAnalysis": {"canonicalLevel": canonical_level, "profileId": level_profile["profile_id"], "fallbackMode": level_profile["fallback_mode"]},
         "crossStrokePolicy": _cross_stroke_policy(bundle),
+        "knowledgeLayerStatus": governed_knowledge,
         "manifestHash": ontology_manifest_hash(),
-        "policiesApplied": ["fault_evidence_evaluation", "confidence_policy", "level_analysis_profile", "insight_reasoner", "visual_story_compiler", "drill_linkage", "claim_traceability", *(["earliest_meaningful_divergence"] if divergence else []), *(["causal_graph"] if causal_chain else [])],
+        "policiesApplied": ["fault_evidence_evaluation", "confidence_policy", "chapter_assessment_policy", "level_analysis_profile", "stroke_source_registry", "knowledge_validation_policy", "insight_reasoner", "visual_story_compiler", "drill_linkage", "claim_traceability", *(["earliest_meaningful_divergence"] if divergence else []), *(["causal_graph"] if causal_chain else [])],
         "skippedPolicies": {
             **({} if divergence else {"earliest_meaningful_divergence": "Validated success and weak-repetition outcome labels are unavailable."}),
             **({} if causal_chain else {"causal_graph": "No configured graph edge has measured support at both endpoints."}),

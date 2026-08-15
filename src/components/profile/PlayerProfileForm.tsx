@@ -87,7 +87,7 @@ export default function PlayerProfileForm({ initialProfile }: ProfileProps) {
     }
     try {
       await saveProfile(formData);
-      setSavedMessage("Profile and consent choices saved. Analysis is available for all configured athlete ages.");
+      setSavedMessage("Profile and consent choices saved.");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Unable to save the coaching profile.");
     } finally {
@@ -176,7 +176,7 @@ export default function PlayerProfileForm({ initialProfile }: ProfileProps) {
           <div className="grid gap-4 md:grid-cols-3">
             <label className="space-y-2 text-sm font-medium text-slate-700">
               Age
-              <input type="number" min={5} max={100} required value={form.age} onChange={(event) => update("age", event.target.value)} className={inputClass} />
+              <input type="number" min={13} max={100} required value={form.age} onChange={(event) => update("age", event.target.value)} className={inputClass} />
             </label>
             <label className="space-y-2 text-sm font-medium text-slate-700">
               Country
@@ -185,6 +185,10 @@ export default function PlayerProfileForm({ initialProfile }: ProfileProps) {
             <label className="space-y-2 text-sm font-medium text-slate-700">
               Country code <span className="text-slate-600">(optional)</span>
               <input maxLength={8} placeholder="IN" value={form.countryCode} onChange={(event) => update("countryCode", event.target.value.toUpperCase())} className={inputClass} />
+            </label>
+            <label className="space-y-2 text-sm font-medium text-slate-700">
+              Height (cm)
+              <input type="number" min={80} max={230} step="0.1" required value={form.heightCm} onChange={(event) => update("heightCm", event.target.value)} className={inputClass} />
             </label>
           </div>
 
@@ -230,7 +234,7 @@ export default function PlayerProfileForm({ initialProfile }: ProfileProps) {
                 <option value="female">Female</option>
                 <option value="male">Male</option>
               </select>
-              <span className="block text-xs leading-5 text-slate-500">Used only to choose the reference-body visual. AceCoach does not infer gender from video.</span>
+              <span className="block text-xs leading-5 text-slate-500">Used only to choose the reference-body visual. Athlentra does not infer gender from video.</span>
             </label>
             <label className="space-y-2 text-sm font-medium text-slate-700">
               Primary coaching goal
@@ -253,7 +257,6 @@ export default function PlayerProfileForm({ initialProfile }: ProfileProps) {
             <label className="space-y-2 text-sm font-medium text-slate-700">Competition level<select value={form.competitionLevel} onChange={(event) => update("competitionLevel", event.target.value)} className={inputClass}>{competitionLevels.map((value) => <option key={value || "none"} value={value}>{value || "Not specified"}</option>)}</select></label>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            <label className="space-y-2 text-sm font-medium text-slate-700">Height (cm)<input type="number" min={80} max={250} step="0.1" value={form.heightCm} onChange={(event) => update("heightCm", event.target.value)} className={inputClass} /></label>
             <label className="space-y-2 text-sm font-medium text-slate-700">Weight (kg)<input type="number" min={20} max={300} step="0.1" value={form.weightKg} onChange={(event) => update("weightKg", event.target.value)} className={inputClass} /></label>
           </div>
           <label className="block space-y-2 text-sm font-medium text-slate-700">
@@ -273,7 +276,7 @@ export default function PlayerProfileForm({ initialProfile }: ProfileProps) {
 
           <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-sm font-medium text-slate-700">
             <input type="checkbox" checked={form.serviceProcessing} onChange={(event) => update("serviceProcessing", event.target.checked)} className="mt-1 h-4 w-4" />
-            <span><strong className="text-slate-950">Required for analysis:</strong> Process my uploaded video and derived movement data to provide AceCoach analysis. You can withdraw this consent by resetting coaching data.</span>
+            <span><strong className="text-slate-950">Required for analysis:</strong> Process my uploaded video and derived movement data to provide Athlentra analysis. You can withdraw this consent by resetting coaching data.</span>
           </label>
           <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-sm font-medium text-slate-700">
             <input type="checkbox" checked={form.derivedDataImprovement} onChange={(event) => update("derivedDataImprovement", event.target.checked)} className="mt-1 h-4 w-4" />
@@ -281,12 +284,12 @@ export default function PlayerProfileForm({ initialProfile }: ProfileProps) {
           </label>
           {isYouthAthlete ? (
             <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4 text-sm leading-6 text-sky-900">
-              Youth analysis is enabled. For public launch, the account owner should implement the guardian and local youth-data consent workflow required in each market.
+              Players under 18 should use Athlentra with permission from a parent or guardian. Youth reports use stricter coaching and comparison safeguards.
             </div>
           ) : null}
           <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-sm font-medium text-slate-700">
             <input type="checkbox" checked={form.rawMediaTraining} onChange={(event) => update("rawMediaTraining", event.target.checked)} className="mt-1 h-4 w-4" />
-            <span><strong className="text-slate-950">Optional:</strong> Allow uploaded videos to help improve AceCoach after privacy and quality review. Not required for analysis.</span>
+            <span><strong className="text-slate-950">Optional:</strong> Allow uploaded videos to help improve Athlentra after privacy and quality review. Not required for analysis.</span>
           </label>
         </section>
 

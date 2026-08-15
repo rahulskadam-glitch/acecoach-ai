@@ -42,7 +42,21 @@ def coaching_playbook(
     }
 
 
-def repetition_insights(repetitions: list[dict[str, Any]]) -> dict[str, Any]:
+def repetition_insights(
+    repetitions: list[dict[str, Any]],
+    *,
+    control_policy: dict[str, Any],
+) -> dict[str, Any]:
+    if control_policy.get("fail_closed") is not True:
+        raise ValueError("Repetition analysis requires a fail-closed knowledge-control policy.")
+    policy = control_policy["scoring"]["repetition_analysis"]
+    policy_id = control_policy["scoring"]["policy_id"]
+    policy_version = control_policy["version"]
+    trace = {
+        "policyId": policy_id,
+        "policyVersion": policy_version,
+        "knowledgeControlled": True,
+    }
     if not repetitions:
         return {
             "clearestReferenceRepetition": None,
@@ -53,43 +67,57 @@ def repetition_insights(repetitions: list[dict[str, Any]]) -> dict[str, Any]:
             "rhythmProfile": None,
             "outlierRepetitions": [],
             "phaseTiming": [],
+            **trace,
         }
 
-    durations = np.array([max(float(item.get("durationSeconds", 0.0)), 0.001) for item in repetitions], dtype=float)
+    duration_floor = float(policy["duration_floor_seconds"])
+    mean_epsilon = float(policy["mean_epsilon"])
+    durations = np.array([max(float(item.get("durationSeconds", 0.0)), duration_floor) for item in repetitions], dtype=float)
     peaks = np.array([max(float(item.get("peakMotion", 0.0)), 0.0) for item in repetitions], dtype=float)
     duration_dist = robust_distribution(durations)
     peak_dist = robust_distribution(peaks)
     median_duration = duration_dist.median if duration_dist else float(np.median(durations))
     median_peak = peak_dist.median if peak_dist else float(np.median(peaks))
-    duration_cv = float(np.std(durations) / max(float(np.mean(durations)), 1e-6)) if len(durations) > 1 else 0.0
-    peak_cv = float(np.std(peaks) / max(float(np.mean(peaks)), 1e-6)) if len(peaks) > 1 and float(np.mean(peaks)) > 0 else 0.0
+    duration_cv = float(np.std(durations) / max(float(np.mean(durations)), mean_epsilon)) if len(durations) > 1 else 0.0
+    peak_cv = float(np.std(peaks) / max(float(np.mean(peaks)), mean_epsilon)) if len(peaks) > 1 and float(np.mean(peaks)) > 0 else 0.0
     outlier_indices = sorted(set(robust_outlier_indices(durations)) | set(robust_outlier_indices(peaks)))
-    outlier_penalty = min(22.0, len(outlier_indices) * 7.0)
-    consistency = int(round(max(0.0, min(100.0, 100.0 - (duration_cv * 58.0 + peak_cv * 32.0) * 100.0 - outlier_penalty))))
-    label = "Stable rhythm" if consistency >= 80 else "Developing repeatability" if consistency >= 62 else "Variable repetitions"
+    outlier_penalty = min(float(policy["outlier_penalty_cap"]), len(outlier_indices) * float(policy["outlier_penalty_each"]))
+    consistency = int(round(max(0.0, min(100.0, float(policy["consistency_base"]) - (
+        duration_cv * float(policy["duration_cv_weight"])
+        + peak_cv * float(policy["peak_cv_weight"])
+    ) * float(policy["percentage_scale"]) - outlier_penalty))))
+    label = (
+        "Stable rhythm" if consistency >= int(policy["stable_minimum"])
+        else "Developing repeatability" if consistency >= int(policy["developing_minimum"])
+        else "Variable repetitions"
+    )
 
     rows: list[dict[str, Any]] = []
     for item in repetitions:
         duration = float(item.get("durationSeconds", 0.0))
         peak = float(item.get("peakMotion", 0.0))
         visibility = float(item.get("meanVisibility", 0.0))
-        duration_fit = max(0.0, 1.0 - abs(duration - median_duration) / max(median_duration, 1e-6))
-        peak_fit = 1.0 if median_peak <= 0 else max(0.0, 1.0 - abs(peak - median_peak) / max(median_peak, 1e-6))
-        review_score = int(round(max(0.0, min(100.0, visibility * 55.0 + duration_fit * 30.0 + peak_fit * 15.0))))
+        duration_fit = max(0.0, 1.0 - abs(duration - median_duration) / max(median_duration, mean_epsilon))
+        peak_fit = 1.0 if median_peak <= 0 else max(0.0, 1.0 - abs(peak - median_peak) / max(median_peak, mean_epsilon))
+        review_score = int(round(max(0.0, min(100.0,
+            visibility * float(policy["review_visibility_weight"])
+            + duration_fit * float(policy["review_duration_fit_weight"])
+            + peak_fit * float(policy["review_peak_fit_weight"])
+        ))))
         strengths: list[str] = []
         watchouts: list[str] = []
-        if visibility >= 0.85:
+        if visibility >= float(policy["clear_visibility_minimum"]):
             strengths.append("Clear body tracking")
         else:
             watchouts.append("Landmark visibility drops during this repetition")
-        if duration_fit >= 0.82:
+        if duration_fit >= float(policy["typical_duration_fit_minimum"]):
             strengths.append("Rhythm close to your typical repetition")
         else:
             watchouts.append("Timing differs from your typical repetition")
         if int(item.get("index", len(rows))) in outlier_indices:
             watchouts.append("Robust signal analytics marked this repetition as an outlier")
         head_range = item.get("headMovementRange")
-        if isinstance(head_range, (int, float)) and float(head_range) <= 0.09:
+        if isinstance(head_range, (int, float)) and float(head_range) <= float(policy["quiet_head_range_maximum"]):
             strengths.append("Relatively quiet head-position proxy")
         elif isinstance(head_range, (int, float)):
             watchouts.append("More head-position movement than your steadier repetitions")
@@ -97,7 +125,11 @@ def repetition_insights(repetitions: list[dict[str, Any]]) -> dict[str, Any]:
             "index": int(item.get("index", len(rows))),
             "timestampSeconds": float(item.get("startSeconds", 0.0)),
             "reviewScore": review_score,
-            "label": "Clearest self-reference" if review_score >= 80 else "Useful comparison" if review_score >= 62 else "Lower-confidence repetition",
+            "label": (
+                "Clearest self-reference" if review_score >= int(policy["stable_minimum"])
+                else "Useful comparison" if review_score >= int(policy["developing_minimum"])
+                else "Lower-confidence repetition"
+            ),
             "strengths": strengths,
             "watchouts": watchouts,
         })
@@ -127,8 +159,8 @@ def repetition_insights(repetitions: list[dict[str, Any]]) -> dict[str, Any]:
     best = max(rows, key=lambda row: (row["reviewScore"], -row["index"]))
     return {
         "clearestReferenceRepetition": best["index"],
-        "consistencyScore": consistency if len(repetitions) >= 2 else None,
-        "consistencyLabel": label if len(repetitions) >= 2 else "One repetition only",
+        "consistencyScore": consistency if len(repetitions) >= int(policy["minimum_repetitions_for_consistency"]) else None,
+        "consistencyLabel": label if len(repetitions) >= int(policy["minimum_repetitions_for_consistency"]) else "One repetition only",
         "explanation": "This is a self-consistency view based on tracking clarity, robust rhythm statistics, and similarity to your own typical repetition—not a technique grade or age-group percentile.",
         "repetitions": rows,
         "rhythmProfile": {
@@ -141,5 +173,5 @@ def repetition_insights(repetitions: list[dict[str, Any]]) -> dict[str, Any]:
         },
         "outlierRepetitions": outlier_indices,
         "phaseTiming": phase_timing,
+        **trace,
     }
-

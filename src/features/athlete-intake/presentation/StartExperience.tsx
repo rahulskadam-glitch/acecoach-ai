@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, ArrowRight, CheckCircle2, LoaderCircle, RefreshCw, ShieldCheck, Trash2, UploadCloud, X } from "lucide-react";
+import { AlertTriangle, ArrowRight, Camera, CheckCircle2, Images, LoaderCircle, RefreshCw, ShieldCheck, Target, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -9,12 +9,15 @@ import { queueAnalysisVideo } from "@/app/actions/analysis-actions";
 import { ensureContextSafetyReadiness, runSafetyPrecheck } from "@/app/actions/context-safety-actions";
 import { deleteVideo, recordVideoMetadata, updateVideoCaptureContext } from "@/app/actions/video-actions";
 import { createClient } from "@/lib/supabase/client";
+import { normalizePlayerAgeBand, PLAYER_AGE_BANDS, requiresGuardianConfirmation } from "@/lib/athlete/age-bands";
 import type { SportDefinition } from "@/lib/sports";
 
 const MAX_BYTES = 150 * 1024 * 1024;
 const MAX_SECONDS = 30.25;
 const ACCEPTED = new Set(["video/mp4", "video/quicktime", "video/webm", "video/x-m4v"]);
-const DRAFT_KEY = "acecoach-v6-intake-draft";
+// Versioned so drafts created with the retired overlapping 16–18 band cannot
+// incorrectly require guardian approval for an adult player.
+const DRAFT_KEY = "athlentra-tennis-intake-v2";
 
 type VideoCheck = {
   file: File;
@@ -52,7 +55,7 @@ async function fileMetadata(file: File): Promise<VideoCheck> {
   video.src = previewUrl;
   await new Promise<void>((resolve, reject) => {
     video.onloadedmetadata = () => resolve();
-    video.onerror = () => reject(new Error("AceCoach could not read this video. Try MP4, MOV, M4V, or WEBM."));
+    video.onerror = () => reject(new Error("Athlentra could not read this video. Try MP4, MOV, M4V, or WEBM."));
   });
   const duration = Number(video.duration || 0);
   const width = video.videoWidth;
@@ -98,6 +101,7 @@ function qualityPresentation(quality: VideoCheck["quality"]) {
 export default function StartExperience({ userId, sport, initialProfile }: { userId: string; sport: SportDefinition; initialProfile: InitialProfile }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
   const [video, setVideo] = useState<VideoCheck | null>(null);
   const [registered, setRegistered] = useState<RegisteredVideo | null>(null);
   const [movement, setMovement] = useState("");
@@ -105,7 +109,7 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
   const [shotSituation, setShotSituation] = useState("controlled_practice");
   const [shotIntent, setShotIntent] = useState("consistency");
   const [specificQuestion, setSpecificQuestion] = useState("");
-  const [ageBand, setAgeBand] = useState(initialProfile.ageBand);
+  const [ageBand, setAgeBand] = useState(() => normalizePlayerAgeBand(initialProfile.ageBand));
   const [playingLevel, setPlayingLevel] = useState(initialProfile.playingLevel);
   const [dominantSide, setDominantSide] = useState(initialProfile.dominantSide);
   const [primaryGoal, setPrimaryGoal] = useState(initialProfile.primaryGoal);
@@ -124,12 +128,13 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
         if (!raw) return;
         const draft = JSON.parse(raw) as Record<string, string>;
         if (draft.sportId !== sport.id) return;
-        setMovement(draft.movement ?? "");
+        const savedMovement = draft.movement ?? "";
+        setMovement(sport.actions.some((action) => action.id === savedMovement) ? savedMovement : "");
         setCameraAngle(draft.cameraAngle ?? "unknown");
         setShotSituation(draft.shotSituation ?? "controlled_practice");
         setShotIntent(draft.shotIntent ?? "consistency");
         setSpecificQuestion(draft.specificQuestion ?? "");
-        setAgeBand(draft.ageBand ?? initialProfile.ageBand);
+        setAgeBand(normalizePlayerAgeBand(draft.ageBand ?? initialProfile.ageBand));
         setPlayingLevel(draft.playingLevel ?? initialProfile.playingLevel);
         setDominantSide(draft.dominantSide ?? initialProfile.dominantSide);
         setPrimaryGoal(draft.primaryGoal ?? initialProfile.primaryGoal);
@@ -140,7 +145,7 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
       }
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [initialProfile, sport.id]);
+  }, [initialProfile, sport.actions, sport.id]);
 
   useEffect(() => {
     const draft = { sportId: sport.id, movement, cameraAngle, shotSituation, shotIntent, specificQuestion, ageBand, playingLevel, dominantSide, primaryGoal, silhouettePreference, heightCm };
@@ -174,6 +179,7 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
       setRegistered(null);
       setVideo(null);
       if (inputRef.current) inputRef.current.value = "";
+      if (cameraInputRef.current) cameraInputRef.current.value = "";
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Unable to delete the video.");
     } finally {
@@ -181,14 +187,18 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
     }
   }
 
-  const guardianRequired = ageBand === "under_10" || ageBand === "10_12" || ageBand === "under_13";
-  const ready = Boolean(video && video.quality !== "fail" && movement && ageBand && (!guardianRequired || guardianConsent) && playingLevel && dominantSide && consent && !busy);
+  const guardianRequired = requiresGuardianConfirmation(ageBand);
+  const numericHeight = Number(heightCm);
+  const validHeight = Number.isFinite(numericHeight) && numericHeight >= 80 && numericHeight <= 230;
+  const requirementsMet = Boolean(video && video.quality !== "fail" && movement && ageBand && (!guardianRequired || guardianConsent) && playingLevel && dominantSide && validHeight && consent);
+  const ready = requirementsMet && !busy;
   const readiness = [
     ["Video ready", Boolean(video && video.quality !== "fail")],
     ["Movement chosen", Boolean(movement)],
     [guardianRequired ? "Guardian confirmed" : "Age confirmed", Boolean(ageBand && (!guardianRequired || guardianConsent))],
     ["Playing level", Boolean(playingLevel)],
     ["Dominant side", Boolean(dominantSide)],
+    ["Height", validHeight],
     ["Processing consent", consent],
   ] as const;
   const selectedMovement = useMemo(() => sport.actions.find((item) => item.id === movement), [movement, sport.actions]);
@@ -199,7 +209,7 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
     setError(null);
     try {
       setUploadStage("Saving your movement details");
-      await saveJourneyIntake({ sportId: sport.id, ageBand, playingLevel, dominantSide, primaryGoal, silhouettePreference, heightCm: heightCm ? Number(heightCm) : null, serviceProcessing: consent, guardianConsent, actionType: movement, cameraAngle, shotSituation, shotIntent, specificQuestion });
+      await saveJourneyIntake({ sportId: sport.id, ageBand, playingLevel, dominantSide, primaryGoal, silhouettePreference, heightCm: numericHeight, serviceProcessing: consent, guardianConsent, actionType: movement, cameraAngle, shotSituation, shotIntent, specificQuestion });
 
       setUploadStage("Verifying profile and consent safeguards");
       await ensureContextSafetyReadiness({
@@ -255,20 +265,40 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
   }
 
   const quality = video ? qualityPresentation(video.quality) : null;
-  const inputClass = "mt-2 min-h-12 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm text-slate-900 outline-none transition focus:border-blue-700 focus:ring-2 focus:ring-blue-100";
+  const inputClass = "mt-2 min-h-12 w-full rounded-xl border border-[#dce5df] bg-white px-3.5 text-sm text-slate-900 outline-none transition focus:border-[#08715b] focus:ring-2 focus:ring-[#79d5ff]/30";
 
   return (
     <div className="mx-auto max-w-5xl">
       <div className="max-w-2xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-800">{sport.name} analysis</p>
-        <h1 className="mt-3 text-4xl font-semibold tracking-[-0.035em] text-slate-950">Upload one movement.<br />Tell us what we are seeing.</h1>
-        <p className="mt-4 text-base leading-8 text-slate-600">Tell us the stroke and a little about you so the feedback fits. We ask only for information that changes the analysis or coaching plan.</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#08715b]">{sport.name} analysis</p>
+        <h1 className="mt-3 text-4xl font-semibold tracking-[-0.035em] text-slate-950">Which stroke are we working on?</h1>
+        <p className="mt-3 text-base leading-7 text-slate-600">Choose the stroke, then record or add a short clip.</p>
       </div>
 
       <div className="mt-10 space-y-6">
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          <div className="flex items-start justify-between gap-5"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-800">A · Your video</p><h2 className="mt-2 text-2xl font-semibold text-slate-950">Choose a short, clear clip</h2></div><span className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">≤ 30 sec · ≤ 150 MB</span></div>
-          {!video ? <button type="button" onClick={() => inputRef.current?.click()} className="mt-6 flex min-h-64 w-full flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center transition hover:border-blue-400 hover:bg-blue-50/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-700 focus-visible:ring-offset-4"><span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-blue-800 shadow-sm"><UploadCloud className="h-7 w-7" /></span><span className="mt-5 text-lg font-semibold text-slate-950">Choose your {sport.name.toLowerCase()} video</span><span className="mt-2 max-w-xl text-sm leading-6 text-slate-600">Keep the full athlete, both feet, and the racket, bat, or equipment visible. Include two to five repetitions where possible.</span></button> : (
+        <section className="ath-card p-5 sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#08715b]">1 · Pick a stroke</p>
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {sport.actions.map((action) => <button key={action.id} type="button" aria-pressed={movement === action.id} onClick={() => setMovement(action.id)} className={`min-h-20 rounded-2xl border p-3 text-left transition ${movement === action.id ? "border-[#071b2d] bg-[#071b2d] text-white shadow-lg" : "border-[#dce5df] bg-[#f6f8f5] text-slate-800 hover:border-[#87ad99] hover:bg-white"}`}><Target className={`h-4 w-4 ${movement === action.id ? "text-[#d8ff52]" : "text-[#08715b]"}`} /><span className="mt-3 block text-sm font-semibold">{action.label}</span></button>)}
+          </div>
+        </section>
+
+        {movement ? <section className="ath-card p-5 sm:p-8">
+          <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#08715b]">2 · Add video</p><h2 className="mt-2 text-2xl font-semibold text-slate-950">Record {selectedMovement?.label.toLowerCase()}</h2></div><span className="shrink-0 rounded-full bg-[#eaf0ec] px-3 py-1.5 text-xs font-medium text-[#075f4e]">≤ 30 sec</span></div>
+          {!video ? <div className="mt-6 grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
+            <div className="relative min-h-60 overflow-hidden rounded-2xl bg-[#071B2D] p-5 text-white">
+              <div className="absolute inset-x-8 bottom-7 top-16 border border-white/15 [transform:perspective(420px)_rotateX(58deg)]"><div className="absolute inset-x-0 top-1/2 border-t border-white/20" /><div className="absolute bottom-0 left-1/2 top-0 border-l border-white/20" /></div>
+              <div className="relative flex items-center gap-2 text-sm font-semibold"><Camera className="h-4 w-4 text-[#D8FF52]" />Frame the full movement</div>
+              <div className="absolute bottom-6 left-1/2 h-28 w-14 -translate-x-1/2"><span className="absolute left-4 top-0 h-8 w-8 rounded-full bg-[#8AD8FF]" /><span className="absolute left-7 top-8 h-14 border-l-[6px] border-white" /><span className="absolute left-1 top-11 w-12 rotate-12 border-t-[5px] border-white" /><span className="absolute bottom-0 left-2 h-12 rotate-[24deg] border-l-[6px] border-white" /><span className="absolute bottom-0 right-1 h-12 -rotate-[24deg] border-r-[6px] border-white" /></div>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-slate-950">Before you record</h3>
+              <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
+                {["Turn the phone sideways.", "Stand 3–5 metres away at waist or chest height.", "Keep your full body, feet, racket, and ball path visible.", "Capture 2–5 natural repetitions in good light."].map((tip) => <li key={tip} className="flex gap-3"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-700" />{tip}</li>)}
+              </ul>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2"><button type="button" onClick={() => cameraInputRef.current?.click()} className="ath-primary inline-flex min-h-12 items-center justify-center gap-2 px-5 text-sm"><Camera className="h-4 w-4" />Record</button><button type="button" onClick={() => inputRef.current?.click()} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[#dce5df] bg-white px-5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-[#f3f6f2]"><Images className="h-4 w-4" />Choose video</button></div>
+            </div>
+          </div> : (
             <div className="mt-6 grid gap-5 lg:grid-cols-[1.25fr_0.75fr]">
               <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-950"><video src={video.previewUrl} controls playsInline className="aspect-video h-full w-full object-contain" /></div>
               <div className="space-y-4">
@@ -279,41 +309,54 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
               </div>
             </div>
           )}
+          <input ref={cameraInputRef} type="file" accept="video/*" capture="environment" className="sr-only" onChange={(event) => selectFile(event.target.files?.[0])} />
           <input ref={inputRef} type="file" accept="video/mp4,video/quicktime,video/webm,.m4v" className="sr-only" onChange={(event) => selectFile(event.target.files?.[0])} />
-          <div className="mt-5 grid gap-3 text-sm text-slate-600 sm:grid-cols-3">{sport.filmingTips.slice(0, 3).map((tip) => <div key={tip} className="rounded-xl bg-slate-50 p-3.5">{tip}</div>)}</div>
-        </section>
+        </section> : null}
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-800">B · About this movement</p><h2 className="mt-2 text-2xl font-semibold text-slate-950">What movement is in the video?</h2><p className="mt-2 text-sm leading-6 text-slate-600">AceCoach will check your selection, but it will never silently replace it.</p>
+        {movement ? <details className="ath-card group p-5 sm:p-8">
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4"><span><span className="block text-xs font-semibold uppercase tracking-[0.16em] text-[#08715b]">Optional</span><span className="mt-1 block text-lg font-semibold text-slate-950">Add shot context</span></span><span className="rounded-full bg-[#eaf0ec] px-3 py-1.5 text-xs font-semibold text-[#075f4e] group-open:hidden">Add details</span><span className="hidden rounded-full bg-[#eaf0ec] px-3 py-1.5 text-xs font-semibold text-[#075f4e] group-open:inline">Hide</span></summary>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <label className="text-sm font-medium text-slate-700">Movement or stroke <span className="text-rose-600">*</span><select value={movement} onChange={(event) => setMovement(event.target.value)} className={inputClass} required><option value="">Choose the movement</option>{sport.actions.map((action) => <option key={action.id} value={action.id}>{action.label}</option>)}</select></label>
             <label className="text-sm font-medium text-slate-700">Camera angle<select value={cameraAngle} onChange={(event) => setCameraAngle(event.target.value)} className={inputClass}><option value="unknown">Not sure</option><option value="side">Side view</option><option value="rear">Rear view</option><option value="front">Front view</option><option value="diagonal">Diagonal view</option></select></label>
             <label className="text-sm font-medium text-slate-700">Shot situation<select value={shotSituation} onChange={(event) => setShotSituation(event.target.value)} className={inputClass}><option value="controlled_practice">Controlled practice or feed</option><option value="neutral_rally">Neutral rally ball</option><option value="attacking">Attacking ball</option><option value="defensive_on_run">Defensive or on the run</option><option value="return_of_serve">Return of serve</option><option value="unknown">Not sure</option></select></label>
             <label className="text-sm font-medium text-slate-700">Main intention<select value={shotIntent} onChange={(event) => setShotIntent(event.target.value)} className={inputClass}><option value="consistency">Consistency and control</option><option value="depth">Depth</option><option value="heavy_topspin">Heavier topspin</option><option value="flatter_drive">Flatter drive</option><option value="angle">Create angle</option><option value="approach">Approach the net</option><option value="defensive_height">Defensive height and time</option><option value="unknown">Not sure</option></select></label>
           </div>
           <label className="mt-4 block text-sm font-medium text-slate-700">Specific question <span className="font-normal text-slate-400">optional</span><textarea value={specificQuestion} onChange={(event) => setSpecificQuestion(event.target.value)} maxLength={500} rows={3} className={`${inputClass} py-3`} placeholder="Example: Why does my forehand feel rushed?" /></label>
-        </section>
+        </details> : null}
 
-        <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-800">C · About you</p><h2 className="mt-2 text-2xl font-semibold text-slate-950">Only what changes the coaching</h2>
+        {movement ? <section className="ath-card p-6 sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#08715b]">3 · Player details</p><h2 className="mt-2 text-2xl font-semibold text-slate-950">Personalize the coaching</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <label className="text-sm font-medium text-slate-700">Age band <span className="text-rose-600">*</span><select value={ageBand} onChange={(event) => { setAgeBand(event.target.value); setGuardianConsent(false); }} className={inputClass}><option value="">Choose age band</option><option value="under_10">Under 10</option><option value="10_12">10–12</option><option value="13_15">13–15</option><option value="16_18">16–18</option><option value="19_29">19–29</option><option value="30_39">30–39</option><option value="40_49">40–49</option><option value="50_59">50–59</option><option value="60_plus">60+</option></select></label>
+            <label className="text-sm font-medium text-slate-700">Age band <span className="text-rose-600">*</span><select value={ageBand} onChange={(event) => { setAgeBand(normalizePlayerAgeBand(event.target.value)); setGuardianConsent(false); }} className={inputClass}><option value="">Choose age band</option>{PLAYER_AGE_BANDS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select><span className="mt-2 block text-xs font-normal leading-5 text-slate-500">Athlentra Tennis is available to players aged 13 and older.</span></label>
             <label className="text-sm font-medium text-slate-700">Playing level <span className="text-rose-600">*</span><select value={playingLevel} onChange={(event) => setPlayingLevel(event.target.value)} className={inputClass}><option value="">Choose level</option><option value="new">New to the sport</option><option value="beginner">Beginner</option><option value="developing">Developing</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option><option value="competitive">Competitive</option><option value="coach_professional">Coach / professional</option></select></label>
             <label className="text-sm font-medium text-slate-700">Dominant side <span className="text-rose-600">*</span><select value={dominantSide} onChange={(event) => setDominantSide(event.target.value)} className={inputClass}><option value="">Choose side</option><option value="right">Right</option><option value="left">Left</option></select></label>
-            <label className="text-sm font-medium text-slate-700">Height <span className="font-normal text-slate-400">optional</span><div className="relative"><input value={heightCm} onChange={(event) => setHeightCm(event.target.value.replace(/[^0-9.]/g, "").slice(0, 5))} inputMode="decimal" min={80} max={230} className={`${inputClass} pr-12`} placeholder="175" /><span className="pointer-events-none absolute bottom-3.5 right-3.5 text-sm text-slate-400">cm</span></div><span className="mt-2 block text-xs font-normal leading-5 text-slate-500">Helps scale body-relative reach and spacing. It does not turn one camera into a laboratory 3D measurement.</span></label>
+            <label className="text-sm font-medium text-slate-700">Height <span className="text-rose-600">*</span><div className="relative"><input value={heightCm} onChange={(event) => setHeightCm(event.target.value.replace(/[^0-9.]/g, "").slice(0, 5))} inputMode="decimal" type="number" min={80} max={230} required className={`${inputClass} pr-12`} placeholder="175" /><span className="pointer-events-none absolute bottom-3.5 right-3.5 text-sm text-slate-400">cm</span></div><span className="mt-2 block text-xs font-normal leading-5 text-slate-500">Used to scale body-relative reach and spacing.</span></label>
             <label className="text-sm font-medium text-slate-700">Reference body style<select value={silhouettePreference} onChange={(event) => setSilhouettePreference(event.target.value)} className={inputClass}><option value="player-matched">Player-proportioned</option><option value="neutral">Neutral</option><option value="female">Female</option><option value="male">Male</option></select></label>
           </div>
           <label className="mt-4 block text-sm font-medium text-slate-700">Primary goal <span className="font-normal text-slate-400">optional</span><input value={primaryGoal} onChange={(event) => setPrimaryGoal(event.target.value)} maxLength={180} className={inputClass} placeholder="Improve control and timing" /></label>
-          <label className="mt-6 flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-1 h-4 w-4 accent-blue-800" /><span className="text-sm leading-6 text-slate-700"><span className="font-semibold text-slate-950">Allow AceCoach to process this video for your analysis.</span><br />This is required for the service. It is separate from any optional model-training or research consent.</span></label>
-          {guardianRequired ? <label className="mt-4 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4"><input type="checkbox" checked={guardianConsent} onChange={(event) => setGuardianConsent(event.target.checked)} className="mt-1 h-4 w-4 accent-amber-800" /><span className="text-sm leading-6 text-amber-950"><span className="font-semibold">Parent or guardian confirmation required.</span><br />I am the parent or guardian managing this athlete’s account and I approve this analysis.</span></label> : null}
-        </section>
+          <label className="mt-6 flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} className="mt-1 h-4 w-4 accent-blue-800" /><span className="text-sm leading-6 text-slate-700"><span className="font-semibold text-slate-950">Allow Athlentra to process this video for your analysis.</span><br />This is required for the service. It is separate from any optional model-training or research consent.</span></label>
+          {guardianRequired ? <label className="mt-4 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4"><input type="checkbox" checked={guardianConsent} onChange={(event) => setGuardianConsent(event.target.checked)} className="mt-1 h-4 w-4 accent-amber-800" /><span className="text-sm leading-6 text-amber-950"><span className="font-semibold">Parent or guardian approval</span><br />I am the parent or guardian for this player and approve this video analysis.</span></label> : null}
+        </section> : null}
 
         {error ? <div role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm leading-6 text-rose-800">{error}</div> : null}
         {busy ? <div role="status" aria-live="polite" className="flex items-center gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900"><LoaderCircle className="h-5 w-5 animate-spin" />{uploadStage ?? "Preparing your analysis"}</div> : null}
 
         <div className="sticky bottom-4 z-20 rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-xl shadow-slate-300/40 backdrop-blur sm:flex sm:items-center sm:justify-between sm:gap-5">
-          <div><div className="flex items-center gap-2 text-sm text-slate-600"><ShieldCheck className="h-4 w-4 text-emerald-700" />Your original remains private and downloadable.</div><ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500">{readiness.map(([label, done]) => <li key={label} className={done ? "text-emerald-700" : ""}>{done ? "✓" : "○"} {label}</li>)}</ul></div>
-          <button type="button" onClick={analyze} disabled={!ready} className="mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#173F6A] px-6 font-semibold text-white shadow-sm transition hover:bg-[#103554] disabled:cursor-not-allowed disabled:bg-slate-300 sm:mt-0 sm:w-auto">Analyze my video<ArrowRight className="h-4 w-4" /></button>
+          <div><div className="flex items-center gap-2 text-sm text-slate-600"><ShieldCheck className="h-4 w-4 text-emerald-700" />Private and under your control</div><ul className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500">{readiness.map(([label, done]) => <li key={label} className={done ? "text-emerald-700" : ""}>{done ? "✓" : "○"} {label}</li>)}</ul></div>
+          <button
+            type="button"
+            onClick={analyze}
+            disabled={!ready}
+            aria-disabled={!ready}
+            className={`mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-6 text-sm font-semibold transition sm:mt-0 sm:w-auto ${
+              requirementsMet
+                ? "bg-[#071b2d] text-white shadow-[0_10px_24px_rgba(7,27,45,0.2)] hover:bg-[#12324a] focus-visible:ring-2 focus-visible:ring-[#071b2d] focus-visible:ring-offset-2"
+                : "cursor-not-allowed bg-slate-200 text-slate-500"
+            } ${busy ? "cursor-wait" : ""}`}
+          >
+            {busy ? <LoaderCircle className="h-4 w-4 animate-spin" /> : null}
+            {busy ? "Starting analysis…" : "Analyze my video"}
+            {!busy ? <ArrowRight className="h-4 w-4" /> : null}
+          </button>
         </div>
       </div>
     </div>

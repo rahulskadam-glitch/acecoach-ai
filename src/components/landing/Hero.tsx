@@ -17,7 +17,7 @@ export default function Hero() {
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.25),_transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(59,130,246,0.18),_transparent_28%)]" />
 
       <div className="mb-10">
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-300">Choose your sport</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-300">Your tennis coach</p>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5" role="tablist" aria-label="Supported sports">
           {supportedSports.map((item) => {
             const selected = item.id === sport.id;

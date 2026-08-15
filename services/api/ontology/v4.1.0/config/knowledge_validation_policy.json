@@ -1,0 +1,62 @@
+{
+  "version": "1.0.0",
+  "default_state": "fail_closed",
+  "personal_baseline": {
+    "priority": 1,
+    "minimum_prior_context_matched_sessions": 3,
+    "minimum_total_repetitions": 24,
+    "minimum_measurement_confidence": 0.65,
+    "maximum_capture_score_difference": 15,
+    "exact_match_dimensions": ["sport_id", "action_type", "construct_id", "camera_angle", "shot_situation", "shot_intent", "engine_version", "runtime_signature"],
+    "outputs": ["current_vs_typical", "current_vs_highest_reliable", "distribution_spread"],
+    "forbidden_labels_without_outcomes": ["best successful stroke", "elite", "percentile", "learned"]
+  },
+  "matched_cohort": {
+    "priority": 2,
+    "minimum_athletes_per_cell": 30,
+    "minimum_repetitions_per_cell": 300,
+    "minimum_repetitions_per_athlete": 8,
+    "required_dimensions": ["stroke", "age_band", "playing_level", "handedness", "camera_angle", "stance", "shot_situation", "shot_intent"],
+    "required_documentation": ["consent_scope", "inclusion_criteria", "exclusion_criteria", "camera_coverage", "missingness", "uncertainty", "bias_review", "validation_split", "version", "owner"],
+    "activation_status": "validated",
+    "withdraw_on": ["expired_review", "material_drift", "coverage_regression", "consent_violation", "validation_failure"]
+  },
+  "outcome_labels": {
+    "allowed_sources": ["player", "credentialed_coach", "validated_sensor", "validated_ball_tracker"],
+    "validated_sources": ["credentialed_coach", "validated_sensor", "validated_ball_tracker"],
+    "fields": ["execution_result", "depth_zone", "direction", "placement_zone", "net_clearance", "bounce_location"],
+    "minimum_successful_repetitions": 2,
+    "minimum_comparison_repetitions": 2,
+    "causal_claims_allowed": false
+  },
+  "expert_annotation": {
+    "minimum_independent_raters": 3,
+    "blind_to_engine_output": true,
+    "credential_verification_required": true,
+    "rubric_version_required": true,
+    "minimum_fleiss_kappa": 0.6,
+    "disagreement_policy": "retain_distribution_and_uncertainty",
+    "adjudication_policy": "adjudication_may_create_consensus_label_but_must_not_delete_original_labels"
+  },
+  "intervention_validation": {
+    "minimum_baseline_sessions": 3,
+    "minimum_post_sessions": 3,
+    "minimum_retention_checks": 2,
+    "minimum_transfer_contexts": 2,
+    "requires_stable_cue": true,
+    "requires_context_matched_primary_outcome": true,
+    "allowed_claim": "The target measurement improved after this intervention under the documented conditions.",
+    "forbidden_claim": "The cue caused improvement without a controlled causal design."
+  },
+  "equipment_and_multiview": {
+    "capabilities": {
+      "ball_tracking": ["held_out_athlete_test", "camera_angle_coverage", "occlusion_test", "trajectory_error_report", "event_timing_error_report"],
+      "racket_tracking": ["held_out_athlete_test", "camera_angle_coverage", "motion_blur_test", "racket_path_error_report", "racket_face_error_report"],
+      "contact_event": ["validated_ball_tracking", "validated_racket_tracking", "synchronized_event_error_report"],
+      "multi_camera_3d": ["capture_calibration", "synchronization_error_report", "reprojection_error_report", "held_out_athlete_test"],
+      "joint_force_or_load": ["validated_kinetics_instrumentation", "held_out_athlete_test", "uncertainty_report"]
+    },
+    "activation_status": "validated",
+    "pose_only_must_not_unlock": ["racket_face", "ball_trajectory", "exact_contact", "joint_force", "joint_load", "precise_3d_rotation"]
+  }
+}

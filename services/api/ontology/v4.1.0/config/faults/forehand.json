@@ -16,7 +16,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces preparation time and creates downstream timing compensations",
     "player_message": "Read the ball earlier and start moving sooner.",
-    "coach_message_template": "Late recognition: {evidence_summary}.",
     "overlay_markers": [
       "BALL_TRAIL",
       "TIMING_DELTA",
@@ -111,7 +110,8 @@
       "required_when_player_baseline_available": true,
       "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
       "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
-    }
+    },
+    "capability_status": "dormant_pending_validated_ball_tracking"
   },
   {
     "fault_id": "FH-PREP-01",
@@ -133,7 +133,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "compresses the acceleration window and often moves contact backward",
     "player_message": "Turn as soon as you recognize forehand.",
-    "coach_message_template": "Late unit turn: {evidence_summary}.",
     "overlay_markers": [
       "SHOULDER_LINE",
       "PELVIS_LINE",
@@ -251,7 +250,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "limits torso loading and increases reliance on the arm",
     "player_message": "Move the racket with your body turn.",
-    "coach_message_template": "Arm-only take-back: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "SHOULDER_LINE",
@@ -369,7 +367,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces extension and forces late racket-face compensation",
     "player_message": "Create more room between your body and the ball.",
-    "coach_message_template": "Crowded contact: {evidence_summary}.",
     "overlay_markers": [
       "CONTACT_WINDOW",
       "CONTACT_POINT",
@@ -487,7 +484,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces balance and racket control",
     "player_message": "Move your feet so you do not have to reach.",
-    "coach_message_template": "Excessive reach: {evidence_summary}.",
     "overlay_markers": [
       "COM_ESTIMATE",
       "BASE_OF_SUPPORT",
@@ -605,7 +601,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces available ground-up contribution",
     "player_message": "Load your legs before you drive the racket.",
-    "coach_message_template": "Insufficient lower-body load: {evidence_summary}.",
     "overlay_markers": [
       "KNEE_ANGLE_L",
       "KNEE_ANGLE_R",
@@ -723,7 +718,6 @@
     "measurement_class": "INFERRED",
     "performance_consequence": "reverses the intended proximal-to-distal sequence",
     "player_message": "Start the forward move from the ground and hips.",
-    "coach_message_template": "Arm accelerates before body: {evidence_summary}.",
     "overlay_markers": [
       "SEQUENCE_RIBBON",
       "RACKET_PATH",
@@ -840,7 +834,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces stored rotation and can pull contact across the body",
     "player_message": "Stay turned a little longer before you release.",
-    "coach_message_template": "Premature opening: {evidence_summary}.",
     "overlay_markers": [
       "SHOULDER_LINE",
       "PELVIS_LINE",
@@ -957,7 +950,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces net clearance and topspin margin",
     "player_message": "Drive forward and slightly up through the ball.",
-    "coach_message_template": "Path too horizontal for intended topspin: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "PATH_CORRIDOR",
@@ -1074,7 +1066,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "creates a spin-only ball with reduced depth and timing margin",
     "player_message": "Send the racket farther through the ball.",
-    "coach_message_template": "Path too steep with limited penetration: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "PATH_CORRIDOR",
@@ -1191,7 +1182,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces extension and often causes across-body steering",
     "player_message": "Meet the ball farther in front.",
-    "coach_message_template": "Late contact: {evidence_summary}.",
     "overlay_markers": [
       "CONTACT_POINT",
       "CONTACT_WINDOW",
@@ -1308,7 +1298,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces visual and postural stability through impact",
     "player_message": "Keep your eyes near the contact spot a little longer.",
-    "coach_message_template": "Head moves before contact: {evidence_summary}.",
     "overlay_markers": [
       "HEAD_AXIS",
       "STABILITY_HALO",
@@ -1425,7 +1414,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces energy transfer and may signal an upstream timing problem",
     "player_message": "Swing through the ball and let the finish happen.",
-    "coach_message_template": "Blocked or decelerating finish: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_SPEED_RELATIVE",
       "RACKET_PATH",
@@ -1537,7 +1525,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces readiness for the next ball",
     "player_message": "Finish, then recover immediately.",
-    "coach_message_template": "Delayed recovery: {evidence_summary}.",
     "overlay_markers": [
       "RECOVERY_TARGET",
       "FOOT_TRAIL",

@@ -73,7 +73,7 @@ export default function BiomechanicalExplorer({ profile, sessionId, actionType }
           <div>
             <h2 className="text-xl font-semibold text-slate-950">106-point movement map</h2>
             <p className="mt-2 text-sm leading-7 text-slate-600">Re-analyse this recording to generate the new six-phase movement and body-linkage profile.</p>
-            <button type="button" onClick={() => void reanalyze()} disabled={reanalyzing} className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#173F6A] px-4 text-sm font-semibold text-white hover:bg-[#103554] disabled:opacity-60">{reanalyzing ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <ScanLine className="h-4 w-4" />}{reanalyzing ? "Building 106-point map…" : "Re-analyse this video"}</button>
+            <button type="button" onClick={() => void reanalyze()} disabled={reanalyzing} className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#071b2d] px-4 text-sm font-semibold text-white hover:bg-[#0d2b42] disabled:opacity-60">{reanalyzing ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <ScanLine className="h-4 w-4" />}{reanalyzing ? "Building 106-point map…" : "Re-analyse this video"}</button>
             {reanalyzeError ? <p role="alert" className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{reanalyzeError}</p> : null}
           </div>
         </div>
@@ -88,7 +88,7 @@ export default function BiomechanicalExplorer({ profile, sessionId, actionType }
 
   return (
     <section id="movement-map" className="scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-200 bg-gradient-to-br from-[#102F50] via-[#173F6A] to-[#21598F] p-6 text-white sm:p-9">
+      <div className="border-b border-slate-200 bg-gradient-to-br from-[#102F50] via-[#071b2d] to-[#21598F] p-6 text-white sm:p-9">
         <div className="flex flex-wrap items-start justify-between gap-6">
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-blue-100"><ScanLine className="h-4 w-4" />Full movement deep dive</div>

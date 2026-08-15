@@ -64,6 +64,16 @@ const requiredColumns = {
   analysis_sessions: ["id", "user_id", "video_id", "status", "progress", "current_stage", "engine_version", "athlete_context_fingerprint", "movement_confirmation_status", "score_status"],
   analysis_reports: ["session_id", "user_id", "video_id", "score_status", "quality_gate", "engine_manifest", "frame_summary", "movement_classification", "coaching_playbook", "repetition_insights"],
   practice_plans: ["id", "user_id", "session_id", "plan", "completion", "status"],
+  construct_session_distributions: ["analysis_session_id", "construct_id", "context_signature", "sample_count", "median_score", "confidence", "engine_version"],
+  analysis_rep_outcomes: ["analysis_session_id", "repetition_index", "outcome_source", "validation_status", "execution_result"],
+  expert_annotation_studies: ["status", "rubric_version", "minimum_independent_raters", "agreement_result"],
+  expert_annotations: ["study_id", "analysis_session_id", "annotator_ref", "credential_status", "uncertainty"],
+  intervention_validations: ["development_state_id", "baseline_session_ids", "post_session_ids", "retention_session_ids", "transfer_contexts", "causal_claim_allowed"],
+  benchmark_cohorts: ["sport_id", "consent_scope", "inclusion_criteria", "exclusion_criteria"],
+  benchmark_cohort_versions: ["cohort_id", "status", "minimum_athletes_per_cell", "minimum_repetitions_per_cell", "dimensions", "uncertainty", "bias_review", "review_expires_at", "withdrawal_reason"],
+  benchmark_cohort_cells: ["cohort_version_id", "stroke", "age_band", "playing_level", "handedness", "camera_angle", "stance", "shot_situation", "shot_intent"],
+  model_capability_validations: ["capability", "model_version", "status", "artifacts", "validation_metrics", "uncertainty", "review_expires_at", "withdrawal_reason"],
+  capture_calibrations: ["analysis_session_id", "calibration_type", "status", "camera_views", "synchronization_error_ms", "reprojection_error_px"],
 };
 
 const missing = [];
@@ -79,6 +89,9 @@ for (const [table, columns] of Object.entries(requiredColumns)) {
 }
 if (!("/rpc/upsert_active_practice_plan_v30" in (schema.paths ?? {}))) {
   missing.push("upsert_active_practice_plan_v30 RPC");
+}
+if (!("/rpc/upsert_construct_session_distributions_v640" in (schema.paths ?? {}))) {
+  missing.push("upsert_construct_session_distributions_v640 RPC");
 }
 if (missing.length) fail(`Connected Supabase schema is missing: ${missing.join(", ")}`);
 
@@ -100,8 +113,8 @@ const health = await healthResponse.json();
 if (health.status !== "ok" || health.service !== "analysis-api") {
   fail("Analysis health response did not identify a ready analysis-api service.");
 }
-if (health.engine_version !== "movement-intelligence-v1.11.0") {
-  fail(`Analysis engine mismatch: expected movement-intelligence-v1.11.0, received ${health.engine_version ?? "missing"}.`);
+if (health.engine_version !== "movement-intelligence-v1.13.0") {
+  fail(`Analysis engine mismatch: expected movement-intelligence-v1.13.0, received ${health.engine_version ?? "missing"}.`);
 }
 if (health.ontology_version !== "4.1.0" || !health.ontology_manifest_hash || health.ontology_manifest_hash === "unavailable") {
   fail(`Analysis ontology is not ready: expected v4.1.0 with a loaded manifest, received ${health.ontology_version ?? "missing"}.`);

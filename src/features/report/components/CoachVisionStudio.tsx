@@ -16,7 +16,6 @@ import {
   RefreshCw,
   ScanLine,
   Sparkles,
-  Target,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -74,7 +73,7 @@ const BACKHAND_FOUR_STAGES: Array<{
   visualChecks: Array<{ id: string; label: string }>;
 }> = [
   { number: 1, label: "Preparation", shortLabel: "Prepare", motionStage: "preparation", correction: "Turn the shoulders early and keep both hands organized together in front of the body. Racket position remains a separate video-confirmation item.", visualChecks: [{ id: "early-coil", label: "Back shoulder turns before the swing" }, { id: "two-hands-together", label: "Both hands stay organized together" }] },
-  { number: 2, label: "Power position & drop", shortLabel: "Load & drop", motionStage: "loading", correction: "Load the outside leg and preserve visible space between the hands and torso before accelerating.", visualChecks: [{ id: "outside-leg-load", label: "Outside leg creates the load" }, { id: "arm-space", label: "Hands stay away from the torso" }] },
+  { number: 2, label: "Load & swing", shortLabel: "Load & swing", motionStage: "loading", correction: "Load the outside leg and preserve visible space between the hands and torso before accelerating.", visualChecks: [{ id: "outside-leg-load", label: "Outside leg creates the load" }, { id: "arm-space", label: "Hands stay away from the torso" }] },
   { number: 3, label: "Contact", shortLabel: "Contact", motionStage: "contact", correction: "Keep the head inside the steady ring and meet the likely strike window with visible space from the torso.", visualChecks: [{ id: "quiet-contact", label: "Head stays quiet through the strike window" }, { id: "contact-in-front", label: "Hands meet in front with body space" }] },
   { number: 4, label: "Finish & recovery", shortLabel: "Finish & recover", motionStage: "finish", correction: "Swing through first, let the lead elbow finish above the nose line, then recover in balance.", visualChecks: [{ id: "lead-elbow-above-nose", label: "Lead elbow finishes above the nose line" }, { id: "recover", label: "First recovery step regains balance" }, { id: "swing-through", label: "Hands travel through before finishing" }] },
 ];
@@ -183,7 +182,7 @@ export default function CoachVisionStudio({
   const side: "left" | "right" = (athleteContext?.dominantSide ?? report.frameSummary?.dominantSide ?? "right").toLowerCase().startsWith("left") ? "left" : "right";
   const [time, setTime] = useState(initialTime);
   const [playing, setPlaying] = useState(false);
-  const [rate, setRate] = useState(0.5);
+  const [rate, setRate] = useState(1);
   const [mode, setMode] = useState<OverlayMode>("coach");
   const [stage, setStage] = useState<MotionStage>(stageForTime(initialTime, anchors));
   const [selectedAction, setSelectedAction] = useState(actionType);
@@ -348,17 +347,20 @@ export default function CoachVisionStudio({
     };
 
     const linkColor = (index: number) => STATUS_STYLE[chainLinks[index]?.status ?? "unavailable"].color;
+    const held = (name: string) => stabilizerRef.current.isContinuityHeld(name);
     const hit = side;
     const support = side === "right" ? "left" : "right";
     const assessmentColor = area?.status === "strength" ? VISUAL_STATUS.good.color : area ? VISUAL_STATUS.correction.color : VISUAL_STATUS.confirm.color;
 
     {
       for (const [startName, endName] of BODY_CONNECTIONS) {
+        const continuityHeld = held(startName) || held(endName);
         drawLine(
           alignedLandmarks[startName],
           alignedLandmarks[endName],
           mode === "body" ? "rgba(125,211,252,.92)" : mode === "coach" ? "rgba(226,232,240,.58)" : "rgba(203,213,225,.34)",
           mode === "body" ? 2.1 : mode === "coach" ? 1.35 : 1.25,
+          continuityHeld ? [4, 4] : [],
         );
       }
       for (const [startName, endName] of BODY_AXES) {
@@ -584,14 +586,14 @@ export default function CoachVisionStudio({
     }
 
     if (mode === "chain") {
-      const nodes: Array<{ name: string; point: Landmark | undefined }> = [
-        { name: "BASE", point: alignedLandmarks[`${side}_ankle`] },
-        { name: "KNEE", point: alignedLandmarks[`${side}_knee`] },
-        { name: "HIP", point: alignedLandmarks[`${side}_hip`] },
-        { name: "CORE", point: alignedLandmarks.torso_center },
-        { name: "SHOULDER", point: alignedLandmarks[`${side}_shoulder`] },
-        { name: "ELBOW", point: alignedLandmarks[`${side}_elbow`] },
-        { name: "HAND", point: alignedLandmarks[`${side}_wrist`] },
+      const nodes: Array<{ name: string; point: Landmark | undefined; held: boolean }> = [
+        { name: "BASE", point: midpoint(alignedLandmarks.left_ankle, alignedLandmarks.right_ankle) ?? alignedLandmarks[`${side}_ankle`], held: held("left_ankle") || held("right_ankle") },
+        { name: "KNEES", point: midpoint(alignedLandmarks.left_knee, alignedLandmarks.right_knee) ?? alignedLandmarks[`${side}_knee`], held: held("left_knee") || held("right_knee") },
+        { name: "HIPS", point: alignedLandmarks.pelvis_center ?? alignedLandmarks[`${side}_hip`], held: held("left_hip") || held("right_hip") },
+        { name: "CORE", point: alignedLandmarks.torso_center, held: held("left_hip") || held("right_hip") || held("left_shoulder") || held("right_shoulder") },
+        { name: "SHOULDER", point: alignedLandmarks[`${side}_shoulder`], held: held(`${side}_shoulder`) },
+        { name: "ELBOW", point: alignedLandmarks[`${side}_elbow`], held: held(`${side}_elbow`) },
+        { name: "HAND", point: alignedLandmarks[`${side}_wrist`], held: held(`${side}_wrist`) },
       ];
       const activeSegment = Math.min(5, Math.floor(chainProgress * 6));
       for (let index = 0; index < nodes.length - 1; index += 1) {
@@ -600,8 +602,9 @@ export default function CoachVisionStudio({
         if (!from || !to) continue;
         const color = linkColor(index);
         const active = index === activeSegment;
-        if (active) drawLine(from, to, `${color}55`, 7);
-        drawLine(from, to, color, active ? 3.4 : 2.35);
+        const continuityHeld = nodes[index].held || nodes[index + 1].held;
+        if (active) drawLine(from, to, `${color}55`, 7, continuityHeld ? [5, 5] : []);
+        drawLine(from, to, color, active ? 3.4 : 2.35, continuityHeld ? [5, 5] : []);
       }
       nodes.forEach((node, index) => {
         if (!node.point) return;
@@ -610,7 +613,7 @@ export default function CoachVisionStudio({
         const color = linkColor(Math.max(0, Math.min(index - 1, 5)));
         context.beginPath();
         context.arc(mapped.x, mapped.y, active ? 5.8 : 3.8, 0, Math.PI * 2);
-        context.fillStyle = "rgba(2,6,23,.8)";
+        context.fillStyle = node.held ? "rgba(2,6,23,.48)" : "rgba(2,6,23,.8)";
         context.fill();
         context.strokeStyle = color;
         context.lineWidth = active ? 2.5 : 1.6;
@@ -845,20 +848,18 @@ export default function CoachVisionStudio({
       <div className="border-b border-slate-200 bg-[radial-gradient(circle_at_90%_0%,rgba(191,219,254,.5),transparent_34%),linear-gradient(135deg,#ffffff_0%,#f8fafc_58%,#ecfdf5_100%)] p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-5">
           <div className="max-w-3xl">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-800"><ScanLine className="h-4 w-4" />2 · See it in your video</div>
-            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl">Watch where the pattern begins</h2>
-            <p className="mt-3 text-sm leading-7 text-slate-600">Use the same stage-and-letter references as the summary above. Green means the measured body check is working and red means change it. Confirmation-only or low-confidence joints stay in the checklist but are not drawn on the athlete. Body links and the power chain each follow their own measured anatomical segments.</p>
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-blue-800"><ScanLine className="h-4 w-4" />Video Lesson</div>
+            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.035em] text-slate-950 sm:text-4xl">Watch the change</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">Choose a stage. Watch slowly. Focus on one coaching cue.</p>
           </div>
-          <div className="min-w-64 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
-            <div className="flex items-center justify-between gap-3"><span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Detected movement</span><span className="rounded-full bg-emerald-50 px-2 py-1 text-[0.68rem] font-semibold text-emerald-800">{classificationConfidence}% confidence</span></div>
-            <div className="mt-3 flex gap-2"><select value={selectedAction} onChange={(event) => setSelectedAction(event.target.value)} className="min-h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-blue-500" aria-label="Correct detected movement">{actionOptions.map((action) => <option key={action.id} value={action.id}>{action.label}</option>)}</select><button type="button" onClick={() => void correctMovement()} disabled={selectedAction === actionType || correcting} className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#173F6A] px-3 text-xs font-semibold text-white disabled:opacity-40">{correcting ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}Correct</button></div>
-            <p className="mt-2 text-[0.68rem] leading-5 text-slate-500">If this is wrong, correct it. The report will rebuild around the right stroke.</p>
+          <details className="min-w-64 rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3"><span className="text-xs font-semibold text-slate-700">Detected stroke</span><span className="rounded-full bg-emerald-50 px-2 py-1 text-[0.68rem] font-semibold text-emerald-800">{classificationConfidence}%</span></summary>
+            <div className="mt-3 flex gap-2"><select value={selectedAction} onChange={(event) => setSelectedAction(event.target.value)} className="min-h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-blue-500" aria-label="Correct detected movement">{actionOptions.map((action) => <option key={action.id} value={action.id}>{action.label}</option>)}</select><button type="button" onClick={() => void correctMovement()} disabled={selectedAction === actionType || correcting} className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#071b2d] px-3 text-xs font-semibold text-white disabled:opacity-40">{correcting ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}Change</button></div>
             {correctionError ? <p role="alert" className="mt-2 text-xs text-rose-700">{correctionError}</p> : null}
-          </div>
+          </details>
         </div>
-        {analysisContext ? <div className="mt-5 grid gap-4 rounded-2xl border border-slate-200 bg-white/75 p-4 md:grid-cols-[auto_1fr] md:items-start">
-          <div className="flex flex-wrap gap-2 text-[0.68rem] font-semibold"><span className="rounded-full bg-blue-50 px-3 py-1.5 text-blue-900">{analysisContext.shotSituationLabel}</span><span className="rounded-full bg-violet-50 px-3 py-1.5 text-violet-900">Intent: {analysisContext.shotIntentLabel}</span><span className="rounded-full bg-slate-100 px-3 py-1.5 text-slate-700">{analysisContext.cameraAngleLabel}</span>{analysisContext.athleteHeightCm ? <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-emerald-900">Height-aware · {analysisContext.athleteHeightCm} cm</span> : null}</div>
-          <div><p className="text-xs leading-5 text-slate-500">{analysisContext.statement}</p>{analysisContext.athleteQuestion ? <p className="mt-2 flex items-start gap-2 text-xs font-medium leading-5 text-slate-800"><Target className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />Your question: {analysisContext.athleteQuestion}</p> : null}</div>
+        {analysisContext ? <div className="mt-4 rounded-2xl border border-slate-200 bg-white/75 p-3">
+          <div className="flex flex-wrap gap-2 text-[0.68rem] font-semibold"><span className="rounded-full bg-blue-50 px-3 py-1.5 text-blue-900">{analysisContext.shotSituationLabel}</span><span className="rounded-full bg-violet-50 px-3 py-1.5 text-violet-900">{analysisContext.shotIntentLabel}</span><span className="rounded-full bg-slate-100 px-3 py-1.5 text-slate-700">{analysisContext.cameraAngleLabel}</span>{analysisContext.athleteQuestion ? <span className="rounded-full bg-amber-50 px-3 py-1.5 text-amber-900">Question: {analysisContext.athleteQuestion}</span> : null}</div>
         </div> : null}
       </div>
 
@@ -873,14 +874,14 @@ export default function CoachVisionStudio({
             <canvas ref={canvasRef} className="pointer-events-none absolute inset-0" aria-hidden="true" />
             {storyCaption ? <div className="pointer-events-none absolute inset-x-3 bottom-3 flex justify-center"><p className="max-w-xl rounded-2xl border border-white/15 bg-slate-950/88 px-4 py-3 text-center text-sm font-semibold leading-6 text-white shadow-xl backdrop-blur">{storyCaption}</p></div> : null}
             <div data-testid="video-stage-reference" className="absolute left-3 top-3 rounded-xl border border-white/10 bg-slate-950/90 px-3 py-2 backdrop-blur"><p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white">{activeBackhandGuide ? `Stage ${activeBackhandGuide.number} · ${activeBackhandGuide.label}` : phaseTitle(stage)} · {time.toFixed(2)}s</p><p className="mt-1 text-[0.65rem] text-slate-300">{phaseTitle(stage)} frame {currentFrame?.frameIndex ?? "—"} · {mode === "clean" ? "original video" : MODE_OPTIONS.find((item) => item.id === mode)?.label}</p></div>
-            {mode !== "clean" ? <div data-testid="correction-overlay-key" className="absolute bottom-3 left-3 flex flex-wrap gap-2 text-[0.62rem]">{mode === "body" ? <span className="rounded-full bg-sky-950/90 px-2 py-1 text-sky-100">{BODY_CONNECTIONS.length} anatomical segments</span> : null}{mode === "coach" ? <><span className="rounded-full bg-slate-950/88 px-2 py-1 text-slate-100">light map = body links + shoulder/hip axes</span><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = change</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = working</span><span className="rounded-full bg-slate-800/90 px-2 py-1 text-slate-100">uncertain = hidden</span></> : null}{mode === "chain" ? <><span className="rounded-full bg-slate-950/88 px-2 py-1 text-slate-100">base → knee → hip → core → shoulder → elbow → hand</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = connected</span><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = timing issue</span></> : null}</div> : null}
+            {mode !== "clean" ? <div data-testid="correction-overlay-key" className="absolute bottom-3 left-3 flex flex-wrap gap-2 text-[0.62rem]">{mode === "body" ? <><span className="rounded-full bg-sky-950/90 px-2 py-1 text-sky-100">{BODY_CONNECTIONS.length} anatomical segments</span><span className="rounded-full bg-slate-950/90 px-2 py-1 text-slate-100">dashed = briefly occluded</span></> : null}{mode === "coach" ? <><span className="rounded-full bg-slate-950/88 px-2 py-1 text-slate-100">light map = body links + shoulder/hip axes</span><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = change</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = working</span><span className="rounded-full bg-slate-800/90 px-2 py-1 text-slate-100">dashed = briefly occluded</span></> : null}{mode === "chain" ? <><span className="rounded-full bg-slate-950/88 px-2 py-1 text-slate-100">base → knees → hips → core → shoulder → elbow → hand</span><span className="rounded-full bg-emerald-950/90 px-2 py-1 text-emerald-100">green = connected</span><span className="rounded-full bg-red-950/90 px-2 py-1 text-red-100">red = timing issue</span><span className="rounded-full bg-slate-800/90 px-2 py-1 text-slate-100">dashed = briefly occluded</span></> : null}</div> : null}
           </div>
 
           <input type="range" min={start} max={end} step={presentationStep} value={Math.max(start, Math.min(end, time))} onChange={(event) => seek(Number(event.target.value))} className="mt-4 w-full accent-blue-900" aria-label="Biomechanical video timeline" />
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <button type="button" onClick={() => seek(start)} className="rounded-full border border-slate-200 bg-white p-3 text-slate-600 hover:bg-slate-50" aria-label="Restart movement"><RefreshCw className="h-4 w-4" /></button>
             <button type="button" onClick={() => seek(time - presentationStep)} className="rounded-full border border-slate-200 bg-white p-3 text-slate-600 hover:bg-slate-50" aria-label="Previous frame"><ChevronLeft className="h-4 w-4" /></button>
-            <button type="button" onClick={() => void toggle()} disabled={previewOnly} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#173F6A] px-5 font-semibold text-white hover:bg-[#103554] disabled:cursor-not-allowed disabled:opacity-50">{playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}{previewOnly ? "Preview frames" : playing ? "Pause" : "Play at half speed"}</button>
+            <button type="button" onClick={() => void toggle()} disabled={previewOnly} className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#071b2d] px-5 font-semibold text-white hover:bg-[#0d2b42] disabled:cursor-not-allowed disabled:opacity-50">{playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}{previewOnly ? "Preview frames" : playing ? "Pause" : "Play"}</button>
             <button type="button" onClick={() => seek(time + presentationStep)} className="rounded-full border border-slate-200 bg-white p-3 text-slate-600 hover:bg-slate-50" aria-label="Next frame"><ChevronRight className="h-4 w-4" /></button>
             {[0.1, 0.25, 0.5, 1].map((value) => <button key={value} type="button" data-testid={`playback-rate-${value}`} onClick={() => { setRate(value); if (videoRef.current) videoRef.current.playbackRate = value; }} className={`rounded-full border px-3 py-2 text-xs font-semibold ${rate === value ? "border-blue-900 bg-blue-50 text-blue-950" : "border-slate-200 text-slate-500"}`}>{value}×</button>)}
             <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-slate-500">{mode === "clean" ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}Original video preserved</span>
@@ -892,8 +893,8 @@ export default function CoachVisionStudio({
         </div>
 
         <aside className="flex flex-col bg-slate-50/70 p-5 sm:p-7">
-          {activeBackhandGuide ? <div data-testid="active-four-stage-correction" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-start gap-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-950 text-xl font-bold text-white ring-4 ring-blue-100">{activeBackhandGuide.number}</span><div><p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-blue-800">Matches stage {activeBackhandGuide.number} above</p><h3 className="mt-1 text-xl font-semibold text-slate-950">{activeBackhandGuide.label}</h3><p className="mt-2 text-sm leading-6 text-slate-700">{activeBackhandGuide.correction}</p></div></div><div className="mt-4 grid gap-2" aria-label={`Stage ${activeBackhandGuide.number} correction checklist`}>{activeVisualChecks.map((check, index) => { const style = VISUAL_STATUS[check.status]; return <div key={check.id} className={`flex items-start gap-2 rounded-xl border px-3 py-2.5 ${style.classes}`}><span className="flex h-6 w-8 shrink-0 items-center justify-center rounded-full text-[0.65rem] font-bold text-white" style={{ backgroundColor: style.color }}>{activeBackhandGuide.number}{String.fromCharCode(65 + index)}</span><div><p className="text-xs font-semibold leading-5">{check.label}</p><p className="mt-0.5 text-[0.62rem] font-semibold uppercase tracking-wide opacity-70">{style.label}</p></div></div>; })}</div>{activeBackhandGuide.number === 1 || activeBackhandGuide.number === 2 ? <p className="mt-3 rounded-xl bg-slate-100 px-3 py-2 text-[0.68rem] leading-5 text-slate-700"><span className="font-semibold">Camera-honest view:</span> racket checkpoints remain in the written report as Confirm; no synthetic racket is drawn on the video.</p> : null}</div> : null}
-          <div className={`${activeBackhandGuide ? "mt-6" : ""} flex items-start justify-between gap-4`}><div><p className="text-xs font-semibold uppercase tracking-[0.17em] text-violet-800">Coach’s eye · {activeBackhandGuide ? `Stage ${activeBackhandGuide.number}` : phaseTitle(stage)}</p><h3 className="mt-2 text-2xl font-semibold tracking-[-0.025em] text-slate-950">{copy.question}</h3></div><span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-500">{phaseSummary?.availableMetricCount ?? 0}/{phaseSummary?.metricCount ?? 0} visible</span></div>
+          {activeBackhandGuide ? <div data-testid="active-four-stage-correction" className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><div className="flex items-start gap-4"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-950 text-xl font-bold text-white ring-4 ring-blue-100">{activeBackhandGuide.number}</span><div><p className="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-blue-800">Stage {activeBackhandGuide.number}</p><h3 className="mt-1 text-xl font-semibold text-slate-950">{activeBackhandGuide.label}</h3><p className="mt-2 text-sm leading-6 text-slate-700">{activeBackhandGuide.correction}</p></div></div><div className="mt-4 grid gap-2" aria-label={`Stage ${activeBackhandGuide.number} correction checklist`}>{activeVisualChecks.map((check, index) => { const style = VISUAL_STATUS[check.status]; return <div key={check.id} className={`flex items-start gap-2 rounded-xl border px-3 py-2.5 ${style.classes}`}><span className="flex h-6 w-8 shrink-0 items-center justify-center rounded-full text-[0.65rem] font-bold text-white" style={{ backgroundColor: style.color }}>{activeBackhandGuide.number}{String.fromCharCode(65 + index)}</span><div><p className="text-xs font-semibold leading-5">{check.label}</p><p className="mt-0.5 text-[0.62rem] font-semibold uppercase tracking-wide opacity-70">{style.label}</p></div></div>; })}</div>{activeBackhandGuide.number === 1 || activeBackhandGuide.number === 2 ? <p className="mt-3 rounded-xl bg-slate-100 px-3 py-2 text-[0.68rem] leading-5 text-slate-700"><span className="font-semibold">Camera-honest view:</span> racket checkpoints remain in the written report as Confirm; no synthetic racket is drawn on the video.</p> : null}</div> : null}
+          <div className={`${activeBackhandGuide ? "mt-6" : ""} flex items-start justify-between gap-4`}><div><p className="text-xs font-semibold uppercase tracking-[0.17em] text-violet-800">What to notice</p><h3 className="mt-2 text-2xl font-semibold tracking-[-0.025em] text-slate-950">{copy.question}</h3></div><span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-500">{phaseSummary?.availableMetricCount ?? 0}/{phaseSummary?.metricCount ?? 0} visible</span></div>
 
           <div className="mt-5 space-y-3">
             <div className="rounded-2xl border border-blue-100 bg-white p-4"><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-blue-800"><ScanLine className="h-4 w-4" />What I see</div><p className="mt-2 text-sm leading-6 text-slate-700">{plainLanguage(area?.observation ?? copy.observe)}</p></div>
@@ -902,26 +903,24 @@ export default function CoachVisionStudio({
           </div>
 
           <details className="mt-6 rounded-2xl border border-slate-200 bg-white p-3">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3"><span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Evidence behind the call</span><span className="text-[0.68rem] text-slate-400">{visibleMetrics.slice(0, 3).length} checks · open</span></summary>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3"><span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Measurements</span><span className="text-[0.68rem] text-slate-400">{visibleMetrics.slice(0, 3).length} checks · open</span></summary>
             <div className="mt-3 space-y-2">
               {visibleMetrics.slice(0, 3).length > 0 ? visibleMetrics.slice(0, 3).map((metric) => <div key={metric.id} className="flex items-start justify-between gap-4 rounded-xl border border-slate-200 bg-white p-3"><div><p className="text-xs font-semibold text-slate-800">{metric.label}</p><p className="mt-1 text-[0.66rem] leading-4 text-slate-500">{metric.playerMeaning}</p></div><span className="shrink-0 text-sm font-semibold text-slate-950">{metric.displayValue}</span></div>) : <p className="rounded-xl border border-slate-200 bg-white p-3 text-xs leading-5 text-slate-500">This phase was not clear enough for a dependable body measurement.</p>}
             </div>
           </details>
 
           <details className="mt-3 rounded-2xl border border-slate-200 bg-white p-3">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-3"><span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600"><GitBranch className="h-4 w-4" />Full-body linkage map</span><span className="text-[0.68rem] text-slate-400">{BODY_CONNECTIONS.length} body links · {chainLinks.length} timing transfers</span></summary>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3"><span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600"><GitBranch className="h-4 w-4" />Movement sequence</span><span className="text-[0.68rem] text-slate-400">{BODY_CONNECTIONS.length} body links · {chainLinks.length} timing transfers</span></summary>
             <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-1">
               {chainLinks.map((link) => { const style = STATUS_STYLE[link.status]; return <button key={link.id} type="button" onClick={() => { const targetTime = link.target.peakTimestampSeconds; if (typeof targetTime === "number") seek(targetTime); setMode("chain"); }} className={`flex items-center justify-between gap-3 rounded-xl border px-3 py-2 text-left ${style.classes}`}><span className="text-xs font-semibold">{link.source.label} <ArrowRight className="mx-1 inline h-3 w-3" /> {link.target.label}</span><span className="inline-flex shrink-0 items-center gap-1 text-[0.63rem] font-semibold uppercase"><span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: style.color }} />{style.label}</span></button>; })}
             </div>
           </details>
 
-          <div className="mt-auto pt-6"><div className="flex items-start gap-2 rounded-xl border border-slate-200 bg-white p-3 text-[0.68rem] leading-5 text-slate-500"><CircleAlert className="mt-0.5 h-3.5 w-3.5 shrink-0" /><p>Body links connect only measured anatomical neighbours; no cross-body or hand-to-hand lines are invented. The power chain follows the measured hitting-side path from base to hand. Confirmation-only, occluded, implausible, or low-confidence joints are withheld instead of guessing. This remains a 2D coaching view—not force data, racket-face measurement, or an exact 3D reconstruction.</p></div></div>
+          <details className="mt-auto pt-6"><summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-semibold text-slate-500"><CircleAlert className="h-4 w-4" />What the camera cannot measure</summary><p className="mt-3 rounded-xl border border-slate-200 bg-white p-3 text-[0.68rem] leading-5 text-slate-500">This is a 2D coaching view. Low-confidence joints are withheld; force, exact racket-face angle, and full 3D motion are not claimed.</p></details>
         </aside>
       </div>
 
-      <div className="grid gap-px border-t border-slate-200 bg-slate-200 md:grid-cols-4">
-        {[{ icon: Eye, title: "1 · Watch", copy: "Choose one numbered stage and use 0.1× when needed." }, { icon: GitBranch, title: "2 · Check A, then B", copy: "Read the two literal labels drawn on the athlete." }, { icon: Target, title: "3 · Feel", copy: "Use the matching short cue beside the video." }, { icon: CheckCircle2, title: "4 · Prove", copy: "Record the same drill and compare the next clip." }].map((item) => <div key={item.title} className="bg-white p-4"><div className="flex items-center gap-2 text-xs font-semibold text-slate-800"><item.icon className="h-4 w-4 text-blue-800" />{item.title}</div><p className="mt-2 text-xs leading-5 text-slate-500">{item.copy}</p></div>)}
-      </div>
+      <div className="flex items-center gap-3 border-t border-slate-200 bg-white p-4 text-sm text-slate-600"><CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-700" /><p><span className="font-semibold text-slate-950">Watch → feel → repeat.</span> Take the cue below to your next practice.</p></div>
     </section>
   );
 }

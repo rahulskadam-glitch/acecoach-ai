@@ -11,9 +11,9 @@ export default function Sports() {
   return (
     <section id="sports" className="scroll-mt-24 py-20">
       <div className="max-w-3xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-300">One platform, multiple sports</p>
-        <h2 className="mt-5 text-3xl font-semibold tracking-tight text-white sm:text-4xl">Sport-specific intelligence, built on a shared motion platform.</h2>
-        <p className="mt-4 text-lg leading-8 text-slate-400">The core video, pose, biomechanics, AI routing, reporting, and progress systems are shared. Each sport adds its own actions, coaching vocabulary, scoring rules, and knowledge pack.</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.3em] text-emerald-300">Tennis-specific intelligence</p>
+        <h2 className="mt-5 text-3xl font-semibold tracking-tight text-white sm:text-4xl">Tennis intelligence, built for every stroke and reassessment.</h2>
+        <p className="mt-4 text-lg leading-8 text-slate-400">Video, pose, biomechanics, reporting, and progress systems work together with tennis-specific actions, coaching vocabulary, evidence gates, and knowledge.</p>
       </div>
       <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-5">
         {supportedSports.map((sport, index) => {

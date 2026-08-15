@@ -14,6 +14,11 @@ export type DrillDefinition = {
   successMetric: string;
   regression?: string;
   progression?: string;
+  targetFaultIds?: string[];
+  ontologyVersion?: string;
+  policyId?: string;
+  policyVersion?: string;
+  knowledgeControlled?: boolean;
 };
 
 export type EvidenceReference = {
@@ -83,6 +88,8 @@ export type EngineManifest = {
   ontologyVersion?: string;
   ontologyManifestHash?: string;
   ontologyReasonerVersion?: string;
+  knowledgeControlVersion?: string;
+  knowledgeControlPolicyIds?: string[];
   evidenceVersion?: string;
   reportVersion: string;
   analysisMode: string;
@@ -199,6 +206,10 @@ export type PerformanceStory = {
   transferRisk: string;
   nextMilestone: string;
   coachPrinciple: string;
+  policyId?: string;
+  policyVersion?: string;
+  ontologyVersion?: string;
+  knowledgeControlled?: boolean;
 };
 
 export type VisualMoment = {
@@ -210,6 +221,11 @@ export type VisualMoment = {
   cue?: string;
   frameIndex?: number | null;
   timestampSeconds?: number | null;
+  faultId?: string;
+  policyId?: string;
+  policyVersion?: string;
+  ontologyVersion?: string;
+  knowledgeControlled?: boolean;
 };
 
 export type MeasurementCoverage = {
@@ -222,11 +238,16 @@ export type PracticePlan = {
   title: string;
   primaryGoal: string;
   cue: string;
+  policyId?: string;
+  policyVersion?: string;
+  ontologyVersion?: string;
+  knowledgeControlled?: boolean;
   sessions: Array<{
     id: string;
     day: string;
     title: string;
     duration: string;
+    cue?: string;
     objective: string;
     drillName: string;
     dosage: string;
@@ -244,9 +265,16 @@ export type CoachingPlaybook = {
   successTest: string;
   transferChallenge: string;
   coachQuestion: string;
+  policyId?: string;
+  policyVersion?: string;
+  ontologyVersion?: string;
+  knowledgeControlled?: boolean;
 };
 
 export type RepetitionInsights = {
+  policyId?: string;
+  policyVersion?: string;
+  knowledgeControlled?: boolean;
   clearestReferenceRepetition: number | null;
   consistencyScore: number | null;
   consistencyLabel: string;
@@ -301,6 +329,9 @@ export type AnalysisReport = {
     note: string;
     confidence?: number;
     basis?: string;
+    policyId?: string;
+    policyVersion?: string;
+    knowledgeControlled?: boolean;
   }>;
   metricScores: Array<{
     id: string;
@@ -309,6 +340,9 @@ export type AnalysisReport = {
     explanation: string;
     confidence?: number;
     basis?: string;
+    policyId?: string;
+    policyVersion?: string;
+    knowledgeControlled?: boolean;
   }>;
   strengths: Array<{
     title: string;
@@ -316,6 +350,10 @@ export type AnalysisReport = {
     frameIndex?: number | null;
     timestampSeconds?: number | null;
     confidence?: number;
+    policyId?: string;
+    policyVersion?: string;
+    ontologyVersion?: string;
+    knowledgeControlled?: boolean;
   }>;
   priorities: Array<{
     rank: number;
@@ -328,12 +366,21 @@ export type AnalysisReport = {
     timestampSeconds?: number | null;
     confidence?: number;
     measurementBasis?: string;
+    faultId?: string;
+    ontologyVersion?: string;
+    policyId?: string;
+    policyVersion?: string;
+    knowledgeControlled?: boolean;
   }>;
   drills: DrillDefinition[];
   nextSession: {
     objective: string;
     recordingPlan: string;
     successCriteria: string[];
+    policyId?: string;
+    policyVersion?: string;
+    ontologyVersion?: string;
+    knowledgeControlled?: boolean;
     sessionPlan?: Array<{
       block: string;
       duration: string;
@@ -346,6 +393,10 @@ export type AnalysisReport = {
     mainPriority: string;
     whyItMatters: string;
     practiceFocus: string[];
+    policyId?: string;
+    policyVersion?: string;
+    ontologyVersion?: string;
+    knowledgeControlled?: boolean;
     contextStatement?: string;
     coachVerdict?: string;
     executiveBullets?: Array<{
@@ -567,6 +618,9 @@ export type AnalysisReport = {
     status?: string;
     disclaimer: string;
     nextStep?: string;
+    policyId?: string;
+    policyVersion?: string;
+    knowledgeControlled?: boolean;
     areas: Array<{
       id: string;
       label: string;
@@ -587,6 +641,32 @@ export type AnalysisReport = {
     policiesApplied: string[];
     skippedPolicies?: Record<string, string>;
     gatedCapabilities: string[];
+    knowledgeLayerStatus?: {
+      version: string;
+      sourceCoverage: {
+        status: "covered" | "missing";
+        sourceIds: string[];
+        qualitativeConstructs: string[];
+        numericBenchmarkGranted: false;
+      };
+      personalBaseline: {
+        status: "collection_ready";
+        minimumPriorContextMatchedSessions: number;
+        minimumTotalRepetitions: number;
+        minimumMeasurementConfidence: number;
+        maximumCaptureScoreDifference: number;
+        exactMatchDimensions: string[];
+      };
+      matchedCohort: {
+        status: "available" | "dormant";
+        eligibleVersionCount: number;
+        reason: string | null;
+      };
+      outcomeLabels: { status: string; causalClaimsAllowed: false };
+      expertAnnotation: { status: string; minimumIndependentRaters: number };
+      interventionValidation: { status: string; causalClaimsAllowed: false };
+      capabilities: Record<string, { eligible: boolean; missing: string[] }>;
+    };
     rejectedCandidates?: Array<{
       faultId: string;
       chapterId: string;
@@ -667,6 +747,66 @@ export type AnalysisReport = {
       score: number | null;
       summary: string;
       faultId?: string | null;
+      assessmentBasis?: "EVIDENCE_GATED_FAULT" | "MEASURED_CHAPTER_PRIORITY" | "MEASURED_CHAPTER_SCORE" | "INSUFFICIENT_MEASUREMENT_CONFIDENCE" | string;
+      scoreRule?: "mean_of_reliably_measured_contributing_areas" | "suppressed_below_measurement_confidence_gate" | string;
+      availabilityReason?: "LOW_LANDMARK_CONFIDENCE" | "NO_RELIABLE_MEASUREMENT" | "CAMERA_OR_OCCLUSION_LIMIT" | string | null;
+      coachExplanation?: string | null;
+      evidence?: Array<{
+        areaId: string;
+        label: string;
+        score: number;
+        confidence: number | null;
+        measurementBasis: string | null;
+        observation: string;
+      }>;
     }>;
+    assessmentPolicy?: {
+      strengthMinimumScore: number;
+      minimumMeasurementConfidence: number;
+      measuredFocusFallback: "MEASURED_AREA_PRIORITY_ONLY" | string;
+    };
+  };
+  knowledgeControl?: KnowledgeControlTrace;
+};
+
+export type KnowledgeControlDomain = {
+  authorized: boolean;
+  decision: string;
+  policyIds: string[];
+};
+
+export type KnowledgeControlTrace = {
+  status: "CONTROLLED";
+  failClosed: true;
+  policyVersion: string;
+  ontologyVersion: string;
+  manifestHash: string;
+  domains: {
+    calculations: KnowledgeControlDomain;
+    insights: KnowledgeControlDomain;
+    recommendations: KnowledgeControlDomain;
+    benchmarks: KnowledgeControlDomain;
+    records: KnowledgeControlDomain;
+    report: KnowledgeControlDomain;
+  };
+  legacyRecordPolicy: string;
+  reportFallbacksAllowed: false;
+  contracts: {
+    comparisons: {
+      maximumCaptureScoreDifference: number;
+      improvedScoreDelta: number;
+      unchangedLowerScoreDelta: number;
+      requireSameEngine: boolean;
+      requireSameRuntime: boolean;
+      requireSameContext: boolean;
+      requireSameKnowledgePolicy: boolean;
+      requireSameManifestHash: boolean;
+    };
+    longitudinal: {
+      distributionSpreadDivisor: number;
+      minimumHistorySessions: number;
+      historyWindowSessions: number;
+      meaningfulShiftPoints: number;
+    };
   };
 };

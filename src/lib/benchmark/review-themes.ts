@@ -53,7 +53,7 @@ export const reviewThemes: ReviewTheme[] = [
     ],
     coverageScore: 4.6,
     outcomeStatus: "strong",
-    evidenceNote: "This is one of AceCoach's strongest product dimensions.",
+    evidenceNote: "This is one of Athlentra's strongest product dimensions.",
   },
   {
     id: "actionability",

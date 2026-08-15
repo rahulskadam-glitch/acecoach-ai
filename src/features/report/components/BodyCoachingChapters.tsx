@@ -75,7 +75,7 @@ function fallbackReviews(report: AnalysisReport, actionType: string): BodyReview
         id: chapter.id,
         title: chapter.title,
         status: "needs_confirmation" as const,
-        coachNote: "I cannot identify your grip or racket-face angle reliably from body landmarks alone. Tell AceCoach the grip, or record a close side view where the hand and handle are clear.",
+        coachNote: "I cannot identify your grip or racket-face angle reliably from body landmarks alone. Tell Athlentra the grip, or record a close side view where the hand and handle are clear.",
         whyItMatters: "Grip changes the natural contact height, arm shape, spin window, and racket-face behavior.",
         cue: chapter.cue,
         phase: chapter.phase,
@@ -161,7 +161,7 @@ export default function BodyCoachingChapters({ report, actionType }: { report: A
           </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            {typeof selected.timestampSeconds === "number" ? <button type="button" onClick={showOnVideo} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#173F6A] px-4 text-sm font-semibold text-white hover:bg-[#103554]"><Eye className="h-4 w-4" />Show this at {selected.timestampSeconds.toFixed(2)}s</button> : null}
+            {typeof selected.timestampSeconds === "number" ? <button type="button" onClick={showOnVideo} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#071b2d] px-4 text-sm font-semibold text-white hover:bg-[#0d2b42]"><Eye className="h-4 w-4" />Show this at {selected.timestampSeconds.toFixed(2)}s</button> : null}
             <p className="text-xs leading-5 text-slate-500">One chapter at a time. The numbers are evidence, not the coaching message.</p>
           </div>
         </article>

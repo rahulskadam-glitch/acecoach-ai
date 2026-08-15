@@ -19,7 +19,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "compresses preparation and spacing time",
     "player_message": "Recognize backhand early and turn.",
-    "coach_message_template": "Late recognition: {evidence_summary}.",
     "overlay_markers": [
       "BALL_TRAIL",
       "TIMING_DELTA",
@@ -114,7 +113,8 @@
       "required_when_player_baseline_available": true,
       "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
       "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
-    }
+    },
+    "capability_status": "dormant_pending_validated_ball_tracking"
   },
   {
     "fault_id": "2HB-PREP-01",
@@ -136,7 +136,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "moves contact backward and rushes the forward swing",
     "player_message": "Turn and set the racket earlier.",
-    "coach_message_template": "Late preparation: {evidence_summary}.",
     "overlay_markers": [
       "SHOULDER_LINE",
       "RACKET_PATH",
@@ -253,7 +252,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "limits whole-body loading",
     "player_message": "Turn your shoulders and racket together.",
-    "coach_message_template": "Disconnected unit turn: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "SHOULDER_LINE",
@@ -370,7 +368,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "restricts extension and hand path",
     "player_message": "Create more space before you swing.",
-    "coach_message_template": "Crowded contact: {evidence_summary}.",
     "overlay_markers": [
       "CONTACT_WINDOW",
       "ELBOW_ANGLE_L",
@@ -488,7 +485,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces extension and can force the racket across the body",
     "player_message": "Meet the ball farther in front.",
-    "coach_message_template": "Late contact: {evidence_summary}.",
     "overlay_markers": [
       "CONTACT_POINT",
       "CONTACT_WINDOW",
@@ -605,7 +601,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "disrupts rotation around a stable axis and may reduce balance",
     "player_message": "Stay taller and more centered through contact.",
-    "coach_message_template": "Excessive head or trunk tilt: {evidence_summary}.",
     "overlay_markers": [
       "TRUNK_AXIS",
       "BODY_TILT",
@@ -722,7 +717,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "increases arm dependence and reduces vertical support",
     "player_message": "Load your legs, then drive up through the shot.",
-    "coach_message_template": "Passive lower body: {evidence_summary}.",
     "overlay_markers": [
       "KNEE_ANGLE_L",
       "KNEE_ANGLE_R",
@@ -839,7 +833,6 @@
     "measurement_class": "INFERRED",
     "performance_consequence": "reverses the intended kinetic sequence",
     "player_message": "Start the forward move from your legs and hips.",
-    "coach_message_template": "Arms initiate before pelvis: {evidence_summary}.",
     "overlay_markers": [
       "SEQUENCE_RIBBON",
       "HIP_SHOULDER_SEPARATION",
@@ -956,7 +949,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces stored rotation and can pull contact sideways",
     "player_message": "Keep the turn, then let the hips lead.",
-    "coach_message_template": "Premature full-body opening: {evidence_summary}.",
     "overlay_markers": [
       "SHOULDER_LINE",
       "PELVIS_LINE",
@@ -1073,7 +1065,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "shortens the hitting zone and can block extension",
     "player_message": "Keep your arm shape stable through the hit.",
-    "coach_message_template": "Arm structure collapses: {evidence_summary}.",
     "overlay_markers": [
       "ELBOW_ANGLE_L",
       "ELBOW_ANGLE_R",
@@ -1190,7 +1181,6 @@
     "measurement_class": "INFERRED",
     "performance_consequence": "may indicate the bottom hand is steering across the body",
     "player_message": "Let the top hand guide the racket through the ball.",
-    "coach_message_template": "Dominant-side pulling pattern: {evidence_summary}.",
     "overlay_markers": [
       "ELBOW_ANGLE_L",
       "ELBOW_ANGLE_R",
@@ -1307,7 +1297,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces spin and net-clearance margin",
     "player_message": "Swing forward and up through the ball.",
-    "coach_message_template": "Swing too horizontal: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "PATH_CORRIDOR"
@@ -1423,7 +1412,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "creates a rushed path and timing compensation",
     "player_message": "Let the racket settle before you drive forward.",
-    "coach_message_template": "Racket drop mistimed: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_DROP_DEPTH",
       "TIMING_DELTA",
@@ -1540,7 +1528,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces contact stability",
     "player_message": "Keep your head near the contact point longer.",
-    "coach_message_template": "Head releases before contact: {evidence_summary}.",
     "overlay_markers": [
       "HEAD_AXIS",
       "STABILITY_HALO"
@@ -1656,7 +1643,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces support and can lift the swing out of the contact zone",
     "player_message": "Stay down through contact, then rise.",
-    "coach_message_template": "Standing up before contact: {evidence_summary}.",
     "overlay_markers": [
       "COM_ESTIMATE",
       "HEAD_AXIS",
@@ -1773,7 +1759,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "limits extension and completion of the top-arm path",
     "player_message": "Let both elbows finish freely.",
-    "coach_message_template": "Bottom elbow blocks finish: {evidence_summary}.",
     "overlay_markers": [
       "ELBOW_ANGLE_L",
       "ELBOW_ANGLE_R",
@@ -1885,7 +1870,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces readiness for the next shot",
     "player_message": "Finish and recover right away.",
-    "coach_message_template": "Delayed recovery: {evidence_summary}.",
     "overlay_markers": [
       "RECOVERY_TARGET",
       "FOOT_TRAIL"

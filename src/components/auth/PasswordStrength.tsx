@@ -41,7 +41,7 @@ export default function PasswordStrength({ password }: Props) {
         {[1, 2, 3, 4].map((level) => (
           <div
             key={level}
-            className={`h-1 flex-1 rounded-full transition-all duration-300 ${level <= score ? bar : "bg-white/10"}`}
+            className={`h-1 flex-1 rounded-full transition-all duration-300 ${level <= score ? bar : "bg-slate-200"}`}
           />
         ))}
       </div>

@@ -99,7 +99,7 @@ export async function requireUser() {
   const { user, error } = await getAuthenticatedUser();
 
   if (error || !user) {
-    redirect("/login");
+    redirect("/auth");
   }
 
   return user;
@@ -195,15 +195,17 @@ export async function getUserDashboardStats(userId: string) {
         created_at,
         completed_at,
         videos!inner(filename),
-        analysis_reports(overall_score, score_label, coach_summary)
+        analysis_reports(overall_score, score_label, coach_summary, knowledge_control, knowledge_policy_version, knowledge_manifest_hash)
       `)
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(12),
     supabase
       .from("practice_plans")
-      .select("id, session_id, sport_id, action_type, primary_goal, coaching_cue, plan, completion, status, reassessment_due_at, created_at")
+      .select("id, session_id, sport_id, action_type, primary_goal, coaching_cue, plan, completion, status, reassessment_due_at, created_at, knowledge_policy_version, knowledge_manifest_hash")
       .eq("user_id", userId)
+      .not("knowledge_policy_version", "is", null)
+      .not("knowledge_manifest_hash", "is", null)
       .in("status", ["active", "ready_for_reassessment"])
       .order("created_at", { ascending: false })
       .limit(1),
@@ -222,7 +224,8 @@ export async function getUserDashboardStats(userId: string) {
   const scored = completedSessions
     .map((session: DashboardSessionRow) => {
       const report = Array.isArray(session.analysis_reports) ? session.analysis_reports[0] : session.analysis_reports;
-      return session.score_status === "provisional_criterion_index" && typeof (report as { overall_score?: number } | null)?.overall_score === "number"
+      const controlled = (report as { knowledge_control?: { status?: string } } | null)?.knowledge_control?.status === "CONTROLLED";
+      return controlled && session.score_status === "provisional_criterion_index" && typeof (report as { overall_score?: number } | null)?.overall_score === "number"
         ? (report as { overall_score?: number }).overall_score
         : null;
     })
@@ -248,6 +251,7 @@ export async function getUserDashboardStats(userId: string) {
     } : null,
     recentSessions: safeSessions.map((session: DashboardSessionRow) => {
       const report = Array.isArray(session.analysis_reports) ? session.analysis_reports[0] : session.analysis_reports;
+      const controlled = report?.knowledge_control?.status === "CONTROLLED";
       const video = Array.isArray(session.videos) ? session.videos[0] : session.videos;
       return {
         id: session.id,
@@ -255,14 +259,14 @@ export async function getUserDashboardStats(userId: string) {
         selectedAction: session.action_type,
         analysisAction: session.analysis_action_type ?? session.detected_action_type ?? session.action_type,
         scoreStatus: session.score_status,
-        overallScore: typeof report?.overall_score === "number" ? report.overall_score : null,
-        scoreLabel: report?.score_label ?? "Execution index",
+        overallScore: controlled && typeof report?.overall_score === "number" ? report.overall_score : null,
+        scoreLabel: controlled ? report?.score_label ?? "Execution index" : "Reanalysis required",
         confidence: Number(session.confidence ?? 0),
         status: session.status,
         currentStage: session.current_stage,
         createdAt: session.created_at,
         fileName: video?.filename ?? "Uploaded video",
-        headline: typeof report?.coach_summary?.headline === "string" ? report.coach_summary.headline : null,
+        headline: controlled && typeof report?.coach_summary?.headline === "string" ? report.coach_summary.headline : null,
       };
     }),
     error: videoError?.message ?? sessionError?.message ?? practiceError?.message ?? null,
@@ -279,7 +283,7 @@ export async function getUserVideoLibrary(userId: string) {
       .order("created_at", { ascending: false }),
     supabase
       .from("analysis_sessions")
-      .select("id, video_id, status, score_status, current_stage, analysis_action_type, created_at, analysis_reports(overall_score, coach_summary)")
+      .select("id, video_id, status, score_status, current_stage, analysis_action_type, created_at, analysis_reports(overall_score, coach_summary, knowledge_control, knowledge_policy_version, knowledge_manifest_hash)")
       .eq("user_id", userId)
       .order("created_at", { ascending: false }),
   ]);
@@ -295,6 +299,7 @@ export async function getUserVideoLibrary(userId: string) {
     items: (videos ?? []).map((video: DashboardVideoRow) => {
       const session = latestByVideo.get(video.id) ?? null;
       const report = session ? (Array.isArray(session.analysis_reports) ? session.analysis_reports[0] : session.analysis_reports) : null;
+      const controlled = report?.knowledge_control?.status === "CONTROLLED";
       return {
         id: video.id,
         fileName: video.filename,
@@ -310,8 +315,8 @@ export async function getUserVideoLibrary(userId: string) {
         scoreStatus: session?.score_status ?? null,
         currentStage: session?.current_stage ?? null,
         analysisAction: session?.analysis_action_type ?? null,
-        overallScore: typeof report?.overall_score === "number" ? report.overall_score : null,
-        headline: typeof report?.coach_summary?.headline === "string" ? report.coach_summary.headline : null,
+        overallScore: controlled && typeof report?.overall_score === "number" ? report.overall_score : null,
+        headline: controlled && typeof report?.coach_summary?.headline === "string" ? report.coach_summary.headline : null,
       };
     }),
     error: videoError?.message ?? sessionError?.message ?? null,

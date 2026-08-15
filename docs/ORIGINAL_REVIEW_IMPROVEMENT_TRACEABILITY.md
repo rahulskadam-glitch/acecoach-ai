@@ -59,3 +59,30 @@ Managed Supabase leaked-password protection still requires enabling in the proje
 | Ontology selection could force a drill when no fault was supportable | Fixed | Evaluation-only traces preserve generic coaching output and do not claim ontology-derived drill linkage |
 
 Verification: 46 analysis tests, ESLint, TypeScript, 11 web tests, and the production build pass. A non-persisting live-video run returned HTTP 200 on engine `movement-intelligence-v1.11.0` / ontology `4.1.0`, rejected 19 unsupported or non-discriminative candidates, and emitted zero findings and zero causal claims. Interactive browser control was not callable for the final rendering pass, so the existing manual inspection boundary still applies.
+
+## Governed knowledge and validation expansion — 2026-08-15
+
+| Requested improvement | Resolution | Evidence |
+|---|---|---|
+| Personal baseline first | Implemented | All reliable movement-chain constructs persist; the report releases current/typical/highest-reliable comparisons only after 3 matching prior videos and 24 repetitions |
+| Sources for every stroke | Implemented | Explicit eight-stroke source registry with authority, use-policy, variation, and claim-route checks; analysis output includes source-coverage status |
+| Validated matched cohorts | Implemented as a fail-closed collection/release system | Cohort/version/cell schema plus sample, context, documentation, expiry, bias, drift and withdrawal gates; no cohort or percentile is currently released |
+| Outcome-labelled repetitions | Implemented as a governed ingestion/reanalysis path | Player, coach, sensor and tracker storage; only correctly paired coach/sensor/tracker verification can enter self-best reasoning |
+| Ball and racket tracking | Implemented as validation gates, not simulated | Model-validation registry and required held-out/error artifacts; pose-only analysis cannot unlock ball, racket-face or exact-contact claims |
+| Expert annotation studies | Implemented as a governed study contract | Independent raters, credential state, blinding, rubric, agreement and retained disagreement schema/gates |
+| Longitudinal intervention validation | Implemented as a governed collection contract | Baseline/post/retention/transfer fields and deterministic release rules; uncontrolled causal claims stay prohibited |
+| Benchmark governance | Implemented | Version, owner, inclusion/exclusion, coverage, uncertainty, bias, expiry and withdrawal records with RLS and service-only writes |
+| Multi-camera and depth validation | Implemented as calibration/model gates | Capture calibration storage and synchronization/reprojection/held-out validation requirements; capture UI remains dormant |
+
+The detailed operational contract is in `docs/GOVERNED_KNOWLEDGE_LAYER_V640.md`.
+
+## Player reassessment loop — 2026-08-15
+
+| Requested improvement | Resolution | Evidence |
+|---|---|---|
+| Jump from every Stroke Map phase to its video moment | Implemented | All six tiles use repetition-local stored phase timestamps first, dispatch an exact seek to CoachVision, and fall back to the report timeline only for older analyses |
+| Compare the same phase with the previous matched video | Implemented, fail closed | Six-phase deltas require the same stroke, camera view, shot situation, shot intention, engine/runtime, reliability state, and comparable capture quality |
+| Keep one primary correction across the three drills | Implemented | Practice-plan generation is rebuilt after ontology selection; every session stores the same selected cue and the mobile report repeats it across all three drills |
+| Show ball depth, direction, clearance and placement when tracking is validated | Implemented, dormant until evidence exists | The report reads only `validated_ball_tracker` + `tracker_verified` rows and hides the entire outcome card when no qualifying outcome dimensions exist |
+| Adapt cue complexity to player level | Implemented | Beginners receive only the stored feel cue, intermediate players receive one concise mechanical sentence, and advanced players receive the full stored evidence-backed correction |
+| End reassessments with a clear verdict | Implemented | Context-matched score changes produce `Improved`, `Unchanged`, or `Needs another comparable recording`; first reports do not pretend to be reassessments |

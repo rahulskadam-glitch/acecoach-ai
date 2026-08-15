@@ -14,7 +14,7 @@ export default function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4 lg:px-8">
         <div>
           <Link href="/" className="text-sm font-semibold uppercase tracking-[0.35em] text-white/90 transition hover:text-white">
-            AceCoach AI
+            Athlentra Tennis
           </Link>
         </div>
 
@@ -27,11 +27,11 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Link href="/login" className="text-sm text-white/70 transition hover:text-white">
+          <Link href="/auth" className="text-sm text-white/70 transition hover:text-white">
             Login
           </Link>
           <a
-            href="/upload"
+            href="/start"
             className="inline-flex rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400"
           >
             Start Free

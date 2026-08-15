@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const sessionId = process.argv[2];
 const confirmedAction = process.argv[3] ?? "two_handed_backhand";
-const engineVersion = "movement-intelligence-v1.11.0";
+const engineVersion = "movement-intelligence-v1.13.0";
 
 if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(sessionId ?? "")) {
   throw new Error("Usage: node --env-file=.env.local scripts/reanalyze-session.mjs <session-uuid> [confirmed-action]");
@@ -77,6 +77,17 @@ if (video.user_id !== session.user_id || !video.storage_path.startsWith(expected
 const { data: signedVideo, error: signedError } = await supabase.storage.from("videos").createSignedUrl(video.storage_path, 15 * 60);
 if (signedError || !signedVideo?.signedUrl) throw new Error(signedError?.message ?? "Unable to sign the video URL.");
 
+const { data: validatedOutcomes, error: outcomeError } = await supabase
+  .from("analysis_rep_outcomes")
+  .select("repetition_index,outcome_source,validation_status,execution_result,depth_zone,direction,placement_zone,net_clearance_cm,bounce_x_normalized,bounce_y_normalized,model_version")
+  .eq("analysis_session_id", session.id)
+  .eq("user_id", session.user_id)
+  .in("validation_status", ["coach_verified", "sensor_verified", "tracker_verified"])
+  .not("execution_result", "is", null)
+  .order("repetition_index", { ascending: true })
+  .limit(12);
+if (outcomeError) throw new Error(outcomeError.message);
+
 const response = await fetch(`${process.env.ANALYSIS_API_URL ?? "http://127.0.0.1:8000"}/analysis`, {
   method: "POST",
   headers: { "Content-Type": "application/json", "X-Analysis-API-Key": process.env.ANALYSIS_API_KEY },
@@ -98,6 +109,7 @@ const response = await fetch(`${process.env.ANALYSIS_API_URL ?? "http://127.0.0.
     shot_situation: captureContext.shotSituation,
     shot_intent: captureContext.shotIntent,
     athlete_question: captureContext.specificQuestion || null,
+    validated_outcomes: validatedOutcomes ?? [],
   }),
 });
 if (!response.ok) {
@@ -109,6 +121,13 @@ if (result.engine_manifest?.engineVersion !== engineVersion) {
   throw new Error(`Engine mismatch: expected ${engineVersion}, received ${result.engine_manifest?.engineVersion ?? "unknown"}.`);
 }
 if (result.frame_summary?.biomechanicalProfile?.metricCount !== 106) throw new Error("The regenerated report is missing the 106-point profile.");
+if (
+  result.knowledge_control?.status !== "CONTROLLED"
+  || result.knowledge_control?.failClosed !== true
+  || result.knowledge_control?.manifestHash !== result.engine_manifest?.ontologyManifestHash
+  || result.knowledge_control?.domains?.records?.authorized !== true
+  || result.knowledge_control?.domains?.report?.authorized !== true
+) throw new Error("The regenerated report is missing a valid knowledge-control authorization trace.");
 
 const manifest = { ...result.engine_manifest, intakeContext: captureContext };
 const confirmationStatus = "confirmed";
@@ -154,8 +173,59 @@ const { error: reportError } = await supabase.from("analysis_reports").upsert({
   reference_comparison: result.reference_comparison,
   input_fingerprint: result.input_fingerprint,
   athlete_context_fingerprint: contextFingerprint,
+  knowledge_control: result.knowledge_control,
+  knowledge_policy_version: result.knowledge_control.policyVersion,
+  knowledge_manifest_hash: result.knowledge_control.manifestHash,
 }, { onConflict: "session_id" });
 if (reportError) throw new Error(reportError.message);
+
+const reasoning = result.ontology_reasoning ?? result.coach_summary?.ontologyReasoning;
+const movementChain = Array.isArray(reasoning?.movementChain) ? reasoning.movementChain : [];
+const minimumConfidence = Number(reasoning?.knowledgeLayerStatus?.personalBaseline?.minimumMeasurementConfidence);
+const spreadDivisor = Number(result.knowledge_control?.contracts?.longitudinal?.distributionSpreadDivisor);
+const consistencyScore = result.repetition_insights?.consistencyScore;
+const captureScore = result.capture_quality?.score;
+if (movementChain.length > 0 && Number.isFinite(consistencyScore) && Number.isFinite(captureScore) && Number.isFinite(minimumConfidence) && Number.isFinite(spreadDivisor) && spreadDivisor > 0) {
+  const observations = movementChain.flatMap((item) => {
+    if (!Number.isFinite(item.score) || item.assessmentBasis === "INSUFFICIENT_MEASUREMENT_CONFIDENCE") return [];
+    const evidence = Array.isArray(item.evidence) ? item.evidence : [];
+    const evidenceConfidences = evidence.map((entry) => entry.confidence).filter(Number.isFinite);
+    const confidence = evidenceConfidences.length > 0 ? Math.min(...evidenceConfidences) : result.confidence;
+    if (confidence < minimumConfidence || typeof item.id !== "string") return [];
+    return [{
+      constructId: item.id,
+      medianScore: Math.max(0, Math.min(100, item.score)),
+      confidence,
+      evidenceIds: evidence.flatMap((entry) => typeof entry.areaId === "string" ? [`area:${entry.areaId}`] : []),
+    }];
+  });
+  if (observations.length > 0) {
+    const contextSignature = crypto.createHash("sha256").update(JSON.stringify({
+      sportId: session.sport_id,
+      actionType: result.movement_classification.analysisAction,
+      cameraAngle: captureContext.cameraAngle,
+      shotSituation: captureContext.shotSituation,
+      shotIntent: captureContext.shotIntent,
+    })).digest("hex");
+    const { error: distributionError } = await supabase.rpc("upsert_construct_session_distributions_v650", {
+      p_user_id: session.user_id,
+      p_session_id: session.id,
+      p_sport_id: session.sport_id,
+      p_action_type: result.movement_classification.analysisAction,
+      p_context_signature: contextSignature,
+      p_context_dimensions: { shotSituation: captureContext.shotSituation, shotIntent: captureContext.shotIntent },
+      p_sample_count: result.repetitions.length,
+      p_spread: Math.max(0, Math.min(100, (100 - consistencyScore) / spreadDivisor)),
+      p_capture_score: captureScore,
+      p_engine_version: engineVersion,
+      p_runtime_signature: result.engine_manifest.runtimeSignature ?? null,
+      p_observations: observations,
+      p_knowledge_policy_version: result.knowledge_control.policyVersion,
+      p_knowledge_manifest_hash: result.knowledge_control.manifestHash,
+    });
+    if (distributionError) throw new Error(distributionError.message);
+  }
+}
 
 const now = new Date().toISOString();
 const { error: completeError } = await supabase.from("analysis_sessions").update({
@@ -191,7 +261,7 @@ await supabase.from("videos").update({ content_hash: result.content_hash, status
 if (result.quality_gate?.movementConfirmed && Array.isArray(result.practice_plan?.sessions) && result.practice_plan.sessions.length > 0) {
   const completion = Object.fromEntries(result.practice_plan.sessions.map((item) => [item.id, false]));
   const reassessmentDue = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-  const { error: planError } = await supabase.rpc("upsert_active_practice_plan_v30", {
+  const { error: planError } = await supabase.rpc("upsert_active_practice_plan_v650", {
     p_user_id: session.user_id,
     p_session_id: session.id,
     p_sport_id: session.sport_id,
@@ -202,6 +272,8 @@ if (result.quality_gate?.movementConfirmed && Array.isArray(result.practice_plan
     p_plan: result.practice_plan,
     p_completion: completion,
     p_reassessment_due_at: reassessmentDue,
+    p_knowledge_policy_version: result.knowledge_control.policyVersion,
+    p_knowledge_manifest_hash: result.knowledge_control.manifestHash,
   });
   if (planError) throw new Error(planError.message);
 }
@@ -211,15 +283,10 @@ console.log(JSON.stringify({
   engineVersion: result.engine_manifest.engineVersion,
   reportVersion: result.engine_manifest.reportVersion,
   score: result.overall_score,
-  headline: result.coach_summary?.pyramidSummary?.headline,
-  bottomLine: result.coach_summary?.pyramidSummary?.bottomLine,
-  framework: result.coach_summary?.pyramidSummary?.framework?.map((item) => ({ step: item.step, title: item.title, status: item.status, cue: item.coachCue })),
-  phaseReport: result.coach_summary?.pyramidSummary?.audit?.checkpoints?.map((item) => ({
-    phase: item.label,
-    status: item.status,
-    cue: item.cue,
-    bodyChecks: item.bodyChecks?.map((check) => ({ bodyPart: check.bodyPart, status: check.status, finding: check.finding })),
-  })),
+  headline: result.coach_summary?.headline,
+  mainPriority: result.coach_summary?.mainPriority,
+  reasoningStatus: result.ontology_reasoning?.status,
   priorities: result.priorities?.map((item) => item.title),
   drills: result.drills?.map((item) => item.name),
+  knowledgeLayerStatus: result.ontology_reasoning?.knowledgeLayerStatus,
 }, null, 2));

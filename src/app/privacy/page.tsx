@@ -1,2 +1,18 @@
-import AceCoachMark from "@/components/design-system/AceCoachMark";
-export default function PrivacyPage(){return <main className="min-h-screen bg-[#F6F8FB] px-5 py-12 text-slate-950"><article className="mx-auto max-w-3xl rounded-3xl border border-slate-200 bg-white p-7 shadow-sm sm:p-10"><AceCoachMark/><h1 className="mt-10 text-4xl font-semibold tracking-[-0.035em]">Privacy</h1><div className="mt-6 space-y-5 text-sm leading-7 text-slate-600"><p>AceCoach stores uploaded videos privately and uses signed, time-limited access for analysis and playback. Your original video remains available until you delete it or the documented retention policy applies.</p><p>Required service-processing consent is separate from optional research or model-improvement consent. AceCoach does not use raw media for training without explicit permission.</p><p>Analysis and coaching conversations are tied to your account and protected by server-side ownership checks and row-level security.</p></div></article></main>}
+import ContextualPageShell from "@/components/layout/ContextualPageShell";
+
+export default function PrivacyPage() {
+  return (
+    <ContextualPageShell maxWidth="max-w-5xl">
+      <article className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm sm:p-10">
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-800">Privacy and data</p>
+        <h1 className="mt-3 text-4xl font-semibold tracking-[-0.035em] text-slate-950">Your videos remain yours</h1>
+        <div className="mt-8 grid gap-6 text-sm leading-7 text-slate-600 md:grid-cols-2">
+          <section><h2 className="text-lg font-semibold text-slate-950">Private by default</h2><p className="mt-2">Uploaded videos are stored privately. Athlentra uses signed, time-limited access for analysis and playback.</p></section>
+          <section><h2 className="text-lg font-semibold text-slate-950">Separate choices</h2><p className="mt-2">Processing consent is separate from optional product-improvement consent. Raw video is never used for improvement without your explicit permission.</p></section>
+          <section><h2 className="text-lg font-semibold text-slate-950">Protected account data</h2><p className="mt-2">Reports, practice history, and coaching conversations are tied to your account and protected by ownership checks.</p></section>
+          <section><h2 className="text-lg font-semibold text-slate-950">Deletion controls</h2><p className="mt-2">Delete individual videos from My Videos, or permanently delete your account and associated coaching data from Account.</p></section>
+        </div>
+      </article>
+    </ContextualPageShell>
+  );
+}

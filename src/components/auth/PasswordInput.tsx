@@ -17,17 +17,17 @@ export default function PasswordInput({ wrapperClassName, className, id, ...prop
   return (
     <div
       className={cn(
-        "group flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/60 px-4 py-3 transition-all duration-200",
-        "focus-within:border-emerald-500/50 focus-within:bg-slate-950/80 focus-within:ring-1 focus-within:ring-emerald-500/20",
+        "group flex items-center gap-3 rounded-2xl border border-slate-300 bg-white px-4 py-3 transition-all duration-200",
+        "focus-within:border-blue-600 focus-within:ring-2 focus-within:ring-blue-100",
         wrapperClassName,
       )}
     >
-      <Lock className="h-4 w-4 shrink-0 text-slate-500 transition-colors group-focus-within:text-emerald-400" />
+      <Lock className="h-4 w-4 shrink-0 text-slate-400 transition-colors group-focus-within:text-blue-700" />
       <input
         {...props}
         id={inputId}
         type={show ? "text" : "password"}
-        className={cn("w-full bg-transparent text-sm text-white outline-none placeholder:text-slate-600", className)}
+        className={cn("w-full bg-transparent text-sm text-slate-950 outline-none placeholder:text-slate-500", className)}
       />
       <button
         type="button"
@@ -35,7 +35,7 @@ export default function PasswordInput({ wrapperClassName, className, id, ...prop
         aria-label={show ? "Hide password" : "Show password"}
         aria-pressed={show}
         aria-controls={inputId}
-        className="shrink-0 text-slate-500 transition-colors hover:text-slate-300 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 rounded"
+        className="shrink-0 rounded text-slate-500 transition-colors hover:text-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-600/40"
       >
         {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
       </button>

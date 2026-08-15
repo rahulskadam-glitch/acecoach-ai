@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from statistics import mean, median, pstdev
-from typing import Iterable
+from typing import Any, Iterable
 
 import numpy as np
 
@@ -11,7 +11,7 @@ from .frame_types import PoseFrame
 from .temporal import RepetitionWindow, coefficient_of_variation, detect_repetitions
 
 BIOMECHANICS_VERSION = "camera-aware-kinematics-v1.1.0"
-SCORING_VERSION = "criterion-control-index-v1.1.0"
+SCORING_VERSION = "knowledge-controlled-criterion-index-v2.0.0"
 
 KEY_LANDMARKS = (
     "nose",
@@ -165,7 +165,9 @@ def _phase_for_frame(frame_index: int, windows: list[RepetitionWindow]) -> tuple
     return None, None
 
 
-def _capture_quality(frames: list[PoseFrame]) -> dict:
+def _capture_quality(frames: list[PoseFrame], policy: dict[str, Any], policy_id: str, policy_version: str) -> dict:
+    if not isinstance(policy, dict) or not policy:
+        raise ValueError("A knowledge-controlled capture-quality policy is required.")
     if not frames:
         return {
             "score": 0,
@@ -173,9 +175,16 @@ def _capture_quality(frames: list[PoseFrame]) -> dict:
             "positives": [],
             "limitations": ["No frames were decoded."],
             "diagnostics": {},
+            "policyId": policy_id,
+            "policyVersion": policy_version,
+            "knowledgeControlled": True,
         }
 
-    core_coverage = mean(1.0 if frame.core_visibility >= 0.55 else 0.0 for frame in frames)
+    score_scale = float(policy["score_scale"])
+    core_coverage = mean(
+        1.0 if frame.core_visibility >= float(policy["core_landmark_visibility_minimum"]) else 0.0
+        for frame in frames
+    )
     clipping_ratio = mean(1.0 if frame.edge_clipping else 0.0 for frame in frames)
     brightness = median(frame.brightness for frame in frames)
     contrast = median(frame.contrast for frame in frames)
@@ -183,42 +192,45 @@ def _capture_quality(frames: list[PoseFrame]) -> dict:
     boxes = [frame.body_box for frame in frames if frame.body_box]
     body_height = median(float(box["height"]) for box in boxes) if boxes else 0.0
 
-    visibility_score = min(100.0, core_coverage * 100.0)
-    framing_score = max(0.0, 100.0 - clipping_ratio * 130.0)
-    body_scale_score = max(0.0, min(100.0, (body_height - 0.18) / 0.42 * 100.0))
-    brightness_score = max(0.0, 100.0 - abs(brightness - 0.52) * 220.0)
-    contrast_score = max(0.0, min(100.0, contrast * 82.0))
-    blur_score = max(0.0, min(100.0, math.log1p(max(0.0, blur)) / math.log(401.0) * 100.0))
+    visibility_score = min(score_scale, core_coverage * score_scale)
+    framing_score = max(0.0, score_scale - clipping_ratio * float(policy["framing_clipping_penalty"]))
+    body_scale_score = max(0.0, min(score_scale, (body_height - float(policy["body_height_floor"])) / float(policy["body_height_span"]) * score_scale))
+    brightness_score = max(0.0, score_scale - abs(brightness - float(policy["brightness_target"])) * float(policy["brightness_penalty"]))
+    contrast_score = max(0.0, min(score_scale, contrast * float(policy["contrast_multiplier"])))
+    blur_score = max(0.0, min(score_scale, math.log1p(max(0.0, blur)) / math.log(float(policy["blur_log_ceiling"])) * score_scale))
 
+    weights = policy["weights"]
     score = round(
-        visibility_score * 0.34
-        + framing_score * 0.24
-        + body_scale_score * 0.16
-        + brightness_score * 0.10
-        + contrast_score * 0.06
-        + blur_score * 0.10
+        visibility_score * float(weights["visibility"])
+        + framing_score * float(weights["framing"])
+        + body_scale_score * float(weights["body_scale"])
+        + brightness_score * float(weights["brightness"])
+        + contrast_score * float(weights["contrast"])
+        + blur_score * float(weights["blur"])
     )
-    grade = "excellent" if score >= 85 else "good" if score >= 72 else "usable" if score >= 58 else "limited" if score >= 42 else "unusable"
+    grades = policy["grade_minimums"]
+    grade = "excellent" if score >= float(grades["excellent"]) else "good" if score >= float(grades["good"]) else "usable" if score >= float(grades["usable"]) else "limited" if score >= float(grades["limited"]) else "unusable"
 
     positives: list[str] = []
     limitations: list[str] = []
-    if core_coverage >= 0.85:
+    feedback = policy["feedback_thresholds"]
+    if core_coverage >= float(feedback["core_coverage_good"]):
         positives.append("Core body landmarks were visible through most of the clip.")
     else:
-        limitations.append(f"Core-body pose coverage was {core_coverage * 100:.0f}%; aim for at least 85%.")
-    if clipping_ratio <= 0.05:
+        limitations.append(f"Core-body pose coverage was {core_coverage * score_scale:.0f}%; improve full-body visibility.")
+    if clipping_ratio <= float(feedback["edge_clipping_good_maximum"]):
         positives.append("The athlete remained inside the frame for nearly the entire clip.")
     else:
         limitations.append(f"The body touched the image edge in {clipping_ratio * 100:.0f}% of frames.")
-    if body_height >= 0.38:
+    if body_height >= float(feedback["body_height_good_minimum"]):
         positives.append("Athlete scale was large enough for useful body tracking.")
     else:
         limitations.append("The athlete appears small in frame; move the camera closer while keeping the full body visible.")
-    if brightness < 0.20:
+    if brightness < float(feedback["brightness_low"]):
         limitations.append("The clip is underexposed; increase lighting.")
-    elif brightness > 0.88:
+    elif brightness > float(feedback["brightness_high"]):
         limitations.append("The clip is overexposed; reduce backlighting or glare.")
-    if blur < 35:
+    if blur < float(feedback["blur_low"]):
         limitations.append("Motion blur is high; use brighter light or a higher shutter speed/frame rate.")
 
     return {
@@ -234,10 +246,24 @@ def _capture_quality(frames: list[PoseFrame]) -> dict:
             "medianBlurScore": round(blur, 2),
             "medianBodyHeightRatio": round(body_height, 4),
         },
+        "policyId": policy_id,
+        "policyVersion": policy_version,
+        "knowledgeControlled": True,
     }
 
 
-def compute_frame_metrics(frames: list[PoseFrame], fps: float, dominant_side: str = "right") -> BiomechanicsResult:
+def compute_frame_metrics(
+    frames: list[PoseFrame],
+    fps: float,
+    dominant_side: str = "right",
+    *,
+    control_policy: dict[str, Any],
+) -> BiomechanicsResult:
+    if not isinstance(control_policy, dict) or control_policy.get("fail_closed") is not True:
+        raise ValueError("A fail-closed analysis control policy is required for measurement calculations.")
+    scoring_policy = control_policy.get("scoring")
+    if not isinstance(scoring_policy, dict) or not isinstance(scoring_policy.get("capture_quality"), dict):
+        raise ValueError("The analysis control policy does not authorize capture-quality calculations.")
     side = "left" if dominant_side.lower().startswith("left") else "right"
     opposite = "right" if side == "left" else "left"
     motion_signal, repetition_windows = detect_repetitions(frames, fps, dominant_side)
@@ -549,7 +575,12 @@ def compute_frame_metrics(frames: list[PoseFrame], fps: float, dominant_side: st
             "hipChainSpeedBodyPerSecond": round(mean(first_hips), 6) if first_hips else None,
         })
 
-    capture_quality = _capture_quality(frames)
+    capture_quality = _capture_quality(
+        frames,
+        scoring_policy["capture_quality"],
+        str(scoring_policy["policy_id"]),
+        str(control_policy["version"]),
+    )
     pose_coverage = round(float(capture_quality["diagnostics"].get("corePoseCoverage", 0.0)), 6)
 
     repetition_summaries: list[dict] = []
@@ -682,11 +713,19 @@ def _timeline_timestamp(result: BiomechanicsResult, phase: str) -> float:
     return float(item.get("timestampSeconds", 0.0)) if item else 0.0
 
 
-def _score_band(value: float, ideal_low: float, ideal_high: float, tolerance: float) -> int:
+def _score_band(
+    value: float,
+    ideal_low: float,
+    ideal_high: float,
+    tolerance: float,
+    band_policy: dict[str, Any],
+) -> int:
+    anchor = float(band_policy["anchor"])
+    penalty_span = float(band_policy["penalty_span"])
     if ideal_low <= value <= ideal_high:
-        return 88
+        return clamp_score(anchor)
     distance = ideal_low - value if value < ideal_low else value - ideal_high
-    return clamp_score(88 - distance / max(tolerance, 1e-6) * 38)
+    return clamp_score(anchor - distance / max(tolerance, 1e-6) * penalty_span)
 
 
 def score_from_measurements(
@@ -694,69 +733,74 @@ def score_from_measurements(
     action_type: str,
     movement_confirmed: bool,
     sport_id: str = "tennis",
+    *,
+    control_policy: dict[str, Any],
 ) -> tuple[int | None, list[dict], list[dict], float, str]:
+    if not isinstance(control_policy, dict) or control_policy.get("fail_closed") is not True:
+        raise ValueError("A fail-closed analysis control policy is required for scoring.")
+    scoring = control_policy.get("scoring")
+    if not isinstance(scoring, dict) or not scoring.get("policy_id"):
+        raise ValueError("The analysis control policy does not authorize scoring.")
+    policy_id = str(scoring["policy_id"])
+    policy_version = str(control_policy["version"])
+    phases_policy = scoring["phases"]
+    phase_by_id = {str(item["id"]): item for item in phases_policy}
+    components = scoring["components"]
+    band_policy = scoring["score_band"]
     capture_score = int(result.capture_quality.get("score", 0))
-    measurement_confidence = round(max(0.0, min(1.0, capture_score / 100.0 * 0.88)), 3)
+    capture_scale = float(scoring["measurement_confidence"]["capture_scale"])
+    measurement_confidence = round(max(0.0, min(1.0, capture_score / 100.0 * capture_scale)), 3)
 
-    if sport_id != "tennis":
+    def controlled(record: dict[str, Any]) -> dict[str, Any]:
+        return {**record, "policyId": policy_id, "policyVersion": policy_version, "knowledgeControlled": True}
+
+    if sport_id not in set(scoring["supported_sports"]):
         phase_scores = [
-            {
-                "id": phase,
-                "label": label,
+            controlled({
+                "id": phase["id"],
+                "label": phase["label"],
                 "score": None,
                 "note": "Technique scoring is not validated for this sport in the current engine.",
                 "confidence": measurement_confidence,
                 "basis": "unsupported_sport_capture_only",
-            }
-            for phase, label in [
-                ("readiness", "Ready position & footwork"),
-                ("preparation", "Preparation & backlift"),
-                ("loading", "Body loading & positioning"),
-                ("acceleration", "Forward swing path"),
-                ("contact", "Contact position proxy"),
-                ("follow_through", "Follow-through & finish"),
-                ("recovery", "Recovery"),
-            ]
+            })
+            for phase in phases_policy
         ]
-        metric_scores = [{
+        metric_scores = [controlled({
             "id": "video_measurability",
             "label": "Video measurability",
             "score": capture_score,
             "explanation": "Only capture quality is assessed because this sport pack is not yet validated.",
             "confidence": 1.0,
             "basis": "measured_capture_quality",
-        }]
+        })]
         return None, phase_scores, metric_scores, measurement_confidence, "blocked_unsupported_sport"
+
+    scoring_action = {"backhand_slice": "slice_backhand", "slice": "slice_backhand"}.get(action_type, action_type)
+    if scoring_action not in set(scoring["supported_actions"]):
+        raise ValueError(f"No knowledge-controlled scoring policy exists for action '{action_type}'.")
 
     if not movement_confirmed:
         phase_scores = [
-            {
-                "id": phase,
-                "label": label,
+            controlled({
+                "id": phase["id"],
+                "label": phase["label"],
                 "score": None,
                 "note": "Confirm the movement before sport-specific scoring is produced.",
                 "confidence": measurement_confidence,
                 "basis": "pending_movement_confirmation",
-            }
-            for phase, label in [
-                ("readiness", "Ready position & footwork"),
-                ("preparation", "Preparation & backlift"),
-                ("loading", "Body loading & positioning"),
-                ("acceleration", "Forward swing path"),
-                ("contact", "Contact position proxy"),
-                ("follow_through", "Follow-through & finish"),
-                ("recovery", "Recovery"),
-            ]
+            })
+            for phase in phases_policy
         ]
         metric_scores = [
-            {
+            controlled({
                 "id": "video_measurability",
                 "label": "Video measurability",
                 "score": capture_score,
                 "explanation": "Capture quality can be assessed before the stroke label is confirmed.",
                 "confidence": measurement_confidence,
                 "basis": "measured_capture_quality",
-            }
+            })
         ]
         return None, phase_scores, metric_scores, measurement_confidence, "pending_movement_confirmation"
 
@@ -795,17 +839,29 @@ def score_from_measurements(
         if contact_head_values
         else head_range
     )
+    head_policy = components["head_control"].get(scoring_action, components["head_control"]["default"])
+    head_measurement = contact_head_range if head_policy["measurement"] == "acceleration_to_follow_through_head_range" else head_range
     head_control = clamp_score(
-        94 - contact_head_range * 240
-        if action_type == "two_handed_backhand"
-        else 92 - head_range * 165
+        float(head_policy["base"]) - head_measurement * float(head_policy["movement_penalty"])
     )
-    base_control = _score_band(stance_median, 0.75, 2.35, 1.0)
-    repeatability = 58
+    base_policy = components["base_control"]
+    base_control = _score_band(
+        stance_median,
+        float(base_policy["ideal_low"]),
+        float(base_policy["ideal_high"]),
+        float(base_policy["tolerance"]),
+        band_policy,
+    )
+    repeatability_policy = components["repeatability"]
+    repeatability = float(repeatability_policy["missing_multi_rep_score"])
     if duration_cv is not None and peak_cv is not None:
-        repeatability = clamp_score(96 - float(duration_cv) * 125 - float(peak_cv) * 105)
+        repeatability = clamp_score(
+            float(repeatability_policy["multi_rep_base"])
+            - float(duration_cv) * float(repeatability_policy["duration_cv_penalty"])
+            - float(peak_cv) * float(repeatability_policy["peak_cv_penalty"])
+        )
     elif len(result.repetitions) == 1:
-        repeatability = 55
+        repeatability = float(repeatability_policy["single_rep_score"])
 
     ready_knees = [
         float(ready.get(key) or 175.0) if ready else 175.0
@@ -823,8 +879,18 @@ def score_from_measurements(
     knee_extension_changes = [max(0.0, finish_angle - load_angle) for finish_angle, load_angle in zip(finish_knees, loading_knees, strict=True)]
     knee_flex_change = max(knee_flex_changes)
     knee_extension_change = max(knee_extension_changes)
-    loading_control = clamp_score(52 + min(36, knee_flex_change * 1.55) + capture_score * 0.08)
-    extension_control = clamp_score(50 + min(38, knee_extension_change * 1.45) + capture_score * 0.08)
+    loading_policy = components["loading_control"]
+    extension_policy = components["extension_control"]
+    loading_control = clamp_score(
+        float(loading_policy["base"])
+        + min(float(loading_policy["change_cap"]), knee_flex_change * float(loading_policy["change_multiplier"]))
+        + capture_score * float(loading_policy["capture_multiplier"])
+    )
+    extension_control = clamp_score(
+        float(extension_policy["base"])
+        + min(float(extension_policy["change_cap"]), knee_extension_change * float(extension_policy["change_multiplier"]))
+        + capture_score * float(extension_policy["capture_multiplier"])
+    )
 
     preparation_index = _timeline_index(result, "preparation")
     contact_index = _timeline_index(result, "contact_proxy")
@@ -833,53 +899,102 @@ def score_from_measurements(
     forward_span = max(1, (contact_index or 0) - (acceleration_index or 0))
     recovery_span = max(1, (recovery_index or 0) - (contact_index or 0))
     tempo_ratio = prep_span / max(1, prep_span + forward_span)
-    preparation_control = _score_band(tempo_ratio, 0.48, 0.82, 0.30)
+    preparation_policy = components["preparation_control"]
+    preparation_control = _score_band(
+        tempo_ratio,
+        float(preparation_policy["ideal_low"]),
+        float(preparation_policy["ideal_high"]),
+        float(preparation_policy["tolerance"]),
+        band_policy,
+    )
 
     peak_prominence = motion_peak / max(0.0001, motion_mean)
-    acceleration_control = clamp_score(46 + min(38, peak_prominence * 9.5) + capture_score * 0.08)
-    if action_type == "two_handed_backhand":
-        acceleration_control = clamp_score(acceleration_control * 0.68 + extension_control * 0.32)
+    acceleration_policy = components["acceleration_control"]
+    acceleration_control = clamp_score(
+        float(acceleration_policy["base"])
+        + min(float(acceleration_policy["prominence_cap"]), peak_prominence * float(acceleration_policy["prominence_multiplier"]))
+        + capture_score * float(acceleration_policy["capture_multiplier"])
+    )
+    if scoring_action == "two_handed_backhand":
+        blend = acceleration_policy["two_handed_backhand_blend"]
+        acceleration_control = clamp_score(
+            acceleration_control * float(blend["acceleration"])
+            + extension_control * float(blend["extension"])
+        )
 
     contact_spacing = float(contact.get("handToTorsoNormalized") or 0.0) if contact else 0.0
-    spacing_bands = {
-        "serve": (1.25, 3.4),
-        "overhead": (1.15, 3.2),
-        "forehand_volley": (0.75, 2.3),
-        "backhand_volley": (0.75, 2.3),
-    }
-    spacing_low, spacing_high = spacing_bands.get(action_type, (0.85, 2.75))
-    spacing_control = _score_band(contact_spacing, spacing_low, spacing_high, 1.0)
-    contact_control = clamp_score(spacing_control * 0.62 + head_control * 0.25 + capture_score * 0.13)
+    spacing_policy = components["contact_spacing"]
+    spacing_band = spacing_policy.get(scoring_action, spacing_policy["default"])
+    spacing_low, spacing_high = float(spacing_band["low"]), float(spacing_band["high"])
+    spacing_control = _score_band(
+        contact_spacing,
+        spacing_low,
+        spacing_high,
+        float(spacing_policy["tolerance"]),
+        band_policy,
+    )
+    contact_blend = spacing_policy["blend"]
+    contact_control = clamp_score(
+        spacing_control * float(contact_blend["spacing"])
+        + head_control * float(contact_blend["head"])
+        + capture_score * float(contact_blend["capture"])
+    )
 
     recovery_motion = float(recovery.get("motionEnergy") or 0.0) if recovery else 0.0
     contact_motion = float(contact.get("motionEnergy") or 0.0) if contact else 0.0
     reset_ratio = recovery_motion / max(contact_motion, 0.0001)
-    recovery_control = clamp_score(88 - min(44, reset_ratio * 38) + head_control * 0.10)
-    finish_control = clamp_score((head_control * 0.40) + (recovery_control * 0.38) + (repeatability * 0.22))
+    recovery_policy = components["recovery_control"]
+    recovery_control = clamp_score(
+        float(recovery_policy["base"])
+        - min(float(recovery_policy["motion_penalty_cap"]), reset_ratio * float(recovery_policy["motion_penalty_multiplier"]))
+        + head_control * float(recovery_policy["head_multiplier"])
+    )
+    finish_policy = components["finish_control"]
+    finish_control = clamp_score(
+        head_control * float(finish_policy["head"])
+        + recovery_control * float(finish_policy["recovery"])
+        + repeatability * float(finish_policy["repeatability"])
+    )
 
+    phase_components = {
+        "readiness": clamp_score(
+            base_control * float(phase_by_id["readiness"]["component_weights"]["base_control"])
+            + head_control * float(phase_by_id["readiness"]["component_weights"]["head_control"])
+        ),
+        "preparation": preparation_control,
+        "loading": loading_control,
+        "acceleration": acceleration_control,
+        "contact": contact_control,
+        "follow_through": finish_control,
+        "recovery": recovery_control,
+    }
     phase_scores = [
-        {"id": "readiness", "label": "Ready position & footwork", "score": clamp_score(base_control * 0.55 + head_control * 0.45), "note": "Body-scaled base width and head stability before the stroke.", "confidence": measurement_confidence, "basis": "2d_pose_control_proxy"},
-        {"id": "preparation", "label": "Preparation & backlift", "score": preparation_control, "note": "Relative time allocated to preparation before forward acceleration.", "confidence": measurement_confidence, "basis": "temporal_phase_proxy"},
-        {"id": "loading", "label": "Body loading & positioning", "score": loading_control, "note": "The visible knee-bend load before the forward swing; leg drive is scored separately.", "confidence": measurement_confidence, "basis": "world_pose_angle_proxy"},
-        {"id": "acceleration", "label": "Forward swing rhythm", "score": acceleration_control, "note": "Whole-chain motion shape, with the post-load knee drive included for the two-handed backhand.", "confidence": measurement_confidence, "basis": "smoothed_pose_and_world_angle_proxy" if action_type == "two_handed_backhand" else "smoothed_pose_motion_signal"},
-        {"id": "contact", "label": "Contact-position proxy", "score": contact_control, "note": "Body-scaled hand spacing and head control at peak whole-chain motion; the ball is not detected.", "confidence": measurement_confidence * 0.82, "basis": "peak_motion_proxy"},
-        {"id": "follow_through", "label": "Follow-through & finish", "score": finish_control, "note": "Post-peak body control, head stability, and repeatability.", "confidence": measurement_confidence, "basis": "post_peak_control_proxy"},
-        {"id": "recovery", "label": "Recovery", "score": recovery_control, "note": "Post-peak motion decay, body-relative head control, and reset timing; court recovery is not directly measured.", "confidence": measurement_confidence, "basis": "post_peak_motion_decay_proxy"},
+        controlled({
+            "id": phase["id"],
+            "label": phase["label"],
+            "score": phase_components[phase["id"]],
+            "note": phase["note"],
+            "confidence": measurement_confidence * float(phase.get("confidence_multiplier", 1.0)),
+            "basis": phase["basis"],
+        })
+        for phase in phases_policy
     ]
 
+    developing_boundary = float(scoring["evidence_direction_score_boundary"])
+    contact_confidence_multiplier = float(phase_by_id["contact"].get("confidence_multiplier", 1.0))
+    repetition_confidence = scoring["measurement_confidence"]
     metric_scores = [
-        {"id": "video_measurability", "label": "Video measurability", "score": capture_score, "explanation": f"Capture quality grade: {result.capture_quality.get('grade', 'unknown')}.", "confidence": 1.0, "basis": "measured_capture_quality"},
-        {"id": "footwork_base", "label": "Footwork and base", "score": phase_scores[0]["score"], "explanation": f"Median ankle-to-ankle width was {stance_median:.2f} shoulder widths; this is a body-scaled image-plane measure.", "confidence": measurement_confidence, "basis": "2d_body_scaled_distance", "evidenceRecords": [{"metricId": "base_width_hip_widths", "value": round(stance_median, 5), "unit": "shoulder_widths", "measurementClass": "BODY_NORMALIZED_2D", "quality": "proxy", "deviation": "low" if stance_median < 0.75 else "high" if stance_median > 2.35 else "within_band"}]},
-        {"id": "body_position", "label": "Body position and head stability", "score": head_control, "explanation": (f"Body-relative head movement from forward acceleration through follow-through was {contact_head_range:.3f} shoulder-scaled units." if action_type == "two_handed_backhand" else f"Body-relative head movement within the primary repetition was {head_range:.3f} shoulder-scaled units."), "confidence": measurement_confidence, "basis": "2d_pose_stability_proxy", "evidenceRecords": [{"metricId": "head_displacement_body_ratio", "value": round(contact_head_range if action_type == "two_handed_backhand" else head_range, 6), "unit": "shoulder_widths", "measurementClass": "BODY_NORMALIZED_2D", "quality": "estimated", "deviation": "high" if head_control < 78 else "within_band"}]},
-        {"id": "backlift_preparation", "label": "Preparation timing", "score": preparation_control, "explanation": f"Preparation occupied approximately {tempo_ratio * 100:.0f}% of the preparation-to-contact window.", "confidence": measurement_confidence, "basis": "temporal_phase_proxy"},
-        {"id": "lower_body_loading", "label": "Knee loading", "score": loading_control, "explanation": f"The larger visible knee-flexion change was approximately {knee_flex_change:.1f}° from ready to loading. This is the load event, scored separately from the later drive.", "confidence": measurement_confidence, "basis": "world_pose_angle_proxy", "evidenceRecords": [{"metricId": "knee_flexion_deg", "value": round(knee_flex_change, 4), "unit": "degrees_change", "measurementClass": "MONOCULAR_3D_ESTIMATE", "quality": "estimated", "deviation": "low" if loading_control < 78 else "within_band"}]},
-        {"id": "lower_body_extension", "label": "Knee drive after loading", "score": extension_control, "explanation": f"The larger visible knee-extension change was approximately {knee_extension_change:.1f}° from loading into follow-through.", "confidence": measurement_confidence, "basis": "world_pose_angle_proxy"},
-        {"id": "hand_swing_path", "label": "Swing rhythm and acceleration", "score": acceleration_control, "explanation": f"The smoothed whole-chain motion peak was {peak_prominence:.2f}× the clip mean.", "confidence": measurement_confidence, "basis": "smoothed_pose_motion_signal"},
-        {"id": "contact_spacing", "label": "Contact-spacing proxy", "score": contact_control, "explanation": f"At peak whole-chain motion, hand-to-torso distance was {contact_spacing:.2f} shoulder widths.", "confidence": measurement_confidence * 0.82, "basis": "peak_motion_proxy_without_ball"},
-        {"id": "ending_position", "label": "Ending position and recovery", "score": finish_control, "explanation": f"The post-peak reset lasted {recovery_span} frames; court-position recovery is not directly measured.", "confidence": measurement_confidence, "basis": "post_peak_control_proxy", "evidenceRecords": [{"metricId": "recovery_latency_ms", "value": round(max(0.0, (_timeline_timestamp(result, "recovery") - _timeline_timestamp(result, "contact_proxy")) * 1000.0), 2), "unit": "milliseconds", "measurementClass": "EVENT_TIMING", "quality": "estimated", "deviation": "high" if recovery_control < 78 else "within_band"}]},
-        {"id": "repeatability", "label": "Repetition consistency", "score": repeatability, "explanation": f"{len(result.repetitions)} repetition{'s' if len(result.repetitions) != 1 else ''} were detected; consistency is more reliable with at least three.", "confidence": min(measurement_confidence, 0.85 if len(result.repetitions) >= 3 else 0.55), "basis": "between_repetition_variability"},
+        controlled({"id": "video_measurability", "label": "Video measurability", "score": capture_score, "explanation": f"Capture quality grade: {result.capture_quality.get('grade', 'unknown')}.", "confidence": 1.0, "basis": "measured_capture_quality"}),
+        controlled({"id": "footwork_base", "label": "Footwork and base", "score": phase_scores[0]["score"], "explanation": f"Median ankle-to-ankle width was {stance_median:.2f} shoulder widths; this is a body-scaled image-plane measure.", "confidence": measurement_confidence, "basis": "2d_body_scaled_distance", "evidenceRecords": [{"metricId": "base_width_hip_widths", "value": round(stance_median, 5), "unit": "shoulder_widths", "measurementClass": "BODY_NORMALIZED_2D", "quality": "proxy", "deviation": "low" if stance_median < float(base_policy["ideal_low"]) else "high" if stance_median > float(base_policy["ideal_high"]) else "within_band"}]}),
+        controlled({"id": "body_position", "label": "Body position and head stability", "score": head_control, "explanation": (f"Body-relative head movement from forward acceleration through follow-through was {contact_head_range:.3f} shoulder-scaled units." if scoring_action == "two_handed_backhand" else f"Body-relative head movement within the primary repetition was {head_range:.3f} shoulder-scaled units."), "confidence": measurement_confidence, "basis": "2d_pose_stability_proxy", "evidenceRecords": [{"metricId": "head_displacement_body_ratio", "value": round(head_measurement, 6), "unit": "shoulder_widths", "measurementClass": "BODY_NORMALIZED_2D", "quality": "estimated", "deviation": "high" if head_control < developing_boundary else "within_band"}]}),
+        controlled({"id": "backlift_preparation", "label": "Preparation timing", "score": preparation_control, "explanation": f"Preparation occupied approximately {tempo_ratio * 100:.0f}% of the preparation-to-contact window.", "confidence": measurement_confidence, "basis": "temporal_phase_proxy"}),
+        controlled({"id": "lower_body_loading", "label": "Knee loading", "score": loading_control, "explanation": f"The larger visible knee-flexion change was approximately {knee_flex_change:.1f}° from ready to loading. This is the load event, scored separately from the later drive.", "confidence": measurement_confidence, "basis": "world_pose_angle_proxy", "evidenceRecords": [{"metricId": "knee_flexion_deg", "value": round(knee_flex_change, 4), "unit": "degrees_change", "measurementClass": "MONOCULAR_3D_ESTIMATE", "quality": "estimated", "deviation": "low" if loading_control < developing_boundary else "within_band"}]}),
+        controlled({"id": "lower_body_extension", "label": "Knee drive after loading", "score": extension_control, "explanation": f"The larger visible knee-extension change was approximately {knee_extension_change:.1f}° from loading into follow-through.", "confidence": measurement_confidence, "basis": "world_pose_angle_proxy"}),
+        controlled({"id": "hand_swing_path", "label": "Swing rhythm and acceleration", "score": acceleration_control, "explanation": f"The smoothed whole-chain motion peak was {peak_prominence:.2f}× the clip mean.", "confidence": measurement_confidence, "basis": "smoothed_pose_motion_signal"}),
+        controlled({"id": "contact_spacing", "label": "Contact-spacing proxy", "score": contact_control, "explanation": f"At peak whole-chain motion, hand-to-torso distance was {contact_spacing:.2f} shoulder widths.", "confidence": measurement_confidence * contact_confidence_multiplier, "basis": "peak_motion_proxy_without_ball"}),
+        controlled({"id": "ending_position", "label": "Ending position and recovery", "score": finish_control, "explanation": f"The post-peak reset lasted {recovery_span} frames; court-position recovery is not directly measured.", "confidence": measurement_confidence, "basis": "post_peak_control_proxy", "evidenceRecords": [{"metricId": "recovery_latency_ms", "value": round(max(0.0, (_timeline_timestamp(result, "recovery") - _timeline_timestamp(result, "contact_proxy")) * 1000.0), 2), "unit": "milliseconds", "measurementClass": "EVENT_TIMING", "quality": "estimated", "deviation": "high" if recovery_control < developing_boundary else "within_band"}]}),
+        controlled({"id": "repeatability", "label": "Repetition consistency", "score": repeatability, "explanation": f"{len(result.repetitions)} repetition{'s' if len(result.repetitions) != 1 else ''} were detected; consistency is more reliable with at least three.", "confidence": min(measurement_confidence, float(repetition_confidence["repeatability_three_plus_cap"] if len(result.repetitions) >= 3 else repetition_confidence["repeatability_under_three_cap"])), "basis": "between_repetition_variability"}),
     ]
 
-    weights = [0.10, 0.16, 0.15, 0.17, 0.18, 0.13, 0.11]
-    overall = clamp_score(sum(float(item["score"]) * weight for item, weight in zip(phase_scores, weights, strict=True)))
+    overall = clamp_score(sum(float(item["score"]) * float(phase["weight"]) for item, phase in zip(phase_scores, phases_policy, strict=True)))
     return overall, phase_scores, metric_scores, measurement_confidence, "provisional_criterion_index"

@@ -1,4 +1,7 @@
 const replacements: Array<[RegExp, string]> = [
+  [/here is my honest read:\s*/gi, ""],
+  [/build a comparable evidence baseline before changing technique/gi, "record a few more clear swings before choosing a technique change"],
+  [/comparable evidence/gi, "clear video evidence"],
   [/stable visual and postural control supports cleaner timing and directional control/gi, "a steady head and balanced body help you time the movement and control the result"],
   [/visual and postural control/gi, "head steadiness and balance"],
   [/body position and head control/gi, "keep your head steady through contact"],

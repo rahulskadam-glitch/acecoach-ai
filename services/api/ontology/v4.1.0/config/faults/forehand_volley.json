@@ -19,7 +19,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "delays reaction and preparation",
     "player_message": "Split as your opponent hits.",
-    "coach_message_template": "Missing or mistimed split step: {evidence_summary}.",
     "overlay_markers": [
       "FOOT_TRAIL",
       "TIMING_DELTA"
@@ -113,7 +112,8 @@
       "required_when_player_baseline_available": true,
       "question": "Does this feature differ between successful and weak comparable reps before the visible effect appears?",
       "reject_root_cause_when": "difference is absent in self-best contrast or counterexample rate is high"
-    }
+    },
+    "capability_status": "dormant_pending_validated_ball_tracking"
   },
   {
     "fault_id": "FHV-READY-01",
@@ -135,7 +135,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "increases preparation distance under time pressure",
     "player_message": "Keep the racket up and in front.",
-    "coach_message_template": "Racket held too low: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_HEAD_CENTER",
       "TARGET_GHOST"
@@ -251,7 +250,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "delays contact and reduces control",
     "player_message": "Keep the volley preparation compact.",
-    "coach_message_template": "Excessive backswing: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "TRUNK_AXIS",
@@ -368,7 +366,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "makes timely contact difficult",
     "player_message": "Keep your elbow in front of your body.",
-    "coach_message_template": "Elbow behind body: {evidence_summary}.",
     "overlay_markers": [
       "ELBOW_ANGLE_L",
       "ELBOW_ANGLE_R",
@@ -485,7 +482,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces directional control",
     "player_message": "Catch the ball farther in front.",
-    "coach_message_template": "Late contact: {evidence_summary}.",
     "overlay_markers": [
       "CONTACT_POINT",
       "CONTACT_WINDOW"
@@ -601,7 +597,6 @@
     "measurement_class": "INFERRED",
     "performance_consequence": "reduces precision on fast balls",
     "player_message": "Keep the racket face stable through contact.",
-    "coach_message_template": "Racket-face instability: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_FACE_ESTIMATE",
       "CONFIDENCE_BADGE"
@@ -712,7 +707,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces controlled penetration",
     "player_message": "Step and move through the ball.",
-    "coach_message_template": "No forward transfer when available: {evidence_summary}.",
     "overlay_markers": [
       "COM_ESTIMATE",
       "FOOT_TRAIL",
@@ -829,7 +823,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces timing and touch",
     "player_message": "Punch the volley; do not take a full swing.",
-    "coach_message_template": "Groundstroke-like swing: {evidence_summary}.",
     "overlay_markers": [
       "RACKET_PATH",
       "PATH_CORRIDOR"
@@ -945,7 +938,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces pace absorption and direction",
     "player_message": "Stay forward and balanced.",
-    "coach_message_template": "Falling away from contact: {evidence_summary}.",
     "overlay_markers": [
       "COM_ESTIMATE",
       "BASE_OF_SUPPORT"
@@ -1061,7 +1053,6 @@
     "measurement_class": "MEASURED_OR_ESTIMATED",
     "performance_consequence": "reduces readiness for the next volley",
     "player_message": "Reset the racket and split again.",
-    "coach_message_template": "Racket or feet fail to reset: {evidence_summary}.",
     "overlay_markers": [
       "RECOVERY_TARGET",
       "RACKET_PATH",

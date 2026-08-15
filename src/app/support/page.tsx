@@ -1,6 +1,6 @@
 import { Clock3, MessageCircleQuestion } from "lucide-react";
 
-import JourneyShell from "@/features/journey/presentation/JourneyShell";
+import AthleteWorkspaceShell from "@/components/layout/AthleteWorkspaceShell";
 import SupportRequestForm from "@/features/support/presentation/SupportRequestForm";
 import { createClient, requireUser } from "@/lib/supabase/server";
 
@@ -21,7 +21,7 @@ export default async function SupportPage() {
   const requests = (data ?? []) as SupportRequestRow[];
 
   return (
-    <JourneyShell current="coach" showProgress={false}>
+    <AthleteWorkspaceShell>
       <div className="space-y-6">
         <header className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-800">Help</p>
@@ -45,6 +45,6 @@ export default async function SupportPage() {
           </div>
         </section>
       </div>
-    </JourneyShell>
+    </AthleteWorkspaceShell>
   );
 }

@@ -22,7 +22,6 @@ export const sportRegistry: Record<SportId, SportDefinition> = {
       { id: "backhand_volley", label: "Backhand volley", category: "stroke" },
       { id: "slice", label: "Slice", category: "stroke" },
       { id: "overhead", label: "Overhead", category: "stroke" },
-      { id: "other", label: "Other / Not sure", category: "movement" },
     ],
     profileGoals: ["Improve consistency", "Generate more power", "Improve footwork", "Improve match play"],
     rankingSystems: ["NTRP", "UTR", "ATP", "WTA", "ITF", "AITA", "Other"],
@@ -59,7 +58,7 @@ export const sportRegistry: Record<SportId, SportDefinition> = {
     biomechanics: ["scapular loading", "elbow extension", "wrist acceleration", "lunge mechanics", "split step", "recovery"],
     roleOptions: ["Singles", "Doubles", "Mixed doubles", "Multiple formats"],
     playingStyleOptions: ["Attacking", "Defensive", "Counter-attacking", "All-round", "Developing"],
-    enabled: true,
+    enabled: false,
   },
   squash: {
     id: "squash",
@@ -88,7 +87,7 @@ export const sportRegistry: Record<SportId, SportDefinition> = {
     biomechanics: ["racket preparation", "trunk rotation", "lunge depth", "knee alignment", "balance", "T-position recovery"],
     roleOptions: ["Singles player", "Team player", "Both"],
     playingStyleOptions: ["Attacking", "Counter-attacking", "Defensive", "All-round", "Developing"],
-    enabled: true,
+    enabled: false,
   },
   cricket: {
     id: "cricket",
@@ -117,7 +116,7 @@ export const sportRegistry: Record<SportId, SportDefinition> = {
     biomechanics: ["head stability", "front-leg bracing", "trunk rotation", "shoulder counter-rotation", "release mechanics", "follow-through"],
     roleOptions: ["Batter", "Fast bowler", "Spin bowler", "Wicketkeeper", "All-rounder", "Fielder"],
     playingStyleOptions: ["Top-order", "Middle-order", "Finisher", "Pace", "Spin", "Wicketkeeping", "All-round"],
-    enabled: true,
+    enabled: false,
   },
   table_tennis: {
     id: "table_tennis",
@@ -147,13 +146,14 @@ export const sportRegistry: Record<SportId, SportDefinition> = {
     biomechanics: ["ready position", "hip rotation", "forearm acceleration", "contact timing", "weight transfer", "recovery"],
     roleOptions: ["Singles", "Doubles", "Both"],
     playingStyleOptions: ["Offensive", "Defensive", "All-round", "Chopper", "Developing"],
-    enabled: true,
+    enabled: false,
   },
 };
 
-export const supportedSports = Object.values(sportRegistry).filter((sport) => sport.enabled);
 export const defaultSportId: SportId = "tennis";
+export const supportedSports = Object.values(sportRegistry).filter((sport) => sport.enabled);
 
 export function getSport(sportId: string | null | undefined): SportDefinition {
-  return sportRegistry[(sportId as SportId) in sportRegistry ? (sportId as SportId) : defaultSportId];
+  const candidate = sportRegistry[sportId as SportId];
+  return candidate?.enabled ? candidate : sportRegistry[defaultSportId];
 }

@@ -120,14 +120,14 @@ export async function saveProfile(formData: FormData) {
   const yearsPlaying = optionalInteger(formData, "yearsPlaying", 0, 90);
   const trainingSessions = optionalInteger(formData, "trainingSessions", 0, 21);
   const competitionLevel = text(formData, "competitionLevel", 80) || null;
-  const heightCm = optionalNumber(formData, "heightCm", 80, 250);
+  const heightCm = optionalNumber(formData, "heightCm", 80, 230);
   const weightKg = optionalNumber(formData, "weightKg", 20, 300);
   const mobilityConsiderations = text(formData, "mobilityConsiderations", 800) || null;
   const requestedServiceProcessing = formData.get("serviceProcessing") === "true";
   const derivedDataImprovement = formData.get("derivedDataImprovement") === "true";
   const requestedRawMediaTraining = formData.get("rawMediaTraining") === "true";
 
-  if (!firstName || !lastName || !country || age === null || !playingLevel || !primaryGoal) {
+  if (!firstName || !lastName || !country || age === null || !playingLevel || !primaryGoal || heightCm === null) {
     throw new Error("Complete all required profile fields.");
   }
 

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2732 2732">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="20%" r="85%">
+      <stop offset="0" stop-color="#064e3b"/>
+      <stop offset=".48" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#020617"/>
+    </radialGradient>
+  </defs>
+  <rect width="2732" height="2732" fill="url(#bg)"/>
+  <circle cx="1366" cy="1200" r="290" fill="#10b981"/>
+  <path d="M1101 1085c120 20 205 108 224 236M1633 1315c-120-20-205-108-224-236" fill="none" stroke="#ecfdf5" stroke-width="32" stroke-linecap="round"/>
+  <path d="M1366 1013 1553 1403h-91l-39-91h-117l-38 91h-89l187-390Zm0 143-36 87h72l-36-87Z" fill="#020617"/>
+  <text x="1366" y="1665" text-anchor="middle" fill="#f8fafc" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="116" font-weight="700" letter-spacing="2">Athlentra Tennis</text>
+  <text x="1366" y="1775" text-anchor="middle" fill="#a7f3d0" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="52" font-weight="600" letter-spacing="12">AI COACH</text>
+</svg>

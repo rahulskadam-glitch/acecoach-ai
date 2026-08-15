@@ -3,6 +3,7 @@
 import { randomUUID } from "node:crypto";
 
 import { requireUser } from "@/lib/supabase/server";
+import { requiresGuardianConfirmation } from "@/lib/athlete/age-bands";
 
 const ANALYSIS_API_URL = process.env.ANALYSIS_API_URL ?? "http://127.0.0.1:8000";
 const ANALYSIS_API_KEY = process.env.ANALYSIS_API_KEY;
@@ -95,15 +96,24 @@ async function callContextSafetyApi<TResponse>(
     throw new Error("ANALYSIS_API_KEY must be configured with at least 32 characters.");
   }
 
-  const response = await fetch(`${ANALYSIS_API_URL}${path}`, {
-    method: init.method,
-    headers: {
-      "Content-Type": "application/json",
-      "X-Analysis-API-Key": ANALYSIS_API_KEY,
-    },
-    body: init.body === undefined ? undefined : JSON.stringify(init.body),
-    cache: "no-store",
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${ANALYSIS_API_URL}${path}`, {
+      method: init.method,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Analysis-API-Key": ANALYSIS_API_KEY,
+      },
+      body: init.body === undefined ? undefined : JSON.stringify(init.body),
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    });
+  } catch (cause) {
+    const timedOut = cause instanceof Error && cause.name === "TimeoutError";
+    throw new Error(timedOut
+      ? "The analysis service took too long to respond. Try again."
+      : "The analysis service is unavailable. Wait a moment and try again.");
+  }
 
   const text = await response.text();
   const payload = text ? (JSON.parse(text) as unknown) : null;
@@ -126,7 +136,7 @@ export async function ensureContextSafetyReadiness(input: IntakeContextPayload) 
   const user = await requireUser();
   const playerId = user.id;
   const ageBand = mapAgeBand(input.ageBand);
-  const isMinor = !["18_to_34", "35_to_54", "55_plus"].includes(ageBand);
+  const isMinor = requiresGuardianConfirmation(input.ageBand);
 
   await callContextSafetyApi(`/v1/players`, {
     method: "POST",
@@ -167,7 +177,7 @@ export async function ensureContextSafetyReadiness(input: IntakeContextPayload) 
   });
 
   if (isMinor && !input.guardianConsent) {
-    throw new Error("A parent or guardian must confirm this analysis before continuing.");
+    throw new Error("Parent or guardian approval is required for players aged 13–17.");
   }
 
   const now = new Date().toISOString();

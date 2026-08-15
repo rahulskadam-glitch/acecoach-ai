@@ -15,7 +15,7 @@ export default function VisualBenchmarkReleaseBanner() {
         <div>
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-violet-200">
             <BadgeCheck className="h-4 w-4" />
-            AceCoach v{APP_VERSION} · Visual benchmark active
+            Athlentra v{APP_VERSION} · Visual benchmark active
           </div>
           <h2 className="mt-2 text-2xl font-semibold text-white">{APP_RELEASE_NAME}</h2>
           <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-300">

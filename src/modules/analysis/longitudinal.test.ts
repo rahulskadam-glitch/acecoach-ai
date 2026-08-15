@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "vitest";
 
 import {
+  buildPersonalBaselineComparison,
   reduceDevelopmentState,
   reduceSharedRootConstruct,
   resolveMeasuredDistribution,
@@ -10,9 +11,9 @@ import {
 } from "./longitudinal.ts";
 
 test("fails closed instead of fabricating a construct distribution", () => {
-  assert.equal(resolveMeasuredDistribution(undefined, 70, 80), null);
-  assert.equal(resolveMeasuredDistribution(55, undefined, 80), null);
-  assert.deepEqual(resolveMeasuredDistribution(55, 70, 80), { medianScore: 55, spread: 15, captureScore: 80 });
+  assert.equal(resolveMeasuredDistribution(undefined, 70, 80, 2), null);
+  assert.equal(resolveMeasuredDistribution(55, undefined, 80, 2), null);
+  assert.deepEqual(resolveMeasuredDistribution(55, 70, 80, 2), { medianScore: 55, spread: 15, captureScore: 80 });
 });
 
 
@@ -33,6 +34,8 @@ function distribution(
     captureScore: 84,
     engineVersion: "engine-v1",
     runtimeSignature: "runtime-v1",
+    knowledgePolicyVersion: "policy-v1",
+    knowledgeManifestHash: "manifest-v1",
     recordedAt: `2026-08-${sessionId.padStart(2, "0")}T10:00:00.000Z`,
     ...overrides,
   };
@@ -45,6 +48,20 @@ const existing: DevelopmentState = {
   status: "active",
 };
 
+const baselineRequirements = {
+  minimumPriorSessions: 3,
+  minimumPriorRepetitions: 18,
+  minimumMeasurementConfidence: 0.65,
+  maximumCaptureScoreDifference: 15,
+};
+
+const longitudinalRequirements = {
+  ...baselineRequirements,
+  minimumHistorySessions: 2,
+  historyWindowSessions: 3,
+  meaningfulShiftPoints: 4,
+};
+
 test("requires two earlier comparable sessions before a learning claim", () => {
   const decision = reduceDevelopmentState(
     distribution("3", 74),
@@ -52,6 +69,7 @@ test("requires two earlier comparable sessions before a learning claim", () => {
     existing,
     "A new cue that should not churn.",
     "A new metric.",
+    longitudinalRequirements,
   );
   assert.equal(decision.comparable, false);
   assert.equal(decision.archetype, null);
@@ -66,6 +84,7 @@ test("emits progress only after a meaningful multi-session distribution shift", 
     existing,
     "Different proposed cue.",
     "Different proposed metric.",
+    longitudinalRequirements,
   );
   assert.equal(decision.comparable, true);
   assert.equal(decision.status, "improving");
@@ -82,6 +101,7 @@ test("plateau and regression use the non-causal trend archetype", () => {
     existing,
     null,
     null,
+    longitudinalRequirements,
   );
   assert.equal(plateau.status, "plateaued");
   assert.equal(plateau.archetype, "REGRESSION_OR_PLATEAU");
@@ -92,6 +112,7 @@ test("plateau and regression use the non-causal trend archetype", () => {
     existing,
     null,
     null,
+    longitudinalRequirements,
   );
   assert.equal(regression.status, "regressed");
   assert.equal(regression.archetype, "REGRESSION_OR_PLATEAU");
@@ -108,9 +129,59 @@ test("rejects history with incompatible runtime or capture quality", () => {
     null,
     "Set early.",
     "Retain next session.",
+    longitudinalRequirements,
   );
   assert.equal(decision.comparable, false);
   assert.deepEqual(decision.comparisonSessionIds, []);
+});
+
+test("builds a personal distribution only from enough context-matched history", () => {
+  const baseline = buildPersonalBaselineComparison(
+    [distribution("5", 76)],
+    [distribution("2", 68), distribution("3", 72), distribution("4", 74)],
+    baselineRequirements,
+  );
+  assert.equal(baseline.status, "available");
+  assert.equal(baseline.priorSessionCount, 3);
+  assert.deepEqual(baseline.areas[0], {
+    constructId: "movement_spacing",
+    currentScore: 76,
+    typicalScore: 72,
+    highestReliableScore: 74,
+    differenceFromTypical: 4,
+    differenceFromHighest: 2,
+    priorSessionCount: 3,
+    priorRepetitionCount: 24,
+    typicalSpread: 8,
+  });
+});
+
+test("personal baseline fails closed for sparse or mismatched history", () => {
+  const baseline = buildPersonalBaselineComparison(
+    [distribution("5", 76)],
+    [
+      distribution("2", 68),
+      distribution("3", 72, { contextSignature: "another-context" }),
+      distribution("4", 74, { engineVersion: "engine-v2" }),
+    ],
+    baselineRequirements,
+  );
+  assert.equal(baseline.status, "collecting");
+  assert.deepEqual(baseline.areas, []);
+  assert.match(baseline.reason, /3 earlier matching videos/i);
+});
+
+test("does not mix personal baselines across knowledge manifests", () => {
+  const baseline = buildPersonalBaselineComparison(
+    [distribution("5", 76)],
+    [
+      distribution("2", 68, { knowledgeManifestHash: "older-manifest" }),
+      distribution("3", 72, { knowledgeManifestHash: "older-manifest" }),
+      distribution("4", 74, { knowledgeManifestHash: "older-manifest" }),
+    ],
+    baselineRequirements,
+  );
+  assert.equal(baseline.status, "collecting");
 });
 
 const sharedContract = {

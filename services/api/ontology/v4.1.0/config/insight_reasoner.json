@@ -104,6 +104,23 @@
       "higher_measurement_class"
     ]
   },
+  "chapter_assessment_policy": {
+    "strength_minimum_score": 82,
+    "minimum_measurement_confidence_source": "confidence_policy.confirmation_rule.minimum_measurement_confidence",
+    "measured_focus_fallback": {
+      "enabled": true,
+      "selection": "lowest_reliably_measured_chapter_below_strength_minimum_when_no_supported_fault_exists",
+      "claim_class": "MEASURED_AREA_PRIORITY_ONLY",
+      "allowed_language": "best place to review first",
+      "forbidden_language": [
+        "confirmed fault",
+        "root cause",
+        "caused",
+        "diagnosis"
+      ]
+    },
+    "not_assessed_rule": "Use not_assessed only when no score survives the configured measurement-confidence gate."
+  },
   "suppression_rules": [
     "Suppress a symptom when its likely upstream cause is selected and coaching the symptom would conflict with that correction.",
     "Suppress a metric difference if it has no clear tennis consequence.",

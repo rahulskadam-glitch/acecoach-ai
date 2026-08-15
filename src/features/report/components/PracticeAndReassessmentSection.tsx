@@ -45,7 +45,7 @@ export default function PracticeAndReassessmentSection({
           <p className="mt-4 text-sm leading-7 text-slate-300">{plainLanguage(report.nextSession.recordingPlan)}</p>
           <div className="mt-5 rounded-xl border border-white/10 bg-slate-950/45 p-4"><p className="text-xs font-semibold uppercase tracking-[0.15em] text-violet-200">Next objective</p><p className="mt-2 text-base font-semibold text-white">{plainLanguage(report.nextSession.objective)}</p></div>
           <ul className="mt-5 space-y-3 text-sm text-slate-300">{report.nextSession.successCriteria.slice(0, 3).map((item) => <li key={item} className="flex gap-3"><Target className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />{plainLanguage(item)}</li>)}</ul>
-          <a href="/upload" className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-emerald-400 px-4 py-3 font-semibold text-slate-950 hover:bg-emerald-300"><Dumbbell className="h-4 w-4" />Record another session</a>
+          <a href="/start" className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-emerald-400 px-4 py-3 font-semibold text-slate-950 hover:bg-emerald-300"><Dumbbell className="h-4 w-4" />Record another session</a>
         </aside>
       </div>
     </section>

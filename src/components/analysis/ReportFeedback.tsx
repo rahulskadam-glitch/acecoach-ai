@@ -47,7 +47,7 @@ export default function ReportFeedback({ existing, onSubmit }: { existing: Exist
       <div className="flex items-start gap-3"><MessageSquareText className="mt-1 h-5 w-5 text-sky-300" /><div><p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-300">Help improve your coaching</p><h2 className="mt-2 text-2xl font-semibold text-white">Was this report accurate and useful?</h2><p className="mt-2 text-sm leading-6 text-slate-400">Tell us if the movement, coaching, visuals, or drills did not fit your video.</p></div></div>
       <form action={submit} className="mt-6 space-y-5">
         <div>
-          <p className="text-sm font-medium text-white">Did AceCoach identify the movement correctly?</p>
+          <p className="text-sm font-medium text-white">Did Athlentra identify the movement correctly?</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {[["accurate", "Yes"], ["incorrect", "No"], ["unsure", "Not sure"]].map(([value, label]) => (
               <label key={value} className="cursor-pointer"><input type="radio" name="movementAccuracy" value={value} defaultChecked={(existing?.movementAccuracy ?? "unsure") === value} className="peer sr-only" /><span className="block rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-300 peer-checked:border-sky-400/50 peer-checked:bg-sky-400/15 peer-checked:text-sky-100">{label}</span></label>

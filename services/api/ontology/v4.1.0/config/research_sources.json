@@ -388,5 +388,164 @@
       "context"
     ],
     "use_policy": "return_context_and_skill_pattern_not_prescriptive_threshold"
+  },
+  {
+    "source_id": "ORG-ITF-SKILL-PHASES-2023",
+    "type": "governing_body_coaching_science",
+    "authority_tier": "A",
+    "title": "Biomechanical insights on Tennis Canada's skill fundamental phases",
+    "authors": ["Tim Hopper", "Jesse Rhoades"],
+    "organization": "International Tennis Federation Coaching & Sport Science Review",
+    "year": 2023,
+    "url": "https://doi.org/10.52383/itfcoaching.v32i91.405",
+    "supports": ["forehand", "one_handed_backhand", "two_handed_backhand", "slice_backhand", "serve", "volley", "overhead", "perception_action", "recovery"],
+    "use_policy": "qualitative_skill_phases_and_contextual_coaching_only",
+    "notes": "Supports the read/respond/react/recover and skill-phase lens. It does not supply a numeric player cohort."
+  },
+  {
+    "source_id": "ORG-ITF-COACH-EDUCATION-2025",
+    "type": "governing_body_coach_education_standard",
+    "authority_tier": "A",
+    "title": "ITF Coach Education Programme: Educating and certifying coaches",
+    "organization": "International Tennis Federation",
+    "year": 2025,
+    "url": "https://www.itftennis.com/en/news-and-media/articles/itf-coach-education-programme-educating-and-certifying-coaches/",
+    "supports": ["coach_credential_governance", "beginner", "intermediate", "advanced", "high_performance"],
+    "use_policy": "credential_and_education_governance_only",
+    "notes": "Defines education levels and competencies; it is not a stroke metric or benchmark source."
+  },
+  {
+    "source_id": "ORG-USTA-GPS",
+    "type": "governing_body_coaching_resource",
+    "authority_tier": "A",
+    "title": "Grip, Preparation and Swing Path coaching resource",
+    "organization": "United States Tennis Association Player Development",
+    "url": "https://www.playerdevelopment.usta.com/Coaching-Education/coaching_education_resources/",
+    "supports": ["forehand", "one_handed_backhand", "two_handed_backhand", "serve", "forehand_volley", "backhand_volley", "acceptable_variation"],
+    "use_policy": "qualitative_checkpoint_ranges_not_numeric_cohort",
+    "notes": "Explicitly describes ranges of acceptable parameters rather than one compulsory technique."
+  },
+  {
+    "source_id": "ORG-USTA-SLICE-2018",
+    "type": "governing_body_coaching_resource",
+    "authority_tier": "A",
+    "title": "Tips for improving your backhand slice",
+    "organization": "United States Tennis Association",
+    "year": 2018,
+    "url": "https://www.usta.com/en/home/improve/tips-and-instruction/national/improve-your-tennis-game--tips-for-improving-your-backhand-slice.html",
+    "supports": ["slice_backhand", "racket_path", "contact", "follow_through"],
+    "use_policy": "qualitative_slice_coaching_only",
+    "notes": "Racket-path statements remain confirmation-only until racket tracking is validated."
+  },
+  {
+    "source_id": "ORG-USTA-VOLLEY-2017",
+    "type": "governing_body_coaching_resource",
+    "authority_tier": "A",
+    "title": "Tennis 101: Perfecting the Volley",
+    "organization": "United States Tennis Association",
+    "year": 2017,
+    "url": "https://www.usta.com/en/home/improve/tips-and-instruction/national/learning-the-basics--volleys.html",
+    "supports": ["forehand_volley", "backhand_volley", "compactness", "contact", "placement", "progression"],
+    "use_policy": "qualitative_volley_coaching_and_progression"
+  },
+  {
+    "source_id": "ORG-USTA-OVERHEAD-CURRICULUM",
+    "type": "governing_body_curriculum",
+    "authority_tier": "A",
+    "title": "Warrior Tennis Curriculum: Overhead Smash and Lob",
+    "organization": "United States Tennis Association",
+    "url": "https://www.usta.com/content/dam/usta/pdfs/20180302_WoundedWarriorCurricula.pdf",
+    "supports": ["overhead", "positioning", "serve_similarity", "progression", "accessible_coaching"],
+    "use_policy": "qualitative_overhead_progression_not_elite_benchmark"
+  },
+  {
+    "source_id": "ORG-TENNIS-AU-TECH-FUNDAMENTALS-2013",
+    "type": "national_governing_body_technical_manual",
+    "authority_tier": "A",
+    "title": "Technical and Tactical Fundamentals Guidelines",
+    "organization": "Tennis Australia Coach Development",
+    "year": 2013,
+    "url": "https://www.tennis.com.au/wp-content/uploads/2014/11/Technical-and-Tactical-fundamentals-guidelines_low-res.pdf",
+    "supports": ["forehand", "one_handed_backhand", "two_handed_backhand", "serve", "forehand_volley", "backhand_volley", "developmental_scaling", "acceptable_variation"],
+    "use_policy": "developmentally_scaled_qualitative_fundamentals"
+  },
+  {
+    "source_id": "ORG-TENNIS-AU-ACTIVITY-MANUAL",
+    "type": "national_governing_body_coaching_manual",
+    "authority_tier": "A",
+    "title": "Tennis Australia Activity Manual",
+    "organization": "Tennis Australia",
+    "url": "https://www.tennis.com.au/doc/tennis-australias-2009-activity-manual",
+    "supports": ["forehand", "backhand", "slice_backhand", "serve", "forehand_volley", "backhand_volley", "overhead", "outcome_targets", "drills"],
+    "use_policy": "drill_design_and_observable_success_criteria"
+  },
+  {
+    "source_id": "ORG-LTA-STROKE-GUIDES",
+    "type": "national_governing_body_coaching_resource",
+    "authority_tier": "A",
+    "title": "Tennis tips and techniques",
+    "organization": "Lawn Tennis Association",
+    "url": "https://www.lta.org.uk/play/tennis-tips-and-techniques/",
+    "supports": ["forehand", "backhand", "serve", "forehand_volley", "backhand_volley", "footwork", "beginner_language"],
+    "use_policy": "beginner_friendly_coaching_language_and_progressions"
+  },
+  {
+    "source_id": "ORG-AITA-COACH-EDUCATION-2026",
+    "type": "national_governing_body_coach_education_standard",
+    "authority_tier": "A",
+    "title": "AITA Coach Education course information",
+    "organization": "All India Tennis Association",
+    "year": 2026,
+    "url": "https://aitatennis.com/wp-content/uploads/2026/02/AITA_coachs_course_Information_for_website_revised_Feb_2026.pdf",
+    "supports": ["coach_credential_governance", "india_coach_education", "itf_alignment"],
+    "use_policy": "credential_and_localization_governance_only",
+    "notes": "Used to recognize the Indian coach-education pathway, never to infer a stroke benchmark."
+  },
+  {
+    "source_id": "ORG-ATF-EDUCATION",
+    "type": "regional_governing_body_context",
+    "authority_tier": "A",
+    "title": "Asian Tennis Federation: Officiating and Education",
+    "organization": "Asian Tennis Federation",
+    "url": "https://www.atf.hitcourt.com/about",
+    "supports": ["asia_governance", "regional_education_context"],
+    "use_policy": "regional_governance_context_only",
+    "notes": "No stroke-level technical claim is derived from this page."
+  },
+  {
+    "source_id": "VID-MOURATOGLOU-SLICE",
+    "type": "expert_coaching_video",
+    "authority_tier": "B",
+    "title": "Tennis 101: backhand slice lesson",
+    "creator": "Patrick Mouratoglou",
+    "platform": "YouTube",
+    "year": 2022,
+    "url": "https://www.youtube.com/watch?v=tR0UfDTW318",
+    "supports": ["slice_backhand", "coaching_cues", "visual_explanation"],
+    "use_policy": "coaching_language_and_cue_examples_only"
+  },
+  {
+    "source_id": "VID-MOURATOGLOU-2HB",
+    "type": "expert_coaching_video",
+    "authority_tier": "B",
+    "title": "How to hit the two-handed backhand",
+    "creator": "Patrick Mouratoglou",
+    "platform": "YouTube",
+    "year": 2023,
+    "url": "https://www.youtube.com/watch?v=Obw1GDi-ojU",
+    "supports": ["two_handed_backhand", "coaching_cues", "visual_explanation"],
+    "use_policy": "coaching_language_and_cue_examples_only"
+  },
+  {
+    "source_id": "VID-MOURATOGLOU-1HB",
+    "type": "expert_coaching_video",
+    "authority_tier": "B",
+    "title": "The one-handed backhand: Tennis Masterclass, Episode 5",
+    "creator": "Patrick Mouratoglou",
+    "platform": "YouTube",
+    "year": 2023,
+    "url": "https://www.youtube.com/watch?v=5ahFrtq9g3I",
+    "supports": ["one_handed_backhand", "preparation", "contact", "footwork", "follow_through", "coaching_cues"],
+    "use_policy": "coaching_language_and_cue_examples_only"
   }
 ]
