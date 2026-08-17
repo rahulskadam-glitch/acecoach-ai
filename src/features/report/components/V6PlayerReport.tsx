@@ -1,93 +1,358 @@
 "use client";
 
-import { ArrowRight, BadgeCheck, ChevronDown, Dumbbell, Eye, FlaskConical, LayoutDashboard, MessageCircle, MessageSquareHeart, RotateCcw, ShieldCheck, } from "lucide-react";
+import {
+  Activity,
+  ArrowLeft,
+  ChevronDown,
+  Dumbbell,
+  Eye,
+  Gauge,
+  LayoutDashboard,
+  ShieldAlert,
+  Sparkles,
+  Wind,
+  Zap,
+} from "lucide-react";
 import { useState } from "react";
 
+import AthlentraMark from "@/components/design-system/AthlentraMark";
 import { getSport } from "@/lib/sports";
 import type { PlayerReportProps } from "../types";
 import { buildPlayerReportView } from "../model/view-model";
 import { concise, plainLanguage } from "../model/plain-language";
-import BiomechanicalExplorer from "./BiomechanicalExplorer";
-import BodyCoachingChapters from "./BodyCoachingChapters";
+import type { MotionStage } from "../motion/motion-model";
+import TennisBiomechanicsIndex from "./TennisBiomechanicsIndex";
+import ProTwinStudio from "./ProTwinStudio";
+import KinematicDataMatrix from "./KinematicDataMatrix";
+import KineticEnergyTransferStudio from "./KineticEnergyTransferStudio";
 import CoachVisionStudio from "./CoachVisionStudio";
-import ReportOverviewStory from "./ReportOverviewStory";
-import StrokePyramidSummary from "./StrokePyramidSummary";
+import BiomechanicalExplorer from "./BiomechanicalExplorer";
+import JointStressInjuryRiskRadar from "./JointStressInjuryRiskRadar";
+import RotatorCuffDecelerationBarometer from "./RotatorCuffDecelerationBarometer";
+import NetClearanceTrajectoryFunnel from "./NetClearanceTrajectoryFunnel";
+import CoachAIDrawer from "./CoachAIDrawer";
+
+type ReportTab = "hub" | "overview" | "video" | "phases" | "energy" | "telemetry" | "injury" | "tracking" | "practice";
+type VideoView = "yours" | "pro";
+type InjuryView = "joint_stress" | "shoulder_braking";
 
 export default function V6PlayerReport(props: PlayerReportProps & { sessionId: string; previewOnly?: boolean }) {
-  const { report, sportId, actionType, athleteContext, videoUrl, sessionId, progressComparison, personalBaselineComparison, previewOnly = false } = props;
+  const {
+    report,
+    sportId,
+    actionType,
+    athleteContext,
+    videoUrl,
+    sessionId,
+  } = props;
   const sport = getSport(sportId);
   const view = buildPlayerReportView(report);
-  const [detailView, setDetailView] = useState<"stroke" | "checks" | "method">("stroke");
-  const movement = report.movementClassification?.analysisActionLabel
-    ?? sport.actions.find((item) => item.id === actionType)?.label
-    ?? actionType.replaceAll("_", " ");
+  const [activeTab, setActiveTab] = useState<ReportTab>("hub");
+  const [videoView, setVideoView] = useState<VideoView>("yours");
+  const [injuryView, setInjuryView] = useState<InjuryView>("joint_stress");
+  const [proTwinStage, setProTwinStage] = useState<MotionStage>("forward_swing_contact");
+  const [isCoachDrawerOpen, setIsCoachDrawerOpen] = useState(false);
+  const resolvedActionType = report.movementClassification?.analysisAction ?? actionType;
+  const actionOptions = sport.actions.map((item) => ({ id: item.id, label: item.label }));
+
+  const movement =
+    report.movementClassification?.analysisActionLabel ??
+    sport.actions.find((item) => item.id === actionType)?.label ??
+    actionType.replaceAll("_", " ");
+
   const drills = [...report.drills];
   for (const finding of report.ontologyReasoning?.findings ?? []) {
     if (drills.length >= 3 || !finding.drill || drills.some((item) => item.id === finding.drill?.id)) continue;
-    drills.push({ id: finding.drill.id, name: finding.drill.name, purpose: finding.drill.purpose ?? finding.why, cue: finding.drill.cue ?? finding.cue, dosage: finding.drill.dosage, successMetric: finding.drill.success });
+    drills.push({
+      id: finding.drill.id,
+      name: finding.drill.name,
+      purpose: finding.drill.purpose ?? finding.why,
+      cue: finding.drill.cue ?? finding.cue,
+      dosage: finding.drill.dosage,
+      successMetric: finding.drill.success,
+    });
   }
   const practiceDrills = drills.slice(0, 3);
   const firstDrill = practiceDrills[0];
-  const coachChatAvailable = report.knowledgeControl?.status === "CONTROLLED"
-    && report.knowledgeControl?.domains?.recommendations?.decision === "ontology_fault_links";
+
+  const hubTiles: Array<{ id: ReportTab; label: string; icon: typeof LayoutDashboard }> = [
+    { id: "overview", label: "Overview", icon: LayoutDashboard },
+    { id: "video", label: "Video", icon: Eye },
+    { id: "phases", label: "Stroke Phases", icon: Activity },
+    { id: "energy", label: "Energy Flow", icon: Zap },
+    { id: "telemetry", label: "Telemetry", icon: Gauge },
+    { id: "injury", label: "Injury Risk", icon: ShieldAlert },
+    { id: "tracking", label: "Ball Tracking", icon: Wind },
+    { id: "practice", label: "Practice", icon: Dumbbell },
+  ];
+  const sectionLabel = hubTiles.find((tile) => tile.id === activeTab)?.label ?? "";
+
+  function goTo(tab: ReportTab) {
+    setActiveTab(tab);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-4 sm:space-y-6">
-      <header className="flex items-center justify-between gap-4 px-1">
-        <h1 className="text-2xl font-semibold tracking-[-0.03em] text-slate-950">{movement} · Report</h1>
-        {coachChatAvailable ? (
-          <a href={`/coach/${sessionId}`} className="inline-flex min-h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-800 shadow-sm"><MessageCircle className="h-4 w-4" />Ask coach</a>
-        ) : (
-          <span
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-dashed border-slate-300 bg-slate-50 px-4 text-sm font-medium text-slate-500"
-            title="Your coach can weigh in once this report reaches a confirmed technique finding. Record a few more clear swings to get there."
+    <div className="mx-auto max-w-4xl space-y-5 px-3 pb-8 pt-1 sm:px-6">
+      {activeTab === "hub" ? (
+        /* Landing hub: every section one tap away, no scroll */
+        <div className="fixed inset-0 z-[60] flex flex-col bg-ath-navy px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,env(safe-area-inset-top))]">
+          <div className="flex flex-col items-center gap-1 py-3">
+            <AthlentraMark inverse />
+            <p className="mt-2 text-xs font-bold uppercase tracking-[0.22em] text-ath-lime capitalize">{movement}</p>
+          </div>
+
+          <div className="mt-4 grid flex-1 auto-rows-fr grid-cols-2 gap-3">
+            {hubTiles.map((tile) => (
+              <button
+                key={tile.id}
+                type="button"
+                onClick={() => goTo(tile.id)}
+                className="flex flex-col items-center justify-center gap-2.5 rounded-3xl border border-white/10 bg-white/5 text-white transition active:scale-95 active:bg-white/10"
+              >
+                <tile.icon className="h-7 w-7 text-ath-lime" />
+                <span className="text-sm font-bold">{tile.label}</span>
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsCoachDrawerOpen(true)}
+            className="mt-3 flex min-h-14 shrink-0 items-center justify-center gap-2 rounded-2xl bg-ath-lime text-sm font-black text-ath-navy shadow-lg shadow-black/20 transition active:scale-[0.98]"
           >
-            <MessageCircle className="h-4 w-4" />Coach unlocks with more data
-          </span>
-        )}
-      </header>
-
-      <nav aria-label="Report chapters" className="sticky top-[4.25rem] z-30 grid grid-cols-3 gap-1 rounded-2xl border border-slate-200 bg-white/95 p-1.5 shadow-lg shadow-slate-900/5 backdrop-blur-xl lg:top-4">
-        {[{ href: "#report-overview", label: "Coach Read", icon: LayoutDashboard }, { href: "#key-moment", label: "Video Lesson", icon: Eye }, { href: "#practice-reassess", label: "Practice", icon: Dumbbell }].map((item) => <a key={item.href} href={item.href} className="flex min-h-11 items-center justify-center gap-2 rounded-xl text-xs font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-950"><item.icon className="h-4 w-4 text-blue-800" />{item.label}</a>)}
-      </nav>
-
-      <ReportOverviewStory report={report} sportId={sportId} actionType={report.movementClassification?.analysisAction ?? actionType} athleteContext={athleteContext} movement={movement} progressComparison={progressComparison} personalBaselineComparison={personalBaselineComparison} mode="verdict" />
-
-      <CoachVisionStudio videoUrl={videoUrl} previewOnly={previewOnly} report={report} sessionId={sessionId} actionType={report.movementClassification?.analysisAction ?? actionType} actionOptions={sport.actions} athleteContext={athleteContext} />
-
-      <ReportOverviewStory report={report} sportId={sportId} actionType={report.movementClassification?.analysisAction ?? actionType} athleteContext={athleteContext} movement={movement} progressComparison={progressComparison} personalBaselineComparison={personalBaselineComparison} mode="details" />
-
-      <section id="practice-reassess" className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
-        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] text-emerald-800"><Dumbbell className="h-4 w-4" />Practice</div>
-        {firstDrill ? <>
-          <h2 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-slate-950">{plainLanguage(firstDrill.name)}</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-600">{concise(firstDrill.purpose, 150)}</p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-2xl bg-slate-50 p-4"><p className="text-[0.65rem] font-bold uppercase tracking-wide text-slate-500">Do</p><p className="mt-2 text-sm font-semibold leading-6">{plainLanguage(firstDrill.dosage)}</p></div>
-            <div className="rounded-2xl bg-emerald-50 p-4"><p className="text-[0.65rem] font-bold uppercase tracking-wide text-emerald-700">Cue</p><p className="mt-2 text-sm font-semibold leading-6">“{plainLanguage(firstDrill.cue)}”</p></div>
-            <div className="rounded-2xl bg-blue-50 p-4"><p className="text-[0.65rem] font-bold uppercase tracking-wide text-blue-800">Ready when</p><p className="mt-2 text-sm font-semibold leading-6">{plainLanguage(firstDrill.successMetric)}</p></div>
-          </div>
-          {practiceDrills.length > 1 ? <details className="group mt-4 rounded-2xl border border-slate-200"><summary className="flex cursor-pointer list-none items-center justify-between p-4 text-sm font-semibold">More drills <ChevronDown className="h-4 w-4 transition group-open:rotate-180" /></summary><div className="space-y-3 border-t border-slate-200 p-4">{practiceDrills.slice(1).map((drill, index) => <article key={drill.id} className="rounded-xl bg-slate-50 p-4"><p className="text-xs font-bold uppercase tracking-wide text-slate-500">Step {index + 2}</p><h3 className="mt-1 font-semibold">{plainLanguage(drill.name)}</h3><p className="mt-2 text-sm text-slate-600">{plainLanguage(drill.dosage)} · “{plainLanguage(drill.cue)}”</p></article>)}</div></details> : null}
-        </> : <p className="mt-3 text-sm leading-6 text-slate-600">Use the cue “{view.coachingCue}” for a small set of slow, balanced repetitions.</p>}
-        <a href={`/start?sport=${sportId}`} className="mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#071b2d] px-5 text-sm font-semibold text-white">Record after practice<RotateCcw className="h-4 w-4" /></a>
-      </section>
-
-      <details className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5"><span className="flex items-center gap-3"><FlaskConical className="h-5 w-5 text-blue-800" /><span><span className="block font-semibold">Deep Dive</span><span className="mt-1 block text-xs text-slate-500">How the coaching read was built</span></span></span><ChevronDown className="h-5 w-5 text-slate-400 transition group-open:rotate-180" /></summary>
-        <div className="border-t border-slate-200 p-4 sm:p-6">
-          <div className="grid grid-cols-3 gap-1 rounded-xl bg-slate-100 p-1" role="tablist">
-            {[{ id: "stroke" as const, label: "Coaching detail" }, { id: "checks" as const, label: "Measurements" }, { id: "method" as const, label: "Limits" }].map((item) => <button key={item.id} type="button" role="tab" aria-selected={detailView === item.id} onClick={() => setDetailView(item.id)} className={`min-h-10 rounded-lg px-2 text-xs font-semibold ${detailView === item.id ? "bg-white text-slate-950 shadow-sm" : "text-slate-500"}`}>{item.label}</button>)}
-          </div>
-          <div className="mt-5" role="tabpanel">
-            {detailView === "stroke" ? <div className="space-y-5"><StrokePyramidSummary report={report} movement={movement} /><BodyCoachingChapters report={report} actionType={report.movementClassification?.analysisAction ?? actionType} /></div> : null}
-            {detailView === "checks" ? <BiomechanicalExplorer profile={report.frameSummary?.biomechanicalProfile} sessionId={sessionId} actionType={report.movementClassification?.analysisAction ?? actionType} /> : null}
-            {detailView === "method" ? <div className="space-y-4"><div className="grid grid-cols-2 gap-3"><div className="rounded-xl bg-slate-50 p-4 text-sm"><span className="text-slate-500">Confidence</span><p className="mt-1 font-semibold">{view.confidence}%</p></div><div className="rounded-xl bg-slate-50 p-4 text-sm"><span className="text-slate-500">Capture</span><p className="mt-1 font-semibold capitalize">{view.captureQuality}</p></div></div><div className="rounded-xl bg-slate-50 p-4"><div className="flex items-center gap-2 font-semibold"><BadgeCheck className="h-4 w-4 text-emerald-700" />Boundaries</div><p className="mt-2 text-sm leading-6 text-slate-600">{report.safetyNote}</p><ul className="mt-3 space-y-2 text-sm text-slate-500">{report.limitations.slice(0, 4).map((item) => <li key={item}>• {item}</li>)}</ul><div className="mt-4 flex items-center gap-2 text-sm text-emerald-800"><ShieldCheck className="h-4 w-4" />Original video preserved</div></div></div> : null}
-          </div>
+            <Sparkles className="h-5 w-5" />
+            <span>Ask the Coach</span>
+          </button>
         </div>
-      </details>
+      ) : (
+        <>
+          {/* Header: back to hub, section name, Ask Coach */}
+          <header className="flex items-center justify-between gap-3 pt-1">
+            <button
+              type="button"
+              onClick={() => goTo("hub")}
+              className="flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-slate-900/80 px-3.5 text-xs font-bold text-white transition active:scale-95"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Hub</span>
+            </button>
+            <h1 className="text-xs font-black uppercase tracking-[0.14em] text-white">{sectionLabel}</h1>
+            <button
+              type="button"
+              onClick={() => setIsCoachDrawerOpen(true)}
+              className="flex min-h-10 items-center gap-2 rounded-full bg-ath-lime px-3.5 text-xs font-black text-ath-navy shadow-lg shadow-black/20 transition active:scale-95"
+            >
+              <Sparkles className="h-4 w-4" />
+            </button>
+          </header>
 
-      <div className="grid gap-2 sm:grid-cols-2"><a href="/feedback?stage=report" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-4 text-sm font-semibold text-violet-800"><MessageSquareHeart className="h-4 w-4" />Rate report</a><a href={`/coach/${sessionId}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#071b2d] px-4 text-sm font-semibold text-white">Ask about this report<ArrowRight className="h-4 w-4" /></a></div>
+      {/* Overview: score + top priority */}
+      {activeTab === "overview" && (
+        <section className="space-y-4 animate-in fade-in duration-200">
+          <TennisBiomechanicsIndex report={report} movementName={movement} />
 
+          <button
+            type="button"
+            onClick={() => goTo("video")}
+            className="w-full flex items-center justify-between rounded-3xl border border-white/10 bg-slate-900/60 p-5 text-left transition hover:border-white/20 active:scale-[0.99] backdrop-blur-xl group"
+          >
+            <div className="flex items-center gap-3.5">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ath-lime/15 text-ath-lime ring-1 ring-ath-lime/30">
+                <Eye className="h-5 w-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-white group-hover:text-ath-lime transition">
+                  Open the video
+                </h4>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  See exactly where each correction shows up, stage by stage
+                </p>
+              </div>
+            </div>
+            <ChevronDown className="h-5 w-5 -rotate-90 text-slate-400 group-hover:translate-x-1 transition" />
+          </button>
+        </section>
+      )}
+
+      {/* Video: your swing (real corrections) or a pro comparison, plus optional detail */}
+      {activeTab === "video" && (
+        <section className="space-y-4 animate-in fade-in duration-200">
+          <div className="grid grid-cols-2 gap-1 rounded-xl border border-white/10 bg-slate-900/80 p-1">
+            <button
+              type="button"
+              onClick={() => setVideoView("yours")}
+              className={`min-h-9 rounded-lg text-xs font-bold transition ${videoView === "yours" ? "bg-ath-lime text-ath-navy" : "text-slate-400 hover:text-white"}`}
+            >
+              Your swing
+            </button>
+            <button
+              type="button"
+              onClick={() => setVideoView("pro")}
+              className={`min-h-9 rounded-lg text-xs font-bold transition ${videoView === "pro" ? "bg-ath-lime text-ath-navy" : "text-slate-400 hover:text-white"}`}
+            >
+              vs Pro
+            </button>
+          </div>
+
+          {videoView === "yours" ? (
+            <CoachVisionStudio
+              videoUrl={videoUrl}
+              previewOnly={props.previewOnly}
+              report={report}
+              sessionId={sessionId}
+              actionType={resolvedActionType}
+              actionOptions={actionOptions}
+              athleteContext={athleteContext}
+            />
+          ) : (
+            <ProTwinStudio
+              report={report}
+              actionType={resolvedActionType}
+              currentStage={proTwinStage}
+              currentTime={0}
+              onSeekToStage={setProTwinStage}
+              dominantSide={(athleteContext?.dominantSide ?? "right").toLowerCase().startsWith("left") ? "left" : "right"}
+              videoUrl={videoUrl}
+            />
+          )}
+        </section>
+      )}
+
+      {/* Phases: per-stage benchmark, checkpoints, and common mistakes */}
+      {activeTab === "phases" && (
+        <section className="animate-in fade-in duration-200">
+          <BiomechanicalExplorer
+            profile={report.frameSummary?.biomechanicalProfile}
+            sessionId={sessionId}
+            actionType={resolvedActionType}
+          />
+        </section>
+      )}
+
+      {/* Energy flow: power waterfall, net clearance, joint load */}
+      {activeTab === "energy" && (
+        <section className="animate-in fade-in duration-200">
+          <KineticEnergyTransferStudio
+            currentStage={proTwinStage}
+            onSeekToStage={setProTwinStage}
+            actionType={resolvedActionType}
+          />
+        </section>
+      )}
+
+      {/* Telemetry: live 9-tile kinematic dashboard */}
+      {activeTab === "telemetry" && (
+        <section className="animate-in fade-in duration-200">
+          <KinematicDataMatrix actionType={resolvedActionType} />
+        </section>
+      )}
+
+      {/* Injury Risk: every joint-load/safety view lives here, nowhere else */}
+      {activeTab === "injury" && (
+        <section className="space-y-4 animate-in fade-in duration-200">
+          <div className="grid grid-cols-2 gap-1 rounded-xl border border-white/10 bg-slate-900/80 p-1">
+            <button
+              type="button"
+              onClick={() => setInjuryView("joint_stress")}
+              className={`min-h-9 rounded-lg text-xs font-bold transition ${injuryView === "joint_stress" ? "bg-ath-lime text-ath-navy" : "text-slate-400 hover:text-white"}`}
+            >
+              Joint Stress
+            </button>
+            <button
+              type="button"
+              onClick={() => setInjuryView("shoulder_braking")}
+              className={`min-h-9 rounded-lg text-xs font-bold transition ${injuryView === "shoulder_braking" ? "bg-ath-lime text-ath-navy" : "text-slate-400 hover:text-white"}`}
+            >
+              Shoulder Braking
+            </button>
+          </div>
+
+          {injuryView === "joint_stress" ? (
+            <JointStressInjuryRiskRadar actionType={resolvedActionType} />
+          ) : (
+            <RotatorCuffDecelerationBarometer actionType={resolvedActionType} />
+          )}
+        </section>
+      )}
+
+      {/* Ball Tracking: 3D net clearance and spin window (Hawk-Eye style) */}
+      {activeTab === "tracking" && (
+        <section className="animate-in fade-in duration-200">
+          <NetClearanceTrajectoryFunnel actionType={resolvedActionType} />
+        </section>
+      )}
+
+      {/* Practice drills */}
+      {activeTab === "practice" && (
+        <section className="space-y-4 animate-in fade-in duration-200">
+          {firstDrill ? (
+            <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-6 backdrop-blur-xl shadow-xl">
+              <div className="flex items-center justify-between">
+                <span className="rounded-full bg-ath-lime/15 px-3 py-1 text-xs font-black uppercase tracking-wider text-ath-lime ring-1 ring-ath-lime/30">
+                  Daily Prescribed Drill
+                </span>
+                <span className="text-xs text-slate-400 font-mono">15 Min Protocol</span>
+              </div>
+
+              <h2 className="mt-3 text-2xl font-black text-white">
+                {plainLanguage(firstDrill.name)}
+              </h2>
+              <p className="mt-1 text-xs text-slate-300 leading-relaxed">
+                {concise(firstDrill.purpose, 160)}
+              </p>
+
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <span className="text-[0.62rem] font-bold uppercase tracking-wider text-slate-400 block">Dosage</span>
+                  <span className="mt-1 text-sm font-black text-white block">{plainLanguage(firstDrill.dosage)}</span>
+                </div>
+
+                <div className="rounded-2xl border border-ath-lime/30 bg-ath-lime/10 p-4">
+                  <span className="text-[0.62rem] font-bold uppercase tracking-wider text-ath-lime block">Primary Feel Cue</span>
+                  <span className="mt-1 text-sm font-black text-white block">“{plainLanguage(firstDrill.cue)}”</span>
+                </div>
+
+                <div className="rounded-2xl border border-ath-sky/30 bg-ath-sky/10 p-4">
+                  <span className="text-[0.62rem] font-bold uppercase tracking-wider text-ath-sky block">Success Metric</span>
+                  <span className="mt-1 text-sm font-black text-white block">{plainLanguage(firstDrill.successMetric)}</span>
+                </div>
+              </div>
+
+              {practiceDrills.length > 1 && (
+                <div className="mt-6 space-y-2.5 border-t border-white/10 pt-5">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Progression Ladder</h4>
+                  {practiceDrills.slice(1).map((drill, index) => (
+                    <div key={drill.id} className="flex items-start gap-3 rounded-2xl border border-white/5 bg-white/5 p-3.5">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-bold text-white">
+                        {index + 2}
+                      </span>
+                      <div>
+                        <h5 className="text-xs font-bold text-white">{plainLanguage(drill.name)}</h5>
+                        <p className="text-[0.68rem] text-slate-300 mt-0.5">{plainLanguage(drill.dosage)} · <span className="text-ath-lime font-bold">“{plainLanguage(drill.cue)}”</span></p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-6 text-center text-xs text-slate-300">
+              Practice shadow swings focusing on: “{view.coachingCue}”
+            </div>
+          )}
+        </section>
+      )}
+        </>
+      )}
+
+      <CoachAIDrawer
+        isOpen={isCoachDrawerOpen}
+        onClose={() => setIsCoachDrawerOpen(false)}
+        sessionId={sessionId}
+        report={report}
+        movementName={movement}
+      />
     </div>
   );
 }

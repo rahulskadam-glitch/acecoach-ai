@@ -16,25 +16,37 @@ export type JointName =
   | "left_ankle"
   | "right_ankle";
 export type Pose = Record<JointName, Point>;
-export type MotionStage = "preparation" | "loading" | "swing" | "contact" | "finish" | "recovery";
+// Canonical 6-stage taxonomy shared across the whole report, matching the
+// practical coaching breakdown used across elite academies and instructional
+// content (e.g. Grass Tennis Club's 8-phase forehand, Feel Tennis's 8-step
+// forehand, condensed to 6 by merging Split Step into Ready Position and
+// Forward Swing into Contact): Ready Position, Unit Turn, Backswing,
+// Forward Swing & Contact, Follow-Through, Recovery.
+export type MotionStage = "ready" | "unit_turn" | "backswing" | "forward_swing_contact" | "follow_through" | "recovery";
 export type MotionTier = "category" | "elite";
 export type VideoRegistrationCalibration = NonNullable<NonNullable<AnalysisReport["frameSummary"]>["videoRegistration"]>;
 
 export const MOTION_STAGES: Array<{ id: MotionStage; label: string; fraction: number }> = [
-  { id: "preparation", label: "Preparation", fraction: 0 },
-  { id: "loading", label: "Load", fraction: 0.24 },
-  { id: "swing", label: "Swing", fraction: 0.48 },
-  { id: "contact", label: "Contact", fraction: 0.64 },
-  { id: "finish", label: "Finish", fraction: 0.83 },
-  { id: "recovery", label: "Recovery", fraction: 1 },
+  { id: "ready", label: "Ready Position", fraction: 0 },
+  { id: "unit_turn", label: "Unit Turn", fraction: 0.15 },
+  { id: "backswing", label: "Backswing", fraction: 0.35 },
+  { id: "forward_swing_contact", label: "Forward Swing & Contact", fraction: 0.62 },
+  { id: "follow_through", label: "Follow-Through", fraction: 0.8 },
+  { id: "recovery", label: "Recovery", fraction: 0.92 },
 ];
 
+// Maps the backend's real timeline-anchor phase keys (from
+// services/api/analysis_engine/biomechanics.py's _phase_frames: ready,
+// preparation, loading, acceleration, contact_proxy, follow_through,
+// recovery) onto the 6 canonical stages above. "forward_swing_contact"
+// deliberately absorbs both the acceleration and contact anchors, matching
+// the merged stage name.
 const PHASE_ALIASES: Record<MotionStage, string[]> = {
-  preparation: ["preparation", "ready", "unit_turn", "start", "release"],
-  loading: ["loading", "load", "backlift", "cocking", "plant"],
-  swing: ["acceleration", "forward_swing", "downswing", "arm_cocking"],
-  contact: ["contact", "impact", "release", "contact_proxy", "ball_release"],
-  finish: ["finish", "follow_through", "deceleration", "landing"],
+  ready: ["ready", "start"],
+  unit_turn: ["preparation", "unit_turn"],
+  backswing: ["loading", "backlift", "cocking", "plant"],
+  forward_swing_contact: ["acceleration", "forward_swing", "downswing", "arm_cocking", "contact", "impact", "contact_proxy", "ball_release"],
+  follow_through: ["follow_through", "deceleration", "landing"],
   recovery: ["recovery", "ready_again", "return"],
 };
 
@@ -141,24 +153,32 @@ export function stagePose(
   const sa = `${support}_ankle` as JointName;
 
   if (family === "serve") {
-    if (stage === "preparation") {
+    if (stage === "ready") {
       set(pose, hw, 0.5 + direction * 0.11, 0.56);
       set(pose, he, 0.5 + direction * 0.08, 0.44);
       set(pose, sw, 0.5 - direction * 0.14, 0.25);
-    } else if (stage === "loading") {
+    } else if (stage === "unit_turn") {
+      set(pose, hw, 0.5 + direction * 0.09, 0.36);
+      set(pose, he, 0.5 + direction * 0.1, 0.4);
+      set(pose, sw, 0.5 - direction * 0.13, 0.17);
+    } else if (stage === "backswing") {
       set(pose, hw, 0.5 + direction * 0.06, 0.13);
       set(pose, he, 0.5 + direction * 0.14, 0.25);
       set(pose, sw, 0.5 - direction * 0.11, 0.08);
       set(pose, hk, 0.5 + direction * 0.09, 0.78);
       set(pose, sk, 0.5 - direction * 0.09, 0.78);
       pose.head.y = 0.15;
-    } else if (stage === "swing" || stage === "contact") {
+    } else if (stage === "forward_swing_contact") {
       set(pose, he, 0.5 + direction * 0.04, 0.15);
-      set(pose, hw, 0.5 + direction * 0.05, stage === "contact" ? 0.035 : 0.08);
+      set(pose, hw, 0.5 + direction * 0.05, 0.035);
       set(pose, sw, 0.5 - direction * 0.05, 0.43);
       set(pose, hh, 0.5 + direction * 0.04, 0.49);
       set(pose, sh, 0.5 - direction * 0.04, 0.51);
-    } else if (stage === "finish") {
+    } else if (stage === "follow_through") {
+      set(pose, hw, 0.5 - direction * 0.07 * scale, 0.4);
+      set(pose, he, 0.5 - direction * 0.02, 0.3);
+      set(pose, sa, 0.5 - direction * 0.12, 0.92);
+    } else if (stage === "recovery") {
       set(pose, hw, 0.5 - direction * 0.13 * scale, 0.45);
       set(pose, he, 0.5 - direction * 0.03, 0.34);
       set(pose, sa, 0.5 - direction * 0.18, 0.92);
@@ -167,12 +187,12 @@ export function stagePose(
   }
 
   if (family === "volley") {
-    if (stage === "preparation" || stage === "loading") {
-      set(pose, hw, 0.5 + direction * (stage === "loading" ? 0.18 : 0.13), 0.37);
+    if (stage === "ready" || stage === "unit_turn" || stage === "backswing") {
+      set(pose, hw, 0.5 + direction * (stage === "backswing" ? 0.18 : stage === "unit_turn" ? 0.15 : 0.13), 0.37);
       set(pose, he, 0.5 + direction * 0.1, 0.39);
       set(pose, sw, 0.5 - direction * 0.07, 0.4);
-    } else if (stage === "swing" || stage === "contact") {
-      set(pose, hw, 0.5 + direction * (stage === "contact" ? 0.29 : 0.23) * scale, 0.37);
+    } else if (stage === "forward_swing_contact") {
+      set(pose, hw, 0.5 + direction * 0.29 * scale, 0.37);
       set(pose, he, 0.5 + direction * 0.14, 0.39);
       set(pose, sa, 0.5 - direction * 0.16, 0.92);
     } else {
@@ -186,14 +206,21 @@ export function stagePose(
   const twoHands = family === "backhand";
   const slice = family === "slice";
 
-  if (stage === "preparation") {
+  if (stage === "ready") {
     set(pose, hs, 0.5 + strokeDirection * 0.04, 0.27);
     set(pose, ss, 0.5 - strokeDirection * 0.05, 0.28);
     set(pose, he, 0.5 - strokeDirection * 0.11, 0.39);
     set(pose, hw, 0.5 - strokeDirection * 0.2 * scale, slice ? 0.31 : 0.36);
     set(pose, se, 0.5 - strokeDirection * 0.04, 0.39);
     set(pose, sw, twoHands ? 0.5 - strokeDirection * 0.15 : 0.5 - strokeDirection * 0.04, 0.38);
-  } else if (stage === "loading") {
+  } else if (stage === "unit_turn") {
+    set(pose, hs, 0.5 + strokeDirection * 0.07, 0.27);
+    set(pose, ss, 0.5 - strokeDirection * 0.08, 0.28);
+    set(pose, he, 0.5 - strokeDirection * 0.16 * scale, 0.4);
+    set(pose, hw, 0.5 - strokeDirection * 0.22 * scale, slice ? 0.34 : 0.4);
+    set(pose, se, 0.5 - strokeDirection * 0.07, 0.4);
+    set(pose, sw, twoHands ? 0.5 - strokeDirection * 0.17 : 0.5 - strokeDirection * 0.05, 0.39);
+  } else if (stage === "backswing") {
     set(pose, hw, 0.5 - strokeDirection * 0.24 * scale, slice ? 0.37 : 0.43);
     set(pose, sw, twoHands ? 0.5 - strokeDirection * 0.18 : 0.5 - strokeDirection * 0.02, 0.4);
     set(pose, hk, 0.5 + strokeDirection * 0.08, 0.77);
@@ -202,20 +229,23 @@ export function stagePose(
     set(pose, sa, 0.5 - strokeDirection * 0.16 * scale, 0.92);
     set(pose, hh, 0.5 + strokeDirection * 0.05, 0.55);
     set(pose, sh, 0.5 - strokeDirection * 0.05, 0.53);
-  } else if (stage === "swing") {
-    set(pose, he, 0.5 + strokeDirection * 0.04, slice ? 0.43 : 0.42);
-    set(pose, hw, 0.5 + strokeDirection * 0.1 * scale, slice ? 0.45 : 0.39);
-    set(pose, sw, twoHands ? 0.5 + strokeDirection * 0.06 : 0.5 - strokeDirection * 0.02, 0.4);
-  } else if (stage === "contact") {
+  } else if (stage === "forward_swing_contact") {
     set(pose, he, 0.5 + strokeDirection * 0.13, slice ? 0.43 : 0.37);
     set(pose, hw, 0.5 + strokeDirection * 0.29 * scale, slice ? 0.47 : 0.36);
     set(pose, se, 0.5 + strokeDirection * (twoHands ? 0.08 : -0.02), 0.4);
     set(pose, sw, twoHands ? 0.5 + strokeDirection * 0.21 * scale : 0.5 - strokeDirection * 0.02, slice ? 0.45 : 0.37);
-  } else if (stage === "finish") {
+  } else if (stage === "follow_through") {
+    set(pose, he, 0.5 + strokeDirection * 0.1, slice ? 0.38 : 0.3);
+    set(pose, hw, 0.5 - strokeDirection * 0.01, slice ? 0.32 : 0.22);
+    set(pose, se, 0.5 + strokeDirection * 0.04, 0.36);
+    set(pose, sw, twoHands ? 0.5 - strokeDirection * 0.02 : 0.5 - strokeDirection * 0.05, slice ? 0.38 : 0.29);
+  } else if (stage === "recovery") {
     set(pose, he, 0.5 + strokeDirection * 0.08, slice ? 0.34 : 0.26);
     set(pose, hw, 0.5 - strokeDirection * 0.04, slice ? 0.27 : 0.18);
     set(pose, se, 0.5 + strokeDirection * 0.03, 0.35);
     set(pose, sw, twoHands ? 0.5 - strokeDirection * 0.01 : 0.5 - strokeDirection * 0.06, slice ? 0.35 : 0.27);
+    set(pose, hk, 0.5, 0.75);
+    set(pose, sk, 0.5, 0.75);
   }
 
   return pose;
@@ -262,12 +292,11 @@ export function stageAnchors(report: AnalysisReport, start: number, end: number)
     result[stage.id] = Math.min(end, Math.max(previous + 0.01, raw));
     previous = result[stage.id];
   }
-  result.recovery = end;
   return result;
 }
 
 export function stageForTime(time: number, anchors: Record<MotionStage, number>) {
-  let stage: MotionStage = "preparation";
+  let stage: MotionStage = "ready";
   for (const item of MOTION_STAGES) if (time >= anchors[item.id]) stage = item.id;
   return stage;
 }
@@ -444,4 +473,72 @@ export class CausalLandmarkStabilizer {
     this.lastTimestamp = frame.timestampSeconds;
     return { ...frame, keyLandmarks: filtered };
   }
+}
+
+export function interpolatePoses(poseA: Pose, poseB: Pose, t: number): Pose {
+  const clampedT = Math.max(0, Math.min(1, t));
+
+  // Pixar / Studio Ghibli Kinetic Wave & Damped Harmonic Settling
+  const getJointT = (joint: JointName): number => {
+    let delay = 0;
+    let speed = 1.0;
+
+    if (joint.includes("hip") || joint.includes("ankle") || joint.includes("knee")) {
+      // Lower body & hips lead the motion
+      delay = 0.0;
+      speed = 1.15;
+    } else if (joint.includes("shoulder") || joint === "head") {
+      // Upper torso and head lag slightly behind hips
+      delay = 0.05;
+      speed = 1.18;
+    } else if (joint.includes("elbow")) {
+      // Arm lever lags behind torso
+      delay = 0.10;
+      speed = 1.22;
+    } else if (joint.includes("wrist")) {
+      // Wrist lags into lag slot, then snaps with explosive whip acceleration
+      delay = 0.14;
+      speed = 1.28;
+    }
+
+    const localT = Math.max(0, Math.min(1, (clampedT - delay) * speed));
+    // Smooth Hermite cubic ease-in-out curve
+    const hermite = localT * localT * (3 - 2 * localT);
+
+    // Studio Ghibli / Weta FX Soft Damped Harmonic Settling on Deceleration (when localT > 0.85)
+    if (localT > 0.85 && localT < 1.0) {
+      const settleT = (localT - 0.85) / 0.15;
+      const dampedWave = Math.sin(settleT * Math.PI * 2) * Math.exp(-settleT * 3.5) * 0.025;
+      return Math.max(0, Math.min(1, hermite + dampedWave));
+    }
+
+    return hermite;
+  };
+
+  const joints: JointName[] = [
+    "head",
+    "left_shoulder",
+    "right_shoulder",
+    "left_elbow",
+    "right_elbow",
+    "left_wrist",
+    "right_wrist",
+    "left_hip",
+    "right_hip",
+    "left_knee",
+    "right_knee",
+    "left_ankle",
+    "right_ankle",
+  ];
+  const result: Partial<Pose> = {};
+  for (const j of joints) {
+    const ptA = poseA[j];
+    const ptB = poseB[j];
+    const easeT = getJointT(j);
+    result[j] = {
+      x: ptA.x + (ptB.x - ptA.x) * easeT,
+      y: ptA.y + (ptB.y - ptA.y) * easeT,
+    };
+  }
+  return result as Pose;
 }

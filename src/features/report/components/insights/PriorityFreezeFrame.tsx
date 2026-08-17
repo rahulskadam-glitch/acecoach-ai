@@ -74,7 +74,7 @@ export default function PriorityFreezeFrame({ report, actionType, athleteContext
   const end = primary?.endSeconds ?? Math.max(report.frameSummary?.durationSeconds ?? 1, 1);
   const anchors = useMemo(() => stageAnchors(report, start, end), [end, report, start]);
 
-  const stage: MotionStage = typeof timestamp === "number" ? stageForTime(timestamp, anchors) : "contact";
+  const stage: MotionStage = typeof timestamp === "number" ? stageForTime(timestamp, anchors) : "forward_swing_contact";
   const frames = report.frameSummary?.frameMetrics ?? [];
   const athleteFrame = typeof timestamp === "number" ? nearestFrame(frames, timestamp) : null;
   const athletePose = athleteFrame?.keyLandmarks ? poseFromLandmarks(athleteFrame.keyLandmarks) : null;

@@ -14,40 +14,48 @@ ONTOLOGY_ROOT = Path(__file__).resolve().parents[1] / "ontology" / "v4.1.0"
 
 ACTION_ALIASES = {"backhand_slice": "slice_backhand", "slice": "slice_backhand"}
 MOVEMENT_CHAPTERS = [
-    {"id": "setup", "label": "Setup & timing", "area_ids": ["backlift_preparation"], "domains": ["Preparation", "Recognition"], "fault_tokens": ["PREP", "RHYTHM", "REC"]},
-    {"id": "movement_spacing", "label": "Footwork & spacing", "area_ids": ["footwork_base", "contact_spacing"], "domains": ["Positioning", "Spacing"], "fault_tokens": ["SPACE", "REC", "PREP"]},
-    {"id": "weight_transfer", "label": "Weight transfer & leg drive", "area_ids": ["lower_body_loading", "lower_body_extension"], "domains": ["Loading", "Sequencing"], "fault_tokens": ["LOAD", "RISE", "LEG"]},
-    {"id": "swing_connection", "label": "Body-to-racket connection", "area_ids": ["hand_swing_path"], "domains": ["Sequencing", "Racket path"], "fault_tokens": ["SEQ", "ARM", "PATH"]},
-    {"id": "contact_stability", "label": "Head & contact stability", "area_ids": ["body_position"], "domains": ["Stability", "Contact"], "fault_tokens": ["HEAD", "TILT", "CON"]},
-    {"id": "finish_recovery", "label": "Finish & recovery", "area_ids": ["ending_position"], "domains": ["Recovery", "Extension/finish", "Stability"], "fault_tokens": ["RECOV", "FIN", "LAND"]},
+    # Six chapters matching the canonical Ready Position / Unit Turn /
+    # Backswing / Forward Swing & Contact / Follow-Through / Recovery
+    # vocabulary used across the video timeline and biomechanical registry.
+    # "lower_body_loading" (the knee-bend load) and "lower_body_extension"
+    # (the knee-drive "from loading into follow-through", per its own
+    # explanation text in biomechanics.py) were previously grouped into one
+    # "weight_transfer" chapter; they now split across Backswing and
+    # Follow-Through respectively, matching what each area actually measures.
+    {"id": "ready", "label": "Ready Position", "area_ids": ["backlift_preparation"], "domains": ["Preparation", "Recognition"], "fault_tokens": ["PREP", "RHYTHM", "REC"]},
+    {"id": "unit_turn", "label": "Unit Turn", "area_ids": ["footwork_base"], "domains": ["Positioning", "Spacing"], "fault_tokens": ["SPACE", "REC", "PREP"]},
+    {"id": "backswing", "label": "Backswing", "area_ids": ["lower_body_loading"], "domains": ["Loading"], "fault_tokens": ["LOAD", "LEG"]},
+    {"id": "forward_swing_contact", "label": "Forward Swing & Contact", "area_ids": ["hand_swing_path", "body_position", "contact_spacing"], "domains": ["Sequencing", "Racket path", "Stability", "Contact"], "fault_tokens": ["SEQ", "ARM", "PATH", "HEAD", "TILT", "CON"]},
+    {"id": "follow_through", "label": "Follow-Through", "area_ids": ["lower_body_extension"], "domains": ["Extension/finish"], "fault_tokens": ["RISE", "FIN"]},
+    {"id": "recovery", "label": "Recovery", "area_ids": ["ending_position"], "domains": ["Recovery", "Stability"], "fault_tokens": ["RECOV", "LAND"]},
 ]
 CHAPTER_LANGUAGE = {
-    "setup": {
+    "ready": {
         "working": "Your preparation is organized early enough to give the forward swing time.",
         "developing": "The setup is not fully organized before the forward swing has to begin.",
         "why": "An earlier, calmer setup leaves more time for the feet and contact decision.",
     },
-    "movement_spacing": {
+    "unit_turn": {
         "working": "Your feet create a usable base and enough room for the hands.",
         "developing": "Your base and hitting distance change too much, so the hands do not get the same contact window each time.",
         "why": "Better arrival gives you space to swing freely instead of rescuing the ball late.",
     },
-    "weight_transfer": {
-        "working": "Your legs show a clear load-then-drive pattern into the stroke.",
-        "developing": "The legs are not yet creating a clear load-then-drive pattern, so the upper body has to do more of the work.",
-        "why": "Load first, then drive: that sequence helps energy travel from the ground through the trunk and into the swing.",
+    "backswing": {
+        "working": "Your legs show a clear load into the stroke.",
+        "developing": "The legs are not yet creating a clear load, so the upper body has to do more of the work.",
+        "why": "Loading the legs first helps energy travel from the ground through the trunk and into the swing.",
     },
-    "swing_connection": {
-        "working": "The body starts the motion and the hands follow as one connected swing.",
-        "developing": "The swing arrives in pieces instead of flowing cleanly from the body into the hands.",
-        "why": "A connected sequence creates easier speed and a more repeatable racket path.",
+    "forward_swing_contact": {
+        "working": "The body starts the motion and the hands follow as one connected swing, with a stable platform through contact.",
+        "developing": "The swing arrives in pieces instead of flowing cleanly from the body into the hands, and the platform is not always stable through contact.",
+        "why": "A connected sequence creates easier speed and a repeatable racket path, and staying organized through contact makes timing and direction easier to repeat.",
     },
-    "contact_stability": {
-        "working": "Your head and upper body give the hands a stable platform through contact.",
-        "developing": "Your head and upper body move away before the strike window is finished.",
-        "why": "Staying organized a fraction longer makes timing and direction easier to repeat.",
+    "follow_through": {
+        "working": "The legs drive after the load, carrying that energy through the finish.",
+        "developing": "The legs are not yet driving after the load, so the finish loses some of the energy the load created.",
+        "why": "Load first, then drive: that sequence carries energy all the way through the finish instead of stopping short.",
     },
-    "finish_recovery": {
+    "recovery": {
         "working": "You finish in balance and begin returning to ready without a pause.",
         "developing": "The finish does not yet leave you a quick, balanced route back to ready.",
         "why": "A complete finish should carry naturally into the first recovery step.",
@@ -77,6 +85,25 @@ PHASE_TO_TIMELINE = {
     "O0": "ready", "O1": "preparation", "O2": "preparation", "O3": "loading",
     "O4": "acceleration", "O5": "contact_proxy", "O6": "follow_through", "O7": "recovery",
 }
+
+# Folds the 7 real timeline anchors above onto the 6 canonical report stages
+# (Ready Position / Unit Turn / Backswing / Forward Swing & Contact /
+# Follow-Through / Recovery) — the same fold motion-model.ts's PHASE_ALIASES
+# performs on the frontend, kept in sync deliberately so a fault's
+# phase_origin and its stage_guides.json entry always agree.
+TIMELINE_TO_CANONICAL_STAGE = {
+    "ready": "ready",
+    "preparation": "unit_turn",
+    "loading": "backswing",
+    "acceleration": "forward_swing_contact",
+    "contact_proxy": "forward_swing_contact",
+    "follow_through": "follow_through",
+    "recovery": "recovery",
+}
+
+
+def canonical_stage_for_phase_origin(phase_code: str) -> str:
+    return TIMELINE_TO_CANONICAL_STAGE[PHASE_TO_TIMELINE.get(phase_code, "contact_proxy")]
 
 
 @lru_cache(maxsize=1)
@@ -398,7 +425,7 @@ def _movement_chain_item(
             availability_reason = "LOW_LANDMARK_CONFIDENCE"
         else:
             availability_reason = "CAMERA_OR_OCCLUSION_LIMIT"
-        if chapter["id"] == "movement_spacing":
+        if chapter["id"] == "unit_turn":
             coach_explanation = "The feet, base, and body-to-ball spacing were not visible together long enough for a fair coaching judgment. Keep the full body and ball path in frame."
         else:
             coach_explanation = "The camera did not show this stage clearly enough for a fair coaching judgment. This is a filming limitation, not a technique fault."

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import json
 import math
 from dataclasses import dataclass
+from functools import lru_cache
+from pathlib import Path
 from statistics import mean
 from typing import TYPE_CHECKING, Any
 
@@ -9,7 +12,26 @@ if TYPE_CHECKING:
     from .biomechanics import BiomechanicsResult
 
 
-PROFILE_VERSION = "acecoach-106-kinematic-profile-v1.0.0"
+PROFILE_VERSION = "acecoach-kinematic-profile-v3.0.0"
+
+# Mirrors ontology_reasoner.py's ACTION_ALIASES — kept as a separate literal
+# here rather than imported, since neither module otherwise depends on the
+# other and stage_guides.json's stroke keys should stay resolvable even if
+# this file is used standalone (e.g. in tests).
+_STAGE_GUIDE_ACTION_ALIASES = {"backhand_slice": "slice_backhand", "slice": "slice_backhand"}
+_STAGE_GUIDES_PATH = Path(__file__).resolve().parents[1] / "ontology" / "v4.1.0" / "config" / "stage_guides.json"
+
+
+@lru_cache(maxsize=1)
+def _stage_guides() -> dict[str, Any]:
+    if not _STAGE_GUIDES_PATH.exists():
+        return {}
+    return json.loads(_STAGE_GUIDES_PATH.read_text())
+
+
+def _stage_guide_entry(action_type: str, phase_id: str) -> dict[str, Any] | None:
+    stroke = _STAGE_GUIDE_ACTION_ALIASES.get(action_type, action_type)
+    return _stage_guides().get("strokes", {}).get(stroke, {}).get("stages", {}).get(phase_id)
 
 
 @dataclass(frozen=True)
@@ -44,25 +66,33 @@ def _spec(
 
 
 METRIC_SPECS: tuple[MetricSpec, ...] = (
-    # Preparation — 16
-    _spec("prep_base_width", "Ready base width", "preparation", "base", "sample", "baseWidthNormalized", "ready", "ready", "shoulder_widths", "How wide the feet are before the stroke."),
-    _spec("prep_left_knee", "Left knee angle", "preparation", "left_leg", "sample", "leftKneeAngle", "ready", "ready", "degrees", "How bent the left knee is at the start.", "world_pose_angle_proxy"),
-    _spec("prep_right_knee", "Right knee angle", "preparation", "right_leg", "sample", "rightKneeAngle", "ready", "ready", "degrees", "How bent the right knee is at the start.", "world_pose_angle_proxy"),
-    _spec("prep_left_hip", "Left hip angle", "preparation", "left_hip", "sample", "leftHipAngle", "ready", "ready", "degrees", "The left-side body shape at the start.", "world_pose_angle_proxy"),
-    _spec("prep_right_hip", "Right hip angle", "preparation", "right_hip", "sample", "rightHipAngle", "ready", "ready", "degrees", "The right-side body shape at the start.", "world_pose_angle_proxy"),
-    _spec("prep_trunk_lean", "Upper-body lean", "preparation", "trunk", "sample", "trunkAngleDegrees", "ready", "ready", "degrees", "Whether the upper body starts upright or tilted.", "image_plane_orientation_proxy"),
-    _spec("prep_head_com_offset", "Head-to-balance offset", "preparation", "head", "sample", "headToComNormalized", "ready", "ready", "shoulder_widths", "How the head sits over the body's balance point."),
-    _spec("prep_shoulder_line", "Shoulder-line orientation", "preparation", "shoulders", "sample", "shoulderLineDegrees", "ready", "ready", "degrees", "The visible direction of the shoulder line.", "image_plane_orientation_proxy"),
-    _spec("prep_pelvis_line", "Hip-line orientation", "preparation", "pelvis", "sample", "pelvisLineDegrees", "ready", "ready", "degrees", "The visible direction of the hip line.", "image_plane_orientation_proxy"),
-    _spec("prep_separation", "Shoulder–hip separation", "preparation", "trunk", "sample", "shoulderPelvisSeparation", "ready", "ready", "degrees", "Visible separation between shoulder and hip lines.", "image_plane_rotation_proxy"),
-    _spec("prep_hand_separation", "Hand separation", "preparation", "arms", "sample", "handSeparationNormalized", "ready", "ready", "shoulder_widths", "How far apart the hands are before preparation."),
-    _spec("prep_dominant_elbow", "Hitting elbow angle", "preparation", "hitting_arm", "sample", "dominantElbowAngle", "ready", "ready", "degrees", "The shape of the hitting arm at the start.", "world_pose_angle_proxy"),
-    _spec("prep_dominant_shoulder", "Hitting shoulder angle", "preparation", "hitting_shoulder", "sample", "dominantShoulderAngle", "ready", "ready", "degrees", "How the hitting arm is organized from the torso.", "world_pose_angle_proxy"),
-    _spec("prep_non_dominant_shoulder", "Support shoulder angle", "preparation", "support_shoulder", "sample", "oppositeShoulderAngle", "ready", "ready", "degrees", "How the support arm helps organize the body.", "world_pose_angle_proxy"),
-    _spec("prep_com_lateral_stability", "Balance-point movement", "preparation", "balance", "range", "centerOfMassXNormalized", "ready", "preparation", "shoulder_widths", "How much the body's balance point moves before the turn."),
-    _spec("prep_head_stability", "Head stability", "preparation", "head", "range", "headToComNormalized", "ready", "preparation", "shoulder_widths", "How quiet the head stays during early preparation."),
+    # Ready Position — the static stance sampled at the "ready" anchor,
+    # before any turn or racket movement begins.
+    _spec("prep_base_width", "Ready base width", "ready", "base", "sample", "baseWidthNormalized", "ready", "ready", "shoulder_widths", "How wide the feet are before the stroke."),
+    _spec("prep_left_knee", "Left knee angle", "ready", "left_leg", "sample", "leftKneeAngle", "ready", "ready", "degrees", "How bent the left knee is at the start.", "world_pose_angle_proxy"),
+    _spec("prep_right_knee", "Right knee angle", "ready", "right_leg", "sample", "rightKneeAngle", "ready", "ready", "degrees", "How bent the right knee is at the start.", "world_pose_angle_proxy"),
+    _spec("prep_left_hip", "Left hip angle", "ready", "left_hip", "sample", "leftHipAngle", "ready", "ready", "degrees", "The left-side body shape at the start.", "world_pose_angle_proxy"),
+    _spec("prep_right_hip", "Right hip angle", "ready", "right_hip", "sample", "rightHipAngle", "ready", "ready", "degrees", "The right-side body shape at the start.", "world_pose_angle_proxy"),
+    _spec("prep_trunk_lean", "Upper-body lean", "ready", "trunk", "sample", "trunkAngleDegrees", "ready", "ready", "degrees", "Whether the upper body starts upright or tilted.", "image_plane_orientation_proxy"),
+    _spec("prep_head_com_offset", "Head-to-balance offset", "ready", "head", "sample", "headToComNormalized", "ready", "ready", "shoulder_widths", "How the head sits over the body's balance point."),
+    _spec("prep_separation", "Shoulder–hip separation", "ready", "trunk", "sample", "shoulderPelvisSeparation", "ready", "ready", "degrees", "Visible separation between shoulder and hip lines.", "image_plane_rotation_proxy"),
+    _spec("prep_hand_separation", "Hand separation", "ready", "arms", "sample", "handSeparationNormalized", "ready", "ready", "shoulder_widths", "How far apart the hands are before preparation."),
+    _spec("prep_dominant_elbow", "Hitting elbow angle", "ready", "hitting_arm", "sample", "dominantElbowAngle", "ready", "ready", "degrees", "The shape of the hitting arm at the start.", "world_pose_angle_proxy"),
+    _spec("prep_dominant_shoulder", "Hitting shoulder angle", "ready", "hitting_shoulder", "sample", "dominantShoulderAngle", "ready", "ready", "degrees", "How the hitting arm is organized from the torso.", "world_pose_angle_proxy"),
+    _spec("prep_non_dominant_shoulder", "Support shoulder angle", "ready", "support_shoulder", "sample", "oppositeShoulderAngle", "ready", "ready", "degrees", "How the support arm helps organize the body.", "world_pose_angle_proxy"),
 
-    # Backswing — 18
+    # Unit Turn — the shoulders and hips beginning to rotate together as one
+    # unit, from the "ready" anchor to the "preparation" anchor.
+    _spec("prep_com_lateral_stability", "Balance-point movement", "unit_turn", "balance", "range", "centerOfMassXNormalized", "ready", "preparation", "shoulder_widths", "How much the body's balance point moves before the turn."),
+    _spec("prep_head_stability", "Head stability", "unit_turn", "head", "range", "headToComNormalized", "ready", "preparation", "shoulder_widths", "How quiet the head stays during early preparation."),
+    _spec("backswing_shoulder_turn", "Shoulder-line turn", "unit_turn", "shoulders", "abs_delta", "shoulderLineDegrees", "preparation", "loading", "degrees", "How much the visible shoulder line changes through the unit turn.", "image_plane_rotation_proxy"),
+    _spec("backswing_pelvis_turn", "Hip-line turn", "unit_turn", "pelvis", "abs_delta", "pelvisLineDegrees", "preparation", "loading", "degrees", "How much the visible hip line changes through the unit turn.", "image_plane_rotation_proxy"),
+    _spec("backswing_separation_change", "Separation change", "unit_turn", "trunk", "delta", "shoulderPelvisSeparation", "preparation", "loading", "degrees", "How shoulder–hip separation develops as the body turns as one unit.", "image_plane_rotation_proxy"),
+    _spec("backswing_shoulder_turn_speed", "Peak shoulder-turn speed", "unit_turn", "shoulders", "peak", "shoulderLineAngularSpeed", "preparation", "loading", "degrees_per_second", "The fastest visible shoulder-line turn.", "image_plane_angular_speed_proxy"),
+    _spec("backswing_pelvis_turn_speed", "Peak hip-turn speed", "unit_turn", "pelvis", "peak", "pelvisLineAngularSpeed", "preparation", "loading", "degrees_per_second", "The fastest visible hip-line turn.", "image_plane_angular_speed_proxy"),
+
+    # Backswing — the racket, hands, and arms travelling back into the
+    # loaded position, plus the concurrent leg-loading that supports it.
     _spec("backswing_hitting_hand_distance", "Hitting-hand distance", "backswing", "hitting_arm", "sample", "dominantHandToTorsoNormalized", "loading", "loading", "shoulder_widths", "How far the hitting hand travels from the torso."),
     _spec("backswing_support_hand_distance", "Support-hand distance", "backswing", "support_arm", "sample", "oppositeHandToTorsoNormalized", "loading", "loading", "shoulder_widths", "How the support hand organizes the turn."),
     _spec("backswing_hand_separation", "Hand separation", "backswing", "arms", "sample", "handSeparationNormalized", "loading", "loading", "shoulder_widths", "Whether the hands stay connected or separate."),
@@ -70,81 +100,74 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     _spec("backswing_support_elbow", "Support elbow angle", "backswing", "support_arm", "sample", "oppositeElbowAngle", "loading", "loading", "degrees", "The support-arm shape at the end of the backswing.", "world_pose_angle_proxy"),
     _spec("backswing_hitting_shoulder", "Hitting shoulder angle", "backswing", "hitting_shoulder", "sample", "dominantShoulderAngle", "loading", "loading", "degrees", "The hitting-arm position relative to the torso.", "world_pose_angle_proxy"),
     _spec("backswing_support_shoulder", "Support shoulder angle", "backswing", "support_shoulder", "sample", "oppositeShoulderAngle", "loading", "loading", "degrees", "The support-arm position relative to the torso.", "world_pose_angle_proxy"),
-    _spec("backswing_shoulder_turn", "Shoulder-line turn", "backswing", "shoulders", "abs_delta", "shoulderLineDegrees", "preparation", "loading", "degrees", "How much the visible shoulder line changes through the backswing.", "image_plane_rotation_proxy"),
-    _spec("backswing_pelvis_turn", "Hip-line turn", "backswing", "pelvis", "abs_delta", "pelvisLineDegrees", "preparation", "loading", "degrees", "How much the visible hip line changes through the backswing.", "image_plane_rotation_proxy"),
-    _spec("backswing_separation", "Shoulder–hip separation", "backswing", "trunk", "sample", "shoulderPelvisSeparation", "loading", "loading", "degrees", "Visible upper- and lower-body separation at load.", "image_plane_rotation_proxy"),
-    _spec("backswing_separation_change", "Separation change", "backswing", "trunk", "delta", "shoulderPelvisSeparation", "preparation", "loading", "degrees", "How shoulder–hip separation develops during the turn.", "image_plane_rotation_proxy"),
     _spec("backswing_hitting_wrist_vertical", "Hitting-hand vertical travel", "backswing", "hitting_hand", "abs_delta", "dominantWristYNormalized", "preparation", "loading", "shoulder_widths", "How far the hitting hand travels up or down."),
     _spec("backswing_hitting_wrist_lateral", "Hitting-hand sideways travel", "backswing", "hitting_hand", "abs_delta", "dominantWristXNormalized", "preparation", "loading", "shoulder_widths", "How far the hitting hand travels across the body."),
     _spec("backswing_support_wrist_vertical", "Support-hand vertical travel", "backswing", "support_hand", "abs_delta", "oppositeWristYNormalized", "preparation", "loading", "shoulder_widths", "How the support hand moves vertically during the turn."),
-    _spec("backswing_shoulder_turn_speed", "Peak shoulder-turn speed", "backswing", "shoulders", "peak", "shoulderLineAngularSpeed", "preparation", "loading", "degrees_per_second", "The fastest visible shoulder-line turn.", "image_plane_angular_speed_proxy"),
-    _spec("backswing_pelvis_turn_speed", "Peak hip-turn speed", "backswing", "pelvis", "peak", "pelvisLineAngularSpeed", "preparation", "loading", "degrees_per_second", "The fastest visible hip-line turn.", "image_plane_angular_speed_proxy"),
     _spec("backswing_wrist_speed", "Peak hitting-hand speed", "backswing", "hitting_hand", "peak", "dominantWristSpeedBodyPerSecond", "preparation", "loading", "body_lengths_per_second", "The fastest hitting-hand movement in the backswing."),
     _spec("backswing_duration", "Backswing time share", "backswing", "timing", "duration_ratio", "", "preparation", "loading", "ratio", "The share of the full movement used for the backswing.", "frame_timing"),
+    _spec("load_hitting_knee", "Hitting-side knee angle", "backswing", "hitting_leg", "sample", "dominantKneeAngle", "loading", "loading", "degrees", "How much the hitting-side leg bends at load.", "world_pose_angle_proxy"),
+    _spec("load_support_knee", "Support-side knee angle", "backswing", "support_leg", "sample", "oppositeKneeAngle", "loading", "loading", "degrees", "How much the support-side leg bends at load.", "world_pose_angle_proxy"),
+    _spec("load_hitting_knee_change", "Hitting-knee load", "backswing", "hitting_leg", "delta", "dominantKneeAngle", "ready", "loading", "degrees", "The change in hitting-side knee angle into load.", "world_pose_angle_proxy"),
+    _spec("load_support_knee_change", "Support-knee load", "backswing", "support_leg", "delta", "oppositeKneeAngle", "ready", "loading", "degrees", "The change in support-side knee angle into load.", "world_pose_angle_proxy"),
+    _spec("load_hitting_hip", "Hitting-side hip angle", "backswing", "hitting_hip", "sample", "dominantHipAngle", "loading", "loading", "degrees", "The hitting-side hip shape at load.", "world_pose_angle_proxy"),
+    _spec("load_support_hip", "Support-side hip angle", "backswing", "support_hip", "sample", "oppositeHipAngle", "loading", "loading", "degrees", "The support-side hip shape at load.", "world_pose_angle_proxy"),
+    _spec("load_base_width", "Loaded base width", "backswing", "base", "sample", "baseWidthNormalized", "loading", "loading", "shoulder_widths", "How wide the base is at load."),
+    _spec("load_base_width_change", "Base-width change", "backswing", "base", "delta", "baseWidthNormalized", "ready", "loading", "shoulder_widths", "How the stance changes from ready position to load."),
+    _spec("load_com_vertical", "Balance-point vertical travel", "backswing", "balance", "abs_delta", "centerOfMassYNormalized", "ready", "loading", "shoulder_widths", "How far the body lowers or rises into load."),
+    _spec("load_com_lateral", "Balance-point sideways travel", "backswing", "balance", "abs_delta", "centerOfMassXNormalized", "ready", "loading", "shoulder_widths", "How far body weight visibly shifts sideways."),
+    _spec("load_head_stability", "Head stability", "backswing", "head", "range", "headToComNormalized", "preparation", "acceleration", "shoulder_widths", "How quiet the head stays through the loading window."),
+    _spec("load_trunk_lean", "Upper-body lean", "backswing", "trunk", "sample", "trunkAngleDegrees", "loading", "loading", "degrees", "The upper-body angle at maximum load.", "image_plane_orientation_proxy"),
+    _spec("load_separation", "Shoulder–hip separation", "backswing", "trunk", "sample", "shoulderPelvisSeparation", "loading", "loading", "degrees", "Visible separation between shoulder and hip lines.", "image_plane_rotation_proxy"),
+    _spec("load_hitting_ankle", "Hitting-side ankle angle", "backswing", "hitting_ankle", "sample", "dominantAnkleAngle", "loading", "loading", "degrees", "The hitting-side lower-leg and foot shape.", "world_pose_angle_proxy"),
+    _spec("load_support_ankle", "Support-side ankle angle", "backswing", "support_ankle", "sample", "oppositeAnkleAngle", "loading", "loading", "degrees", "The support-side lower-leg and foot shape.", "world_pose_angle_proxy"),
 
-    # Loading — 18
-    _spec("load_hitting_knee", "Hitting-side knee angle", "loading", "hitting_leg", "sample", "dominantKneeAngle", "loading", "loading", "degrees", "How much the hitting-side leg bends at load.", "world_pose_angle_proxy"),
-    _spec("load_support_knee", "Support-side knee angle", "loading", "support_leg", "sample", "oppositeKneeAngle", "loading", "loading", "degrees", "How much the support-side leg bends at load.", "world_pose_angle_proxy"),
-    _spec("load_hitting_knee_change", "Hitting-knee load", "loading", "hitting_leg", "delta", "dominantKneeAngle", "ready", "loading", "degrees", "The change in hitting-side knee angle into load.", "world_pose_angle_proxy"),
-    _spec("load_support_knee_change", "Support-knee load", "loading", "support_leg", "delta", "oppositeKneeAngle", "ready", "loading", "degrees", "The change in support-side knee angle into load.", "world_pose_angle_proxy"),
-    _spec("load_hitting_hip", "Hitting-side hip angle", "loading", "hitting_hip", "sample", "dominantHipAngle", "loading", "loading", "degrees", "The hitting-side hip shape at load.", "world_pose_angle_proxy"),
-    _spec("load_support_hip", "Support-side hip angle", "loading", "support_hip", "sample", "oppositeHipAngle", "loading", "loading", "degrees", "The support-side hip shape at load.", "world_pose_angle_proxy"),
-    _spec("load_base_width", "Loaded base width", "loading", "base", "sample", "baseWidthNormalized", "loading", "loading", "shoulder_widths", "How wide the base is at load."),
-    _spec("load_base_width_change", "Base-width change", "loading", "base", "delta", "baseWidthNormalized", "ready", "loading", "shoulder_widths", "How the stance changes from ready position to load."),
-    _spec("load_com_vertical", "Balance-point vertical travel", "loading", "balance", "abs_delta", "centerOfMassYNormalized", "ready", "loading", "shoulder_widths", "How far the body lowers or rises into load."),
-    _spec("load_com_lateral", "Balance-point sideways travel", "loading", "balance", "abs_delta", "centerOfMassXNormalized", "ready", "loading", "shoulder_widths", "How far body weight visibly shifts sideways."),
-    _spec("load_head_stability", "Head stability", "loading", "head", "range", "headToComNormalized", "preparation", "acceleration", "shoulder_widths", "How quiet the head stays through the loading window."),
-    _spec("load_trunk_lean", "Upper-body lean", "loading", "trunk", "sample", "trunkAngleDegrees", "loading", "loading", "degrees", "The upper-body angle at maximum load.", "image_plane_orientation_proxy"),
-    _spec("load_separation", "Shoulder–hip separation", "loading", "trunk", "sample", "shoulderPelvisSeparation", "loading", "loading", "degrees", "Visible separation between shoulder and hip lines.", "image_plane_rotation_proxy"),
-    _spec("load_hitting_ankle", "Hitting-side ankle angle", "loading", "hitting_ankle", "sample", "dominantAnkleAngle", "loading", "loading", "degrees", "The hitting-side lower-leg and foot shape.", "world_pose_angle_proxy"),
-    _spec("load_support_ankle", "Support-side ankle angle", "loading", "support_ankle", "sample", "oppositeAnkleAngle", "loading", "loading", "degrees", "The support-side lower-leg and foot shape.", "world_pose_angle_proxy"),
-    _spec("load_lower_body_speed", "Peak lower-body movement", "loading", "lower_body", "peak", "lowerBodySpeedBodyPerSecond", "loading", "acceleration", "body_lengths_per_second", "The strongest visible lower-body movement into acceleration."),
-    _spec("load_duration", "Loading time share", "loading", "timing", "duration_ratio", "", "loading", "acceleration", "ratio", "The share of the full movement used to load."),
-    _spec("load_to_upper_timing", "Load-to-turn timing", "loading", "linkage", "peak_gap", "lowerBodySpeedBodyPerSecond|shoulderLineAngularSpeed", "loading", "contact_proxy", "seconds", "Timing between lower-body movement and shoulder turn.", "pose_sequence_proxy"),
+    # Forward Swing & Contact — the kinetic-chain drive from the loaded
+    # position through to the racket meeting the ball. Deliberately merges
+    # what earlier registry versions tracked as separate "acceleration" and
+    # "contact" groups, matching the combined stage name.
+    _spec("load_lower_body_speed", "Peak lower-body movement", "forward_swing_contact", "lower_body", "peak", "lowerBodySpeedBodyPerSecond", "loading", "acceleration", "body_lengths_per_second", "The strongest visible lower-body movement into the forward swing."),
+    _spec("load_duration", "Loading time share", "forward_swing_contact", "timing", "duration_ratio", "", "loading", "acceleration", "ratio", "The share of the full movement used to load."),
+    _spec("load_to_upper_timing", "Load-to-turn timing", "forward_swing_contact", "linkage", "peak_gap", "lowerBodySpeedBodyPerSecond|shoulderLineAngularSpeed", "loading", "contact_proxy", "seconds", "Timing between lower-body movement and shoulder turn.", "pose_sequence_proxy"),
+    _spec("accel_hitting_wrist_speed", "Hitting-hand peak speed", "forward_swing_contact", "hitting_hand", "peak", "dominantWristSpeedBodyPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak hitting-hand speed before likely contact."),
+    _spec("accel_support_wrist_speed", "Support-hand peak speed", "forward_swing_contact", "support_hand", "peak", "oppositeWristSpeedBodyPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak support-hand speed before likely contact."),
+    _spec("accel_hitting_elbow_speed", "Hitting-elbow peak speed", "forward_swing_contact", "hitting_arm", "peak", "dominantElbowSpeedBodyPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak hitting-elbow speed in the forward movement."),
+    _spec("accel_support_elbow_speed", "Support-elbow peak speed", "forward_swing_contact", "support_arm", "peak", "oppositeElbowSpeedBodyPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak support-elbow speed in the forward movement."),
+    _spec("accel_hitting_shoulder_speed", "Hitting-shoulder peak speed", "forward_swing_contact", "hitting_shoulder", "peak", "dominantShoulderSpeedBodyPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak hitting-shoulder movement before likely contact."),
+    _spec("accel_support_shoulder_speed", "Support-shoulder peak speed", "forward_swing_contact", "support_shoulder", "peak", "oppositeShoulderSpeedBodyPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak support-shoulder movement before likely contact."),
+    _spec("accel_pelvis_turn_speed", "Hip-line peak turn speed", "forward_swing_contact", "pelvis", "peak", "pelvisLineAngularSpeed", "acceleration", "contact_proxy", "degrees_per_second", "Fastest visible hip-line rotation.", "image_plane_angular_speed_proxy"),
+    _spec("accel_shoulder_turn_speed", "Shoulder-line peak turn speed", "forward_swing_contact", "shoulders", "peak", "shoulderLineAngularSpeed", "acceleration", "contact_proxy", "degrees_per_second", "Fastest visible shoulder-line rotation.", "image_plane_angular_speed_proxy"),
+    _spec("accel_trunk_turn_speed", "Upper-body peak turn speed", "forward_swing_contact", "trunk", "peak", "trunkAngularSpeed", "acceleration", "contact_proxy", "degrees_per_second", "Fastest visible upper-body angular change.", "image_plane_angular_speed_proxy"),
+    _spec("accel_upper_arm_speed", "Hitting upper-arm turn speed", "forward_swing_contact", "hitting_arm", "peak", "dominantUpperArmAngularSpeed", "acceleration", "contact_proxy", "degrees_per_second", "Fastest visible hitting upper-arm rotation.", "image_plane_angular_speed_proxy"),
+    _spec("accel_forearm_speed", "Hitting forearm turn speed", "forward_swing_contact", "hitting_forearm", "peak", "dominantForearmAngularSpeed", "acceleration", "contact_proxy", "degrees_per_second", "Fastest visible hitting-forearm rotation.", "image_plane_angular_speed_proxy"),
+    _spec("accel_wrist_acceleration", "Hitting-hand acceleration", "forward_swing_contact", "hitting_hand", "peak", "dominantWristAccelerationBodyPerSecond2", "acceleration", "contact_proxy", "body_lengths_per_second_squared", "Fastest increase in hitting-hand speed."),
+    _spec("accel_com_speed", "Balance-point peak speed", "forward_swing_contact", "balance", "peak", "comSpeedImageBodyScaledPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak whole-body balance-point movement."),
+    _spec("accel_hitting_knee_extension", "Hitting-knee extension", "forward_swing_contact", "hitting_leg", "delta", "dominantKneeAngle", "loading", "contact_proxy", "degrees", "How the hitting-side leg changes from load to likely contact.", "world_pose_angle_proxy"),
+    _spec("accel_support_knee_extension", "Support-knee extension", "forward_swing_contact", "support_leg", "delta", "oppositeKneeAngle", "loading", "contact_proxy", "degrees", "How the support-side leg changes from load to likely contact.", "world_pose_angle_proxy"),
+    _spec("accel_hitting_hip_extension", "Hitting-hip extension", "forward_swing_contact", "hitting_hip", "delta", "dominantHipAngle", "loading", "contact_proxy", "degrees", "How the hitting-side hip opens from load to likely contact.", "world_pose_angle_proxy"),
+    _spec("accel_support_hip_extension", "Support-hip extension", "forward_swing_contact", "support_hip", "delta", "oppositeHipAngle", "loading", "contact_proxy", "degrees", "How the support-side hip opens from load to likely contact.", "world_pose_angle_proxy"),
+    _spec("accel_hitting_elbow_extension", "Hitting-elbow extension", "forward_swing_contact", "hitting_arm", "delta", "dominantElbowAngle", "loading", "contact_proxy", "degrees", "How the hitting arm changes toward likely contact.", "world_pose_angle_proxy"),
+    _spec("accel_support_elbow_extension", "Support-elbow extension", "forward_swing_contact", "support_arm", "delta", "oppositeElbowAngle", "loading", "contact_proxy", "degrees", "How the support arm changes toward likely contact.", "world_pose_angle_proxy"),
+    _spec("accel_separation_release", "Separation release", "forward_swing_contact", "trunk", "delta", "shoulderPelvisSeparation", "loading", "contact_proxy", "degrees", "How visible shoulder–hip separation changes into contact.", "image_plane_rotation_proxy"),
+    _spec("accel_pelvis_to_shoulder_timing", "Hip-to-shoulder timing", "forward_swing_contact", "linkage", "peak_gap", "pelvisLineAngularSpeed|shoulderLineAngularSpeed", "acceleration", "contact_proxy", "seconds", "Whether hip-line movement leads shoulder-line movement.", "pose_sequence_proxy"),
+    _spec("accel_shoulder_to_elbow_timing", "Shoulder-to-elbow timing", "forward_swing_contact", "linkage", "peak_gap", "dominantShoulderSpeedBodyPerSecond|dominantElbowSpeedBodyPerSecond", "acceleration", "contact_proxy", "seconds", "Whether shoulder movement leads the hitting elbow.", "pose_sequence_proxy"),
+    _spec("contact_hitting_hand_space", "Hitting-hand space", "forward_swing_contact", "hitting_hand", "sample", "dominantHandToTorsoNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Space between the hitting hand and torso at likely contact."),
+    _spec("contact_support_hand_space", "Support-hand space", "forward_swing_contact", "support_hand", "sample", "oppositeHandToTorsoNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Support-hand distance from the torso at likely contact."),
+    _spec("contact_hand_separation", "Hand separation", "forward_swing_contact", "arms", "sample", "handSeparationNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Distance between both hands at likely contact."),
+    _spec("contact_hitting_elbow", "Hitting elbow angle", "forward_swing_contact", "hitting_arm", "sample", "dominantElbowAngle", "contact_proxy", "contact_proxy", "degrees", "Hitting-arm shape at likely contact.", "world_pose_angle_proxy"),
+    _spec("contact_support_elbow", "Support elbow angle", "forward_swing_contact", "support_arm", "sample", "oppositeElbowAngle", "contact_proxy", "contact_proxy", "degrees", "Support-arm shape at likely contact.", "world_pose_angle_proxy"),
+    _spec("contact_hitting_shoulder", "Hitting shoulder angle", "forward_swing_contact", "hitting_shoulder", "sample", "dominantShoulderAngle", "contact_proxy", "contact_proxy", "degrees", "Hitting-arm position relative to the torso.", "world_pose_angle_proxy"),
+    _spec("contact_support_shoulder", "Support shoulder angle", "forward_swing_contact", "support_shoulder", "sample", "oppositeShoulderAngle", "contact_proxy", "contact_proxy", "degrees", "Support-arm position relative to the torso.", "world_pose_angle_proxy"),
+    _spec("contact_hitting_wrist_height", "Hitting-hand height", "forward_swing_contact", "hitting_hand", "sample", "dominantWristYNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Hitting-hand height relative to the shoulder centre."),
+    _spec("contact_support_wrist_height", "Support-hand height", "forward_swing_contact", "support_hand", "sample", "oppositeWristYNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Support-hand height relative to the shoulder centre."),
+    _spec("contact_head_offset", "Head-to-balance offset", "forward_swing_contact", "head", "sample", "headToComNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Head position relative to the body's balance point."),
+    _spec("contact_trunk_lean", "Upper-body lean", "forward_swing_contact", "trunk", "sample", "trunkAngleDegrees", "contact_proxy", "contact_proxy", "degrees", "Upper-body angle at likely contact.", "image_plane_orientation_proxy"),
+    _spec("contact_base_width", "Contact base width", "forward_swing_contact", "base", "sample", "baseWidthNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Foot spacing at likely contact."),
+    _spec("contact_com_horizontal", "Balance-point position", "forward_swing_contact", "balance", "sample", "centerOfMassXNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Sideways balance-point position at likely contact."),
+    _spec("contact_separation", "Shoulder–hip separation", "forward_swing_contact", "trunk", "sample", "shoulderPelvisSeparation", "contact_proxy", "contact_proxy", "degrees", "Visible shoulder–hip separation at likely contact.", "image_plane_rotation_proxy"),
+    _spec("contact_motion_prominence", "Contact motion prominence", "forward_swing_contact", "whole_body", "prominence", "motionEnergy", "ready", "recovery", "ratio", "How strongly the likely-contact motion peak stands out.", "smoothed_pose_motion_signal"),
 
-    # Acceleration / extension — 22
-    _spec("accel_hitting_wrist_speed", "Hitting-hand peak speed", "acceleration", "hitting_hand", "peak", "dominantWristSpeedBodyPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak hitting-hand speed before likely contact."),
-    _spec("accel_support_wrist_speed", "Support-hand peak speed", "acceleration", "support_hand", "peak", "oppositeWristSpeedBodyPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak support-hand speed before likely contact."),
-    _spec("accel_hitting_elbow_speed", "Hitting-elbow peak speed", "acceleration", "hitting_arm", "peak", "dominantElbowSpeedBodyPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak hitting-elbow speed in the forward movement."),
-    _spec("accel_support_elbow_speed", "Support-elbow peak speed", "acceleration", "support_arm", "peak", "oppositeElbowSpeedBodyPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak support-elbow speed in the forward movement."),
-    _spec("accel_hitting_shoulder_speed", "Hitting-shoulder peak speed", "acceleration", "hitting_shoulder", "peak", "dominantShoulderSpeedBodyPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak hitting-shoulder movement before likely contact."),
-    _spec("accel_support_shoulder_speed", "Support-shoulder peak speed", "acceleration", "support_shoulder", "peak", "oppositeShoulderSpeedBodyPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak support-shoulder movement before likely contact."),
-    _spec("accel_pelvis_turn_speed", "Hip-line peak turn speed", "acceleration", "pelvis", "peak", "pelvisLineAngularSpeed", "acceleration", "contact_proxy", "degrees_per_second", "Fastest visible hip-line rotation.", "image_plane_angular_speed_proxy"),
-    _spec("accel_shoulder_turn_speed", "Shoulder-line peak turn speed", "acceleration", "shoulders", "peak", "shoulderLineAngularSpeed", "acceleration", "contact_proxy", "degrees_per_second", "Fastest visible shoulder-line rotation.", "image_plane_angular_speed_proxy"),
-    _spec("accel_trunk_turn_speed", "Upper-body peak turn speed", "acceleration", "trunk", "peak", "trunkAngularSpeed", "acceleration", "contact_proxy", "degrees_per_second", "Fastest visible upper-body angular change.", "image_plane_angular_speed_proxy"),
-    _spec("accel_upper_arm_speed", "Hitting upper-arm turn speed", "acceleration", "hitting_arm", "peak", "dominantUpperArmAngularSpeed", "acceleration", "contact_proxy", "degrees_per_second", "Fastest visible hitting upper-arm rotation.", "image_plane_angular_speed_proxy"),
-    _spec("accel_forearm_speed", "Hitting forearm turn speed", "acceleration", "hitting_forearm", "peak", "dominantForearmAngularSpeed", "acceleration", "contact_proxy", "degrees_per_second", "Fastest visible hitting-forearm rotation.", "image_plane_angular_speed_proxy"),
-    _spec("accel_wrist_acceleration", "Hitting-hand acceleration", "acceleration", "hitting_hand", "peak", "dominantWristAccelerationBodyPerSecond2", "acceleration", "contact_proxy", "body_lengths_per_second_squared", "Fastest increase in hitting-hand speed."),
-    _spec("accel_com_speed", "Balance-point peak speed", "acceleration", "balance", "peak", "comSpeedImageBodyScaledPerSecond", "acceleration", "contact_proxy", "body_lengths_per_second", "Peak whole-body balance-point movement."),
-    _spec("accel_hitting_knee_extension", "Hitting-knee extension", "acceleration", "hitting_leg", "delta", "dominantKneeAngle", "loading", "contact_proxy", "degrees", "How the hitting-side leg changes from load to likely contact.", "world_pose_angle_proxy"),
-    _spec("accel_support_knee_extension", "Support-knee extension", "acceleration", "support_leg", "delta", "oppositeKneeAngle", "loading", "contact_proxy", "degrees", "How the support-side leg changes from load to likely contact.", "world_pose_angle_proxy"),
-    _spec("accel_hitting_hip_extension", "Hitting-hip extension", "acceleration", "hitting_hip", "delta", "dominantHipAngle", "loading", "contact_proxy", "degrees", "How the hitting-side hip opens from load to likely contact.", "world_pose_angle_proxy"),
-    _spec("accel_support_hip_extension", "Support-hip extension", "acceleration", "support_hip", "delta", "oppositeHipAngle", "loading", "contact_proxy", "degrees", "How the support-side hip opens from load to likely contact.", "world_pose_angle_proxy"),
-    _spec("accel_hitting_elbow_extension", "Hitting-elbow extension", "acceleration", "hitting_arm", "delta", "dominantElbowAngle", "loading", "contact_proxy", "degrees", "How the hitting arm changes toward likely contact.", "world_pose_angle_proxy"),
-    _spec("accel_support_elbow_extension", "Support-elbow extension", "acceleration", "support_arm", "delta", "oppositeElbowAngle", "loading", "contact_proxy", "degrees", "How the support arm changes toward likely contact.", "world_pose_angle_proxy"),
-    _spec("accel_separation_release", "Separation release", "acceleration", "trunk", "delta", "shoulderPelvisSeparation", "loading", "contact_proxy", "degrees", "How visible shoulder–hip separation changes into contact.", "image_plane_rotation_proxy"),
-    _spec("accel_pelvis_to_shoulder_timing", "Hip-to-shoulder timing", "acceleration", "linkage", "peak_gap", "pelvisLineAngularSpeed|shoulderLineAngularSpeed", "acceleration", "contact_proxy", "seconds", "Whether hip-line movement leads shoulder-line movement.", "pose_sequence_proxy"),
-    _spec("accel_shoulder_to_elbow_timing", "Shoulder-to-elbow timing", "acceleration", "linkage", "peak_gap", "dominantShoulderSpeedBodyPerSecond|dominantElbowSpeedBodyPerSecond", "acceleration", "contact_proxy", "seconds", "Whether shoulder movement leads the hitting elbow.", "pose_sequence_proxy"),
-
-    # Contact proxy — 16
-    _spec("contact_hitting_hand_space", "Hitting-hand space", "contact", "hitting_hand", "sample", "dominantHandToTorsoNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Space between the hitting hand and torso at likely contact."),
-    _spec("contact_support_hand_space", "Support-hand space", "contact", "support_hand", "sample", "oppositeHandToTorsoNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Support-hand distance from the torso at likely contact."),
-    _spec("contact_hand_separation", "Hand separation", "contact", "arms", "sample", "handSeparationNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Distance between both hands at likely contact."),
-    _spec("contact_hitting_elbow", "Hitting elbow angle", "contact", "hitting_arm", "sample", "dominantElbowAngle", "contact_proxy", "contact_proxy", "degrees", "Hitting-arm shape at likely contact.", "world_pose_angle_proxy"),
-    _spec("contact_support_elbow", "Support elbow angle", "contact", "support_arm", "sample", "oppositeElbowAngle", "contact_proxy", "contact_proxy", "degrees", "Support-arm shape at likely contact.", "world_pose_angle_proxy"),
-    _spec("contact_hitting_shoulder", "Hitting shoulder angle", "contact", "hitting_shoulder", "sample", "dominantShoulderAngle", "contact_proxy", "contact_proxy", "degrees", "Hitting-arm position relative to the torso.", "world_pose_angle_proxy"),
-    _spec("contact_support_shoulder", "Support shoulder angle", "contact", "support_shoulder", "sample", "oppositeShoulderAngle", "contact_proxy", "contact_proxy", "degrees", "Support-arm position relative to the torso.", "world_pose_angle_proxy"),
-    _spec("contact_hitting_wrist_height", "Hitting-hand height", "contact", "hitting_hand", "sample", "dominantWristYNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Hitting-hand height relative to the shoulder centre."),
-    _spec("contact_support_wrist_height", "Support-hand height", "contact", "support_hand", "sample", "oppositeWristYNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Support-hand height relative to the shoulder centre."),
-    _spec("contact_head_offset", "Head-to-balance offset", "contact", "head", "sample", "headToComNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Head position relative to the body's balance point."),
-    _spec("contact_trunk_lean", "Upper-body lean", "contact", "trunk", "sample", "trunkAngleDegrees", "contact_proxy", "contact_proxy", "degrees", "Upper-body angle at likely contact.", "image_plane_orientation_proxy"),
-    _spec("contact_base_width", "Contact base width", "contact", "base", "sample", "baseWidthNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Foot spacing at likely contact."),
-    _spec("contact_com_horizontal", "Balance-point position", "contact", "balance", "sample", "centerOfMassXNormalized", "contact_proxy", "contact_proxy", "shoulder_widths", "Sideways balance-point position at likely contact."),
-    _spec("contact_separation", "Shoulder–hip separation", "contact", "trunk", "sample", "shoulderPelvisSeparation", "contact_proxy", "contact_proxy", "degrees", "Visible shoulder–hip separation at likely contact.", "image_plane_rotation_proxy"),
-    _spec("contact_motion_prominence", "Contact motion prominence", "contact", "whole_body", "prominence", "motionEnergy", "ready", "recovery", "ratio", "How strongly the likely-contact motion peak stands out.", "smoothed_pose_motion_signal"),
-    _spec("contact_visibility", "Contact landmark confidence", "contact", "capture", "sample", "visibility", "contact_proxy", "contact_proxy", "ratio", "Pose visibility at the likely-contact frame.", "landmark_visibility"),
-
-    # Follow-through and recovery — 16
+    # Follow-Through — the hitting arm, racket, and upper body continuing
+    # and decelerating after the ball is struck.
     _spec("finish_hitting_wrist_travel", "Hitting-hand finish travel", "follow_through", "hitting_hand", "vector_displacement", "dominantWristXNormalized|dominantWristYNormalized", "contact_proxy", "recovery", "shoulder_widths", "How far the hitting hand travels after likely contact."),
     _spec("finish_support_wrist_travel", "Support-hand finish travel", "follow_through", "support_hand", "vector_displacement", "oppositeWristXNormalized|oppositeWristYNormalized", "contact_proxy", "recovery", "shoulder_widths", "How far the support hand travels after likely contact."),
     _spec("finish_hitting_elbow", "Hitting elbow at finish", "follow_through", "hitting_arm", "sample", "dominantElbowAngle", "follow_through", "follow_through", "degrees", "Hitting-arm shape during the finish.", "world_pose_angle_proxy"),
@@ -152,28 +175,40 @@ METRIC_SPECS: tuple[MetricSpec, ...] = (
     _spec("finish_shoulder_turn", "Shoulder-line finish travel", "follow_through", "shoulders", "abs_delta", "shoulderLineDegrees", "contact_proxy", "follow_through", "degrees", "Visible shoulder-line movement after likely contact.", "image_plane_rotation_proxy"),
     _spec("finish_pelvis_turn", "Hip-line finish travel", "follow_through", "pelvis", "abs_delta", "pelvisLineDegrees", "contact_proxy", "follow_through", "degrees", "Visible hip-line movement after likely contact.", "image_plane_rotation_proxy"),
     _spec("finish_trunk_lean", "Upper-body lean at finish", "follow_through", "trunk", "sample", "trunkAngleDegrees", "follow_through", "follow_through", "degrees", "Upper-body position during the finish.", "image_plane_orientation_proxy"),
-    _spec("finish_head_stability", "Head stability after contact", "follow_through", "head", "range", "headToComNormalized", "contact_proxy", "recovery", "shoulder_widths", "How quiet the head stays through finish and recovery."),
-    _spec("finish_com_stability", "Balance-point stability", "follow_through", "balance", "range", "centerOfMassXNormalized", "contact_proxy", "recovery", "shoulder_widths", "How much the balance point shifts after likely contact."),
-    _spec("finish_recovery_base", "Recovery base width", "follow_through", "base", "sample", "baseWidthNormalized", "recovery", "recovery", "shoulder_widths", "Foot spacing when the movement resets."),
-    _spec("finish_hitting_knee", "Hitting knee at recovery", "follow_through", "hitting_leg", "sample", "dominantKneeAngle", "recovery", "recovery", "degrees", "Hitting-side knee shape at reset.", "world_pose_angle_proxy"),
-    _spec("finish_support_knee", "Support knee at recovery", "follow_through", "support_leg", "sample", "oppositeKneeAngle", "recovery", "recovery", "degrees", "Support-side knee shape at reset.", "world_pose_angle_proxy"),
     _spec("finish_wrist_deceleration", "Hitting-hand deceleration", "follow_through", "hitting_hand", "deceleration_ratio", "dominantWristSpeedBodyPerSecond", "contact_proxy", "recovery", "ratio", "How the hitting hand slows after likely contact."),
-    _spec("finish_recovery_duration", "Recovery time share", "follow_through", "timing", "duration_ratio", "", "contact_proxy", "recovery", "ratio", "The share of the full movement used to finish and reset.", "frame_timing"),
-    _spec("finish_duration_consistency", "Movement-duration consistency", "follow_through", "repeatability", "aggregate", "repetitionDurationCv", "ready", "recovery", "coefficient_of_variation", "How repeatable the movement duration is across attempts.", "between_repetition_variability"),
-    _spec("finish_peak_consistency", "Peak-rhythm consistency", "follow_through", "repeatability", "aggregate", "repetitionPeakMotionCv", "ready", "recovery", "coefficient_of_variation", "How repeatable the main motion peak is across attempts.", "between_repetition_variability"),
+
+    # Recovery — the legs, base, and balance resetting into a ready
+    # position for the next ball, plus how repeatable the whole movement was.
+    _spec("finish_head_stability", "Head stability after contact", "recovery", "head", "range", "headToComNormalized", "contact_proxy", "recovery", "shoulder_widths", "How quiet the head stays through finish and recovery."),
+    _spec("finish_com_stability", "Balance-point stability", "recovery", "balance", "range", "centerOfMassXNormalized", "contact_proxy", "recovery", "shoulder_widths", "How much the balance point shifts after likely contact."),
+    _spec("finish_recovery_base", "Recovery base width", "recovery", "base", "sample", "baseWidthNormalized", "recovery", "recovery", "shoulder_widths", "Foot spacing when the movement resets."),
+    _spec("finish_hitting_knee", "Hitting knee at recovery", "recovery", "hitting_leg", "sample", "dominantKneeAngle", "recovery", "recovery", "degrees", "Hitting-side knee shape at reset.", "world_pose_angle_proxy"),
+    _spec("finish_support_knee", "Support knee at recovery", "recovery", "support_leg", "sample", "oppositeKneeAngle", "recovery", "recovery", "degrees", "Support-side knee shape at reset.", "world_pose_angle_proxy"),
+    _spec("finish_recovery_duration", "Recovery time share", "recovery", "timing", "duration_ratio", "", "contact_proxy", "recovery", "ratio", "The share of the full movement used to finish and reset.", "frame_timing"),
+    _spec("finish_duration_consistency", "Movement-duration consistency", "recovery", "repeatability", "aggregate", "repetitionDurationCv", "ready", "recovery", "coefficient_of_variation", "How repeatable the movement duration is across attempts.", "between_repetition_variability"),
+    _spec("finish_peak_consistency", "Peak-rhythm consistency", "recovery", "repeatability", "aggregate", "repetitionPeakMotionCv", "ready", "recovery", "coefficient_of_variation", "How repeatable the main motion peak is across attempts.", "between_repetition_variability"),
 )
 
-if len(METRIC_SPECS) != 106:
-    raise RuntimeError(f"The biomechanical registry must contain exactly 106 metrics; found {len(METRIC_SPECS)}.")
-
-
 PHASE_LABELS = {
-    "preparation": "Preparation",
+    "ready": "Ready Position",
+    "unit_turn": "Unit Turn",
     "backswing": "Backswing",
-    "loading": "Loading",
-    "acceleration": "Acceleration / extension",
-    "contact": "Likely contact",
-    "follow_through": "Follow-through / recovery",
+    "forward_swing_contact": "Forward Swing & Contact",
+    "follow_through": "Follow-Through",
+    "recovery": "Recovery",
+}
+
+# Research grounding for each phase's metric set, referencing the same
+# citation ids used by the fault ontology (services/api/ontology/v4.1.0/
+# config/research_sources.json), so a phase's measured constructs are
+# traceable to real published sources rather than an arbitrary list.
+PHASE_SOURCE_IDS: dict[str, tuple[str, ...]] = {
+    "ready": ("SCI-ELLIOTT-2006", "SCI-KOVACS-2011"),
+    "unit_turn": ("SCI-ELLIOTT-2006", "SCI-FILIPCIC-2017-SPLITSTEP", "VID-MOURATOGLOU-FOOTWORK"),
+    "backswing": ("SCI-HE-2022-FOREHAND-LOWER-LIMB", "SCI-LANDLINGER-2010", "SCI-KOVACS-2011"),
+    "forward_swing_contact": ("SCI-ELLIOTT-2006", "SCI-GENEVOIS-2015", "SCI-STEPien-2011", "SCI-LANDLINGER-2010", "SCI-REID-BH-2002", "SCI-CHOW-2007", "SCI-FURUYA-2021", "SCI-BRITO-2024"),
+    "follow_through": ("SCI-ELLIOTT-2006", "ORG-ITF-SKILL-PHASES-2023"),
+    "recovery": ("ORG-ITF-SKILL-PHASES-2023", "SCI-FILIPCIC-2017-SPLITSTEP"),
 }
 
 
@@ -381,18 +416,31 @@ def build_biomechanical_profile(
         })
 
     legacy_phase_scores = {str(item.get("id")): item.get("score") for item in phase_scores}
+    acceleration_score = legacy_phase_scores.get("acceleration")
+    contact_score = legacy_phase_scores.get("contact")
+    forward_swing_contact_score: float | None
+    if acceleration_score is not None and contact_score is not None:
+        forward_swing_contact_score = (float(acceleration_score) + float(contact_score)) / 2
+    else:
+        forward_swing_contact_score = acceleration_score if acceleration_score is not None else contact_score
     phase_score_map = {
-        "preparation": legacy_phase_scores.get("preparation") if legacy_phase_scores.get("preparation") is not None else legacy_phase_scores.get("readiness"),
-        "backswing": legacy_phase_scores.get("preparation"),
-        "loading": legacy_phase_scores.get("loading"),
-        "acceleration": legacy_phase_scores.get("acceleration"),
-        "contact": legacy_phase_scores.get("contact"),
-        "follow_through": legacy_phase_scores.get("follow_through") if legacy_phase_scores.get("follow_through") is not None else legacy_phase_scores.get("recovery"),
+        # Source ids here are the real scoring-policy phases from
+        # analysis_control_policy.json (readiness/preparation/loading/
+        # acceleration/contact/follow_through/recovery) — untouched by this
+        # file's phase regrouping, just referenced by their existing keys.
+        # "forward_swing_contact" blends the two real scores it merges.
+        "ready": legacy_phase_scores.get("readiness"),
+        "unit_turn": legacy_phase_scores.get("preparation"),
+        "backswing": legacy_phase_scores.get("loading"),
+        "forward_swing_contact": forward_swing_contact_score,
+        "follow_through": legacy_phase_scores.get("follow_through"),
+        "recovery": legacy_phase_scores.get("recovery"),
     }
     phases: list[dict[str, Any]] = []
     for phase_id, label in PHASE_LABELS.items():
         phase_metrics = [metric for metric in metrics if metric["phase"] == phase_id]
         available = [metric for metric in phase_metrics if metric["status"] == "available"]
+        guide = _stage_guide_entry(action_type, phase_id)
         phases.append({
             "id": phase_id,
             "label": label,
@@ -400,6 +448,12 @@ def build_biomechanical_profile(
             "metricCount": len(phase_metrics),
             "availableMetricCount": len(available),
             "confidence": round(mean(metric["confidence"] for metric in available), 3) if available else 0.0,
+            "sourceIds": list(PHASE_SOURCE_IDS.get(phase_id, ())),
+            "coachingCue": guide.get("coachingCue") if guide else None,
+            "whatIsMeasured": guide.get("whatIsMeasured") if guide else None,
+            "checkpoints": guide.get("checkpoints", []) if guide else [],
+            "benchmarkDescription": guide.get("benchmarkDescription") if guide else None,
+            "commonMistakeTitles": [item["title"] for item in guide.get("commonMistakes", [])] if guide else [],
         })
 
     links = _linkage_analysis(result, anchors, measurement_confidence)
@@ -411,7 +465,7 @@ def build_biomechanical_profile(
         "metricCount": len(metrics),
         "availableMetricCount": available_metrics,
         "unavailableMetricCount": len(metrics) - available_metrics,
-        "measurementStatement": "106 transparent pose-kinematic checks across six movement phases. Values are camera-aware estimates unless explicitly labelled measured; they are not force, load, muscle-activation, racket, or ball measurements.",
+        "measurementStatement": f"{len(metrics)} transparent pose-kinematic checks across six movement phases, each grounded in cited tennis biomechanics research. Values are camera-aware estimates unless explicitly labelled measured; they are not force, load, muscle-activation, racket, or ball measurements.",
         "phases": phases,
         "linkages": links,
         "connectedLinkCount": connected_links,

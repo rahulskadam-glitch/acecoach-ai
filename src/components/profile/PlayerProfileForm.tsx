@@ -5,6 +5,7 @@ import { AlertTriangle, Save, ShieldCheck, Sparkles, RotateCcw } from "lucide-re
 import { useMemo, useState, type FormEvent } from "react";
 
 import { resetCoachingProfile, saveProfile } from "@/app/actions/video-actions";
+import DeleteAccountButton from "@/components/auth/DeleteAccountButton";
 import { Button } from "@/components/ui/button";
 import { getSport, supportedSports } from "@/lib/sports";
 
@@ -310,6 +311,17 @@ export default function PlayerProfileForm({ initialProfile }: ProfileProps) {
               <Save className="mr-2 h-4 w-4" />
               {saving ? "Saving..." : "Save profile"}
             </Button>
+          </div>
+        </div>
+
+        {/* Apple App Store Guideline 5.1.1(v) & Google Play Store In-App Account & Data Deletion */}
+        <div className="mt-6 rounded-3xl border border-rose-200 bg-rose-50/70 p-6">
+          <h3 className="text-base font-bold text-rose-950">Delete Account and Personal Data</h3>
+          <p className="mt-1.5 text-xs text-rose-800 leading-relaxed max-w-2xl">
+            In compliance with Apple App Store Guideline 5.1.1(v) and Google Play Store Data Safety policies, you can permanently delete your account, authentication credentials, uploaded videos, biomechanical reports, practice history, and coach conversations. This action is irreversible.
+          </p>
+          <div className="mt-4">
+            <DeleteAccountButton />
           </div>
         </div>
       </form>

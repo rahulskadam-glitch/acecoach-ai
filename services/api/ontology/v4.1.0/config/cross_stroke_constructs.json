@@ -9,32 +9,32 @@
   "context_match_fields": ["shot_situation", "shot_intent"],
   "constructs": [
     {
-      "id": "setup",
+      "id": "ready",
       "label": "Recognition and preparation timing",
       "eligible_actions": ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "forehand_volley", "backhand_volley", "overhead"]
     },
     {
-      "id": "movement_spacing",
+      "id": "unit_turn",
       "label": "Arrival and spacing stability",
       "eligible_actions": ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "forehand_volley", "backhand_volley", "overhead"]
     },
     {
-      "id": "weight_transfer",
-      "label": "Load and transfer organization",
+      "id": "backswing",
+      "label": "Load organization",
       "eligible_actions": ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "serve", "overhead"]
     },
     {
-      "id": "swing_connection",
-      "label": "Body-to-racket connection",
-      "eligible_actions": ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "serve", "overhead"]
-    },
-    {
-      "id": "contact_stability",
-      "label": "Contact-platform stability",
+      "id": "forward_swing_contact",
+      "label": "Body-to-racket connection and contact-platform stability",
       "eligible_actions": ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "serve", "forehand_volley", "backhand_volley", "overhead"]
     },
     {
-      "id": "finish_recovery",
+      "id": "follow_through",
+      "label": "Leg drive and transfer through the finish",
+      "eligible_actions": ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "serve", "overhead"]
+    },
+    {
+      "id": "recovery",
       "label": "Finish and recovery readiness",
       "eligible_actions": ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "serve", "forehand_volley", "backhand_volley", "overhead"]
     }

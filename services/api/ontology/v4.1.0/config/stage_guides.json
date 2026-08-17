@@ -1,0 +1,2756 @@
+{
+  "version": "2.0.0",
+  "principle": "Each stage entry describes pose-observable technique only. Grip, exact racket-face angle, string contact, and ball flight remain confirmation-only until validated racket/ball tracking exists \u2014 nothing here claims a measurement the current monocular pose pipeline cannot support. commonMistakes reference real evidence-gated fault_ids already defined in services/api/ontology/v4.1.0/config/faults/; this file adds coaching narrative, body-part checkpoints, and citation grounding around those faults, it does not introduce new detection claims beyond what those faults already gate on.",
+  "coverage": "All 8 stroke types this ontology supports (forehand, two_handed_backhand, one_handed_backhand, slice_backhand, serve, forehand_volley, backhand_volley, overhead), 6 canonical stages each. Some stage entries carry a coverageGap note instead of commonMistakes where the fault ontology genuinely has no fault anchored at that gate for that stroke (verified, not an authoring omission \u2014 see the phase_origin distribution in each faults/*.json file); nothing is fabricated to fill an empty stage.",
+  "canonicalStageOrder": [
+    "ready",
+    "unit_turn",
+    "backswing",
+    "forward_swing_contact",
+    "follow_through",
+    "recovery"
+  ],
+  "strokes": {
+    "forehand": {
+      "stylePrinciple": "Judge the forehand against the player's grip, ball height, stance, intention, and recovery demand. Eastern, semi-western, and western grips legitimately create different arm shapes and contact distances.",
+      "stages": {
+        "ready": {
+          "coachingCue": "Athletic base; racket out front.",
+          "benchmarkDescription": "An athletic base roughly shoulder-width or slightly wider, weight forward on the balls of the feet with heels light, knees softened, and the racket held out in front at waist height. A well-timed split step lands just as the opponent makes contact, putting the body in a state of alert readiness rather than a static stance.",
+          "whatIsMeasured": "Pose-estimated base width, knee shape, balance point, and early head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Use a balanced shoulder-width starting base with soft knees and pressure ready to move.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "footwork_base",
+              "target": "Begin square enough to react in either direction.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Hold the racket out front with the non-hitting hand supporting the throat.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Keep the head level while reading the opponent's contact.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Ready width should fit the athlete and court position; shoulder-width is a starting reference, not a rigid target.",
+          "commonMistakes": [
+            {
+              "faultId": "FH-REC-01",
+              "title": "Late recognition",
+              "summary": "Reaction to the incoming ball starts late relative to when the ball leaves the opponent's strings, compressing every stage that follows."
+            },
+            {
+              "faultId": "FH-SPACE-01",
+              "title": "Crowded contact",
+              "summary": "Ball-to-torso distance at the eventual strike falls inside the athlete's own successful range, a spacing problem that is often traceable back to a slow or absent split step."
+            },
+            {
+              "faultId": "FH-SPACE-02",
+              "title": "Excessive reach",
+              "summary": "Contact happens outside a comfortable reach envelope while the balance point exits the support base, usually because the ready position and first move were too passive to arrive in time."
+            }
+          ],
+          "drillIds": [
+            "FH_EARLY_READ_01",
+            "FH_SPACING_01",
+            "FH_SPACING_02"
+          ],
+          "sourceIds": [
+            "SCI-FILIPCIC-2017-SPLITSTEP",
+            "SCI-ELLIOTT-2006",
+            "ORG-USTA-INSTRUCTION"
+          ]
+        },
+        "unit_turn": {
+          "coachingCue": "Turn together; separate late.",
+          "benchmarkDescription": "Hips and shoulders begin rotating together as one unit \u2014 the racket does not move independently of the body. Elite players separate hip and shoulder rotation deliberately (shoulders turning further than hips) to store rotational energy, but the turn itself starts as a single connected movement, completing early enough that the forward swing is never rushed.",
+          "whatIsMeasured": "Pose-estimated preparation timing, base change, shoulder\u2013pelvis relationship, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Load onto the back or outside foot while preserving adjustment space.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "backlift_preparation",
+              "target": "Turn the hips and shoulders together before the arm tries to swing.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Let the unit turn carry the racket back instead of pulling it back with the arm alone.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Stay level and track the incoming ball during the turn.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "The size of the turn changes with time available, incoming pace, and intended direction.",
+          "commonMistakes": [
+            {
+              "faultId": "FH-PREP-01",
+              "title": "Late unit turn",
+              "summary": "The turn completes late relative to normalized stroke timing or the ball-flight trigger \u2014 the single most cited forehand error in club and junior tennis, since it compresses every later phase."
+            },
+            {
+              "faultId": "FH-PREP-02",
+              "title": "Arm-only take-back",
+              "summary": "The racket travels backward while the shoulders and hips barely change orientation \u2014 the classic 'arm swings, body doesn't turn' pattern that removes the kinetic-chain advantage of hip-shoulder separation."
+            },
+            {
+              "faultId": "FH-LOAD-01",
+              "title": "Insufficient lower-body load",
+              "summary": "Knee flexion and the lowering of the balance point stay below the athlete's own successful range for a comparable ball height \u2014 the base isn't organizing to support the swing."
+            },
+            {
+              "faultId": "FH-ROT-01",
+              "title": "Premature opening",
+              "summary": "The shoulders open well before the racket has reached its forward slot, discarding the separation angle before it can be used."
+            },
+            {
+              "faultId": "FH-CON-01",
+              "title": "Late contact",
+              "summary": "Contact ends up behind the athlete's own front-hip envelope for a comparable context \u2014 often traceable to a late-starting turn rather than a swing-path problem."
+            }
+          ],
+          "drillIds": [
+            "FH_EARLY_TURN_01",
+            "FH_UNIT_TURN_01",
+            "FH_LOAD_01",
+            "FH_STAY_TURNED_01",
+            "FH_CONTACT_01"
+          ],
+          "sourceIds": [
+            "SCI-LANDLINGER-2010",
+            "SCI-REID-2013",
+            "VID-MOURATOGLOU-FOOTWORK",
+            "SCI-ELLIOTT-2006"
+          ]
+        },
+        "backswing": {
+          "coachingCue": "Plant, load, then drop.",
+          "benchmarkDescription": "From the completed unit turn, the racket continues into a loop with a visible drop \u2014 the racket head descends below the hand line before the forward swing starts, letting gravity contribute to racket-head speed rather than adding pure muscular effort. The hitting-side leg continues loading underneath this racket path, not just at the turn.",
+          "whatIsMeasured": "Pose-estimated knee load, base stability, hand-to-torso space, and shoulder\u2013pelvis separation.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_loading",
+              "target": "Plant a stable anchor and flex the knees to match the ball height.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "lower_body_loading",
+              "target": "Keep the hips loaded until the forward sequence begins.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "contact_spacing",
+              "target": "Keep the elbow and hand organized with room in front of the chest.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm the racket drops below the expected ball height with a laid-back wrist before the forward swing.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Keep tracking the bounce without tipping the head away.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Open, semi-open, and neutral stances can all work; the plant must still give the rotation a stable base.",
+          "commonMistakes": [
+            {
+              "faultId": "FH-SEQ-01",
+              "title": "Arm accelerates before body",
+              "summary": "Racket acceleration begins before the pelvis and trunk contribute, beyond the athlete's own reference range \u2014 the arm is doing work the legs and trunk should be starting first."
+            },
+            {
+              "faultId": "FH-PATH-01",
+              "title": "Path too horizontal for intended topspin",
+              "summary": "The racket's vertical displacement through the backswing stays below the corridor typical for the intended spin \u2014 a flat backswing that limits topspin potential."
+            },
+            {
+              "faultId": "FH-PATH-02",
+              "title": "Path too steep with limited penetration",
+              "summary": "Vertical displacement is excessive while forward extension stays short \u2014 an overly steep loop that trades depth and penetration for spin."
+            }
+          ],
+          "drillIds": [
+            "FH_SEQUENCE_01",
+            "FH_PATH_01",
+            "FH_EXTENSION_01"
+          ],
+          "sourceIds": [
+            "SCI-HE-2022-FOREHAND-LOWER-LIMB",
+            "SCI-LANDLINGER-2010",
+            "SCI-ELLIOTT-2006"
+          ]
+        },
+        "forward_swing_contact": {
+          "coachingCue": "Legs, hips, trunk, hand / Space in front; see the hit.",
+          "benchmarkDescription": "The hips lead, followed by the shoulders, then the arm and hand extend last \u2014 a proximal-to-distal sequence where each segment reaches peak rotational speed slightly after the one before it. The head stays still through the strike window while the hitting arm meets the ball with a bent, absorbing elbow rather than a fully locked one, in front of the body with visible space from the torso.",
+          "whatIsMeasured": "Pose-estimated knee extension, hip-to-shoulder timing, wrist-speed progression, hand-to-torso spacing, elbow shape, and head stability around the likely strike window.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_extension",
+              "target": "Drive upward and forward only after loading and stay supported through the strike.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & trunk",
+              "areaId": "hand_swing_path",
+              "target": "Let hip rotation lead the shoulders and hitting arm into open contact without pulling the chest away.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "contact_spacing",
+              "target": "Preserve grip-appropriate space beside and in front of the hitting-side hip without an isolated arm burst.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm a stable face through contact; travel up through the ball for topspin rather than forcing the face downward.",
+              "cameraBoundary": "The engine uses a likely strike window; exact ball-on-strings contact is not detected. Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Keep the head still on the strike window until the ball has left.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Grip changes the valid elbow shape and contact distance; a bent western-grip contact is not automatically a fault.",
+          "commonMistakes": [
+            {
+              "faultId": "FH-HEAD-01",
+              "title": "Head moves before contact",
+              "summary": "Head rotation or translation begins inside the pre-contact stability window instead of staying quiet through the strike \u2014 disrupts the stable platform the rest of the kinetic chain relies on."
+            },
+            {
+              "faultId": "FH-FIN-01",
+              "title": "Blocked or decelerating finish",
+              "summary": "Racket speed falls before impact, or the post-contact path terminates outside the athlete's own established pattern \u2014 the swing is stopping at the ball instead of through it."
+            }
+          ],
+          "drillIds": [
+            "FH_HEAD_01",
+            "FH_FINISH_01"
+          ],
+          "sourceIds": [
+            "SCI-LANDLINGER-2010",
+            "SCI-HE-2022-FOREHAND-LOWER-LIMB",
+            "SCI-ELLIOTT-2006",
+            "VID-MOURATOGLOU-FOREHAND"
+          ]
+        },
+        "follow_through": {
+          "coachingCue": "Brush through; finish free.",
+          "benchmarkDescription": "The racket continues its path across and over the shoulder under its own momentum, decelerating gradually rather than stopping abruptly at the ball. A complete follow-through is the visible evidence that the earlier sequence (legs, trunk, then arm) did not need a late arm-only rescue.",
+          "whatIsMeasured": "Pose-estimated post-contact hand travel, trunk rotation, knee extension, head release, and balance.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_extension",
+              "target": "Let the leg drive complete into the finish with balance.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "ending_position",
+              "target": "Complete the rotation without losing the base.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "ending_position",
+              "target": "Allow a full hand path across or over the shoulder rather than decelerating or chopping short.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm a high, grip- and spin-appropriate finish with the wrist remaining extended.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Release the head naturally only after the strike window.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Over-shoulder, wrap, and more extreme topspin finishes can all be functional when the swing stays continuous and balanced.",
+          "commonMistakes": [
+            {
+              "faultId": "FH-RECOV-01",
+              "title": "Delayed recovery",
+              "summary": "The first purposeful recovery movement is delayed relative to the shot and court context \u2014 the finish is not connecting cleanly into getting ready for the next ball."
+            }
+          ],
+          "drillIds": [
+            "FH_RECOVERY_01"
+          ],
+          "sourceIds": [
+            "SCI-ELLIOTT-2006",
+            "ORG-USTA-INSTRUCTION"
+          ]
+        },
+        "recovery": {
+          "coachingCue": "Finish, reset, split.",
+          "benchmarkDescription": "A quick first step (a cross step when covering distance, not a shuffle) begins the return toward a useful court position, arriving in a reset, balanced stance in time for the next split step. Recovery is a formal continuation of the stroke, not an afterthought once the ball has left the strings.",
+          "whatIsMeasured": "Pose-estimated recovery base, balance-point stability, knee shape, and reset timing.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Use the finish momentum to push into the first recovery step (cross-step when covering distance).",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "ending_position",
+              "target": "Reset the pelvis toward a responsive court position.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Re-center the racket in front for the next shot.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Regain a level visual platform for the opponent's next contact.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "The correct recovery point depends on shot direction, court position, and opponent options; it is not always the geometric center.",
+          "commonMistakes": [],
+          "coverageGap": "No evidence-gated fault currently targets this stage specifically for forehand \u2014 FH-RECOV-01 (delayed recovery) is anchored at the follow-through gate (G8) and already covers the timing of the first recovery movement. A dedicated recovery-quality fault (e.g. cross-step vs. shuffle, base width on reset) would need new measurable criteria; flagged here for a future ontology pass rather than fabricated.",
+          "drillIds": [],
+          "sourceIds": [
+            "SCI-FILIPCIC-2017-SPLITSTEP",
+            "ORG-ITF-SKILL-PHASES-2023"
+          ]
+        }
+      }
+    },
+    "two_handed_backhand": {
+      "stylePrinciple": "The two-handed backhand is driven by the non-dominant top hand with rotation initiated from the lower body. Non-dominant arm extension, dominant elbow tuck/guidance, and stance vary between straight-arm and bent-arm technique archetypes.",
+      "stages": {
+        "ready": {
+          "coachingCue": "Two hands ready; balanced base.",
+          "benchmarkDescription": "Both hands stay organized together on the racket in front of the body, in a balanced, athletic stance with weight forward. Because the take-back is two-handed, the hands' relationship to each other before the ball arrives matters as much as the base underneath them.",
+          "whatIsMeasured": "Pose-estimated base width, knee shape, hand-to-torso organization, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Maintain an athletic shoulder-width base on the balls of the feet with softened knees.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "footwork_base",
+              "target": "Keep the pelvis neutral and ready to pivot toward either flank.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Hold the racket out in front with both hands organized on the grip (dominant bottom, non-dominant top).",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Keep the head level and eyes tracking the opponent's strike point.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Both hands already resting near or on their respective backhand bevels accelerates preparation under pace.",
+          "commonMistakes": [
+            {
+              "faultId": "2HB-REC-01",
+              "title": "Late recognition",
+              "summary": "Reaction and side selection (forehand vs. backhand) happen late relative to the incoming-ball trigger."
+            },
+            {
+              "faultId": "2HB-SPACE-01",
+              "title": "Crowded contact",
+              "summary": "The handle and elbows compress toward the torso and ball-to-body distance falls below the athlete's own family range \u2014 a spacing issue that traces back to a late or passive start."
+            }
+          ],
+          "drillIds": [
+            "2HB_EARLY_READ_01",
+            "2HB_SPACING_01"
+          ],
+          "sourceIds": [
+            "SCI-FILIPCIC-2017-SPLITSTEP",
+            "SCI-ELLIOTT-2006"
+          ]
+        },
+        "unit_turn": {
+          "coachingCue": "Turn the shoulders; step the outside foot.",
+          "benchmarkDescription": "Shoulders and hips turn together, with the outside foot crossing early to get the base to the ball before the swing starts. Because two hands drive the racket, the turn needs to be an unmistakably whole-body rotation \u2014 not just the arms carrying the racket sideways \u2014 and the racket begins dropping into its loaded position without the body prematurely opening back toward the net.",
+          "whatIsMeasured": "Pose-estimated unit turn timing, outside foot placement, shoulder\u2013pelvis coil, and torso lean.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Step or pivot the outside (back) foot early to set the base before the racket drops.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "backlift_preparation",
+              "target": "Rotate shoulders and hips together as a single block so the upper back shows to the opponent.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Take the racket back with both arms without pulling the elbows tight against the ribs.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Track the incoming ball over the lead shoulder with minimal head tilt.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Closed, neutral, and semi-open stances are all utilized; the unit turn must establish an outside anchor regardless of stance type.",
+          "commonMistakes": [
+            {
+              "faultId": "2HB-PREP-01",
+              "title": "Late preparation",
+              "summary": "Preparation completes late relative to ball flight and the athlete's own successful strokes."
+            },
+            {
+              "faultId": "2HB-PREP-02",
+              "title": "Disconnected unit turn",
+              "summary": "The arms and racket move while torso orientation stays largely unchanged \u2014 a two-handed version of the arm-only take-back, since two hands can disguise a lack of real body rotation."
+            },
+            {
+              "faultId": "2HB-CON-01",
+              "title": "Late contact",
+              "summary": "Contact ends up behind the athlete's own personalized envelope for the context."
+            },
+            {
+              "faultId": "2HB-TILT-01",
+              "title": "Excessive head or trunk tilt",
+              "summary": "Trunk inclination increases beyond the athlete's successful range without a contextual reason to do so."
+            },
+            {
+              "faultId": "2HB-LOAD-01",
+              "title": "Passive lower body",
+              "summary": "Little knee flexion, balance-point loading, or leg extension occurs across the load-to-contact window."
+            },
+            {
+              "faultId": "2HB-SEQ-02",
+              "title": "Premature full-body opening",
+              "summary": "Pelvis and shoulders open together too early, eliminating the separation the forward swing would otherwise use."
+            },
+            {
+              "faultId": "2HB-RDROP-01",
+              "title": "Racket drop mistimed",
+              "summary": "Maximum racket drop happens after sustained forward acceleration has already begun, instead of before it."
+            }
+          ],
+          "drillIds": [
+            "2HB_EARLY_TURN_01",
+            "2HB_UNIT_TURN_01",
+            "2HB_CONTACT_01",
+            "2HB_STABILITY_01",
+            "2HB_LOAD_01",
+            "2HB_HIP_LEAD_01",
+            "2HB_DROP_01"
+          ],
+          "sourceIds": [
+            "SCI-REID-BH-2002",
+            "SCI-GENEVOIS-2015",
+            "SCI-STEPien-2011",
+            "SCI-ELLIOTT-2006"
+          ]
+        },
+        "backswing": {
+          "coachingCue": "Load the back leg; drop the racket head.",
+          "benchmarkDescription": "The outside leg finishes loading while both hands preserve visible space between the racket and the torso as it finishes going back \u2014 the top (non-dominant) hand stays actively engaged rather than passively along for the ride, and the racket path carries enough upward component to support the intended topspin.",
+          "whatIsMeasured": "Pose-estimated knee loading, balance-point lowering, top-hand space, and racket drop timing.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_loading",
+              "target": "Flex the back/outside knee to lower the center of mass to the anticipated ball trajectory.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "lower_body_loading",
+              "target": "Preserve the coiled hip posture without opening early toward the net.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "contact_spacing",
+              "target": "Top hand drives the racket head down below the intended ball height while dominant elbow stays tucked.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Ensure the racket drops below the ball line to facilitate low-to-high topspin path before forward uncoiling.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Maintain head stability and focus on the bounce zone without early rise.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Bent-bent, straight-bent, and double-straight arm structures are valid styles; maintaining structural integrity through the drop is key.",
+          "commonMistakes": [
+            {
+              "faultId": "2HB-SEQ-01",
+              "title": "Arms initiate before pelvis",
+              "summary": "Racket and arm acceleration precede any detectable pelvis contribution \u2014 the hands are starting the swing the legs should start."
+            },
+            {
+              "faultId": "2HB-ARM-01",
+              "title": "Arm structure collapses",
+              "summary": "Elbow configuration changes abruptly outside the athlete's classified arm-family envelope."
+            },
+            {
+              "faultId": "2HB-ARM-02",
+              "title": "Dominant-side pulling pattern",
+              "summary": "The dominant elbow retracts early while the non-dominant arm fails to extend \u2014 the bottom hand is pulling the stroke instead of the two hands working together."
+            },
+            {
+              "faultId": "2HB-PATH-01",
+              "title": "Swing too horizontal",
+              "summary": "The racket path lacks sufficient upward component for the intended topspin."
+            },
+            {
+              "faultId": "2HB-RISE-01",
+              "title": "Standing up before contact",
+              "summary": "The balance point and head rise before the racket reaches the impact zone \u2014 the load is releasing too early."
+            }
+          ],
+          "drillIds": [
+            "2HB_SEQUENCE_01",
+            "2HB_ARM_STRUCTURE_01",
+            "2HB_TOP_HAND_01",
+            "2HB_PATH_01",
+            "2HB_STAY_DOWN_01"
+          ],
+          "sourceIds": [
+            "SCI-STEPien-2011",
+            "SCI-GENEVOIS-2015",
+            "SCI-REID-BH-2002"
+          ]
+        },
+        "forward_swing_contact": {
+          "coachingCue": "Hips initiate; top hand drives through.",
+          "benchmarkDescription": "The hips start the turn a beat before the hands, so the swing stays connected through the ball instead of the arms working in isolation. The head stays quiet through the strike window and both hands meet the ball with visible space from the torso, not crowded against the body.",
+          "whatIsMeasured": "Pose-estimated hip-to-shoulder acceleration sequence, two-handed contact spacing, lead knee support, and head stillness.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_extension",
+              "target": "Drive through the lead leg into contact while staying grounded and supported.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & trunk",
+              "areaId": "hand_swing_path",
+              "target": "Uncoil the pelvis ahead of the shoulders and drive the trunk through the contact line.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "contact_spacing",
+              "target": "Meet the ball comfortably in front of the lead hip with the non-dominant top arm extending through impact.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Maintain a vertical or slightly closed face through the impact corridor.",
+              "cameraBoundary": "The engine uses a likely strike window; exact ball-on-strings contact is not detected. Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Keep the head completely quiet and eyes locked on the contact zone.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Two-handed contact is typically slightly closer to the body and further back than a one-handed backhand, but must remain in front of the lead hip.",
+          "commonMistakes": [
+            {
+              "faultId": "2HB-HEAD-01",
+              "title": "Head releases before contact",
+              "summary": "Head rotation or rise begins before impact rather than staying stable through it."
+            },
+            {
+              "faultId": "2HB-FIN-01",
+              "title": "Bottom elbow blocks finish",
+              "summary": "The dominant (bottom) elbow stays low or close to the body and restricts the post-contact path."
+            }
+          ],
+          "drillIds": [
+            "2HB_HEAD_01",
+            "2HB_FINISH_01"
+          ],
+          "sourceIds": [
+            "SCI-GENEVOIS-2015",
+            "SCI-STEPien-2011",
+            "SCI-ELLIOTT-2006"
+          ]
+        },
+        "follow_through": {
+          "coachingCue": "Extend high; elbows over shoulder.",
+          "benchmarkDescription": "For a topspin/depth pattern, the hands travel through the intended line first, and the lead elbow rises above the nose line as the racket finishes \u2014 flatter, defensive, or high-ball finishes vary from this, which is expected rather than a fault.",
+          "whatIsMeasured": "Pose-estimated hand finish height, trunk release, lead elbow elevation, and landing balance.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_extension",
+              "target": "Absorb the rotational force with balanced footing and upright posture.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "ending_position",
+              "target": "Complete rotation with the chest facing the target or net comfortably.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "ending_position",
+              "target": "Allow the hands and racket to finish high over the dominant shoulder with the non-dominant elbow pointing forward.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Let the racket decelerate smoothly wrap-around or over-the-shoulder without jerking.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Release the head toward the ball's flight only after impact is complete.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Follow-through height corresponds to desired depth and trajectory; low-finish variations may indicate defensive or flat drives.",
+          "commonMistakes": [
+            {
+              "faultId": "2HB-RECOV-01",
+              "title": "Delayed recovery",
+              "summary": "The first recovery action is delayed after the finish, relative to the shot and court context."
+            }
+          ],
+          "drillIds": [
+            "2HB_RECOVERY_01"
+          ],
+          "sourceIds": [
+            "SCI-ELLIOTT-2006",
+            "ORG-USTA-GPS"
+          ]
+        },
+        "recovery": {
+          "coachingCue": "Push off; square and split.",
+          "benchmarkDescription": "The swing settles into a balanced base before the first recovery step begins, connecting the end of one shot to the readiness for the next \u2014 a continuation of the follow-through, not a separate pause.",
+          "whatIsMeasured": "Pose-estimated recovery step efficiency, balance recentering, and racket resetting.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Push off the lead foot and take a dynamic crossover or shuffle step toward the recovery mark.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "ending_position",
+              "target": "Square the hips back toward the net.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Re-center both hands and the racket in front at waist-to-chest height.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Maintain a level gaze to anticipate the opponent's reply.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Recovery path is governed by court geometry and shot outcome; the goal is dynamic readiness for the next split step.",
+          "commonMistakes": [],
+          "coverageGap": "No evidence-gated fault currently targets this stage specifically for two-handed backhand \u2014 2HB-RECOV-01 (delayed recovery) is anchored at the follow-through gate (G8). Flagged for a future ontology pass rather than fabricated.",
+          "drillIds": [],
+          "sourceIds": [
+            "SCI-FILIPCIC-2017-SPLITSTEP",
+            "ORG-ITF-SKILL-PHASES-2023"
+          ]
+        }
+      }
+    },
+    "one_handed_backhand": {
+      "stylePrinciple": "Preserve early preparation, forward space, head stillness, and a ground-up release. Racket lag and body orientation vary by player and by topspin versus slice intention.",
+      "stages": {
+        "ready": {
+          "coachingCue": "Balanced; hands ready.",
+          "benchmarkDescription": "A compact, balanced stance with the grip change to the backhand grip already anticipated rather than rushed once the ball is identified as coming to the backhand side.",
+          "whatIsMeasured": "Pose-estimated base width, knee shape, balance point, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Stay balanced on the balls of the feet with soft knees ready to turn.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "footwork_base",
+              "target": "Begin square enough to react in either direction.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Support the racket near the throat with the non-dominant hand so the eastern backhand grip change happens immediately.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Read the opponent's contact from a level head position.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "The ready base should fit the athlete and court position.",
+          "commonMistakes": [
+            {
+              "faultId": "1HB-GRIP-01",
+              "title": "Suspected late grip change",
+              "summary": "Hand-racket geometry changes materially during late preparation instead of being organized early."
+            },
+            {
+              "faultId": "1HB-SPACE-01",
+              "title": "Crowded contact",
+              "summary": "Ball-to-body distance prevents a usable arm extension at the eventual strike."
+            }
+          ],
+          "drillIds": [
+            "1HB_GRIP_01",
+            "1HB_SPACING_01"
+          ],
+          "sourceIds": [
+            "ORG-USTA-INSTRUCTION",
+            "SCI-REID-BH-2002"
+          ]
+        },
+        "unit_turn": {
+          "coachingCue": "Racket up; turn early.",
+          "benchmarkDescription": "An early shoulder turn shows the back to the incoming ball well before the ball arrives \u2014 delaying this is one of the most commonly cited one-handed backhand errors, since a single hitting arm has no second hand to compensate for lost preparation time. The racket does not travel straight back; it begins a loop with the elbow staying extended rather than dropping, which preserves leverage for the swing to come.",
+          "whatIsMeasured": "Pose-estimated preparation timing, base change, shoulder\u2013pelvis relationship, and head position.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Turn or step the back foot early while keeping the knees engaged.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "backlift_preparation",
+              "target": "Coil the hips and shoulders together so the back turns toward the net before the hitting arm releases.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "backlift_preparation",
+              "target": "Use the non-dominant hand on the throat to support the turn and high racket organization.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm the eastern-backhand grip is set early and the take-back begins high.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Track the ball over the lead shoulder without tipping the head away.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "The one-hander has little margin for a late grip change or late turn.",
+          "commonMistakes": [
+            {
+              "faultId": "1HB-PREP-01",
+              "title": "Late unit turn",
+              "summary": "The turn completes late relative to the incoming ball."
+            },
+            {
+              "faultId": "1HB-PREP-02",
+              "title": "Low or cramped preparation",
+              "summary": "The racket stays close to the torso and below the athlete's own family envelope for preparation height."
+            },
+            {
+              "faultId": "1HB-LOAD-01",
+              "title": "Insufficient lead-leg load",
+              "summary": "The lead knee and balance point show little load or upward contribution \u2014 the front leg isn't doing the work it needs to for the uncoiling that follows."
+            },
+            {
+              "faultId": "1HB-PATH-01",
+              "title": "Insufficient racket drop",
+              "summary": "The racket begins its forward path outside the usable slot, or without enough drop first."
+            },
+            {
+              "faultId": "1HB-PATH-02",
+              "title": "Oversized backswing",
+              "summary": "The racket path length exceeds what the available time allows for \u2014 too big a backswing for the timing available."
+            },
+            {
+              "faultId": "1HB-CON-01",
+              "title": "Late contact",
+              "summary": "Contact ends up behind the front-foot or personalized envelope."
+            }
+          ],
+          "drillIds": [
+            "1HB_EARLY_TURN_01",
+            "1HB_PREP_01",
+            "1HB_LOAD_01",
+            "1HB_DROP_01",
+            "1HB_COMPACT_01",
+            "1HB_CONTACT_01"
+          ],
+          "sourceIds": [
+            "SCI-REID-BH-2002",
+            "SCI-STEPien-2011",
+            "ORG-USTA-INSTRUCTION"
+          ]
+        },
+        "backswing": {
+          "coachingCue": "Stay flexed; store the release.",
+          "benchmarkDescription": "The front leg continues loading underneath a racket that stays connected to the turning trunk \u2014 the swing has not yet become an arm-only movement, and the chest stays turned (sideways) rather than opening toward the net ahead of schedule.",
+          "whatIsMeasured": "Pose-estimated knee load, shoulder\u2013pelvis separation, hand space, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_loading",
+              "target": "Keep the front leg flexed enough to support the later drive.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "lower_body_loading",
+              "target": "Preserve the loaded sideways body orientation until the forward sequence begins.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "contact_spacing",
+              "target": "Keep the hitting arm organized with space for later extension.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm the racket remains above the hand until the late drop and stores usable lag.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Stay locked on the ball through the load.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Elite racket lag varies substantially; use it as a player-specific checkpoint, not a universal angle target.",
+          "commonMistakes": [
+            {
+              "faultId": "1HB-SEQ-01",
+              "title": "Arm-only acceleration",
+              "summary": "The racket accelerates without any prior trunk or lower-body contribution \u2014 the single hitting arm is generating speed on its own instead of receiving it from the body."
+            },
+            {
+              "faultId": "1HB-ROT-01",
+              "title": "Overrotation before contact",
+              "summary": "The chest opens beyond the athlete's technique-family or context range before impact."
+            }
+          ],
+          "drillIds": [
+            "1HB_SEQUENCE_01",
+            "1HB_STAY_SIDEWAYS_01"
+          ],
+          "sourceIds": [
+            "SCI-STEPien-2011",
+            "SCI-GENEVOIS-2015"
+          ]
+        },
+        "forward_swing_contact": {
+          "coachingCue": "Leg drive; elbow leads / Reach through; freeze the view.",
+          "benchmarkDescription": "The front leg drives and the hips uncoil first, sending the racket into an extended arm ahead of the body at contact \u2014 a stable wrist-to-racket angle through the strike window, with the head staying quiet rather than pulling away.",
+          "whatIsMeasured": "Pose-estimated knee extension, hip-to-shoulder timing, elbow path, wrist-speed progression, contact spacing, trunk orientation, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_extension",
+              "target": "Drive the front leg upward and stay supported through the strike window.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & trunk",
+              "areaId": "hand_swing_path",
+              "target": "Uncoil with a diagonal-to-sideways body line without spinning the torso open too early.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "contact_spacing",
+              "target": "Create a forward, near-full-arm-length contact corridor in front of the lead foot.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm a firm wrist and a face matching intended topspin and direction.",
+              "cameraBoundary": "The engine uses a likely strike window; exact ball-on-strings contact is not detected. Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Keep the head absolutely quiet through the strike window.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "A clean one-hander uses rotation and extension without over-rotating through the strike.",
+          "commonMistakes": [
+            {
+              "faultId": "1HB-HEAD-01",
+              "title": "Head moves before contact",
+              "summary": "Head rotation or translation begins before impact instead of staying still through it."
+            },
+            {
+              "faultId": "1HB-WRIST-01",
+              "title": "Wrist-racket instability",
+              "summary": "An abrupt hand-to-racket angle change occurs around contact."
+            },
+            {
+              "faultId": "1HB-BAL-01",
+              "title": "Balance loss",
+              "summary": "The balance point exits the support base and recovery is uncontrolled \u2014 a single-handed stroke is less forgiving of balance breakdowns than a two-handed one."
+            },
+            {
+              "faultId": "1HB-FIN-01",
+              "title": "Low or abbreviated finish",
+              "summary": "The post-contact path lacks the upward and outward extension expected for the context \u2014 the finish is cut short instead of completing. Anchored at the contact gate since the finish is judged relative to the strike, not a separate later window."
+            }
+          ],
+          "drillIds": [
+            "1HB_HEAD_01",
+            "1HB_WRIST_01",
+            "1HB_BALANCE_01",
+            "1HB_FINISH_01"
+          ],
+          "sourceIds": [
+            "SCI-REID-BH-2002",
+            "SCI-STEPien-2011",
+            "VID-MOURATOGLOU-1HB"
+          ]
+        },
+        "follow_through": {
+          "coachingCue": "Extend, rise, finish high.",
+          "benchmarkDescription": "The racket continues up and out after contact with full arm extension \u2014 a useful visual check is whether the strings would be visible from underneath just after contact, indicating the racket is moving up through the ball rather than across it.",
+          "whatIsMeasured": "Pose-estimated post-contact hand travel, knee extension, trunk travel, head release, and balance.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_extension",
+              "target": "Complete the upward leg drive into balance.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & chest",
+              "areaId": "ending_position",
+              "target": "Rotate enough to release the shot without spinning wildly through it.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "ending_position",
+              "target": "Let arm extension and body release carry the hand into a high finish with non-dominant arm pulling back.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm a natural high finish rather than actively lifting with the wrist.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Release the eyes only after contact is completed.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "The finish may vary with height, direction, and defense, but a low flat collapse often signals lost extension.",
+          "commonMistakes": [],
+          "coverageGap": "No evidence-gated fault is anchored at this stage for one-handed backhand \u2014 the ontology's finish-quality fault (1HB-FIN-01) is anchored at the contact gate (G6) rather than a separate post-contact gate. The benchmark above still applies; flagged here so this isn't mistaken for a scored check.",
+          "drillIds": [],
+          "sourceIds": [
+            "SCI-REID-BH-2002",
+            "VID-MOURATOGLOU-1HB"
+          ]
+        },
+        "recovery": {
+          "coachingCue": "Reset and split.",
+          "benchmarkDescription": "Balance recovers from the single-arm extension before the first step back toward the center of the court, so the next split step isn't rushed while still regaining stability from the finish.",
+          "whatIsMeasured": "Pose-estimated recovery base, balance, knee shape, and reset timing.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Push out of the finish into the first recovery step.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "ending_position",
+              "target": "Square toward the next court task.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Re-center the racket and restore two-hand support.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Return to a level tracking position.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Recovery direction is tactical and depends on the shot just played.",
+          "commonMistakes": [],
+          "coverageGap": "No evidence-gated fault currently targets this stage specifically for one-handed backhand \u2014 1HB-BAL-01 (balance loss) covers balance at the forward_swing_contact stage but there is no dedicated post-finish recovery fault yet. Flagged for a future ontology pass rather than fabricated.",
+          "drillIds": [],
+          "sourceIds": [
+            "SCI-FILIPCIC-2017-SPLITSTEP",
+            "ORG-ITF-SKILL-PHASES-2023"
+          ]
+        }
+      }
+    },
+    "slice_backhand": {
+      "stylePrinciple": "Treat the slice as its own high-to-low, firm-wrist, sideways-body stroke\u2014not as a softened topspin backhand. Defensive and attacking slices can use different depth and follow-through length.",
+      "stages": {
+        "ready": {
+          "coachingCue": "Continental grip; balanced stance.",
+          "benchmarkDescription": "A continental grip is already in place or anticipated early \u2014 the base knuckle of the index finger on the bevel that lets the racket face open naturally through the swing, rather than an eastern backhand grip that tends to produce a flatter, floating ball instead of a biting slice.",
+          "whatIsMeasured": "Pose-estimated base width, knee flexion, early grip readiness, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Maintain a shoulder-width athletic base with knees softened, ready to step forward or across.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "footwork_base",
+              "target": "Keep hips neutral to react to incoming trajectory.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Continental grip established with the non-dominant hand supporting the frame at chest height.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Level tracking platform watching the incoming ball bounce and spin.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Anticipating the continental grip in the ready phase eliminates rushed wrist adjustments on low-skidding balls.",
+          "commonMistakes": [
+            {
+              "faultId": "SL-SPACE-01",
+              "title": "Late or crowded contact",
+              "summary": "Contact ends up beside the torso or inside the athlete's own spacing envelope instead of comfortably in front and to the side."
+            }
+          ],
+          "drillIds": [
+            "SL_SPACING_01"
+          ],
+          "sourceIds": [
+            "ORG-USTA-SLICE-2018"
+          ]
+        },
+        "unit_turn": {
+          "coachingCue": "Turn early; racket above the ball.",
+          "benchmarkDescription": "An early shoulder turn brings the racket head up and back \u2014 a slice starts its backswing higher than a topspin drive, since the swing path needs to travel high-to-low through contact rather than low-to-high.",
+          "whatIsMeasured": "Pose-estimated preparation timing, body turn, base, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Turn early and preserve a balanced forward path with lead step.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "backlift_preparation",
+              "target": "Turn with the shoulders and prepare to stay sideways through the stroke.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "backlift_preparation",
+              "target": "Use the non-dominant hand to support a compact high take-back.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm a continental grip and a racket position above expected contact height.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Track the ball without losing the sideways axis.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "The slice preparation can resemble a topspin one-hander, but the later path and body release are different.",
+          "commonMistakes": [
+            {
+              "faultId": "SL-PREP-01",
+              "title": "Late preparation",
+              "summary": "The racket is not prepared above and behind the intended contact path early enough."
+            }
+          ],
+          "drillIds": [
+            "SL_PREP_01"
+          ],
+          "sourceIds": [
+            "ORG-USTA-SLICE-2018",
+            "VID-MOURATOGLOU-SLICE"
+          ]
+        },
+        "backswing": {
+          "coachingCue": "Compact and firm.",
+          "benchmarkDescription": "The body stays sideways (turned) through the backswing rather than opening up early, with the racket path building toward a roughly 45-degree high-to-low angle \u2014 not a vertical chop, and not so flat that it loses its slicing action.",
+          "whatIsMeasured": "Pose-estimated knee shape, trunk orientation, arm space, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_loading",
+              "target": "Stay engaged under the ball with lead-knee bend rather than standing rigid.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "body_position",
+              "target": "Preserve the sideways orientation without opening toward the net.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "contact_spacing",
+              "target": "Keep the hitting arm organized and the non-dominant hand supporting the frame.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm a compact take-back without a large topspin loop.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Stay visually locked on the ball.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "A compact backswing protects timing and control, especially under pace.",
+          "commonMistakes": [
+            {
+              "faultId": "SL-BAL-01",
+              "title": "Leaning backward",
+              "summary": "The balance point shifts behind the support base while the racket moves forward \u2014 leaning away from the shot instead of staying forward into it."
+            },
+            {
+              "faultId": "SL-ROT-01",
+              "title": "Excessive torso opening",
+              "summary": "Shoulders and pelvis rotate through as if hitting a topspin drive, which works against the slice's need to stay sideways longer."
+            },
+            {
+              "faultId": "SL-PATH-01",
+              "title": "Vertical chop with little penetration",
+              "summary": "The downward path is steep while forward extension stays short \u2014 chopping down on the ball like cutting wood instead of carving through it."
+            },
+            {
+              "faultId": "SL-PATH-02",
+              "title": "Path too flat",
+              "summary": "The high-to-low component falls below the range needed for a biting slice, producing a flatter, more floating ball instead."
+            }
+          ],
+          "drillIds": [
+            "SL_FORWARD_01",
+            "SL_SIDEWAYS_01",
+            "SL_PATH_01",
+            "SL_PATH_02"
+          ],
+          "sourceIds": [
+            "ORG-USTA-SLICE-2018",
+            "SCI-ELLIOTT-2006"
+          ]
+        },
+        "forward_swing_contact": {
+          "coachingCue": "Forward and down; stay sideways / Firm, in front, eyes still.",
+          "benchmarkDescription": "The racket face stays only slightly open (not excessively so) at contact, with the non-dominant arm actively counterbalancing rather than passively following the torso, and the hitting arm holding its extension through the strike rather than collapsing.",
+          "whatIsMeasured": "Pose-estimated forward transfer, trunk orientation, hand path, contact spacing, lead-side support, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Transfer weight forward onto a firm, stable lead side.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & trunk",
+              "areaId": "body_position",
+              "target": "Hold the sideways body line through contact rather than opening the chest.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "contact_spacing",
+              "target": "High-to-low hand path carving through contact in front of the lead knee with a firm wrist.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm a slightly open face and controlled forearm supination without wrist flick.",
+              "cameraBoundary": "The engine uses a likely strike window; exact ball-on-strings contact is not detected. Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Keep the head still on contact until the ball leaves.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "The slice contact is generally slightly earlier and higher relative to the lead knee than a topspin backhand.",
+          "commonMistakes": [
+            {
+              "faultId": "SL-FACE-01",
+              "title": "Racket face excessively open",
+              "summary": "The estimated face angle is too open for the intended trajectory, a common cause of a floating slice."
+            },
+            {
+              "faultId": "SL-WRIST-01",
+              "title": "Wrist-racket instability",
+              "summary": "Abrupt face or racket-axis changes occur around impact."
+            },
+            {
+              "faultId": "SL-ARM-01",
+              "title": "Hitting arm collapses",
+              "summary": "Arm extension decreases prematurely right after contact instead of holding through it."
+            },
+            {
+              "faultId": "SL-COUNTER-01",
+              "title": "Insufficient non-dominant-arm counterbalance",
+              "summary": "The non-dominant arm follows the torso instead of separating out for balance, reducing stability through the shot."
+            },
+            {
+              "faultId": "SL-FIN-01",
+              "title": "Follow-through stops immediately",
+              "summary": "The racket path terminates shortly after contact instead of continuing out toward the target. Anchored at the contact gate since the follow-through is judged relative to the strike, not a separate later window."
+            }
+          ],
+          "drillIds": [
+            "SL_FACE_01",
+            "SL_WRIST_01",
+            "SL_ARM_01",
+            "SL_BALANCE_01",
+            "SL_FINISH_01"
+          ],
+          "sourceIds": [
+            "ORG-USTA-SLICE-2018",
+            "SCI-ELLIOTT-2006",
+            "VID-MOURATOGLOU-SLICE"
+          ]
+        },
+        "follow_through": {
+          "coachingCue": "Drive down the court; split the arms.",
+          "benchmarkDescription": "The racket continues forward and low in the direction of the intended target after contact, rather than stopping abruptly \u2014 a complete follow-through is part of what keeps the slice penetrating instead of sitting up.",
+          "whatIsMeasured": "Pose-estimated post-contact hand separation, hand travel, trunk travel, head release, and balance.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "ending_position",
+              "target": "Continue forward weight transfer into a balanced finish.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "body_position",
+              "target": "Avoid rotating fully open like a topspin shot.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "ending_position",
+              "target": "Let the non-dominant hand split away behind the body for balance while hitting hand drives out along target line.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm the hitting wrist and arm stay firm to the end of the finish.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Release naturally only after contact.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "The slice finish drives more down the court and less up across the body than a topspin backhand.",
+          "commonMistakes": [
+            {
+              "faultId": "SL-RECOV-01",
+              "title": "Recovery delayed",
+              "summary": "The player remains side-on or fixed after the finish beyond the context window instead of resetting toward the next ball."
+            }
+          ],
+          "drillIds": [
+            "SL_RECOVERY_01"
+          ],
+          "sourceIds": [
+            "ORG-USTA-SLICE-2018",
+            "SCI-FILIPCIC-2017-SPLITSTEP"
+          ]
+        },
+        "recovery": {
+          "coachingCue": "Push, reset, split.",
+          "benchmarkDescription": "The stance releases from sideways back toward a neutral, court-ready position promptly after the finish, rather than staying locked in the slice's characteristically sideways posture.",
+          "whatIsMeasured": "Pose-estimated recovery base, balance, and reset timing.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Recover from the forward transfer without an extra balance step.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips",
+              "areaId": "ending_position",
+              "target": "Reset for the next court task.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Re-center the racket after the arm split.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Return to a level tracking position.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "A slice may be a neutral rally ball, defensive reset, or attacking approach; recovery must match the intention.",
+          "commonMistakes": [],
+          "coverageGap": "No evidence-gated fault currently targets this stage specifically for slice backhand \u2014 SL-RECOV-01 (recovery delayed) is anchored at the follow-through gate (G8), which already covers the timing of resetting out of the sideways finish. Flagged for a future ontology pass rather than fabricated.",
+          "drillIds": [],
+          "sourceIds": [
+            "SCI-FILIPCIC-2017-SPLITSTEP",
+            "ORG-ITF-SKILL-PHASES-2023"
+          ]
+        }
+      }
+    },
+    "serve": {
+      "stylePrinciple": "Use the eight-stage serve sequence to judge rhythm and chain order while allowing platform or pinpoint stance, serve type, and individual loading depth to vary.",
+      "stages": {
+        "ready": {
+          "coachingCue": "Side-on; continental; relaxed.",
+          "benchmarkDescription": "A stable, balanced starting stance with the feet set before any part of the motion begins, and a rhythm that flows into the toss without a rushed or interrupted pause \u2014 the serve is the one stroke the athlete fully controls the timing of, so the start should look unhurried.",
+          "whatIsMeasured": "Pose-estimated base width, body orientation, balance, and head position.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Set a balanced platform or pinpoint starting base behind the baseline.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "backlift_preparation",
+              "target": "Begin side-on (roughly 45\u201360 degrees to baseline) to create room for coil.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Confirm a continental grip and hold ball/racket together in front before the motion starts.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Set the target visually, then prepare to track the toss.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Platform and pinpoint stances are both valid when balance and timing remain repeatable.",
+          "commonMistakes": [
+            {
+              "faultId": "SRV-SETUP-01",
+              "title": "Unstable starting balance",
+              "summary": "The balance point or feet show instability before the intended motion even begins."
+            },
+            {
+              "faultId": "SRV-RHYTHM-01",
+              "title": "Rushed or interrupted rhythm",
+              "summary": "Phase intervals vary strongly, or contain an unplanned pause, instead of flowing at a consistent tempo."
+            }
+          ],
+          "drillIds": [
+            "SRV_BALANCE_01",
+            "SRV_RHYTHM_01"
+          ],
+          "sourceIds": [
+            "SCI-KOVACS-2011",
+            "SCI-ELLIOTT-2006",
+            "ORG-USTA-INSTRUCTION"
+          ]
+        },
+        "unit_turn": {
+          "coachingCue": "Lift together; track it.",
+          "benchmarkDescription": "The toss releases from a still arm (wrist and hand only, not the whole arm swinging) to a consistent, repeatable location \u2014 roughly the height the fully extended arm and racket can reach, slightly in front of and to the hitting side of the head. At the same time the shoulders and hips coil into the trophy position, turning well enough to store real rotational energy rather than a token turn.",
+          "whatIsMeasured": "Pose-estimated arm lift, knee flexion, balance-point travel, shoulder line, and head tracking.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_loading",
+              "target": "Begin the knee load without swaying out of the base.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "backlift_preparation",
+              "target": "Build the coil while the weight shifts smoothly, reaching full trophy shoulder tilt.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "hand_swing_path",
+              "target": "Coordinate the tossing and hitting arms together, tossing arm rising straight with ball release at eye level.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket / toss",
+              "areaId": null,
+              "target": "Confirm a straight lifting toss arm and a release around eye-to-forehead height slightly in front.",
+              "cameraBoundary": "Ball toss location and release quality require ball tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Track the toss continuously with chin raised.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Toss location varies by flat, slice, or kick intention; consistency matters more than one universal point.",
+          "commonMistakes": [
+            {
+              "faultId": "SRV-TOSS-01",
+              "title": "Inconsistent toss release",
+              "summary": "The release location varies beyond the athlete's own player/session tolerance."
+            },
+            {
+              "faultId": "SRV-TOSS-02",
+              "title": "Toss too far behind",
+              "summary": "The ball's trajectory falls behind the corridor typical for the intended serve type, forcing a rescue or a serve into the net."
+            },
+            {
+              "faultId": "SRV-TOSS-03",
+              "title": "Toss too far forward or lateral",
+              "summary": "The player has to chase the ball and the balance point exits the controlled support path."
+            },
+            {
+              "faultId": "SRV-TROPHY-01",
+              "title": "Incomplete coil",
+              "summary": "Shoulder and pelvis orientation change stays below the athlete's own family or personal successful range."
+            },
+            {
+              "faultId": "SRV-CON-02",
+              "title": "Contact behind body",
+              "summary": "The projected contact point, based on the trophy position and toss, falls behind the shoulder/hip line for the serve type."
+            }
+          ],
+          "drillIds": [
+            "SRV_TOSS_RELEASE_01",
+            "SRV_TOSS_FRONT_01",
+            "SRV_TOSS_TARGET_01",
+            "SRV_COIL_01",
+            "SRV_CONTACT_FRONT_01"
+          ],
+          "sourceIds": [
+            "SCI-KOVACS-2011",
+            "SCI-ELLIOTT-2006",
+            "SCI-BRITO-2024",
+            "ORG-USTA-INSTRUCTION"
+          ]
+        },
+        "backswing": {
+          "coachingCue": "Coil, bend, eyes up / Drop as the legs drive.",
+          "benchmarkDescription": "The tossing arm stays up, tracking the ball, while the racket drops into a full, well-timed loop behind the back \u2014 edge-first, not face-first (the racket face should not open upward early, the classic 'waiter's tray' pattern). Underneath this, the legs load with real knee bend and the racket does not accelerate until the legs and trunk have already started driving upward.",
+          "whatIsMeasured": "Pose-estimated knee load, shoulder tilt, elbow position, racket drop timing, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_loading",
+              "target": "Reach stable maximum knee flexion and drive upward as the racket drops.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "backlift_preparation",
+              "target": "Complete the coil with hitting shoulder below tossing shoulder, creating upward shoulder tilt.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & elbow",
+              "areaId": "contact_spacing",
+              "target": "Keep hitting elbow high and organized, tossing arm up until leg drive starts, then loose drop.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm edge-first racket drop behind the back without collapsing into a waiter's tray.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Keep looking up at the toss and contact zone.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Racket drop is timed with the leg release; forcing it independently can break the kinetic chain.",
+          "commonMistakes": [
+            {
+              "faultId": "SRV-TOSSARM-01",
+              "title": "Tossing arm drops early",
+              "summary": "The tossing arm descends before the upward acceleration window instead of staying up to track the ball."
+            },
+            {
+              "faultId": "SRV-WAITER-01",
+              "title": "Waiter's-tray pattern",
+              "summary": "The racket face opens upward early and approaches the ball face-first rather than edge-first \u2014 a well-documented fault linked to higher shoulder and elbow joint stress."
+            },
+            {
+              "faultId": "SRV-DROP-01",
+              "title": "Limited or mistimed racket drop",
+              "summary": "Drop depth is shallow, or the maximum drop occurs outside the leg-drive timing envelope."
+            },
+            {
+              "faultId": "SRV-LEG-01",
+              "title": "Insufficient leg contribution",
+              "summary": "Knee load and upward balance-point movement stay below the athlete's own personal or style range."
+            },
+            {
+              "faultId": "SRV-LEG-02",
+              "title": "Leg drive mistimed",
+              "summary": "Leg extension happens too early, or after the racket acceleration window has already started."
+            },
+            {
+              "faultId": "SRV-SEQ-01",
+              "title": "Arm initiates before lower body and trunk",
+              "summary": "Arm and racket acceleration precede the upward drive and trunk rotation instead of following it."
+            },
+            {
+              "faultId": "SRV-CON-01",
+              "title": "Contact too low",
+              "summary": "Contact height falls below the athlete's own personalized reachable envelope."
+            }
+          ],
+          "drillIds": [
+            "SRV_TOSS_ARM_01",
+            "SRV_EDGE_01",
+            "SRV_DROP_01",
+            "SRV_LEGS_01",
+            "SRV_SYNC_01",
+            "SRV_SEQUENCE_01",
+            "SRV_CONTACT_HIGH_01"
+          ],
+          "sourceIds": [
+            "SCI-KOVACS-2011",
+            "SCI-ELLIOTT-2006",
+            "SCI-BRITO-2024"
+          ]
+        },
+        "forward_swing_contact": {
+          "coachingCue": "Legs, hips, shoulder, elbow / Reach up; pronate through.",
+          "benchmarkDescription": "The head stays up and tracking the contact point rather than dropping or turning away, the forearm rotates (pronates) through impact, and the swing continues with full effort into a controlled, balanced landing inside the court.",
+          "whatIsMeasured": "Pose-estimated knee extension, upward body travel, hip-to-shoulder timing, elbow extension, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_extension",
+              "target": "Drive explosively upward and forward into full body extension at contact.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "hand_swing_path",
+              "target": "Release hips, shoulders, then arm rather than overarming from the start.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "contact_spacing",
+              "target": "Create a fully extended overhead contact corridor slightly in front of the hitting shoulder.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm edge-led acceleration and natural forearm pronation through contact rather than a wrist snap.",
+              "cameraBoundary": "The engine uses a likely strike window; exact ball-on-strings contact is not detected. Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Keep the head up on the contact window until the ball leaves.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Serve direction and type alter toss and contact details; head stability and upward reach remain high-value checks.",
+          "commonMistakes": [
+            {
+              "faultId": "SRV-HEAD-01",
+              "title": "Head drops before contact",
+              "summary": "Head orientation drops or turns away before impact instead of tracking through it."
+            },
+            {
+              "faultId": "SRV-PRON-01",
+              "title": "Forearm-racket rotation not visible or appears limited",
+              "summary": "The racket-axis progression lacks the supported edge-face-edge change expected of forearm pronation through contact."
+            },
+            {
+              "faultId": "SRV-LAND-01",
+              "title": "Unbalanced landing",
+              "summary": "The landing balance point falls outside the support base and requires an uncontrolled correction."
+            },
+            {
+              "faultId": "SRV-FIN-01",
+              "title": "Abrupt follow-through",
+              "summary": "The racket path terminates abruptly right after impact instead of continuing under its own momentum."
+            }
+          ],
+          "drillIds": [
+            "SRV_HEAD_01",
+            "SRV_PRONATION_PROXY_01",
+            "SRV_LANDING_01",
+            "SRV_FINISH_01"
+          ],
+          "sourceIds": [
+            "SCI-KOVACS-2011",
+            "SCI-ELLIOTT-2006",
+            "SCI-BRITO-2024"
+          ]
+        },
+        "follow_through": {
+          "coachingCue": "Pronate, release, decelerate.",
+          "benchmarkDescription": "The racket continues across the body or down the far side under its own momentum, with the back leg often swinging through to help land inside the court \u2014 a relaxed, complete follow-through is the visible sign the serve used the kinetic chain rather than arm muscle alone.",
+          "whatIsMeasured": "Pose-estimated post-contact hand travel, trunk travel, head release, and balance.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "ending_position",
+              "target": "Prepare for a balanced landing on the front foot inside the court rather than collapsing backward.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "ending_position",
+              "target": "Let the torso complete its forward release into the court.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "ending_position",
+              "target": "Continue the arm path down and across the non-dominant side without an abrupt stop.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm pronation continues after contact into a free deceleration.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Begin lowering the head only after contact is finished.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "A free deceleration protects rhythm and avoids unnecessary shoulder load; this is educational, not an injury diagnosis.",
+          "commonMistakes": [],
+          "coverageGap": "No evidence-gated fault is anchored at this stage for the serve \u2014 the ontology's abrupt-finish fault (SRV-FIN-01) and landing-balance fault (SRV-LAND-01) are both anchored at the contact gate (S7) rather than a separate later gate. The benchmark above still applies; flagged here so this isn't mistaken for a scored check.",
+          "drillIds": [],
+          "sourceIds": [
+            "SCI-ELLIOTT-2006",
+            "SCI-KOVACS-2011"
+          ]
+        },
+        "recovery": {
+          "coachingCue": "Land inside; find ready.",
+          "benchmarkDescription": "The player re-establishes a ready, balanced court position immediately after landing, rather than needing extra time or steps to reset before the return.",
+          "whatIsMeasured": "Pose-estimated landing base, balance-point travel, knee control, and reset timing.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Land on the front foot in balance, absorb the impact, and split step.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "ending_position",
+              "target": "Carry the body into the court without falling sideways.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Re-center the racket in front for the return rally.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Recover visual balance and track the opponent's return.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "The exact landing location depends on serve type and player style; compare the athlete with their own repeatable pattern.",
+          "commonMistakes": [
+            {
+              "faultId": "SRV-RECOV-01",
+              "title": "No recovery after serve",
+              "summary": "The player does not re-establish readiness after landing."
+            }
+          ],
+          "drillIds": [
+            "SRV_RECOVERY_01"
+          ],
+          "sourceIds": [
+            "SCI-FILIPCIC-2017-SPLITSTEP",
+            "ORG-ITF-SKILL-PHASES-2023"
+          ]
+        }
+      }
+    },
+    "forehand_volley": {
+      "stylePrinciple": "A volley is a compact intercept, not a shortened groundstroke. Control comes from early readiness, a small shoulder set, forward transfer, and a firm, brief hand path.",
+      "stages": {
+        "ready": {
+          "coachingCue": "Hands up; weight forward.",
+          "benchmarkDescription": "The racket is held up at a usable height with a continental grip, and a deep, well-timed split step lands as the opponent makes contact \u2014 staying low out of the split step is what makes reaching a low ball or moving in any direction possible.",
+          "whatIsMeasured": "Pose-estimated base, knee shape, hand position, balance, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Stay light, balanced on the balls of the feet with knees flexed, ready to move.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Keep the hands and racket visibly in front of the chest with a continental grip.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Read the opponent's contact from an alert, steady head position.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Net distance and incoming pace change the exact ready height.",
+          "commonMistakes": [
+            {
+              "faultId": "FHV-SPLIT-01",
+              "title": "Missing or mistimed split step",
+              "summary": "No landing event occurs near the opponent's contact or feed release \u2014 the split step is skipped or badly timed."
+            },
+            {
+              "faultId": "FHV-READY-01",
+              "title": "Racket held too low",
+              "summary": "The racket head sits below a usable ready envelope."
+            }
+          ],
+          "drillIds": [
+            "VOLLEY_SPLIT_01",
+            "FHV_READY_01"
+          ],
+          "sourceIds": [
+            "SCI-FILIPCIC-2017-SPLITSTEP",
+            "SCI-ELLIOTT-2006"
+          ]
+        },
+        "unit_turn": {
+          "coachingCue": "Land as they hit / Set, do not swing.",
+          "benchmarkDescription": "A compact shoulder turn \u2014 not a groundstroke-length backswing \u2014 with the elbow staying in front of the torso, a step forward into the ball when time allows, and contact taken in front of the body rather than beside or behind it. Power comes from the forward weight transfer, not from swing length.",
+          "whatIsMeasured": "Pose-estimated base change, preparation duration, hand-to-torso position, elbow path, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Land the split step slightly wider and balanced just as the opponent strikes, preparing to step forward.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "backlift_preparation",
+              "target": "Use a small shoulder turn while keeping the hitting hand in front of the chest plane.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "backlift_preparation",
+              "target": "Keep the hitting hand in front and prevent the elbow from drifting behind the torso.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm a continental grip and a laid-back, slightly open racket face.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Track the incoming ball without bobbing away from the ball line.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "The biggest volley preparation fault is taking the racket back behind the shoulder line.",
+          "commonMistakes": [
+            {
+              "faultId": "FHV-PREP-01",
+              "title": "Excessive backswing",
+              "summary": "The hitting hand or racket travels behind the chest/torso boundary \u2014 the single most commonly cited volley error."
+            },
+            {
+              "faultId": "FHV-ELB-01",
+              "title": "Elbow behind body",
+              "summary": "The elbow crosses the rear torso plane."
+            },
+            {
+              "faultId": "FHV-CON-01",
+              "title": "Late contact",
+              "summary": "Contact occurs beside or behind the torso plane instead of in front."
+            },
+            {
+              "faultId": "FHV-STEP-01",
+              "title": "No forward transfer when available",
+              "summary": "The balance point does not move through contact in a context where a forward step was available \u2014 the power source (weight transfer) is missing."
+            },
+            {
+              "faultId": "FHV-SWING-01",
+              "title": "Groundstroke-like swing",
+              "summary": "The pre- or post-contact racket path exceeds the compact volley family \u2014 the volley is being swung like a mini-groundstroke."
+            }
+          ],
+          "drillIds": [
+            "FHV_COMPACT_01",
+            "FHV_ELBOW_01",
+            "FHV_CONTACT_01",
+            "FHV_STEP_01",
+            "FHV_PUNCH_01"
+          ],
+          "sourceIds": [
+            "SCI-ELLIOTT-2006",
+            "SCI-CHOW-2007"
+          ]
+        },
+        "backswing": {
+          "coachingCue": "Set the angle; move into the ball.",
+          "benchmarkDescription": "In the compressed final window before contact, the racket face holds a stable angle rather than wobbling, and the body stays moving into the ball rather than falling away from it \u2014 for a stroke this short, 'backswing' is really the last moment of set-up stability before the punch through contact.",
+          "whatIsMeasured": "Pose-estimated preparation stability, wrist-to-racket angle preservation, and forward balance shift.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_loading",
+              "target": "Step forward into the ball with the opposite foot, keeping knees softened.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & torso",
+              "areaId": "body_position",
+              "target": "Move the torso into the strike without leaning back.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "contact_spacing",
+              "target": "Keep the wrist laid back and the racket face stable at head/chest height.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Maintain fixed focus on the incoming ball.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "On a volley, 'backswing' is the instant of set-up stability before punch contact.",
+          "commonMistakes": [
+            {
+              "faultId": "FHV-WRIST-01",
+              "title": "Racket-face instability",
+              "summary": "The estimated face angle changes abruptly close to contact."
+            },
+            {
+              "faultId": "FHV-BAL-01",
+              "title": "Falling away from contact",
+              "summary": "The balance point retreats while contact is occurring, instead of moving into the shot."
+            }
+          ],
+          "drillIds": [
+            "FHV_STABLE_FACE_01",
+            "FHV_BALANCE_01"
+          ],
+          "sourceIds": [
+            "SCI-CHOW-2007",
+            "SCI-FURUYA-2021"
+          ]
+        },
+        "forward_swing_contact": {
+          "coachingCue": "Step, punch, see it.",
+          "benchmarkDescription": "Contact happens with a firm wrist, in front of the body, off the momentum of the forward step rather than a swinging motion.",
+          "whatIsMeasured": "Pose-estimated forward step, hand spacing, elbow shape, balance, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Step forward through a stable half-lunge.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "contact_spacing",
+              "target": "Contact well in front with a short push/block rather than a swing.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm a firm wrist and a slightly open face meeting the ball cleanly.",
+              "cameraBoundary": "The engine uses a likely strike window; exact ball-on-strings contact is not detected. Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Keep the head still on contact until the ball rebounds.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Incoming ball pace supplies much of the energy; extra swing length usually reduces control.",
+          "commonMistakes": [],
+          "coverageGap": "No evidence-gated fault is anchored specifically at this gate for the forehand volley \u2014 FHV-CON-01 (late contact) and FHV-SWING-01 (groundstroke-like swing) are both anchored earlier at the unit-turn gate (V3), and FHV-WRIST-01 (face instability) is anchored at the preceding gate (V4). This stage's benchmark is covered by those neighboring checks; flagged here rather than duplicating them under a new claim.",
+          "drillIds": [],
+          "sourceIds": [
+            "SCI-CHOW-2007"
+          ]
+        },
+        "follow_through": {
+          "coachingCue": "Punch and hold.",
+          "benchmarkDescription": "The follow-through freezes short and compact \u2014 a punch, not a full swing \u2014 and the racket and feet reset immediately back toward a ready position for the next ball.",
+          "whatIsMeasured": "Pose-estimated hand travel, forward transfer, trunk stability, and balance.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "ending_position",
+              "target": "Continue the weight transfer through the lead leg into balance.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "ending_position",
+              "target": "Keep the follow-through compact and controlled\u2014punch and freeze briefly.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm the racket holds its line instead of flipping or wrapping across the body.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Release only after the ball has left.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Unlike a groundstroke, the volley intentionally uses a short punch-and-hold finish.",
+          "commonMistakes": [
+            {
+              "faultId": "FHV-RECOV-01",
+              "title": "Racket or feet fail to reset",
+              "summary": "The racket stays displaced, or the feet do not re-establish a ready state, after the volley finishes."
+            }
+          ],
+          "drillIds": [
+            "FHV_RECOVERY_01"
+          ],
+          "sourceIds": [
+            "SCI-ELLIOTT-2006",
+            "SCI-FILIPCIC-2017-SPLITSTEP"
+          ]
+        },
+        "recovery": {
+          "coachingCue": "Re-center and split.",
+          "benchmarkDescription": "The player resets toward the net's controlling position, ready for the next split step, rather than staying anchored where the volley was struck.",
+          "whatIsMeasured": "Pose-estimated recovery base, balance, and reset timing.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Recover with a small step or split while staying forward in the court.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "ending_position",
+              "target": "Return the racket to the center in front with both hands.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Find the next ball immediately.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "At net, recovery is usually compact and forward rather than a retreat to baseline center.",
+          "commonMistakes": [],
+          "coverageGap": "No evidence-gated fault currently targets this stage specifically for the forehand volley \u2014 FHV-RECOV-01 (racket or feet fail to reset) is anchored at the follow-through gate (V6), which already covers the immediate reset. Flagged for a future ontology pass rather than fabricated.",
+          "drillIds": [],
+          "sourceIds": [
+            "SCI-FILIPCIC-2017-SPLITSTEP",
+            "ORG-ITF-SKILL-PHASES-2023"
+          ]
+        }
+      }
+    },
+    "backhand_volley": {
+      "stylePrinciple": "Keep the less naturally strong side supported: compact shoulder preparation, non-dominant hand on the throat longer, forward weight transfer, and a firm punch-and-hold path.",
+      "stages": {
+        "ready": {
+          "coachingCue": "Racket in front; stay light.",
+          "benchmarkDescription": "The continental grip is already set (a backhand volley cannot afford a grip change mid-point the way a groundstroke can), racket up, with a deep, well-timed split step as the opponent contacts the ball.",
+          "whatIsMeasured": "Pose-estimated base, knee shape, hand position, balance, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Stay balanced on the balls of the feet with flexed knees, ready to step across.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Hold the racket out in front with two-hand support and continental grip preset.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Track the opponent's contact from a steady head platform.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Ready height varies with net position and anticipated ball height.",
+          "commonMistakes": [
+            {
+              "faultId": "BHV-SPLIT-01",
+              "title": "Missing or mistimed split step",
+              "summary": "No landing event occurs near the opponent's contact or feed release."
+            },
+            {
+              "faultId": "BHV-GRIP-01",
+              "title": "Suspected grip mismatch",
+              "summary": "Hand-racket geometry and face orientation are inconsistent with a supported volley setup."
+            }
+          ],
+          "drillIds": [
+            "VOLLEY_SPLIT_01",
+            "BHV_GRIP_01"
+          ],
+          "sourceIds": [
+            "SCI-FILIPCIC-2017-SPLITSTEP",
+            "SCI-ELLIOTT-2006"
+          ]
+        },
+        "unit_turn": {
+          "coachingCue": "Turn shoulders; keep support hand on throat.",
+          "benchmarkDescription": "A compact shoulder turn with the support (non-dominant) hand staying on the throat of the racket into the set position rather than releasing early, the elbow holding its structure rather than collapsing, and contact taken in front of the torso plane.",
+          "whatIsMeasured": "Pose-estimated shoulder turn, split step timing, and support hand position.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Land the split step balanced and pivot the feet into a slight side-on angle.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "backlift_preparation",
+              "target": "Turn shoulders slightly sideways without letting the racket head drop behind the torso.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "backlift_preparation",
+              "target": "Keep the non-dominant hand on the throat of the racket to guide the compact preparation.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Maintain sharp focus on the incoming ball path.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "The support hand is critical on the backhand volley to keep the racket head up.",
+          "commonMistakes": [
+            {
+              "faultId": "BHV-PREP-01",
+              "title": "Late preparation",
+              "summary": "The racket reaches its set position only after the ball has entered the close-contact zone."
+            },
+            {
+              "faultId": "BHV-PREP-02",
+              "title": "Oversized backswing",
+              "summary": "The racket or hand travels behind the torso boundary."
+            },
+            {
+              "faultId": "BHV-SUPPORT-01",
+              "title": "Support hand releases too early",
+              "summary": "The non-dominant hand leaves the throat of the racket before the prepared position, losing the stability it provides."
+            },
+            {
+              "faultId": "BHV-CON-01",
+              "title": "Late contact",
+              "summary": "Contact occurs beside or behind the torso plane."
+            },
+            {
+              "faultId": "BHV-ARM-01",
+              "title": "Elbow collapse",
+              "summary": "The hitting-arm structure compresses before impact."
+            }
+          ],
+          "drillIds": [
+            "BHV_PREP_01",
+            "BHV_COMPACT_01",
+            "BHV_SUPPORT_01",
+            "BHV_CONTACT_01",
+            "BHV_ARM_01"
+          ],
+          "sourceIds": [
+            "SCI-ELLIOTT-2006",
+            "SCI-CHOW-2007"
+          ]
+        },
+        "backswing": {
+          "coachingCue": "Turn, support, set.",
+          "benchmarkDescription": "In the final compressed window before contact, the body stays moving forward into the ball rather than leaning back, and the racket face holds its angle rather than wobbling.",
+          "whatIsMeasured": "Pose-estimated preparation duration, shoulder turn, hand position, elbow path, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Stay light while turning sideways and initiating the forward step.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "backlift_preparation",
+              "target": "Align the shoulders toward the intended target without a large swing.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "backlift_preparation",
+              "target": "Keep the non-dominant hand on the throat longer for support until forward push begins.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm continental grip and an approximately 45-degree laid-back setup.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Track the incoming ball continuously.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "The non-dominant hand provides important frame stability on this side.",
+          "commonMistakes": [
+            {
+              "faultId": "BHV-BAL-01",
+              "title": "Leaning backward",
+              "summary": "The trunk and balance point retreat during contact instead of moving forward into it."
+            },
+            {
+              "faultId": "BHV-WRIST-01",
+              "title": "Racket-face instability",
+              "summary": "The estimated face angle changes abruptly around contact."
+            }
+          ],
+          "drillIds": [
+            "BHV_FORWARD_01",
+            "BHV_FACE_01"
+          ],
+          "sourceIds": [
+            "SCI-CHOW-2007",
+            "SCI-FURUYA-2021"
+          ]
+        },
+        "forward_swing_contact": {
+          "coachingCue": "Step in; push through.",
+          "benchmarkDescription": "Contact happens with a firm wrist and stable racket face, in front of the body, using forward momentum rather than a swinging arm motion.",
+          "whatIsMeasured": "Pose-estimated forward step, trunk lean, hand spacing, elbow shape, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Step forward with the dominant lead foot and keep the base underneath the torso.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "body_position",
+              "target": "Stay forward rather than leaning away from contact.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "contact_spacing",
+              "target": "Use a short push through a contact corridor in front of the torso with a locked wrist.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm a firm wrist and stable slightly open face.",
+              "cameraBoundary": "The engine uses a likely strike window; exact ball-on-strings contact is not detected. Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Keep the head still through contact.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "This is a compact block-through action, not a one-handed groundstroke swing.",
+          "commonMistakes": [],
+          "coverageGap": "No evidence-gated fault is anchored specifically at this gate for the backhand volley \u2014 BHV-CON-01 (late contact) is anchored earlier at the unit-turn gate (V3), and BHV-BAL-01/BHV-WRIST-01 are anchored at the preceding gate (V4). This stage's benchmark is covered by those neighboring checks; flagged here rather than duplicating them under a new claim.",
+          "drillIds": [],
+          "sourceIds": [
+            "SCI-CHOW-2007"
+          ]
+        },
+        "follow_through": {
+          "coachingCue": "Punch and hold.",
+          "benchmarkDescription": "The follow-through stays short and compact, and the racket and feet reset immediately back to the backhand side's ready position.",
+          "whatIsMeasured": "Pose-estimated hand travel, forward transfer, trunk position, and balance.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "ending_position",
+              "target": "Complete the forward transfer without falling backward.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "ending_position",
+              "target": "Hold a compact finish in front instead of sweeping across the body.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm the wrist and face stay stable to the end of the short punch.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Release after contact.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "A deliberately short finish preserves control on the volley.",
+          "commonMistakes": [
+            {
+              "faultId": "BHV-RECOV-01",
+              "title": "Failure to reset",
+              "summary": "The racket and feet remain on the backhand side after the finish instead of resetting to a neutral ready position."
+            }
+          ],
+          "drillIds": [
+            "BHV_RECOVERY_01"
+          ],
+          "sourceIds": [
+            "SCI-ELLIOTT-2006",
+            "SCI-FILIPCIC-2017-SPLITSTEP"
+          ]
+        },
+        "recovery": {
+          "coachingCue": "Re-center and split.",
+          "benchmarkDescription": "The player resets toward the net's controlling position, ready for the next split step, rather than staying anchored on the backhand side.",
+          "whatIsMeasured": "Pose-estimated recovery base, balance, and reset timing.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Recover with a small step or split.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "ending_position",
+              "target": "Return the racket to the center with two-hand support.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Track the next ball immediately.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Net recovery is compact and must preserve forward court position.",
+          "commonMistakes": [],
+          "coverageGap": "No evidence-gated fault currently targets this stage specifically for the backhand volley \u2014 BHV-RECOV-01 (failure to reset) is anchored at the follow-through gate (V6), which already covers the immediate reset. Flagged for a future ontology pass rather than fabricated.",
+          "drillIds": [],
+          "sourceIds": [
+            "SCI-FILIPCIC-2017-SPLITSTEP",
+            "ORG-ITF-SKILL-PHASES-2023"
+          ]
+        }
+      }
+    },
+    "overhead": {
+      "stylePrinciple": "Use serve-like acceleration after immediate lob recognition, but move directly into a compact trophy setup. Footwork and uninterrupted ball tracking are as important as the arm swing.",
+      "stages": {
+        "ready": {
+          "coachingCue": "Recognize early; turn sideways.",
+          "benchmarkDescription": "The lob is recognized and the turn to a side-on position begins early, while the ball is still well above the critical overhead zone \u2014 a smash rushed by late recognition compresses every stage that follows, the same way late recognition does on a groundstroke.",
+          "whatIsMeasured": "Pose-estimated lob recognition timing, early body pivot, and tracking posture.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Drop-step immediately upon recognizing the lob trajectory.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "backlift_preparation",
+              "target": "Pivot the torso into a side-on orientation before moving backward.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Raise the racket directly toward head height in a continental grip with non-dominant arm pointing up.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Keep eyes locked on the ascending lob without tilting the head sideways.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Smash execution starts the instant the lob is identified; early turn prevents retreating while facing forward.",
+          "commonMistakes": [
+            {
+              "faultId": "OVH-REC-01",
+              "title": "Late lob recognition",
+              "summary": "The side-on turn begins only after the ball has already entered the critical overhead zone."
+            }
+          ],
+          "drillIds": [
+            "OVH_READ_01"
+          ],
+          "sourceIds": [
+            "SCI-ELLIOTT-2006"
+          ]
+        },
+        "unit_turn": {
+          "coachingCue": "Turn, cross, point.",
+          "benchmarkDescription": "Running steps (not shuffle or hopping steps, which bounce the eye level and make ball-tracking harder) carry the player efficiently backward and sideways into a full side-on set position, with the non-dominant arm up pointing at the ball and the shoulders fully turned \u2014 not remaining square to the net. The player positions to meet the ball in front and overhead, not directly underneath it or let it drop too low.",
+          "whatIsMeasured": "Pose-estimated turn timing, crossover foot pattern, base travel, non-dominant arm position, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Use running crossover steps and position behind the projected strike.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "backlift_preparation",
+              "target": "Turn sideways while moving to load the body.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "backlift_preparation",
+              "target": "Keep the non-dominant arm raised as a tracking and coil aid.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm a continental grip before acceleration.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Lock on the ball throughout its flight.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Crossover steps reduce eye-level bobbing compared with repeated side shuffles.",
+          "commonMistakes": [
+            {
+              "faultId": "OVH-FOOT-01",
+              "title": "Inefficient backward movement",
+              "summary": "The feet retreat without an effective side-on crossover or adjustment pattern \u2014 often shuffling instead of running steps."
+            },
+            {
+              "faultId": "OVH-POS-01",
+              "title": "Player moves directly under the ball",
+              "summary": "The ball's projected path passes too close to the head or trunk instead of being met out in front."
+            },
+            {
+              "faultId": "OVH-POS-02",
+              "title": "Ball allowed to drop",
+              "summary": "Contact height is low relative to the reachable envelope and the time available \u2014 the classic 'backed up too far and let it drop' pattern."
+            },
+            {
+              "faultId": "OVH-ARM-01",
+              "title": "Pointing arm drops early",
+              "summary": "The non-dominant arm descends before the acceleration window instead of continuing to track and time the ball."
+            },
+            {
+              "faultId": "OVH-TROPHY-01",
+              "title": "No side-on set position",
+              "summary": "The shoulders remain square to the net and the racket never reaches a controlled trophy set."
+            },
+            {
+              "faultId": "OVH-CON-01",
+              "title": "Contact beside or behind head",
+              "summary": "Contact falls outside the front-overhead reach corridor."
+            }
+          ],
+          "drillIds": [
+            "OVH_FOOTWORK_01",
+            "OVH_SPACING_01",
+            "OVH_HIGH_CONTACT_01",
+            "OVH_POINT_01",
+            "OVH_SET_01",
+            "OVH_CONTACT_01"
+          ],
+          "sourceIds": [
+            "SCI-ELLIOTT-2006",
+            "ORG-USTA-OVERHEAD-CURRICULUM"
+          ]
+        },
+        "backswing": {
+          "coachingCue": "Set directly; stay under it.",
+          "benchmarkDescription": "From the side-on trophy set, the racket moves directly upward into the swing \u2014 an overhead does not use a groundstroke-style loop, since there usually isn't time for one and a loop only adds a timing risk against a falling ball. The legs and trunk begin driving before the racket accelerates.",
+          "whatIsMeasured": "Pose-estimated base, knee load, shoulder line, elbow position, and head angle.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_loading",
+              "target": "Set a balanced base with enough knee flexion for the required drive or jump.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "backlift_preparation",
+              "target": "Complete the shoulder coil with non-dominant arm pointing up.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "contact_spacing",
+              "target": "Keep the elbow organized and the non-dominant arm up.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Move directly to a racket position near head height without a serve-style preparation loop.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Stay fixed on the ball above.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "A deep lob may require a jump or scissor-kick; the setup must still preserve balance and tracking.",
+          "commonMistakes": [
+            {
+              "faultId": "OVH-SEQ-01",
+              "title": "Arm-only acceleration",
+              "summary": "The racket accelerates with little prior leg or trunk contribution, similar in spirit to serving with the arm alone instead of the kinetic chain."
+            }
+          ],
+          "drillIds": [
+            "OVH_SEQUENCE_01"
+          ],
+          "sourceIds": [
+            "SCI-ELLIOTT-2006"
+          ]
+        },
+        "forward_swing_contact": {
+          "coachingCue": "Legs, hips, elbow, racket / Reach high; see it through.",
+          "benchmarkDescription": "The head stays up tracking the ball through contact rather than dropping to look at the target early, the forearm pronates through impact, and the swing continues with a controlled, balanced landing.",
+          "whatIsMeasured": "Pose-estimated knee extension, hip-to-shoulder timing, elbow path, wrist-speed progression, overhead extension, and head stability.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "lower_body_extension",
+              "target": "Drive or jump upward from back to front through the strike window.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "hand_swing_path",
+              "target": "Uncoil from the body into the arm at roughly a diagonal to the net.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "contact_spacing",
+              "target": "Reach full overhead extension slightly in front at the highest comfortable point.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm contact on top of the ball with natural forearm pronation.",
+              "cameraBoundary": "The engine uses a likely strike window; exact ball-on-strings contact is not detected. Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Track the ball through contact to prevent a mishit.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Take the ball aggressively at a high comfortable point rather than backing up until it drops.",
+          "commonMistakes": [
+            {
+              "faultId": "OVH-HEAD-01",
+              "title": "Head releases before contact",
+              "summary": "The head turns or drops before impact \u2014 commonly caused by looking at the target too early instead of tracking the ball."
+            },
+            {
+              "faultId": "OVH-PRON-01",
+              "title": "Forearm-racket rotation not visible or appears limited",
+              "summary": "The racket-axis progression lacks the supported edge-face transition expected of pronation through contact."
+            },
+            {
+              "faultId": "OVH-FIN-01",
+              "title": "Abrupt follow-through",
+              "summary": "The racket path terminates shortly after impact instead of continuing under its own momentum."
+            },
+            {
+              "faultId": "OVH-LAND-01",
+              "title": "Unbalanced landing",
+              "summary": "The balance point exits the support base and recovery is uncontrolled."
+            }
+          ],
+          "drillIds": [
+            "OVH_HEAD_01",
+            "OVH_ROTATION_01",
+            "OVH_FINISH_01",
+            "OVH_LANDING_01"
+          ],
+          "sourceIds": [
+            "SCI-ELLIOTT-2006"
+          ]
+        },
+        "follow_through": {
+          "coachingCue": "Down, across, balanced.",
+          "benchmarkDescription": "After landing, the player moves immediately and purposefully back toward the center of the court, consistent with the point context, rather than pausing to admire the shot.",
+          "whatIsMeasured": "Pose-estimated post-contact hand travel, trunk travel, head release, and balance.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "ending_position",
+              "target": "Prepare a balanced landing after the drive or jump.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "ending_position",
+              "target": "Complete the uncoiling without falling away.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands",
+              "areaId": "ending_position",
+              "target": "Allow a compact path toward the opposite hip instead of stopping abruptly.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Racket",
+              "areaId": null,
+              "target": "Confirm continued pronation and natural deceleration.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Release only after contact.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "The overhead finish is usually more compact than the serve because its preparation is shorter.",
+          "commonMistakes": [
+            {
+              "faultId": "OVH-RECOV-01",
+              "title": "Incorrect or delayed recovery",
+              "summary": "Movement after landing is delayed or inconsistent with the point context."
+            }
+          ],
+          "drillIds": [
+            "OVH_RECOVERY_01"
+          ],
+          "sourceIds": [
+            "SCI-ELLIOTT-2006",
+            "SCI-FILIPCIC-2017-SPLITSTEP"
+          ]
+        },
+        "recovery": {
+          "coachingCue": "Land, balance, recover.",
+          "benchmarkDescription": "The player re-establishes a balanced, ready court position, prepared for the next ball rather than still recovering from the landing.",
+          "whatIsMeasured": "Pose-estimated recovery base, balance-point stability, knee control, and reset timing.",
+          "checkpoints": [
+            {
+              "bodyPart": "Feet & knees",
+              "areaId": "footwork_base",
+              "target": "Land balanced, including after a scissor-kick pattern.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hips & shoulders",
+              "areaId": "ending_position",
+              "target": "Regain an athletic body position.",
+              "cameraBoundary": null
+            },
+            {
+              "bodyPart": "Hands & racket",
+              "areaId": "backlift_preparation",
+              "target": "Re-center the racket after deceleration.",
+              "cameraBoundary": "Exact grip, racket-head position, string angle, spin, and ball result need a clear racket-and-ball view or dedicated tracking."
+            },
+            {
+              "bodyPart": "Head & eyes",
+              "areaId": "body_position",
+              "target": "Find the opponent and next ball.",
+              "cameraBoundary": null
+            }
+          ],
+          "contextNote": "Recovery may continue forward at net or retreat toward base depending on the point.",
+          "commonMistakes": [],
+          "coverageGap": "No evidence-gated fault currently targets this stage specifically for the overhead \u2014 OVH-RECOV-01 (incorrect or delayed recovery) is anchored at the follow-through gate (O6), which already covers post-landing recovery timing. Flagged for a future ontology pass rather than fabricated.",
+          "drillIds": [],
+          "sourceIds": [
+            "SCI-FILIPCIC-2017-SPLITSTEP",
+            "ORG-ITF-SKILL-PHASES-2023"
+          ]
+        }
+      }
+    }
+  }
+}

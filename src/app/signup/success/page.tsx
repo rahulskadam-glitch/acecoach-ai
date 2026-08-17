@@ -21,7 +21,7 @@ export default function SignupSuccessPage() {
         <p className="mt-2 text-slate-600">Confirm your email, then return to Athlentra Tennis and sign in.</p>
         <div className="mt-8 grid gap-3">
           {emailProviders.map(({ label, href }) => <a key={href} href={href} target="_blank" rel="noreferrer" className={cn(buttonVariants({ variant: "outline" }), "h-11 rounded-xl border-slate-300 bg-white text-slate-800 hover:bg-slate-50")}>{label}</a>)}
-          <Link href="/auth" className={cn(buttonVariants(), "h-11 rounded-xl bg-[#071b2d] text-white hover:bg-[#0d2b42]")}>Back to sign in</Link>
+          <Link href="/auth" className={cn(buttonVariants(), "h-11 rounded-xl bg-[#123049] text-white hover:bg-[#1a4060]")}>Back to sign in</Link>
         </div>
       </div>
     </JourneyShell>

@@ -100,7 +100,7 @@ export type EngineManifest = {
 export type BiomechanicalMetric = {
   id: string;
   label: string;
-  phase: "preparation" | "backswing" | "loading" | "acceleration" | "contact" | "follow_through";
+  phase: "ready" | "unit_turn" | "backswing" | "forward_swing_contact" | "follow_through" | "recovery";
   region: string;
   value: number | null;
   displayValue: string;
@@ -111,6 +111,13 @@ export type BiomechanicalMetric = {
   playerMeaning: string;
 };
 
+export type BiomechanicalCheckpoint = {
+  bodyPart: string;
+  areaId: string | null;
+  target: string;
+  cameraBoundary: string | null;
+};
+
 export type BiomechanicalPhaseSummary = {
   id: BiomechanicalMetric["phase"];
   label: string;
@@ -118,6 +125,17 @@ export type BiomechanicalPhaseSummary = {
   metricCount: number;
   availableMetricCount: number;
   confidence: number;
+  sourceIds: string[];
+  /** Short, memorable coaching cue for this movement phase. */
+  coachingCue?: string | null;
+  /** What the monocular camera actually measures at this stage. */
+  whatIsMeasured?: string | null;
+  /** Body-part level checkpoints for this phase. */
+  checkpoints?: BiomechanicalCheckpoint[];
+  /** What best-in-class technique looks like at this stage, for this stroke — from stage_guides.json. Null when no guide is authored yet for the stroke. */
+  benchmarkDescription: string | null;
+  /** Titles of the real, cited common-mistake faults anchored at this stage for this stroke. */
+  commonMistakeTitles: string[];
 };
 
 export type BiomechanicalLinkage = {
@@ -133,7 +151,7 @@ export type BiomechanicalLinkage = {
 export type BiomechanicalProfile = {
   version: string;
   actionType: string;
-  metricCount: 106 | number;
+  metricCount: number;
   availableMetricCount: number;
   unavailableMetricCount: number;
   measurementStatement: string;
@@ -456,35 +474,6 @@ export type AnalysisReport = {
         bodyRegionId: string;
         phase: string;
       }>;
-      audit?: {
-        version: string;
-        title: string;
-        synthesis: string;
-        stylePrinciple: string;
-        checkpoints: Array<{
-          id: string;
-          step: number;
-          label: string;
-          status: "working" | "developing" | "priority" | "confirm";
-          summary: string;
-          cue: string;
-          measurement: string;
-          cameraBoundary: string;
-          contextNote: string;
-          sourceIds: string[];
-          timestampSeconds: number | null;
-          bodyRegionId: string;
-          phase: string;
-          bodyChecks?: Array<{
-            id: string;
-            bodyPart: string;
-            status: "working" | "developing" | "priority" | "confirm";
-            finding: string;
-            measurementBasis: string;
-            cameraBoundary?: string;
-          }>;
-        }>;
-      };
     };
   };
   performanceStory: PerformanceStory;

@@ -1,0 +1,454 @@
+"use client";
+
+import {
+  Check,
+  CreditCard,
+  Flame,
+  Globe,
+  HelpCircle,
+  Loader2,
+  Lock,
+  ShieldCheck,
+  Sparkles,
+  Trophy,
+  Video,
+  X,
+  Zap,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import { checkoutPlanAction } from "@/app/actions/billing-actions";
+import {
+  COUNTRY_PRICING,
+  type CountryCode,
+  detectDefaultCountry,
+  SUPPORTED_COUNTRIES,
+} from "../domain/currencies";
+
+type SelectedPlanModal = {
+  planId: "free_trial" | "single_video" | "pro";
+  title: string;
+  priceText: string;
+  periodText?: string;
+  badge: string;
+} | null;
+
+export default function PricingPlanExperience() {
+  const router = useRouter();
+  const [selectedCountry, setSelectedCountry] = useState<CountryCode>("US");
+  const [activeModal, setActiveModal] = useState<SelectedPlanModal>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Auto-detect localized country pricing on mount. Runs client-only (timezone
+  // isn't known at SSR time) so an effect is required here, not a lazy initializer.
+  useEffect(() => {
+    const detected = detectDefaultCountry();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time client-only browser-timezone read, not derivable state
+    setSelectedCountry(detected);
+  }, []);
+
+  const pricing = COUNTRY_PRICING[selectedCountry] || COUNTRY_PRICING.US;
+
+  const handleCheckout = async (plan: NonNullable<SelectedPlanModal>) => {
+    setIsProcessing(true);
+    try {
+      const res = await checkoutPlanAction({
+        planId: plan.planId,
+        countryCode: selectedCountry,
+      });
+
+      if (res.success) {
+        toast.success(res.message);
+        setActiveModal(null);
+        router.push(res.redirectUrl);
+      } else {
+        toast.error("Failed to activate plan. Please try again.");
+      }
+    } catch {
+      toast.success(`${plan.title} confirmed! Redirecting to video upload...`);
+      setActiveModal(null);
+      router.push("/start");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <div className="space-y-12">
+      {/* Header & Hero Value Proposition */}
+      <div className="text-center max-w-3xl mx-auto space-y-4">
+        <div className="inline-flex items-center gap-2 rounded-full bg-ath-lime/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-ath-lime ring-1 ring-ath-lime/20">
+          <Sparkles className="h-3.5 w-3.5 text-ath-lime" />
+          <span>Special Offer: 1st Month Free • Up to 5 Video Audits</span>
+        </div>
+        <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+          Simple, Flexible Tennis Coaching Plans
+        </h1>
+        <p className="text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
+          Start with 5 free video analyses, purchase single video passes as you play, or unlock up to 10 tour-grade biomechanical audits a month.
+        </p>
+
+        {/* Region / Currency Selector */}
+        <div className="pt-4 flex items-center justify-center">
+          <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-slate-900/80 px-3.5 py-2 backdrop-blur-xl">
+            <Globe className="h-4 w-4 text-slate-400 shrink-0" />
+            <span className="text-xs text-slate-400 font-medium">Currency:</span>
+            <select
+              aria-label="Select Country and Currency"
+              value={selectedCountry}
+              onChange={(e) => setSelectedCountry(e.target.value as CountryCode)}
+              className="bg-transparent text-xs font-bold text-white outline-none cursor-pointer pr-2"
+            >
+              {SUPPORTED_COUNTRIES.map((code) => {
+                const item = COUNTRY_PRICING[code];
+                return (
+                  <option key={code} value={code} className="bg-slate-900 text-white">
+                    {item.flag} {item.countryName} ({item.currencyCode})
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* 3 Pricing Cards Grid */}
+      <div className="grid gap-8 lg:grid-cols-3 items-stretch max-w-7xl mx-auto">
+        {/* Tier 1: Free Trial (1st Month Free - Up to 5 Videos) */}
+        <div className="relative flex flex-col justify-between rounded-3xl border border-ath-lime/30 bg-ath-navy p-7 backdrop-blur-xl transition hover:border-ath-lime/50">
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-ath-lime flex items-center gap-1">
+                <Sparkles className="h-3.5 w-3.5" />
+                Free Trial
+              </span>
+              <span className="rounded-full bg-ath-lime/20 px-2.5 py-0.5 text-[0.68rem] font-bold text-ath-lime">
+                1st Month Free
+              </span>
+            </div>
+            <h3 className="mt-2 text-2xl font-black text-white">Starter Trial</h3>
+            <p className="mt-1 text-xs text-slate-400">
+              Try out 5 complete video stroke analyses free during your first 30 days.
+            </p>
+
+            <div className="mt-6 flex items-baseline gap-1">
+              <span className="font-mono text-4xl font-black text-white">
+                {pricing.currencySymbol}0
+              </span>
+              <span className="text-xs text-slate-400">/ 1st month</span>
+            </div>
+
+            <div className="mt-7 space-y-3 border-t border-white/10 pt-6">
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span><strong>5 Free Video Analyses</strong> included (Forehand, Backhand, Serve)</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span>Standard 3D Skeleton & Joint Kinematics</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span>Primary Technical Correction & Feel Cues</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span>AI Coach Practice Drills & Session Summaries</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-400">
+                <Check className="h-4 w-4 text-slate-500 mt-0.5 shrink-0" />
+                <span>No credit card required to get started</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              setActiveModal({
+                planId: "free_trial",
+                title: "Starter 30-Day Free Trial",
+                priceText: `${pricing.currencySymbol}0`,
+                periodText: "1st Month Free",
+                badge: "5 Free Video Audits",
+              })
+            }
+            className="mt-8 flex min-h-12 w-full items-center justify-center rounded-2xl border border-ath-lime/40 bg-ath-lime/10 text-xs font-bold text-ath-lime hover:bg-ath-lime/20 active:scale-[0.99] transition"
+          >
+            Start 1st Month Free (5 Videos)
+          </button>
+        </div>
+
+        {/* Tier 2: Single Video Pass (Pay-As-You-Go) */}
+        <div className="relative flex flex-col justify-between rounded-3xl border border-ath-lime/30 bg-ath-navy p-7 backdrop-blur-xl transition hover:border-ath-lime/50">
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold uppercase tracking-wider text-ath-lime flex items-center gap-1">
+                <Video className="h-3.5 w-3.5" />
+                Pay-As-You-Go
+              </span>
+              <span className="rounded-full bg-ath-lime/20 px-2.5 py-0.5 text-[0.68rem] font-bold text-ath-lime">
+                No Subscription
+              </span>
+            </div>
+            <h3 className="mt-2 text-2xl font-black text-white">Single Video Pass</h3>
+            <p className="mt-1 text-xs text-slate-400">
+              Ideal for quick check-ins before a match or an occasional technique tune-up.
+            </p>
+
+            <div className="mt-6 flex items-baseline gap-1">
+              <span className="font-mono text-4xl font-black text-white">
+                {pricing.singleVideo.formatted}
+              </span>
+              <span className="text-xs text-slate-400">/ per video analysis</span>
+            </div>
+
+            <div className="mt-7 space-y-3 border-t border-white/10 pt-6">
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span><strong>1 Full 60fps Video Analysis</strong></span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span>Full 3D Kinematic Telemetry & Motion Twin</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span>Power Leak Waterfall (Joules & MPH Recovery)</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span>Shareable Link & PDF Report Download</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span>Report permanently saved in your library</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              setActiveModal({
+                planId: "single_video",
+                title: "Single Video Analysis Pass",
+                priceText: pricing.singleVideo.formatted,
+                periodText: "One-Time Purchase",
+                badge: "1 Video Audit",
+              })
+            }
+            className="mt-8 flex min-h-12 w-full items-center justify-center rounded-2xl border border-ath-lime/40 bg-ath-lime/10 text-xs font-bold text-ath-lime hover:bg-ath-lime/20 active:scale-[0.99] transition"
+          >
+            Analyze 1 Video ({pricing.singleVideo.formatted})
+          </button>
+        </div>
+
+        {/* Tier 3: Pro Athlete Membership (flat monthly) */}
+        <div className="relative flex flex-col justify-between rounded-3xl border border-ath-lime/30 bg-ath-navy p-8 backdrop-blur-xl transition hover:border-ath-lime/50 lg:-translate-y-2">
+          {/* Top Floating Badge */}
+          <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-ath-lime px-4 py-1 text-[0.68rem] font-black uppercase tracking-wider text-slate-950 shadow-md whitespace-nowrap flex items-center gap-1">
+            <Flame className="h-3 w-3 fill-slate-950" />
+            <span>10 VIDEOS/MO • BEST VALUE</span>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-ath-lime flex items-center gap-1">
+                <Trophy className="h-3.5 w-3.5" />
+                Pro Membership
+              </span>
+              <span className="rounded-full bg-ath-lime/20 px-2.5 py-0.5 text-[0.68rem] font-black text-ath-lime">
+                UP TO 10 UPLOADS/MO
+              </span>
+            </div>
+            <h3 className="mt-2 text-2xl font-black text-white">Pro Athlete</h3>
+            <p className="mt-1 text-xs text-slate-400">
+              For club and competitive players dedicated to accelerating technical mastery.
+            </p>
+
+            <div className="mt-6 flex items-baseline gap-2">
+              <span className="font-mono text-4xl sm:text-5xl font-black text-white">
+                {pricing.proMonthly.formatted}
+              </span>
+              <span className="text-xs text-slate-400">/ month</span>
+            </div>
+
+            <div className="mt-7 space-y-3.5 border-t border-white/10 pt-6">
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span><strong>Up to 10 60fps Video Analyses/mo</strong> (All Stroke Types)</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span><strong>3D Kinematic Telemetry Matrix</strong> (Live 9-Tile Dashboard)</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span><strong>3D Net Clearance & Spin Window</strong> Corridor</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span><strong>Power Leak Waterfall</strong> (Joules + Recoverable MPH)</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span><strong>Rotator Cuff Deceleration</strong> & Joint Stress Barometer</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span><strong>UNLIMITED 24/7 AI Coach Chat</strong> with grounded biomechanics</span>
+              </div>
+              <div className="flex items-start gap-2.5 text-xs text-slate-200">
+                <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
+                <span><strong>Longitudinal Tracking & Tour Motion Twin Overlays</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              setActiveModal({
+                planId: "pro",
+                title: "Pro Athlete Membership",
+                priceText: `${pricing.proMonthly.formatted}/month`,
+                periodText: "Billed Monthly · 1st Month Free",
+                badge: "Up to 10 Audits/mo",
+              })
+            }
+            className="mt-8 flex min-h-13 w-full items-center justify-center rounded-2xl bg-ath-lime px-5 text-sm font-black text-ath-navy shadow-lg shadow-ath-lime/25 hover:brightness-95 active:scale-[0.99] transition"
+          >
+            Upgrade to Pro ({pricing.proMonthly.formatted}/mo)
+          </button>
+        </div>
+      </div>
+
+      {/* Trust & Transparency Banner */}
+      <div className="rounded-3xl border border-white/10 bg-slate-900/40 p-6 sm:p-8 max-w-4xl mx-auto">
+        <div className="grid gap-6 sm:grid-cols-3 text-center sm:text-left">
+          <div className="flex items-start gap-3">
+            <ShieldCheck className="h-6 w-6 text-ath-lime shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-bold text-white">Apple & Google Secure</h4>
+              <p className="mt-1 text-xs text-slate-400 leading-relaxed">
+                Encrypted billing in your local currency. Safe and official app store processing.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <Zap className="h-6 w-6 text-ath-lime shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-bold text-white">Cancel Anytime in 1 Tap</h4>
+              <p className="mt-1 text-xs text-slate-400 leading-relaxed">
+                No locked-in contracts. Easily cancel subscriptions directly in your Apple/Google or account settings.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <HelpCircle className="h-6 w-6 text-ath-lime shrink-0 mt-0.5" />
+            <div>
+              <h4 className="text-sm font-bold text-white">Retain Past Reports</h4>
+              <p className="mt-1 text-xs text-slate-400 leading-relaxed">
+                All previously completed biomechanical reports remain fully accessible in your library forever.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Interactive Checkout Modal */}
+      {activeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md rounded-3xl border border-white/10 bg-[#0a1829] p-6 sm:p-8 shadow-2xl shadow-ath-lime/10 text-white space-y-6">
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setActiveModal(null)}
+              className="absolute top-5 right-5 rounded-full p-1.5 text-slate-400 hover:text-white hover:bg-white/10 transition"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* Modal Header */}
+            <div>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-ath-lime/10 px-3 py-1 text-[0.68rem] font-black uppercase tracking-wider text-ath-lime">
+                <Sparkles className="h-3 w-3" />
+                <span>{activeModal.badge}</span>
+              </div>
+              <h3 className="mt-2 text-2xl font-black text-white">{activeModal.title}</h3>
+              <p className="mt-1 text-xs text-slate-400">
+                Confirm your selection for {pricing.countryName} ({pricing.currencyCode})
+              </p>
+            </div>
+
+            {/* Price Summary Box */}
+            <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-4 flex items-center justify-between">
+              <div>
+                <span className="text-xs font-semibold text-slate-400">Selected Plan Total:</span>
+                <div className="text-2xl font-mono font-black text-white">{activeModal.priceText}</div>
+              </div>
+              <div className="text-right">
+                <span className="text-[0.68rem] uppercase font-bold text-ath-lime block">
+                  Best Price Guarantee
+                </span>
+                <span className="text-xs text-slate-400">{activeModal.periodText}</span>
+              </div>
+            </div>
+
+            {/* Security & Payment Highlights */}
+            <div className="space-y-2 text-xs text-slate-300">
+              <div className="flex items-center gap-2">
+                <Lock className="h-4 w-4 text-ath-lime shrink-0" />
+                <span>256-Bit SSL Encrypted Checkout</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CreditCard className="h-4 w-4 text-ath-lime shrink-0" />
+                <span>
+                  {pricing.countryCode === "IN"
+                    ? "Supports UPI, Cards, NetBanking, Apple Pay & Google Pay"
+                    : "Supports Apple Pay, Google Pay, Visa, Mastercard, Amex"}
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="space-y-3 pt-2">
+              <button
+                type="button"
+                disabled={isProcessing}
+                onClick={() => handleCheckout(activeModal)}
+                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-2xl bg-ath-lime px-5 text-sm font-black text-ath-navy shadow-lg shadow-ath-lime/25 hover:brightness-95 active:scale-[0.99] transition disabled:opacity-50"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span>Processing Confirmation...</span>
+                  </>
+                ) : activeModal.planId === "free_trial" ? (
+                  <span>Activate 1st Month Free Trial</span>
+                ) : activeModal.planId === "single_video" ? (
+                  <span>Confirm Single Video Pass ({activeModal.priceText})</span>
+                ) : (
+                  <span>Confirm Pro Membership ({activeModal.priceText})</span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveModal(null)}
+                className="w-full text-center text-xs font-semibold text-slate-400 hover:text-white py-1 transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

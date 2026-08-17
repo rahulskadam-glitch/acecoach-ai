@@ -1,19 +1,19 @@
 import type { AnalysisReport, BiomechanicalProfile } from "@/modules/analysis/types";
 
 const fixturePhases = [
-  ["preparation", "Preparation", 16],
-  ["backswing", "Backswing", 18],
-  ["loading", "Loading", 18],
-  ["acceleration", "Acceleration / extension", 22],
-  ["contact", "Likely contact", 16],
-  ["follow_through", "Follow-through / recovery", 16],
+  ["ready", "Ready Position", 12, ["SCI-ELLIOTT-2006", "SCI-KOVACS-2011"]],
+  ["unit_turn", "Unit Turn", 7, ["SCI-ELLIOTT-2006", "SCI-FILIPCIC-2017-SPLITSTEP", "VID-MOURATOGLOU-FOOTWORK"]],
+  ["backswing", "Backswing", 27, ["SCI-HE-2022-FOREHAND-LOWER-LIMB", "SCI-LANDLINGER-2010", "SCI-KOVACS-2011"]],
+  ["forward_swing_contact", "Forward Swing & Contact", 40, ["SCI-ELLIOTT-2006", "SCI-GENEVOIS-2015", "SCI-STEPien-2011", "SCI-LANDLINGER-2010", "SCI-REID-BH-2002", "SCI-CHOW-2007", "SCI-FURUYA-2021", "SCI-BRITO-2024"]],
+  ["follow_through", "Follow-Through", 8, ["SCI-ELLIOTT-2006", "ORG-ITF-SKILL-PHASES-2023"]],
+  ["recovery", "Recovery", 8, ["ORG-ITF-SKILL-PHASES-2023", "SCI-FILIPCIC-2017-SPLITSTEP"]],
 ] as const;
-const preparationLabels = ["Ready base width", "Left knee angle", "Right knee angle", "Left hip angle", "Right hip angle", "Upper-body lean", "Head-to-balance offset", "Shoulder-line orientation", "Hip-line orientation", "Shoulder–hip separation", "Hand separation", "Hitting elbow angle", "Hitting shoulder angle", "Support shoulder angle", "Balance-point movement", "Head stability"];
+const readyLabels = ["Ready base width", "Left knee angle", "Right knee angle", "Left hip angle", "Right hip angle", "Upper-body lean", "Head-to-balance offset", "Shoulder–hip separation", "Hand separation", "Hitting elbow angle", "Hitting shoulder angle", "Support shoulder angle"];
 let fixtureMetricNumber = 0;
 const fixtureMetrics = fixturePhases.flatMap(([phase, phaseLabel, count]) => Array.from({ length: count }, (_, index) => {
   fixtureMetricNumber += 1;
   const available = fixtureMetricNumber % 17 !== 0;
-  const label = phase === "preparation" ? preparationLabels[index] : `${phaseLabel} check ${index + 1}`;
+  const label = phase === "ready" ? readyLabels[index] : `${phaseLabel} check ${index + 1}`;
   return {
     id: `fixture_metric_${fixtureMetricNumber}`,
     label,
@@ -29,19 +29,38 @@ const fixtureMetrics = fixturePhases.flatMap(([phase, phaseLabel, count]) => Arr
   };
 }));
 const fixtureBiomechanicalProfile: BiomechanicalProfile = {
-  version: "acecoach-106-kinematic-profile-v1.0.0",
+  version: "acecoach-kinematic-profile-v3.0.0",
   actionType: "two_handed_backhand",
-  metricCount: 106,
+  metricCount: fixtureMetrics.length,
   availableMetricCount: fixtureMetrics.filter((metric) => metric.status === "available").length,
   unavailableMetricCount: fixtureMetrics.filter((metric) => metric.status === "unavailable").length,
-  measurementStatement: "106 transparent pose-kinematic checks across six phases.",
-  phases: fixturePhases.map(([id, label, metricCount]) => ({
+  measurementStatement: `${fixtureMetrics.length} transparent pose-kinematic checks across six movement phases, each grounded in cited tennis biomechanics research.`,
+  phases: fixturePhases.map(([id, label, metricCount, sourceIds]) => ({
     id,
     label,
     score: 78,
     metricCount,
     availableMetricCount: fixtureMetrics.filter((metric) => metric.phase === id && metric.status === "available").length,
     confidence: 0.72,
+    sourceIds: [...sourceIds],
+    coachingCue: `Move smoothly through ${label.toLowerCase()}.`,
+    whatIsMeasured: `Pose-estimated body positioning and timing during ${label.toLowerCase()}.`,
+    checkpoints: [
+      {
+        bodyPart: "Feet & knees",
+        areaId: "footwork_base",
+        target: "Stay balanced and organized through the movement.",
+        cameraBoundary: null,
+      },
+      {
+        bodyPart: "Hands & racket",
+        areaId: "backlift_preparation",
+        target: "Maintain space and control with a stable setup.",
+        cameraBoundary: "Exact grip and ball tracking require dedicated sensors.",
+      },
+    ],
+    benchmarkDescription: `What best-in-class technique looks like during ${label.toLowerCase()}.`,
+    commonMistakeTitles: [],
   })),
   linkages: [
     ["base", "Base", "knees", "Knees", "connected"],
@@ -74,75 +93,6 @@ const fixtureBodyRegionReview = [
   { id: "feet", title: "Feet & hitting base", status: "priority" as const, coachNote: "The base becomes less functional as you arrive at the ball. Use the first turn to pivot, then move and set before the strike.", whyItMatters: "Efficient movement creates time and prevents a last-second upper-body rescue.", cue: "Split, pivot, move, set.", phase: "preparation", timestampSeconds: 0.7, measurementStatus: "video_estimate" as const, evidence: [{ id: "base", label: "Ready base width", displayValue: "1.18 widths", confidence: 0.89, measurementBasis: "pose_kinematic_proxy" }] },
   { id: "finish", title: "Finish & body balance", status: "priority" as const, coachNote: "The hand path shortens before the recovery step. Swing through the intended line, let the finish develop naturally for the ball, then reset.", whyItMatters: "A complete release supports the swing path and gives the feet a cleaner recovery signal.", cue: "Through first, finish free, recover.", phase: "follow_through", timestampSeconds: 3.15, measurementStatus: "video_estimate" as const, evidence: [{ id: "finish", label: "Head movement after contact", displayValue: "0.16 widths", confidence: 0.85, measurementBasis: "pose_kinematic_proxy" }] },
 ];
-
-type PyramidSummary = NonNullable<AnalysisReport["coachSummary"]["pyramidSummary"]>;
-const phaseSources = ["athlete-supplied-complete-stroke-guide", "athlete-supplied-backhand-phase-rubric", "venus-williams-backhand-fundamentals", "mouratoglou-fluid-backhand"];
-const fixturePhaseChecks: Record<string, NonNullable<NonNullable<PyramidSummary["audit"]>["checkpoints"][number]["bodyChecks"]>> = {
-  ready: [
-    { id: "ready-hands", bodyPart: "Hands", status: "confirm", finding: "Confirm both hands begin relaxed with the racket centered in front.", measurementBasis: "athlete_or_racket_confirmation" },
-    { id: "ready-knees", bodyPart: "Knees", status: "working", finding: "The knees begin softly flexed in an athletic base.", measurementBasis: "world_pose_angle_proxy" },
-    { id: "ready-hips", bodyPart: "Hips", status: "developing", finding: "The hip line is organized enough to react in either direction.", measurementBasis: "image_plane_rotation_proxy" },
-    { id: "ready-head", bodyPart: "Head & eyes", status: "working", finding: "The head is level and quiet before the first move.", measurementBasis: "body_scaled_pose_range" },
-    { id: "ready-racket", bodyPart: "Racket", status: "confirm", finding: "Confirm the racket starts in front near waist height.", measurementBasis: "racket_confirmation", cameraBoundary: "The racket is not tracked." },
-  ],
-  preparation: [
-    { id: "prep-hands", bodyPart: "Hands", status: "confirm", finding: "Both hands should organize together during the first turn.", measurementBasis: "athlete_or_close_view_confirmation" },
-    { id: "prep-knees", bodyPart: "Knees", status: "developing", finding: "Knee flexion begins as the body loads.", measurementBasis: "world_pose_angle_proxy" },
-    { id: "prep-hips", bodyPart: "Hips & shoulders", status: "working", finding: "The shoulders and hips begin a connected unit turn.", measurementBasis: "image_plane_rotation_proxy" },
-    { id: "prep-head", bodyPart: "Head & eyes", status: "working", finding: "The head stays supported over the back shoulder.", measurementBasis: "body_scaled_pose_range" },
-    { id: "prep-racket", bodyPart: "Racket", status: "confirm", finding: "Checkpoint: racket head above the hands before the drop.", measurementBasis: "racket_confirmation", cameraBoundary: "Exact racket-head height requires tracking." },
-  ],
-  load: [
-    { id: "load-hands", bodyPart: "Hands & wrists", status: "confirm", finding: "Keep the wrists organized rather than floppy during the drop.", measurementBasis: "hand_and_racket_confirmation" },
-    { id: "load-knees", bodyPart: "Knees", status: "developing", finding: "This is the deepest knee-load event; the later drive is scored separately.", measurementBasis: "world_pose_angle_proxy" },
-    { id: "load-hips", bodyPart: "Hips", status: "developing", finding: "The hips organize the stored separation before release.", measurementBasis: "image_plane_rotation_proxy" },
-    { id: "load-head", bodyPart: "Head & eyes", status: "working", finding: "The head remains quiet while the ball rises.", measurementBasis: "body_scaled_pose_range" },
-    { id: "load-racket", bodyPart: "Racket", status: "confirm", finding: "Checkpoint: racket head below the hand line before acceleration.", measurementBasis: "racket_confirmation", cameraBoundary: "Racket face and wrist layback are not tracked." },
-  ],
-  swing: [
-    { id: "swing-hands", bodyPart: "Hands", status: "confirm", finding: "Top/non-dominant hand leads the path; bottom/dominant hand guides.", measurementBasis: "paired_wrist_speed_proxy", cameraBoundary: "Pose cannot measure force from either hand." },
-    { id: "swing-knees", bodyPart: "Knees", status: "developing", finding: "Drive the knees after the load instead of staying passive.", measurementBasis: "world_pose_angle_proxy" },
-    { id: "swing-hips", bodyPart: "Hips → shoulders", status: "developing", finding: "Let the hips lead the upper-body release.", measurementBasis: "pose_sequence_proxy" },
-    { id: "swing-head", bodyPart: "Head & eyes", status: "priority", finding: "Keep the head fixed as the hands accelerate.", measurementBasis: "body_scaled_pose_range" },
-    { id: "swing-racket", bodyPart: "Racket", status: "confirm", finding: "Confirm a low-to-high path without an early wrist flip.", measurementBasis: "racket_confirmation" },
-  ],
-  contact: [
-    { id: "contact-hands", bodyPart: "Hands & elbows", status: "working", finding: "The hands preserve useful room from the torso.", measurementBasis: "body_scaled_pose_proxy" },
-    { id: "contact-knees", bodyPart: "Knees", status: "developing", finding: "Stay supported through contact; do not stand up before the hit.", measurementBasis: "world_pose_sequence_proxy" },
-    { id: "contact-hips", bodyPart: "Hips & shoulders", status: "developing", finding: "Hips open while the shoulders retain a small visible lag.", measurementBasis: "image_plane_rotation_proxy" },
-    { id: "contact-head", bodyPart: "Head & eyes", status: "priority", finding: "Hold the eyes at the strike window after the ball leaves.", measurementBasis: "body_scaled_pose_range" },
-    { id: "contact-racket", bodyPart: "Racket face", status: "confirm", finding: "Confirm a vertical-to-slightly-closed face for this depth ball.", measurementBasis: "racket_and_ball_confirmation" },
-  ],
-  finish: [
-    { id: "finish-hands", bodyPart: "Hands & elbows", status: "priority", finding: "Continue through, then let both elbows finish high.", measurementBasis: "body_scaled_pose_displacement" },
-    { id: "finish-knees", bodyPart: "Knees", status: "developing", finding: "Extend from the earlier load into the finish.", measurementBasis: "world_pose_angle_proxy" },
-    { id: "finish-hips", bodyPart: "Hips & torso", status: "developing", finding: "Complete the rotation without losing balance.", measurementBasis: "image_plane_rotation_proxy" },
-    { id: "finish-head", bodyPart: "Head & eyes", status: "priority", finding: "Release the head only after the contact window.", measurementBasis: "body_scaled_pose_range" },
-    { id: "finish-racket", bodyPart: "Racket", status: "confirm", finding: "Confirm a high finish and naturally closing face for this pattern.", measurementBasis: "racket_confirmation" },
-  ],
-  recovery: [
-    { id: "recover-hands", bodyPart: "Hands", status: "confirm", finding: "Re-center both hands as recovery begins.", measurementBasis: "racket_confirmation" },
-    { id: "recover-knees", bodyPart: "Knees & feet", status: "priority", finding: "Regain an athletic base without an extra balance step.", measurementBasis: "body_scaled_pose_proxy" },
-    { id: "recover-hips", bodyPart: "Hips & balance", status: "priority", finding: "Re-center the balance point for the next ball.", measurementBasis: "body_scaled_pose_range" },
-    { id: "recover-head", bodyPart: "Head & eyes", status: "confirm", finding: "Reacquire the ball and opponent after the contact hold.", measurementBasis: "athlete_confirmation" },
-    { id: "recover-racket", bodyPart: "Racket", status: "confirm", finding: "Return the racket to a neutral ready position.", measurementBasis: "racket_confirmation" },
-  ],
-};
-const fixtureBackhandAudit: NonNullable<PyramidSummary["audit"]> = {
-  version: "two-handed-backhand-reference-rubric-v2.0.0",
-  title: "Seven-phase technical backhand reference",
-  synthesis: "The complete stroke guide, the athlete-supplied backhand phase model, and six established coaching references were translated into separate checks for hands, knees, hips, head, and racket. Visible body motion is scored; grip pressure, hand force, racket face, exact contact, and ball result remain confirmation-only.",
-  stylePrinciple: "Build a repeatable personal backhand instead of copying one professional silhouette. Bent or straighter arms, compact or slightly larger preparation, and neutral or open stance can all be functional when they match the ball and preserve spacing, sequencing, balance, and recovery.",
-  checkpoints: [
-    { id: "ready-position", step: 1, label: "Ready position", status: "working", summary: "Start in an athletic base with soft knees, relaxed hands, and a level head.", cue: "Balanced, soft, ready.", measurement: "Pose-estimated base, knee shape, balance, and head stability.", cameraBoundary: "Racket setup and gaze target require confirmation.", contextNote: "Ready width should fit the athlete and court position.", sourceIds: phaseSources, timestampSeconds: 0, bodyRegionId: "feet", phase: "preparation", bodyChecks: fixturePhaseChecks.ready },
-    { id: "preparation-unit-turn", step: 2, label: "Preparation / unit turn", status: "working", summary: "Organize both hands together, turn as one unit, begin loading, and keep the racket above the hands.", cue: "Both hands set; turn as one.", measurement: "Pose-estimated turn, knee change, and head stability.", cameraBoundary: "Grip and racket height require confirmation.", contextNote: "Prepare early without freezing the rhythm.", sourceIds: phaseSources, timestampSeconds: 1.05, bodyRegionId: "backlift", phase: "preparation", bodyChecks: fixturePhaseChecks.preparation },
-    { id: "load-drop", step: 3, label: "Load and drop", status: "developing", summary: "Reach the knee-bend load, keep the head quiet, then let the racket fall below the hand line.", cue: "Bend and load; let it drop.", measurement: "Pose-estimated knee load, body lowering, arm space, and head stability.", cameraBoundary: "Weight, force, wrist layback, and racket face are not measured.", contextNote: "Loading and knee drive are separate events.", sourceIds: phaseSources, timestampSeconds: 1.45, bodyRegionId: "hips", phase: "loading", bodyChecks: fixturePhaseChecks.load },
-    { id: "forward-swing", step: 4, label: "Forward swing", status: "developing", summary: "Release legs, hips, trunk, then arms; let the top hand lead the path.", cue: "Load, drive, top hand through.", measurement: "Pose-estimated knee extension, sequencing, and paired wrist motion.", cameraBoundary: "Hand force and racket-head speed are not measured.", contextNote: "Wrist speed supports the read but cannot prove which hand made force.", sourceIds: phaseSources, timestampSeconds: 2.0, bodyRegionId: "knees", phase: "acceleration", bodyChecks: fixturePhaseChecks.swing },
-    { id: "contact", step: 5, label: "Contact", status: "priority", summary: "Keep the head fixed, preserve arm space, and stay supported through the hit.", cue: "See the hit; make room.", measurement: "Pose-estimated head stability, arm space, elbows, and body sequence.", cameraBoundary: "Exact contact, ball result, and racket face are not detected.", contextNote: "Read against the intended depth ball.", sourceIds: phaseSources, timestampSeconds: 2.4, bodyRegionId: "head", phase: "contact", bodyChecks: fixturePhaseChecks.contact },
-    { id: "follow-through-finish", step: 6, label: "Follow-through / finish", status: "priority", summary: "Continue through, finish high, extend from the load, and release the head only after contact.", cue: "Through first; finish high.", measurement: "Pose-estimated hand travel, knee extension, head hold, and balance.", cameraBoundary: "Exact racket finish and ball quality are not tracked.", contextNote: "Finish shape varies with the ball; this is the topspin/depth pattern.", sourceIds: phaseSources, timestampSeconds: 3.15, bodyRegionId: "finish", phase: "follow_through", bodyChecks: fixturePhaseChecks.finish },
-    { id: "recovery", step: 7, label: "Recovery", status: "priority", summary: "Rebuild the base, re-center the hands and racket, and prepare for the next ball.", cue: "Finish, reset, ready.", measurement: "Pose-estimated recovery base, balance, and reset timing.", cameraBoundary: "Court geometry, opponent position, and racket re-centering are not detected.", contextNote: "The best recovery point depends on direction and court position.", sourceIds: phaseSources, timestampSeconds: 3.5, bodyRegionId: "feet", phase: "follow_through", bodyChecks: fixturePhaseChecks.recovery },
-  ],
-};
 
 const fixtureCoachingEvidence: AnalysisReport["evidence"] = [{
   id: "athlete-supplied-complete-stroke-guide",
@@ -283,7 +233,6 @@ export const visualQaReport: AnalysisReport = {
           { id: "recover", label: "Balanced first recovery step", status: "priority", finding: "Complete the swing, regain the base, and make the first recovery step without rushing." },
         ], timestampSeconds: 3.15, bodyRegionId: "finish", phase: "follow_through" },
       ],
-      audit: fixtureBackhandAudit,
     },
   },
   performanceStory: { identity: "A two-handed backhand with organized preparation and useful contact space.", rootCauseHypothesis: "Head movement through contact is reducing repeatability.", transferRisk: "Faster feeds may shorten the finish and recovery.", nextMilestone: "A quieter head through contact in eight of ten repetitions.", coachPrinciple: "Create time, stay quiet, finish the swing." },
@@ -324,15 +273,15 @@ export const visualQaReport: AnalysisReport = {
   },
   ontologyReasoning: {
     status: "FAULT_SUSPECTED", priorityScore: 0.82, candidateCount: 1, evaluatedFaultIds: ["BH-HEAD-01"], cameraSupport: "side", sourceIds: ["SCI-ELLIOTT-2006"], ontologyVersion: "4.1.0", manifestHash: "visual-qa-manifest", policiesApplied: ["fault_evidence_evaluation"], gatedCapabilities: [],
-    findings: [{ id: "VISUAL-QA-PRIMARY", rank: 1, role: "PRIMARY", chapterId: "contact_stability", label: "Head & contact stability", faultId: "BH-HEAD-01", ontologyTitle: "Early head movement", domain: "Stability", status: "FAULT_SUSPECTED", score: 48, priorityScore: 0.82, confidence: 0.74, summary: "The head moves before the strike window is complete.", why: "A stable visual reference supports repeatable timing.", correction: "Keep the chin over the shoulder until both arms complete the strike.", cue: "Chin over the shoulder; see it through", watch: "Watch near 2.40s.", phaseOrigin: "G5", phaseVisibleEffect: "G6", overlayMarkers: ["EVENT_BEACON"], sourceIds: ["SCI-ELLIOTT-2006"], evidence: [{ areaId: "body_position_head", label: "Body position and head stability", observation: "The head moves as the stroke enters the likely contact window.", score: 48, confidence: 0.88, measurementBasis: "pose_kinematic_proxy", timestampSeconds: 2.4 }], drill: { id: "quiet_head", name: "Chin-over-shoulder contact rehearsal", purpose: "Keep the visual reference steady.", dosage: "3 sets of 10", cue: "Chin over the shoulder; see it through", success: "8 of 10 quiet-head contacts", targetFaultIds: ["BH-HEAD-01"] } }],
-    strengthReview: [{ chapterId: "setup", label: "Setup & timing", score: 88, summary: "Your preparation is organized early enough to give the forward swing time.", evidence: [{ areaId: "backlift_preparation", label: "Preparation and backlift timing", observation: "The shoulder coil is organized before the forward swing.", score: 88, confidence: 0.91, measurementBasis: "image_plane_rotation_proxy" }] }],
+    findings: [{ id: "VISUAL-QA-PRIMARY", rank: 1, role: "PRIMARY", chapterId: "forward_swing_contact", label: "Forward Swing & Contact", faultId: "BH-HEAD-01", ontologyTitle: "Early head movement", domain: "Stability", status: "FAULT_SUSPECTED", score: 48, priorityScore: 0.82, confidence: 0.74, summary: "The head moves before the strike window is complete.", why: "A stable visual reference supports repeatable timing.", correction: "Keep the chin over the shoulder until both arms complete the strike.", cue: "Chin over the shoulder; see it through", watch: "Watch near 2.40s.", phaseOrigin: "G5", phaseVisibleEffect: "G6", overlayMarkers: ["EVENT_BEACON"], sourceIds: ["SCI-ELLIOTT-2006"], evidence: [{ areaId: "body_position_head", label: "Body position and head stability", observation: "The head moves as the stroke enters the likely contact window.", score: 48, confidence: 0.88, measurementBasis: "pose_kinematic_proxy", timestampSeconds: 2.4 }], drill: { id: "quiet_head", name: "Chin-over-shoulder contact rehearsal", purpose: "Keep the visual reference steady.", dosage: "3 sets of 10", cue: "Chin over the shoulder; see it through", success: "8 of 10 quiet-head contacts", targetFaultIds: ["BH-HEAD-01"] } }],
+    strengthReview: [{ chapterId: "ready", label: "Ready Position", score: 88, summary: "Your preparation is organized early enough to give the forward swing time.", evidence: [{ areaId: "backlift_preparation", label: "Preparation and backlift timing", observation: "The shoulder coil is organized before the forward swing.", score: 88, confidence: 0.91, measurementBasis: "image_plane_rotation_proxy" }] }],
     movementChain: [
-      { id: "setup", label: "Setup & timing", status: "strength", score: 88, summary: "Preparation is supporting the stroke.", faultId: null, evidence: [] },
-      { id: "movement_spacing", label: "Footwork & spacing", status: "developing", score: 66, summary: "The arrival base changes between repetitions.", faultId: null, evidence: [] },
-      { id: "weight_transfer", label: "Weight transfer & leg drive", status: "developing", score: 72, summary: "The load is visible but the later drive is less consistent.", faultId: null, evidence: [] },
-      { id: "swing_connection", label: "Body-to-racket connection", status: "developing", score: 74, summary: "The sequence is visible but not fully repeatable.", faultId: null, evidence: [] },
-      { id: "contact_stability", label: "Head & contact stability", status: "priority", score: 48, summary: "The head moves before the strike window is complete.", faultId: "BH-HEAD-01", evidence: [] },
-      { id: "finish_recovery", label: "Finish & recovery", status: "developing", score: 68, summary: "The finish does not always lead directly into recovery.", faultId: null, evidence: [] },
+      { id: "ready", label: "Ready Position", status: "strength", score: 88, summary: "Preparation is supporting the stroke.", faultId: null, evidence: [] },
+      { id: "unit_turn", label: "Unit Turn", status: "developing", score: 66, summary: "The arrival base changes between repetitions.", faultId: null, evidence: [] },
+      { id: "backswing", label: "Backswing", status: "developing", score: 72, summary: "The load is visible but not always consistent.", faultId: null, evidence: [] },
+      { id: "forward_swing_contact", label: "Forward Swing & Contact", status: "priority", score: 48, summary: "The head moves before the strike window is complete.", faultId: "BH-HEAD-01", evidence: [] },
+      { id: "follow_through", label: "Follow-Through", status: "developing", score: 74, summary: "The leg drive after the load is not always consistent.", faultId: null, evidence: [] },
+      { id: "recovery", label: "Recovery", status: "developing", score: 68, summary: "The finish does not always lead directly into recovery.", faultId: null, evidence: [] },
     ],
   } as AnalysisReport["ontologyReasoning"],
   knowledgeControl: { status: "CONTROLLED", failClosed: true, policyVersion: "1.0.0", ontologyVersion: "4.1.0", manifestHash: "visual-qa-manifest", domains: {

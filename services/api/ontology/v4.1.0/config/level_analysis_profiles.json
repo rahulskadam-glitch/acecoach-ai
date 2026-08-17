@@ -12,46 +12,133 @@
   "profiles": {
     "beginner": {
       "profile_id": "LEVEL_BEGINNER_V1",
-      "default_chapter_ids": ["setup", "movement_spacing", "contact_stability"],
-      "benchmark_ladder": ["self_best_when_available", "level_matched_pattern", "simple_observation"],
-      "cluster_thresholds": {"minimum_for_pattern": 2, "minimum_for_confirmed_habit": 4, "minimum_for_self_baseline": 4},
-      "emd_thresholds": {"minimum_effect_size": 0.45, "minimum_support_rate": 0.67},
+      "default_chapter_ids": [
+        "ready",
+        "unit_turn",
+        "forward_swing_contact"
+      ],
+      "benchmark_ladder": [
+        "self_best_when_available",
+        "level_matched_pattern",
+        "simple_observation"
+      ],
+      "cluster_thresholds": {
+        "minimum_for_pattern": 2,
+        "minimum_for_confirmed_habit": 4,
+        "minimum_for_self_baseline": 4
+      },
+      "emd_thresholds": {
+        "minimum_effect_size": 0.45,
+        "minimum_support_rate": 0.67
+      },
       "fallback_mode": "simple_observation_and_encouragement",
       "feedback_rule": "Prefer recognition, preparation, balance, and usable contact. Withhold subtle sequencing claims unless evidence is unusually strong."
     },
     "developing": {
       "profile_id": "LEVEL_DEVELOPING_V1",
-      "default_chapter_ids": ["setup", "movement_spacing", "weight_transfer", "swing_connection", "contact_stability", "finish_recovery"],
-      "benchmark_ladder": ["self_best", "level_matched_pattern", "simple_observation"],
-      "cluster_thresholds": {"minimum_for_pattern": 3, "minimum_for_confirmed_habit": 5, "minimum_for_self_baseline": 6},
-      "emd_thresholds": {"minimum_effect_size": 0.4, "minimum_support_rate": 0.6},
+      "default_chapter_ids": [
+        "ready",
+        "unit_turn",
+        "backswing",
+        "forward_swing_contact",
+        "follow_through",
+        "recovery"
+      ],
+      "benchmark_ladder": [
+        "self_best",
+        "level_matched_pattern",
+        "simple_observation"
+      ],
+      "cluster_thresholds": {
+        "minimum_for_pattern": 3,
+        "minimum_for_confirmed_habit": 5,
+        "minimum_for_self_baseline": 6
+      },
+      "emd_thresholds": {
+        "minimum_effect_size": 0.4,
+        "minimum_support_rate": 0.6
+      },
       "fallback_mode": "level_matched_pattern",
       "feedback_rule": "Prioritize broad repeatable movement relationships before fine sequencing detail."
     },
     "intermediate": {
       "profile_id": "LEVEL_INTERMEDIATE_V1",
-      "default_chapter_ids": ["setup", "movement_spacing", "weight_transfer", "swing_connection", "contact_stability", "finish_recovery"],
-      "benchmark_ladder": ["self_best", "matched_cohort", "research_pattern"],
-      "cluster_thresholds": {"minimum_for_pattern": 3, "minimum_for_confirmed_habit": 5, "minimum_for_self_baseline": 8},
-      "emd_thresholds": {"minimum_effect_size": 0.35, "minimum_support_rate": 0.6},
+      "default_chapter_ids": [
+        "ready",
+        "unit_turn",
+        "backswing",
+        "forward_swing_contact",
+        "follow_through",
+        "recovery"
+      ],
+      "benchmark_ladder": [
+        "self_best",
+        "matched_cohort",
+        "research_pattern"
+      ],
+      "cluster_thresholds": {
+        "minimum_for_pattern": 3,
+        "minimum_for_confirmed_habit": 5,
+        "minimum_for_self_baseline": 8
+      },
+      "emd_thresholds": {
+        "minimum_effect_size": 0.35,
+        "minimum_support_rate": 0.6
+      },
       "fallback_mode": "matched_cohort",
       "feedback_rule": "Use self-best causal contrast whenever comparable successful and weak repetitions exist."
     },
     "advanced": {
       "profile_id": "LEVEL_ADVANCED_V1",
-      "default_chapter_ids": ["setup", "movement_spacing", "weight_transfer", "swing_connection", "contact_stability", "finish_recovery"],
-      "benchmark_ladder": ["self_best", "personal_longitudinal_baseline", "matched_cohort"],
-      "cluster_thresholds": {"minimum_for_pattern": 4, "minimum_for_confirmed_habit": 6, "minimum_for_self_baseline": 10},
-      "emd_thresholds": {"minimum_effect_size": 0.3, "minimum_support_rate": 0.65},
+      "default_chapter_ids": [
+        "ready",
+        "unit_turn",
+        "backswing",
+        "forward_swing_contact",
+        "follow_through",
+        "recovery"
+      ],
+      "benchmark_ladder": [
+        "self_best",
+        "personal_longitudinal_baseline",
+        "matched_cohort"
+      ],
+      "cluster_thresholds": {
+        "minimum_for_pattern": 4,
+        "minimum_for_confirmed_habit": 6,
+        "minimum_for_self_baseline": 10
+      },
+      "emd_thresholds": {
+        "minimum_effect_size": 0.3,
+        "minimum_support_rate": 0.65
+      },
       "fallback_mode": "personal_baseline",
       "feedback_rule": "Permit fine timing and variability insights only when context matching and measurement quality support them."
     },
     "elite": {
       "profile_id": "LEVEL_ELITE_V1",
-      "default_chapter_ids": ["setup", "movement_spacing", "weight_transfer", "swing_connection", "contact_stability", "finish_recovery"],
-      "benchmark_ladder": ["personal_longitudinal_baseline", "self_best", "validated_elite_cohort"],
-      "cluster_thresholds": {"minimum_for_pattern": 5, "minimum_for_confirmed_habit": 7, "minimum_for_self_baseline": 12},
-      "emd_thresholds": {"minimum_effect_size": 0.25, "minimum_support_rate": 0.7},
+      "default_chapter_ids": [
+        "ready",
+        "unit_turn",
+        "backswing",
+        "forward_swing_contact",
+        "follow_through",
+        "recovery"
+      ],
+      "benchmark_ladder": [
+        "personal_longitudinal_baseline",
+        "self_best",
+        "validated_elite_cohort"
+      ],
+      "cluster_thresholds": {
+        "minimum_for_pattern": 5,
+        "minimum_for_confirmed_habit": 7,
+        "minimum_for_self_baseline": 12
+      },
+      "emd_thresholds": {
+        "minimum_effect_size": 0.25,
+        "minimum_support_rate": 0.7
+      },
       "fallback_mode": "personal_baseline",
       "feedback_rule": "Focus on context-specific distributions and marginal gains; avoid generic technical prescriptions."
     }

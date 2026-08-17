@@ -7,7 +7,13 @@
     },
     {
       "name": "analysis-api",
-      "url": "http://localhost:8000"
+      "runtimeExecutable": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
+      "runtimeArgs": ["-m", "uvicorn", "app:app", "--host", "127.0.0.1", "--port", "8000"],
+      "port": 8000,
+      "cwd": "services/api",
+      "env": {
+        "PYTHONPATH": "/Users/rahulk/Desktop/workspace/web/services/api/.venv/lib/python3.12/site-packages"
+      }
     }
   ]
 }

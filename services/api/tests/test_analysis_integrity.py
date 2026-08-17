@@ -213,8 +213,8 @@ class AnalysisIntegrityTests(unittest.TestCase):
 
         self.assertEqual(result["engine_manifest"]["engineVersion"], ENGINE_VERSION)
         self.assertEqual(result["engine_manifest"]["biomechanicalProfileVersion"], PROFILE_VERSION)
-        self.assertEqual(result["frame_summary"]["biomechanicalProfile"]["metricCount"], 106)
-        self.assertEqual(len(result["frame_summary"]["biomechanicalProfile"]["metrics"]), 106)
+        self.assertEqual(result["frame_summary"]["biomechanicalProfile"]["metricCount"], len(METRIC_SPECS))
+        self.assertEqual(len(result["frame_summary"]["biomechanicalProfile"]["metrics"]), len(METRIC_SPECS))
         self.assertEqual(len(result["frame_summary"]["biomechanicalProfile"]["linkages"]), 6)
         self.assertEqual(result["frame_summary"]["analysisContext"]["shotSituation"], "controlled_practice")
         self.assertEqual(result["frame_summary"]["analysisContext"]["source"], "athlete_supplied")
@@ -264,21 +264,25 @@ class AnalysisIntegrityTests(unittest.TestCase):
         self.assertIn("repetition_insights", result)
         self.assertFalse(video_path.exists())
 
-    def test_biomechanical_registry_has_exact_phase_distribution(self) -> None:
-        expected = {
-            "preparation": 16,
-            "backswing": 18,
-            "loading": 18,
-            "acceleration": 22,
-            "contact": 16,
-            "follow_through": 16,
-        }
-        self.assertEqual(len(METRIC_SPECS), 106)
-        self.assertEqual(len({metric.id for metric in METRIC_SPECS}), 106)
-        self.assertEqual(
-            {phase: sum(metric.phase == phase for metric in METRIC_SPECS) for phase in expected},
-            expected,
-        )
+    def test_biomechanical_registry_has_no_artificial_size_constraint(self) -> None:
+        # No hardcoded target count on purpose: the registry's size should be
+        # whatever falls out of covering the six real stroke phases without
+        # duplication, not a number chosen in advance.
+        canonical_phases = {"ready", "unit_turn", "backswing", "forward_swing_contact", "follow_through", "recovery"}
+        self.assertEqual({metric.phase for metric in METRIC_SPECS}, canonical_phases)
+        self.assertEqual(len({metric.id for metric in METRIC_SPECS}), len(METRIC_SPECS))
+        for phase in canonical_phases:
+            self.assertGreater(sum(metric.phase == phase for metric in METRIC_SPECS), 0, f"{phase} has no metrics")
+
+    def test_biomechanical_registry_has_no_duplicate_measurements(self) -> None:
+        # Guards against the exact-duplicate bug found during the 2026-08-15
+        # rebuild (two ids computing the identical method/channel/start/end).
+        seen: dict[tuple[str, str, str, str], str] = {}
+        for metric in METRIC_SPECS:
+            key = (metric.method, metric.channel, metric.start, metric.end)
+            if key in seen:
+                self.fail(f"{metric.id} duplicates {seen[key]}: both compute {key}")
+            seen[key] = metric.id
 
     def test_two_handed_backhand_scores_knee_load_and_drive_as_separate_events(self) -> None:
         result = compute_frame_metrics(self.frames, self.fps, "right")
@@ -296,7 +300,7 @@ class AnalysisIntegrityTests(unittest.TestCase):
         first = build_biomechanical_profile(result, "forehand", phases, confidence)
         second = build_biomechanical_profile(result, "forehand", phases, confidence)
         self.assertEqual(first, second)
-        self.assertEqual(first["metricCount"], 106)
+        self.assertEqual(first["metricCount"], len(METRIC_SPECS))
         self.assertGreater(first["availableMetricCount"], 80)
         self.assertEqual(len(first["phases"]), 6)
         self.assertEqual(len(first["linkages"]), 6)

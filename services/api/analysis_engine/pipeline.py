@@ -25,7 +25,6 @@ from .pose import POSE_MODEL_VERSION, extract_pose_frames
 from .signal_analytics import SIGNAL_ANALYTICS_VERSION
 from .ontology_reasoner import ground_report_in_ontology, ontology, ontology_manifest_hash
 from .sport_rules import KNOWLEDGE_VERSION, build_coaching, build_practice_plan
-from .stroke_guide import GUIDE_EVIDENCE_ID, STROKE_GUIDE_VERSION, guide_for
 from .temporal import TEMPORAL_MODEL_VERSION, RepetitionWindow
 from .video import download_video
 

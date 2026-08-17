@@ -28,7 +28,7 @@ export default function SupportRequestForm() {
       </div>
       {message ? <div role="status" className="mt-5 flex gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800"><CheckCircle2 className="h-4 w-4 shrink-0" />{message}</div> : null}
       {error ? <div role="alert" className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">{error}</div> : null}
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-4"><p className="max-w-xl text-xs leading-5 text-slate-500">Basic page and device details are included automatically to help us investigate. Your video is not attached.</p><button type="submit" disabled={pending} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[#071b2d] px-5 py-3 text-sm font-semibold text-white hover:bg-[#0d2b42] disabled:cursor-not-allowed disabled:opacity-60">{pending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <LifeBuoy className="h-4 w-4" />}{pending ? "Sending…" : "Send message"}</button></div>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4"><p className="max-w-xl text-xs leading-5 text-slate-500">Basic page and device details are included automatically to help us investigate. Your video is not attached.</p><button type="submit" disabled={pending} className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-[#123049] px-5 py-3 text-sm font-semibold text-white hover:bg-[#1a4060] disabled:cursor-not-allowed disabled:opacity-60">{pending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <LifeBuoy className="h-4 w-4" />}{pending ? "Sending…" : "Send message"}</button></div>
     </form>
   );
 }

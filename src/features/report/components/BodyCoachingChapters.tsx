@@ -20,14 +20,14 @@ import { concise, plainLanguage } from "../model/plain-language";
 type BodyReview = NonNullable<NonNullable<AnalysisReport["frameSummary"]>["bodyRegionReview"]>[number];
 
 const CHAPTERS = [
-  { id: "head", title: "Head & eyes", icon: ScanFace, regions: ["head"], area: "body_position", phase: "contact", cue: "See the ball through the strike." },
-  { id: "hands", title: "Hands & space", icon: Hand, regions: ["hitting_hand", "support_hand", "arms", "hitting_arm", "support_arm"], area: "contact_spacing", phase: "contact", cue: "Make space. Meet it in front." },
-  { id: "grip", title: "Grip & racket", icon: CircleHelp, regions: [], area: "", phase: "contact", cue: "Confirm the grip before the next set." },
-  { id: "backlift", title: "Shoulders & backlift", icon: Activity, regions: ["shoulders", "trunk", "hitting_shoulder", "support_shoulder"], area: "backlift_preparation", phase: "preparation", cue: "Turn together. Let the racket organize behind you." },
-  { id: "hips", title: "Hips & transfer", icon: Gauge, regions: ["pelvis", "balance", "hitting_hip", "support_hip"], area: "lower_body_loading", phase: "loading", cue: "Load first. Transfer through the shot." },
-  { id: "knees", title: "Knees & height", icon: PersonStanding, regions: ["left_leg", "right_leg", "hitting_leg", "support_leg", "lower_body"], area: "lower_body_loading", phase: "loading", cue: "Stay low into the hit. Rise after the ball." },
-  { id: "feet", title: "Feet & base", icon: Footprints, regions: ["base", "hitting_ankle", "support_ankle"], area: "footwork_base", phase: "preparation", cue: "Adjust, set, hit, recover." },
-  { id: "finish", title: "Finish & balance", icon: Sparkles, regions: ["balance", "repeatability", "timing"], area: "ending_position", phase: "follow_through", cue: "Finish balanced, then recover." },
+  { id: "head", title: "Head & eyes", icon: ScanFace, regions: ["head"], area: "body_position", phase: "forward_swing_contact", cue: "See the ball through the strike." },
+  { id: "hands", title: "Hands & space", icon: Hand, regions: ["hitting_hand", "support_hand", "arms", "hitting_arm", "support_arm"], area: "contact_spacing", phase: "forward_swing_contact", cue: "Make space. Meet it in front." },
+  { id: "grip", title: "Grip & racket", icon: CircleHelp, regions: [], area: "", phase: "forward_swing_contact", cue: "Confirm the grip before the next set." },
+  { id: "backlift", title: "Shoulders & backlift", icon: Activity, regions: ["shoulders", "trunk", "hitting_shoulder", "support_shoulder"], area: "backlift_preparation", phase: "ready", cue: "Turn together. Let the racket organize behind you." },
+  { id: "hips", title: "Hips & transfer", icon: Gauge, regions: ["pelvis", "balance", "hitting_hip", "support_hip"], area: "lower_body_loading", phase: "backswing", cue: "Load first. Transfer through the shot." },
+  { id: "knees", title: "Knees & height", icon: PersonStanding, regions: ["left_leg", "right_leg", "hitting_leg", "support_leg", "lower_body"], area: "lower_body_loading", phase: "backswing", cue: "Stay low into the hit. Rise after the ball." },
+  { id: "feet", title: "Feet & base", icon: Footprints, regions: ["base", "hitting_ankle", "support_ankle"], area: "footwork_base", phase: "unit_turn", cue: "Adjust, set, hit, recover." },
+  { id: "finish", title: "Finish & balance", icon: Sparkles, regions: ["balance", "repeatability", "timing"], area: "ending_position", phase: "recovery", cue: "Finish balanced, then recover." },
 ] as const;
 
 const STATUS = {
@@ -54,10 +54,12 @@ function actionCue(actionType: string, id: string, fallback: string) {
 
 function phaseTime(report: AnalysisReport, phase: string) {
   const aliases: Record<string, string[]> = {
-    preparation: ["ready", "preparation"],
-    loading: ["loading"],
-    contact: ["contact_proxy", "contact"],
-    follow_through: ["follow_through", "recovery"],
+    ready: ["ready"],
+    unit_turn: ["preparation"],
+    backswing: ["loading"],
+    forward_swing_contact: ["contact_proxy", "contact"],
+    follow_through: ["follow_through"],
+    recovery: ["recovery"],
   };
   return report.movementTimeline?.find((item) => aliases[phase]?.includes(item.phase))?.timestampSeconds ?? null;
 }
@@ -161,7 +163,7 @@ export default function BodyCoachingChapters({ report, actionType }: { report: A
           </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
-            {typeof selected.timestampSeconds === "number" ? <button type="button" onClick={showOnVideo} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#071b2d] px-4 text-sm font-semibold text-white hover:bg-[#0d2b42]"><Eye className="h-4 w-4" />Show this at {selected.timestampSeconds.toFixed(2)}s</button> : null}
+            {typeof selected.timestampSeconds === "number" ? <button type="button" onClick={showOnVideo} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#123049] px-4 text-sm font-semibold text-white hover:bg-[#1a4060]"><Eye className="h-4 w-4" />Show this at {selected.timestampSeconds.toFixed(2)}s</button> : null}
             <p className="text-xs leading-5 text-slate-500">One chapter at a time. The numbers are evidence, not the coaching message.</p>
           </div>
         </article>

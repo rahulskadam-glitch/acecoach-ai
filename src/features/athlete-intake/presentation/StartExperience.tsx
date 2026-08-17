@@ -265,30 +265,30 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
   }
 
   const quality = video ? qualityPresentation(video.quality) : null;
-  const inputClass = "mt-2 min-h-12 w-full rounded-xl border border-[#dce5df] bg-white px-3.5 text-sm text-slate-900 outline-none transition focus:border-[#08715b] focus:ring-2 focus:ring-[#79d5ff]/30";
+  const inputClass = "mt-2 min-h-12 w-full rounded-xl border border-[#dce5df] bg-white px-3.5 text-sm text-slate-900 outline-none transition focus:border-[#2fa87f] focus:ring-2 focus:ring-[#5aa3d8]/30";
 
   return (
     <div className="mx-auto max-w-5xl">
       <div className="max-w-2xl">
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#08715b]">{sport.name} analysis</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#2fa87f]">{sport.name} analysis</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-[-0.035em] text-slate-950">Which stroke are we working on?</h1>
         <p className="mt-3 text-base leading-7 text-slate-600">Choose the stroke, then record or add a short clip.</p>
       </div>
 
       <div className="mt-10 space-y-6">
         <section className="ath-card p-5 sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#08715b]">1 · Pick a stroke</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#2fa87f]">1 · Pick a stroke</p>
           <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {sport.actions.map((action) => <button key={action.id} type="button" aria-pressed={movement === action.id} onClick={() => setMovement(action.id)} className={`min-h-20 rounded-2xl border p-3 text-left transition ${movement === action.id ? "border-[#071b2d] bg-[#071b2d] text-white shadow-lg" : "border-[#dce5df] bg-[#f6f8f5] text-slate-800 hover:border-[#87ad99] hover:bg-white"}`}><Target className={`h-4 w-4 ${movement === action.id ? "text-[#d8ff52]" : "text-[#08715b]"}`} /><span className="mt-3 block text-sm font-semibold">{action.label}</span></button>)}
+            {sport.actions.map((action) => <button key={action.id} type="button" aria-pressed={movement === action.id} onClick={() => setMovement(action.id)} className={`min-h-20 rounded-2xl border p-3 text-left transition ${movement === action.id ? "border-[#123049] bg-[#123049] text-white shadow-lg" : "border-[#dce5df] bg-[#f6f8f5] text-slate-800 hover:border-[#87ad99] hover:bg-white"}`}><Target className={`h-4 w-4 ${movement === action.id ? "text-[#d7e022]" : "text-[#2fa87f]"}`} /><span className="mt-3 block text-sm font-semibold">{action.label}</span></button>)}
           </div>
         </section>
 
         {movement ? <section className="ath-card p-5 sm:p-8">
-          <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#08715b]">2 · Add video</p><h2 className="mt-2 text-2xl font-semibold text-slate-950">Record {selectedMovement?.label.toLowerCase()}</h2></div><span className="shrink-0 rounded-full bg-[#eaf0ec] px-3 py-1.5 text-xs font-medium text-[#075f4e]">≤ 30 sec</span></div>
+          <div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#2fa87f]">2 · Add video</p><h2 className="mt-2 text-2xl font-semibold text-slate-950">Record {selectedMovement?.label.toLowerCase()}</h2></div><span className="shrink-0 rounded-full bg-[#eaf0ec] px-3 py-1.5 text-xs font-medium text-[#075f4e]">≤ 30 sec</span></div>
           {!video ? <div className="mt-6 grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
-            <div className="relative min-h-60 overflow-hidden rounded-2xl bg-[#071B2D] p-5 text-white">
+            <div className="relative min-h-60 overflow-hidden rounded-2xl bg-[#123049] p-5 text-white">
               <div className="absolute inset-x-8 bottom-7 top-16 border border-white/15 [transform:perspective(420px)_rotateX(58deg)]"><div className="absolute inset-x-0 top-1/2 border-t border-white/20" /><div className="absolute bottom-0 left-1/2 top-0 border-l border-white/20" /></div>
-              <div className="relative flex items-center gap-2 text-sm font-semibold"><Camera className="h-4 w-4 text-[#D8FF52]" />Frame the full movement</div>
+              <div className="relative flex items-center gap-2 text-sm font-semibold"><Camera className="h-4 w-4 text-[#d7e022]" />Frame the full movement</div>
               <div className="absolute bottom-6 left-1/2 h-28 w-14 -translate-x-1/2"><span className="absolute left-4 top-0 h-8 w-8 rounded-full bg-[#8AD8FF]" /><span className="absolute left-7 top-8 h-14 border-l-[6px] border-white" /><span className="absolute left-1 top-11 w-12 rotate-12 border-t-[5px] border-white" /><span className="absolute bottom-0 left-2 h-12 rotate-[24deg] border-l-[6px] border-white" /><span className="absolute bottom-0 right-1 h-12 -rotate-[24deg] border-r-[6px] border-white" /></div>
             </div>
             <div>
@@ -314,7 +314,7 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
         </section> : null}
 
         {movement ? <details className="ath-card group p-5 sm:p-8">
-          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4"><span><span className="block text-xs font-semibold uppercase tracking-[0.16em] text-[#08715b]">Optional</span><span className="mt-1 block text-lg font-semibold text-slate-950">Add shot context</span></span><span className="rounded-full bg-[#eaf0ec] px-3 py-1.5 text-xs font-semibold text-[#075f4e] group-open:hidden">Add details</span><span className="hidden rounded-full bg-[#eaf0ec] px-3 py-1.5 text-xs font-semibold text-[#075f4e] group-open:inline">Hide</span></summary>
+          <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-4"><span><span className="block text-xs font-semibold uppercase tracking-[0.16em] text-[#2fa87f]">Optional</span><span className="mt-1 block text-lg font-semibold text-slate-950">Add shot context</span></span><span className="rounded-full bg-[#eaf0ec] px-3 py-1.5 text-xs font-semibold text-[#075f4e] group-open:hidden">Add details</span><span className="hidden rounded-full bg-[#eaf0ec] px-3 py-1.5 text-xs font-semibold text-[#075f4e] group-open:inline">Hide</span></summary>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="text-sm font-medium text-slate-700">Camera angle<select value={cameraAngle} onChange={(event) => setCameraAngle(event.target.value)} className={inputClass}><option value="unknown">Not sure</option><option value="side">Side view</option><option value="rear">Rear view</option><option value="front">Front view</option><option value="diagonal">Diagonal view</option></select></label>
             <label className="text-sm font-medium text-slate-700">Shot situation<select value={shotSituation} onChange={(event) => setShotSituation(event.target.value)} className={inputClass}><option value="controlled_practice">Controlled practice or feed</option><option value="neutral_rally">Neutral rally ball</option><option value="attacking">Attacking ball</option><option value="defensive_on_run">Defensive or on the run</option><option value="return_of_serve">Return of serve</option><option value="unknown">Not sure</option></select></label>
@@ -324,7 +324,7 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
         </details> : null}
 
         {movement ? <section className="ath-card p-6 sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#08715b]">3 · Player details</p><h2 className="mt-2 text-2xl font-semibold text-slate-950">Personalize the coaching</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#2fa87f]">3 · Player details</p><h2 className="mt-2 text-2xl font-semibold text-slate-950">Personalize the coaching</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             <label className="text-sm font-medium text-slate-700">Age band <span className="text-rose-600">*</span><select value={ageBand} onChange={(event) => { setAgeBand(normalizePlayerAgeBand(event.target.value)); setGuardianConsent(false); }} className={inputClass}><option value="">Choose age band</option>{PLAYER_AGE_BANDS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select><span className="mt-2 block text-xs font-normal leading-5 text-slate-500">Athlentra Tennis is available to players aged 13 and older.</span></label>
             <label className="text-sm font-medium text-slate-700">Playing level <span className="text-rose-600">*</span><select value={playingLevel} onChange={(event) => setPlayingLevel(event.target.value)} className={inputClass}><option value="">Choose level</option><option value="new">New to the sport</option><option value="beginner">Beginner</option><option value="developing">Developing</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option><option value="competitive">Competitive</option><option value="coach_professional">Coach / professional</option></select></label>
@@ -349,7 +349,7 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
             aria-disabled={!ready}
             className={`mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-6 text-sm font-semibold transition sm:mt-0 sm:w-auto ${
               requirementsMet
-                ? "bg-[#071b2d] text-white shadow-[0_10px_24px_rgba(7,27,45,0.2)] hover:bg-[#12324a] focus-visible:ring-2 focus-visible:ring-[#071b2d] focus-visible:ring-offset-2"
+                ? "bg-[#123049] text-white shadow-[0_10px_24px_rgba(7,27,45,0.2)] hover:bg-[#12324a] focus-visible:ring-2 focus-visible:ring-[#123049] focus-visible:ring-offset-2"
                 : "cursor-not-allowed bg-slate-200 text-slate-500"
             } ${busy ? "cursor-wait" : ""}`}
           >

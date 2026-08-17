@@ -1,0 +1,157 @@
+{
+  "identifier" : "E2B9611D",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "1.99",
+      "familyShareable" : false,
+      "internalID" : "6478901238",
+      "localizations" : [
+        {
+          "description" : "1 complete 60fps tennis stroke video analysis with 3DMA telemetry and report.",
+          "displayName" : "Single Video Analysis Pass",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.athlentra.tennis.single_pass",
+      "referenceName" : "Single Video Pass",
+      "type" : "Consumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6478901234",
+    "_developerTeamID" : "MJ46UZ24P9",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 745500000,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21498101",
+      "localizations" : [
+        {
+          "description" : "Athlentra Pro Biomechanical Passes",
+          "displayName" : "Athlentra Pro Passes",
+          "locale" : "en_US"
+        }
+      ],
+      "name" : "Athlentra Pro Passes",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "9.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6478901235",
+          "introductoryOffer" : {
+            "internalID" : "6478901239",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1M"
+          },
+          "localizations" : [
+            {
+              "description" : "Unlimited 60fps tennis stroke audits, 3DMA telemetry, and AI Coach (1st Month Free).",
+              "displayName" : "Pro Athlete Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.athlentra.tennis.pro_monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Pro Athlete Monthly",
+          "subscriptionGroupID" : "21498101",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "99.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6478901236",
+          "introductoryOffer" : {
+            "internalID" : "6478901240",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1M"
+          },
+          "localizations" : [
+            {
+              "description" : "Annual unlimited 60fps tennis stroke audits (1st Month Free, Save 17%).",
+              "displayName" : "Pro Athlete Annual",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.athlentra.tennis.pro_yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Pro Athlete Annual",
+          "subscriptionGroupID" : "21498101",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

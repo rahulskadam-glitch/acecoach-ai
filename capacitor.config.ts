@@ -23,12 +23,12 @@ const config: CapacitorConfig = {
   },
   ...(serverUrl
     ? {
-        server: {
-          url: serverUrl,
-          cleartext: false,
-          allowNavigation: [new URL(serverUrl).host],
-        },
-      }
+      server: {
+        url: serverUrl,
+        cleartext: false,
+        allowNavigation: [new URL(serverUrl).host],
+      },
+    }
     : {}),
 };
 

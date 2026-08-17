@@ -11,7 +11,7 @@ API_ROOT = Path(__file__).resolve().parents[1]
 if str(API_ROOT) not in sys.path:
     sys.path.insert(0, str(API_ROOT))
 
-from analysis_engine.ontology_reasoner import _canonical_level, _dosage, _evaluate_fault_evidence, _fault_candidates, _validated_self_best_contrast
+from analysis_engine.ontology_reasoner import _canonical_level, _dosage, _evaluate_fault_evidence, _fault_candidates, _validated_self_best_contrast, canonical_stage_for_phase_origin
 from analysis_engine.sport_rules import build_practice_plan
 from ontology_runtime.acecoach_ontology.coaching_engine import compile_visual_story, insight_priority
 from ontology_runtime.acecoach_ontology.knowledge_governance import (
@@ -253,6 +253,84 @@ class OntologyReasoningContractTests(unittest.TestCase):
         self.assertEqual(ranked, [])
         ambiguous = [item for item in rejected if "non_discriminative_evidence" in item["reasons"]]
         self.assertGreaterEqual(len(ambiguous), 2)
+
+    def test_all_stroke_fault_phase_origins_resolve_to_authored_stage_guides(self) -> None:
+        """Guards stage_guides.json against drifting from the fault ontology it narrates.
+
+        Every fault's phase_origin, across all 8 supported strokes, must fold
+        onto one of the 6 canonical stages (via canonical_stage_for_phase_origin,
+        the same fold motion-model.ts's PHASE_ALIASES performs on the frontend),
+        and that stage must either narrate the fault in stage_guides.json's
+        commonMistakes, or (if the fault ontology genuinely has no fault at that
+        exact gate) carry an explicit coverageGap note — so a newly added fault,
+        a re-coded phase_origin, or a silently-dropped stage can't go unnoticed.
+        """
+        guides = json.loads((ONTOLOGY_ROOT / "config" / "stage_guides.json").read_text())
+        canonical_order = set(guides["canonicalStageOrder"])
+        self.assertEqual(canonical_order, {"ready", "unit_turn", "backswing", "forward_swing_contact", "follow_through", "recovery"})
+
+        all_strokes = ["forehand", "two_handed_backhand", "one_handed_backhand", "slice_backhand", "serve", "forehand_volley", "backhand_volley", "overhead"]
+        self.assertEqual(set(guides["strokes"].keys()), set(all_strokes))
+
+        ALLOWED_AREA_IDS = {
+            "backlift_preparation",
+            "footwork_base",
+            "lower_body_loading",
+            "lower_body_extension",
+            "hand_swing_path",
+            "body_position",
+            "contact_spacing",
+            "ending_position",
+        }
+
+        for stroke in all_strokes:
+            stroke_entry = guides["strokes"][stroke]
+            self.assertTrue(stroke_entry.get("stylePrinciple"), f"{stroke} is missing a non-empty stylePrinciple")
+            stages_authored = stroke_entry.get("stages", {})
+            self.assertEqual(set(stages_authored.keys()), canonical_order, f"{stroke} is missing a canonical stage entry in stages")
+            faults = json.loads((ONTOLOGY_ROOT / "config" / "faults" / f"{stroke}.json").read_text())
+            self.assertGreater(len(faults), 0)
+            for fault in faults:
+                stage = canonical_stage_for_phase_origin(fault["phase_origin"])
+                self.assertIn(stage, canonical_order, f"{fault['fault_id']} resolved to an unknown stage {stage!r}")
+                guide_entry = stages_authored[stage]
+                mentioned_fault_ids = {item["faultId"] for item in guide_entry.get("commonMistakes", [])}
+                self.assertIn(
+                    fault["fault_id"], mentioned_fault_ids,
+                    f"{fault['fault_id']} (phase_origin={fault['phase_origin']} -> {stage}) is not narrated in "
+                    f"stage_guides.json's {stroke}.{stage}.commonMistakes",
+                )
+            # Any stage left with no commonMistakes must explain why, rather than silently having nothing.
+            for stage, entry in stages_authored.items():
+                if not entry.get("commonMistakes"):
+                    self.assertTrue(
+                        entry.get("coverageGap"),
+                        f"{stroke}.{stage} has no commonMistakes and no coverageGap explaining the omission",
+                    )
+                # Checkpoints validation
+                self.assertIn("coachingCue", entry, f"{stroke}.{stage} missing coachingCue")
+                self.assertIn("whatIsMeasured", entry, f"{stroke}.{stage} missing whatIsMeasured")
+                self.assertIn("checkpoints", entry, f"{stroke}.{stage} missing checkpoints list")
+                for cp in entry.get("checkpoints", []):
+                    self.assertTrue(cp.get("bodyPart"), f"{stroke}.{stage} checkpoint missing bodyPart")
+                    self.assertTrue(cp.get("target"), f"{stroke}.{stage} checkpoint missing target")
+                    area_id = cp.get("areaId")
+                    if area_id is not None:
+                        self.assertIn(
+                            area_id, ALLOWED_AREA_IDS,
+                            f"{stroke}.{stage} checkpoint uses unallowed areaId {area_id!r}"
+                        )
+
+        # Cross-check every sourceId and drillId referenced in stage_guides.json is real.
+        research_sources = {item["source_id"] for item in json.loads((ONTOLOGY_ROOT / "config" / "research_sources.json").read_text())}
+        drill_ids = {item["drill_id"] for item in json.loads((ONTOLOGY_ROOT / "config" / "drills.json").read_text())}
+        for stroke, stroke_entry in guides["strokes"].items():
+            stages_authored = stroke_entry.get("stages", {})
+            for stage, entry in stages_authored.items():
+                for source_id in entry.get("sourceIds", []):
+                    self.assertIn(source_id, research_sources, f"{stroke}.{stage} cites unknown source {source_id!r}")
+                for drill_id in entry.get("drillIds", []):
+                    self.assertIn(drill_id, drill_ids, f"{stroke}.{stage} references unknown drill {drill_id!r}")
 
 
 if __name__ == "__main__":
