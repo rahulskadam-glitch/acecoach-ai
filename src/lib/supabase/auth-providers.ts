@@ -32,19 +32,15 @@ export async function getAvailableAuthProviders(): Promise<SocialProviderId[]> {
     const response = await fetch(`${url}/auth/v1/settings`, {
       headers: { apikey: key },
       cache: "no-store",
-      signal: AbortSignal.timeout(4_000),
-    });
-    if (!response.ok) {
-      return process.env.NODE_ENV === "development" ? configured : [];
-    }
-    const settings = (await response.json()) as AuthSettings;
-    const available = availableProviderIds(configured, settings);
-    // In development mode, if providers are listed in NEXT_PUBLIC_AUTH_PROVIDERS, show them for setup/testing
-    if (available.length === 0 && process.env.NODE_ENV === "development") {
+      signal: AbortSignal.timeout(2_000),
+    }).catch(() => null);
+
+    if (!response || !response.ok) {
       return configured;
     }
-    return available;
+    const settings = (await response.json().catch(() => null)) as AuthSettings | null;
+    return availableProviderIds(configured, settings);
   } catch {
-    return process.env.NODE_ENV === "development" ? configured : [];
+    return configured;
   }
 }
