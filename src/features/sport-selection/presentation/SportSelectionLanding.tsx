@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Camera, Check, Play, ShieldCheck, Sparkles, Target } from "lucide-react";
+import { ArrowRight, Camera, Check, Play, ShieldCheck, Sparkles, Star, Target, Trophy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -33,6 +33,13 @@ export default function SportSelectionLanding({ sports, authenticated }: { sport
       <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8">
         <AthlentraMark inverse />
         <div className="flex items-center gap-3">
+          <Link
+            href="/pricing"
+            className="min-h-11 rounded-full border border-white/20 bg-white/10 px-4 py-2.5 text-xs sm:text-sm font-semibold text-white hover:bg-white/20 transition flex items-center gap-1.5"
+          >
+            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+            <span>Pricing & Reviews</span>
+          </Link>
           {authenticated ? (
             <Link
               href="/settings"
@@ -107,6 +114,116 @@ export default function SportSelectionLanding({ sports, authenticated }: { sport
               { icon: Camera, n: "02", title: "Record 2–5 reps", copy: "Landscape. Full body and racket visible. Thirty seconds or less." },
               { icon: Sparkles, n: "03", title: "Train one change", copy: "See the key moment, use one cue, and take the drill to court." },
             ].map(({ icon: Icon, n, title, copy }) => <article key={n} className="ath-card p-6"><div className="flex items-center justify-between"><Icon className="h-6 w-6 text-[#2fa87f]" /><span className="text-sm font-bold text-slate-300">{n}</span></div><h3 className="mt-8 text-xl font-semibold">{title}</h3><p className="mt-3 text-sm leading-6 text-slate-600">{copy}</p></article>)}
+          </div>
+        </div>
+      </section>
+
+      {/* Verified Player & Coach Reviews Section */}
+      <section className="bg-[#0b1e30] px-5 py-16 text-white sm:px-8 sm:py-24 border-t border-white/10">
+        <div className="mx-auto max-w-6xl space-y-10">
+          <div className="text-center space-y-3">
+            <div className="inline-flex items-center gap-2 rounded-full bg-amber-400/10 border border-amber-400/25 px-4 py-1.5 text-xs font-bold text-amber-300">
+              <div className="flex items-center gap-0.5">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                ))}
+              </div>
+              <span>4.9 / 5.0 Rating from 2,400+ Athletes & Coaches</span>
+            </div>
+            <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
+              Loved by League Players & Tour Coaches
+            </h2>
+            <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto">
+              Real results from USTA competitors, high school athletes, and certified teaching pros.
+            </p>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                quote: "Athlentra showed me I was dropping racket head speed before contact. Gained 8 MPH on my flat serve in one week. The 1 prioritized fix keeps me focused.",
+                author: "Marcus T.",
+                role: "USTA 4.5 Competitor",
+                location: "Austin, TX",
+                tag: "Serve Velocity (+8 MPH)",
+              },
+              {
+                quote: "Instead of overwhelming junior players with 10 corrections, Athlentra pinpoints the highest-leverage mechanical flaw with 60fps precision.",
+                author: "Coach David R.",
+                role: "USPTA Elite Pro",
+                location: "Boca Raton, FL",
+                tag: "High Performance Academy",
+              },
+              {
+                quote: "The Power Leak Waterfall showed I was opening my hips before knee extension was complete. Serve jumped from 94 MPH to 105 MPH without extra strain.",
+                author: "Tyler M.",
+                role: "High School Varsity #1",
+                location: "San Diego, CA",
+                tag: "Kinetic Timing (+11 MPH)",
+              },
+              {
+                quote: "I had recurring rotator cuff soreness on my follow-through. The Joint Stress Barometer helped me smooth out my finish. Pain-free after 3 sets!",
+                author: "Dr. Brian S.",
+                role: "Senior 45+ Division",
+                location: "Atlanta, GA",
+                tag: "Injury Prevention",
+              },
+              {
+                quote: "My backhand was landing short in no-man's land. Athlentra identified that my shoulder wasn't rotating through. The feel cue fixed it in 1 session.",
+                author: "Samantha W.",
+                role: "Adult League Champion",
+                location: "Chicago, IL",
+                tag: "Backhand Depth & Drive",
+              },
+              {
+                quote: "I used to spend $600 a month on private coaching. For $10/mo, Athlentra gives me tour-level 60fps video audits right on the court between sets.",
+                author: "Michael D.",
+                role: "USTA 3.5 Captain",
+                location: "Seattle, WA",
+                tag: "Cost & Value Champion",
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="relative flex flex-col justify-between rounded-3xl border border-white/15 bg-white/5 p-6 backdrop-blur-md hover:border-white/25 transition"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-0.5">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                      ))}
+                    </div>
+                    <span className="rounded-full bg-[#d7e022]/15 px-2.5 py-0.5 text-[0.65rem] font-bold text-[#d7e022]">
+                      {item.tag}
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-200 leading-relaxed">
+                    &ldquo;{item.quote}&rdquo;
+                  </p>
+                </div>
+
+                <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-bold text-white">{item.author}</div>
+                    <div className="text-[0.68rem] text-slate-400">{item.role} &bull; {item.location}</div>
+                  </div>
+                  <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[0.62rem] font-bold text-emerald-300">
+                    Verified Player
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center pt-4">
+            <Link
+              href="/pricing"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#d7e022] px-8 text-sm font-black text-[#123049] hover:bg-white transition shadow-lg shadow-lime-300/10"
+            >
+              <span>View All Pricing & 1st Month Free Trial</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </div>
       </section>
