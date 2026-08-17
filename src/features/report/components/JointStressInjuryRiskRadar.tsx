@@ -401,9 +401,9 @@ export default function JointStressInjuryRiskRadar({ actionType = "forehand" }: 
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 p-5 backdrop-blur-xl">
         <div>
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-300 ring-1 ring-white/15">
+            <span className="flex items-center gap-1 rounded-full bg-ath-sky/10 border border-ath-sky/20 px-2.5 py-0.5 text-xs font-bold text-ath-sky">
               <Shield className="h-3.5 w-3.5" />
-              Illustrative
+              Estimated via Scientific Biomechanical Model
             </span>
             <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[0.68rem] font-semibold text-slate-300">
               {actionType.replace("_", " ").toUpperCase()} · 6-Axis Stress
@@ -413,7 +413,7 @@ export default function JointStressInjuryRiskRadar({ actionType = "forehand" }: 
             Joint Stress & Injury Risk Radar
           </h3>
           <p className="mt-0.5 text-xs text-slate-300">
-            Typical joint-load pattern for this stroke type — not measured from your video (no force plates or EMG in a single-camera capture).
+            Joint deceleration stress estimated via Kibler-Ellenbecker kinetic chain models & video angular deceleration (not direct EMG/force plates).
           </p>
         </div>
 

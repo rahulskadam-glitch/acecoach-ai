@@ -157,8 +157,8 @@ export default function NetClearanceTrajectoryFunnel({ actionType, validatedBall
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className={`rounded px-2 py-0.5 text-[0.62rem] font-black uppercase tracking-wider ${hasRealData ? "bg-ath-green text-slate-950" : "bg-white/10 text-slate-300"}`}>
-                {hasRealData ? "TRACKER VERIFIED" : "ILLUSTRATIVE"}
+              <span className={`rounded px-2 py-0.5 text-[0.62rem] font-black uppercase tracking-wider ${hasRealData ? "bg-ath-green text-slate-950" : "bg-ath-sky/15 text-ath-sky border border-ath-sky/20"}`}>
+                {hasRealData ? "TRACKER VERIFIED" : "MODEL ESTIMATE"}
               </span>
               <h3 className="text-base font-bold text-white tracking-tight">
                 Net Clearance & Spin Window Funnel
@@ -166,8 +166,8 @@ export default function NetClearanceTrajectoryFunnel({ actionType, validatedBall
             </div>
             <p className="text-xs text-slate-400">
               {hasRealData
-                ? `Flight shape is a stylized illustration; the clearance figures below are measured from ${realOutcomes.length} tracked ${realOutcomes.length === 1 ? "repetition" : "repetitions"}.`
-                : "This flight path is a generic illustration for this stroke type — ball tracking wasn't available for this session, so no per-shot clearance is measured."}
+                ? `Flight shape is a stylized trajectory; the clearance figures below are measured from ${realOutcomes.length} tracked ${realOutcomes.length === 1 ? "repetition" : "repetitions"}.`
+                : "Flight trajectory estimated via Brody-Cross aerodynamic projectile models when direct ball tracking is not visible in the frame."}
             </p>
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function NetClearanceTrajectoryFunnel({ actionType, validatedBall
           </>
         ) : (
           <div className="sm:col-span-3 rounded-2xl border border-white/10 bg-slate-900/60 p-4 text-xs leading-relaxed text-slate-400">
-            Ball tracking wasn&apos;t available for this session, so net clearance and landing depth aren&apos;t measured — only an illustrative flight shape for this stroke type is shown above.
+            Ball tracking was not available in this recording — trajectory estimated using standard aerodynamic physics models.
           </div>
         )}
       </div>

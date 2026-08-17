@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import type { AnalysisReport } from "@/modules/analysis/types";
 import { plainLanguage } from "../model/plain-language";
 
+import { computePlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 import { resolveThreePracticeDrills } from "../model/practice-drills";
 
 type TennisBiomechanicsIndexProps = {
@@ -34,6 +35,11 @@ export default function TennisBiomechanicsIndex({
   // Real per-area scores from the engine (not a fabricated multiplier of the overall score).
   const coachingAreas = (report.coachingAreas ?? []).slice(0, 3);
 
+  // Compute sophisticated, player-specific video biomechanics derived from 60fps keypoints
+  const kinetics = useMemo(() => {
+    return computePlayerBiomechanicalProfile(report, movementName);
+  }, [report, movementName]);
+
   // Priority & Strength — no fallback content when the engine found none; show that honestly.
   const topPriority = report.priorities && report.priorities.length > 0 ? report.priorities[0] : null;
   const topStrength = useMemo(() => {
@@ -58,7 +64,7 @@ export default function TennisBiomechanicsIndex({
   return (
     <div className="space-y-4">
       {/* Hero score card */}
-      <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-ath-navy p-6 sm:p-8 backdrop-blur-2xl shadow-2xl">
+      <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-ath-navy p-6 sm:p-8 backdrop-blur-2xl shadow-2xl space-y-6">
         {/* Background Ambient Glow */}
         <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-ath-lime/10 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 -bottom-20 h-72 w-72 rounded-full bg-ath-sky/10 blur-3xl" />
@@ -126,6 +132,53 @@ export default function TennisBiomechanicsIndex({
               })}
             </div>
           ) : null}
+        </div>
+
+        {/* Player-Specific Video Biometric Telemetry (Dynamic Keypoints) */}
+        <div className="pt-4 border-t border-white/10 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[0.65rem] font-bold uppercase tracking-wider text-slate-400">
+              Video Biomechanical Parameters
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full bg-ath-sky/10 border border-ath-sky/20 px-2.5 py-0.5 text-[0.6rem] font-bold text-ath-sky">
+              Estimated via Scientific Biomechanical Model
+            </span>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2.5">
+            {/* Torso Separation Arc */}
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-3 text-center">
+              <span className="text-[0.58rem] font-bold uppercase tracking-wider text-slate-400 block">Torso Coil</span>
+              <span className="mt-1 text-base font-black text-white block font-mono">
+                {kinetics.measuredTorsoCoilDeg}°
+              </span>
+              <span className="text-[0.62rem] text-slate-400 block mt-0.5">
+                Pro: {kinetics.proBenchmarkCoilDeg}°
+              </span>
+            </div>
+
+            {/* Knee Load Flexion */}
+            <div className="rounded-2xl border border-white/5 bg-white/5 p-3 text-center">
+              <span className="text-[0.58rem] font-bold uppercase tracking-wider text-slate-400 block">Knee Dip</span>
+              <span className="mt-1 text-base font-black text-white block font-mono">
+                {kinetics.measuredKneeFlexionDeg}°
+              </span>
+              <span className="text-[0.62rem] text-slate-400 block mt-0.5">
+                Pro: {kinetics.proBenchmarkKneeDeg}°
+              </span>
+            </div>
+
+            {/* Kinetic Efficiency & Recoverable Speed */}
+            <div className="rounded-2xl border border-ath-lime/20 bg-ath-lime/5 p-3 text-center">
+              <span className="text-[0.58rem] font-bold uppercase tracking-wider text-ath-lime block">Kinetic Transfer</span>
+              <span className="mt-1 text-base font-black text-ath-lime block font-mono">
+                {kinetics.estimatedKineticEfficiencyPct}%
+              </span>
+              <span className="text-[0.62rem] text-slate-300 block mt-0.5 font-bold">
+                +{kinetics.estimatedRecoverableMph} MPH Potential
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 

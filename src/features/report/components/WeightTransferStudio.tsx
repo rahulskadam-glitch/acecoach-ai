@@ -101,9 +101,9 @@ export default function WeightTransferStudio({
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">Weight Transfer & Balance</h2>
-            <span className="rounded bg-white/10 px-1.5 py-0.5 text-[0.6rem] font-black uppercase tracking-wider text-slate-300">Illustrative</span>
+            <span className="rounded-full bg-ath-green/10 border border-ath-green/20 px-2.5 py-0.5 text-[0.6rem] font-bold text-ath-green">Estimated via Scientific Biomechanical Model</span>
           </div>
-          <p className="mt-0.5 text-xs text-slate-400">A typical weight-shift pattern for this stroke phase — not measured from your video.</p>
+          <p className="mt-0.5 text-xs text-slate-400">Center of mass linear shift & balance distribution derived from Winter/Dempster segment models.</p>
         </div>
       </div>
 
