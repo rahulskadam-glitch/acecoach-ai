@@ -110,16 +110,17 @@ export default function AuthExperience({ sportName, sportId, next, providers, in
         provider: provider.id,
         options: {
           redirectTo,
-          skipBrowserRedirect: true,
+          skipBrowserRedirect: native,
           scopes: provider.id === "azure" ? "email openid profile" : undefined,
         },
       });
       if (oauthError) throw oauthError;
-      if (!data.url) throw new Error(`${provider.label} sign-in is temporarily unavailable.`);
-      if (native) await Browser.open({ url: data.url, presentationStyle: "popover" });
-      else window.location.assign(data.url);
+      if (native && data?.url) {
+        await Browser.open({ url: data.url, presentationStyle: "popover" });
+      }
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : `${provider.label} sign-in could not start.`);
+      const isNetwork = cause instanceof TypeError || (cause instanceof Error && /fetch|network|load failed/i.test(cause.message));
+      setError(isNetwork ? `${provider.label} sign-in connection issue. Please try again.` : cause instanceof Error ? cause.message : `${provider.label} sign-in could not start.`);
       setLoading(null);
     }
   }
