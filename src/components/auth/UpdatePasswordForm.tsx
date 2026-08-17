@@ -178,7 +178,7 @@ export default function UpdatePasswordForm() {
       <Button
         type="submit"
         disabled={loading || passwordsMismatch || password.length < 8}
-        className="h-11 w-full rounded-2xl bg-[#123049] font-semibold text-white hover:bg-[#1a4060] disabled:opacity-60"
+        className="h-11 w-full rounded-2xl bg-[#1b4332] font-semibold text-white hover:bg-[#2d6a4f] disabled:opacity-60"
       >
         {loading ? (
           <span className="flex items-center gap-2"><Spinner /> Updating password...</span>

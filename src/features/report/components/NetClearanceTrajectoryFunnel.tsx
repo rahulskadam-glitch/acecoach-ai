@@ -1,26 +1,28 @@
 "use client";
 
 import { Wind } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { AnalysisReport } from "@/modules/analysis/types";
+import type { ValidatedBallOutcome } from "../types";
 
 type Props = {
   report?: AnalysisReport;
   actionType: string;
+  validatedBallOutcomes?: ValidatedBallOutcome[];
 };
 
-export default function NetClearanceTrajectoryFunnel({ actionType }: Props) {
-  const [targetType, setTargetType] = useState<"crosscourt" | "down_the_line">("crosscourt");
+export default function NetClearanceTrajectoryFunnel({ actionType, validatedBallOutcomes }: Props) {
   const isServe = actionType.toLowerCase().includes("serve");
 
-  // Physics trajectory calculation based on stroke launch angle and topspin
-  const trajectoryData = useMemo(() => {
-    const launchSpeedMph = isServe ? 112 : 78;
-    const launchAngleDeg = isServe ? -4.5 : +14.2;
-    const topspinRpm = isServe ? 3100 : 2650;
-    const netClearanceFt = isServe ? 1.4 : 3.2; // Net height is 3.0 ft in center
-    const baselineDepthM = isServe ? 0.4 : 0.85; // Distance inside line
+  // Real per-repetition ball-tracker data, when this session had validated tracking.
+  const realOutcomes = validatedBallOutcomes ?? [];
+  const realClearances = realOutcomes.map((o) => o.netClearanceCm).filter((v): v is number => typeof v === "number");
+  const hasRealData = realClearances.length > 0;
+  const realAvgClearanceCm = hasRealData ? realClearances.reduce((sum, v) => sum + v, 0) / realClearances.length : null;
 
+  // Illustrative flight-path shape only — a generic arc for this stroke type, not a
+  // per-athlete measurement (single-camera video does not capture ball trajectory).
+  const trajectoryData = useMemo(() => {
     // SVG path curve points for 3D side profile flight
     // Coordinate space: Court Length 0 to 700px, Height 0 to 220px (inverted)
     // Player at X=50, Net at X=350, Opponent Baseline at X=650
@@ -62,11 +64,6 @@ export default function NetClearanceTrajectoryFunnel({ actionType }: Props) {
     const proPath = `M ${proPoints.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(" L ")}`;
 
     return {
-      launchSpeedMph,
-      launchAngleDeg,
-      topspinRpm,
-      netClearanceFt,
-      baselineDepthM,
       playerPath,
       proPath,
     };
@@ -74,54 +71,6 @@ export default function NetClearanceTrajectoryFunnel({ actionType }: Props) {
 
   return (
     <div className="rounded-[2rem] border border-white/10 bg-gradient-to-b from-[#090e1a] via-[#060a14] to-[#04060c] p-5 shadow-2xl text-white">
-      {/* Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-500/20 text-sky-400 ring-1 ring-sky-500/50 shadow-lg shadow-sky-500/20">
-            <Wind className="h-5 w-5" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded bg-sky-500 px-2 py-0.5 text-[0.62rem] font-black uppercase tracking-wider text-black">
-                3D FLIGHT APEX
-              </span>
-              <h3 className="text-base font-bold text-white tracking-tight">
-                Net Clearance & Spin Window Funnel
-              </h3>
-            </div>
-            <p className="text-xs text-slate-400">
-              3D Ball Flight Apex, Magnus Topspin Arc, and Depth Envelope
-            </p>
-          </div>
-        </div>
-
-        {/* Target Mode Toggle */}
-        <div className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 p-1 text-xs">
-          <button
-            type="button"
-            onClick={() => setTargetType("crosscourt")}
-            className={`rounded-lg px-3 py-1.5 font-bold transition ${
-              targetType === "crosscourt"
-                ? "bg-white text-slate-950 shadow-md"
-                : "text-slate-400 hover:text-white"
-            }`}
-          >
-            Crosscourt
-          </button>
-          <button
-            type="button"
-            onClick={() => setTargetType("down_the_line")}
-            className={`rounded-lg px-3 py-1.5 font-bold transition ${
-              targetType === "down_the_line"
-                ? "bg-white text-slate-950 shadow-md"
-                : "text-slate-400 hover:text-white"
-            }`}
-          >
-            Down The Line
-          </button>
-        </div>
-      </div>
-
       {/* 3D Side-Profile Trajectory Arena */}
       <div className="relative mt-5 aspect-[16/7] w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 p-4">
         <svg viewBox="0 0 700 220" className="h-full w-full">
@@ -151,27 +100,13 @@ export default function NetClearanceTrajectoryFunnel({ actionType }: Props) {
           {/* Court Floor Grid */}
           <line x1="30" y1="195" x2="670" y2="195" stroke="#334155" strokeWidth="2.5" />
           <line x1="50" y1="195" x2="50" y2="205" stroke="#64748b" strokeWidth="2" />
-          <text x="50" y="215" fill="#94a3b8" fontSize="8" fontWeight="700" textAnchor="middle">
-            YOUR BASELINE
-          </text>
-
           <line x1="350" y1="195" x2="350" y2="205" stroke="#64748b" strokeWidth="2" />
-          <text x="350" y="215" fill="#94a3b8" fontSize="8" fontWeight="700" textAnchor="middle">
-            NET (3.0 FT)
-          </text>
-
           <line x1="650" y1="195" x2="650" y2="205" stroke="#64748b" strokeWidth="2" />
-          <text x="650" y="215" fill="#94a3b8" fontSize="8" fontWeight="700" textAnchor="middle">
-            OPPONENT BASELINE
-          </text>
 
           {/* Tennis Net Visual */}
           <g>
             <rect x="347" y="145" width="6" height="50" fill="#cbd5e1" rx="1" />
             <line x1="340" y1="145" x2="360" y2="145" stroke="#ffffff" strokeWidth="3" />
-            <text x="350" y="138" fill="#ffffff" fontSize="8" fontWeight="800" textAnchor="middle">
-              NET 3.0&apos;
-            </text>
 
             {/* Danger Net Hit Zone (0 - 1.5 ft clearance) */}
             <rect x="344" y="125" width="12" height="20" fill="url(#dangerZoneGradient)" />
@@ -182,9 +117,6 @@ export default function NetClearanceTrajectoryFunnel({ actionType }: Props) {
             {/* Safe Spin Window Corridor (2.5 - 4.5 ft) */}
             <rect x="342" y="55" width="16" height="65" fill="url(#safeZoneGradient)" rx="2" />
             <line x1="335" y1="55" x2="365" y2="55" stroke="#10b981" strokeWidth="1.5" strokeDasharray="3 2" />
-            <text x="350" y="48" fill="#34d399" fontSize="7.5" fontWeight="800" textAnchor="middle">
-              SAFE APEX WINDOW (2.5 - 4.0 FT)
-            </text>
           </g>
 
           {/* Pro Tour Benchmark Trajectory */}
@@ -195,9 +127,6 @@ export default function NetClearanceTrajectoryFunnel({ actionType }: Props) {
             strokeWidth="2"
             strokeDasharray="4 4"
           />
-          <text x="210" y="50" fill="#94a3b8" fontSize="7.5" fontWeight="700">
-            Tour Benchmark Arc (Apex +3.5 ft)
-          </text>
 
           {/* Player Measured Trajectory Arc */}
           <path
@@ -207,81 +136,85 @@ export default function NetClearanceTrajectoryFunnel({ actionType }: Props) {
             strokeWidth="3.5"
           />
 
-          {/* Measured Trajectory Apex Pin */}
+          {/* Apex Pin */}
           <g>
             <circle cx="350" cy={isServe ? "118" : "65"} r="5" fill="#00f0ff" stroke="#ffffff" strokeWidth="2" />
-            <rect x="315" y="15" width="70" height="22" rx="4" fill="rgba(15, 23, 42, 0.9)" stroke="#00f0ff" strokeWidth="1" />
-            <text x="350" y="26" fill="#00f0ff" fontSize="7.5" fontWeight="800" textAnchor="middle">
-              CLEARANCE: +{trajectoryData.netClearanceFt.toFixed(1)} FT
-            </text>
-            <text x="350" y="34" fill="#94a3b8" fontSize="6.5" fontWeight="600" textAnchor="middle">
-              Spin Window: OPTIMAL
-            </text>
           </g>
 
           {/* Landing Target Cluster */}
           <g>
             <ellipse cx="615" cy="195" rx="22" ry="6" fill="rgba(16, 185, 129, 0.3)" stroke="#10b981" strokeWidth="1.5" />
             <circle cx="615" cy="195" r="4" fill="#10b981" />
-            <text x="615" y="180" fill="#34d399" fontSize="7.5" fontWeight="800" textAnchor="middle">
-              LANDING: {trajectoryData.baselineDepthM}M IN
-            </text>
           </g>
         </svg>
       </div>
 
-      {/* 3 Telemetry Summary Cards */}
+      {/* Header Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-500/20 text-sky-400 ring-1 ring-sky-500/50 shadow-lg shadow-sky-500/20">
+            <Wind className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className={`rounded px-2 py-0.5 text-[0.62rem] font-black uppercase tracking-wider ${hasRealData ? "bg-ath-green text-slate-950" : "bg-white/10 text-slate-300"}`}>
+                {hasRealData ? "TRACKER VERIFIED" : "ILLUSTRATIVE"}
+              </span>
+              <h3 className="text-base font-bold text-white tracking-tight">
+                Net Clearance & Spin Window Funnel
+              </h3>
+            </div>
+            <p className="text-xs text-slate-400">
+              {hasRealData
+                ? `Flight shape is a stylized illustration; the clearance figures below are measured from ${realOutcomes.length} tracked ${realOutcomes.length === 1 ? "repetition" : "repetitions"}.`
+                : "This flight path is a generic illustration for this stroke type — ball tracking wasn't available for this session, so no per-shot clearance is measured."}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Telemetry Summary */}
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">
-              Net Clearance Margin
-            </span>
-            <span className="rounded-full bg-ath-green/20 px-2 py-0.5 text-[0.62rem] font-extrabold text-ath-green">
-              SAFE WINDOW
-            </span>
-          </div>
-          <p className="mt-2 font-mono text-3xl font-black text-white">
-            +{trajectoryData.netClearanceFt} <span className="text-sm font-bold text-slate-400">FT</span>
-          </p>
-          <p className="mt-1 text-xs text-slate-400 leading-relaxed">
-            Eliminates net errors while heavy topspin forces the ball downward inside the baseline.
-          </p>
-        </div>
+        {hasRealData ? (
+          <>
+            <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+              <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">
+                Avg Net Clearance
+              </span>
+              <p className="mt-2 font-mono text-3xl font-black text-white">
+                {realAvgClearanceCm!.toFixed(0)} <span className="text-sm font-bold text-slate-400">CM</span>
+              </p>
+              <p className="mt-1 text-xs text-slate-400 leading-relaxed">
+                Measured by the ball tracker across {realClearances.length} tracked {realClearances.length === 1 ? "shot" : "shots"} this session.
+              </p>
+            </div>
 
-        <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">
-              Magnus Topspin RPM
-            </span>
-            <span className="rounded-full bg-sky-500/20 px-2 py-0.5 text-[0.62rem] font-extrabold text-sky-400">
-              {trajectoryData.topspinRpm} RPM
-            </span>
-          </div>
-          <p className="mt-2 font-mono text-3xl font-black text-white">
-            {trajectoryData.topspinRpm} <span className="text-sm font-bold text-slate-400">RPM</span>
-          </p>
-          <p className="mt-1 text-xs text-slate-400 leading-relaxed">
-            Creates 420 N of downward Magnus dipping pressure, pulling deep balls safely inside the court.
-          </p>
-        </div>
+            <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+              <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">
+                Repetitions Tracked
+              </span>
+              <p className="mt-2 font-mono text-3xl font-black text-white">
+                {realOutcomes.length}
+              </p>
+              <p className="mt-1 text-xs text-slate-400 leading-relaxed">
+                Total repetitions with validated ball-tracker outcomes this session.
+              </p>
+            </div>
 
-        <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">
-              Baseline Depth Margin
-            </span>
-            <span className="rounded-full bg-ath-green/20 px-2 py-0.5 text-[0.62rem] font-extrabold text-ath-green">
-              DEEP PENETRATION
-            </span>
+            <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4 sm:col-span-1">
+              <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">
+                Placement Zones Seen
+              </span>
+              <p className="mt-2 text-sm font-semibold text-white leading-relaxed">
+                {Array.from(new Set(realOutcomes.map((o) => o.placementZone).filter((z): z is string => Boolean(z)))).join(", ") || "Not classified"}
+              </p>
+            </div>
+          </>
+        ) : (
+          <div className="sm:col-span-3 rounded-2xl border border-white/10 bg-slate-900/60 p-4 text-xs leading-relaxed text-slate-400">
+            Ball tracking wasn&apos;t available for this session, so net clearance and landing depth aren&apos;t measured — only an illustrative flight shape for this stroke type is shown above.
           </div>
-          <p className="mt-2 font-mono text-3xl font-black text-white">
-            {trajectoryData.baselineDepthM} <span className="text-sm font-bold text-slate-400">M IN</span>
-          </p>
-          <p className="mt-1 text-xs text-slate-400 leading-relaxed">
-            Pushes opponents 3 feet behind the baseline, preventing them from stepping in to attack.
-          </p>
-        </div>
+        )}
       </div>
     </div>
   );

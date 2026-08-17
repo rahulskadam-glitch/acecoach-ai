@@ -2,6 +2,8 @@ export type PlanEntitlement = {
   id: "free" | "single" | "pro";
   name: string;
   badge?: string;
+  /** Single numeric source of truth for this plan's video-analysis cap — every display string below derives from it. */
+  videoLimit: number;
   audience: string;
   analysesPerMonth: string;
   maxVideoDuration: string;
@@ -15,13 +17,17 @@ export type PlanEntitlement = {
   historicalAccess: string;
 };
 
+const FREE_VIDEO_LIMIT = 5;
+const PRO_VIDEO_LIMIT = 10;
+
 export const PLAN_ENTITLEMENTS: PlanEntitlement[] = [
   {
     id: "free",
     name: "Free Trial",
     badge: "1st Month Free",
-    audience: "Try out your first 5 stroke audits",
-    analysesPerMonth: "Up to 5 videos (first month)",
+    videoLimit: FREE_VIDEO_LIMIT,
+    audience: `Try out your first ${FREE_VIDEO_LIMIT} stroke audits`,
+    analysesPerMonth: `Up to ${FREE_VIDEO_LIMIT} videos (first month)`,
     maxVideoDuration: "30 seconds",
     reportDepth: "Essential 3D Skeleton & Joint Tracking",
     motionTwins: "Category + best-in-class preview",
@@ -36,6 +42,7 @@ export const PLAN_ENTITLEMENTS: PlanEntitlement[] = [
     id: "single",
     name: "Single Video Pass",
     badge: "Pay-As-You-Go",
+    videoLimit: 1,
     audience: "Instant single audit without commitment",
     analysesPerMonth: "1 full analysis per purchase",
     maxVideoDuration: "30 seconds",
@@ -52,8 +59,9 @@ export const PLAN_ENTITLEMENTS: PlanEntitlement[] = [
     id: "pro",
     name: "Pro Athlete",
     badge: "Most Popular",
+    videoLimit: PRO_VIDEO_LIMIT,
     audience: "Dedicated players building elite technique",
-    analysesPerMonth: "Up to 10 60fps video analyses / month",
+    analysesPerMonth: `Up to ${PRO_VIDEO_LIMIT} 60fps video analyses / month`,
     maxVideoDuration: "30 seconds",
     reportDepth: "Tour-Grade 9-Tile Telemetry & Power Leaks",
     motionTwins: "Full synchronized Tour motion twins",

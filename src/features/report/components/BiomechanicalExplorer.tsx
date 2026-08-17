@@ -90,13 +90,13 @@ export default function BiomechanicalExplorer({ profile, sessionId, actionType }
   return (
     <section id="movement-map" className="scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
       <div className="border-b border-slate-200 bg-ath-navy p-6 text-white sm:p-9">
-        <div className="flex flex-wrap items-start justify-between gap-6">
+        <div className="flex flex-wrap-reverse items-start justify-between gap-6">
           <div className="max-w-3xl">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-ath-lime"><ScanLine className="h-4 w-4" />Stroke Phases</div>
             <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">Every stage of your stroke</h2>
             <p className="mt-3 max-w-2xl text-sm leading-7 text-white/80">See what each part of your body did, when it happened, and how movement passed from the ground through the hitting hand.</p>
           </div>
-          <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="grid w-full grid-cols-3 gap-2 text-center sm:w-auto">
             <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur"><p className="text-2xl font-semibold">{profile.availableMetricCount}</p><p className="text-[0.68rem] uppercase tracking-wide text-ath-sky">of {profile.metricCount} visible</p></div>
             <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur"><p className="text-2xl font-semibold">6</p><p className="text-[0.68rem] uppercase tracking-wide text-ath-sky">swing phases</p></div>
             <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur"><p className="text-2xl font-semibold">{profile.connectedLinkCount}/{availableLinks || "—"}</p><p className="text-[0.68rem] uppercase tracking-wide text-ath-sky">links on time</p></div>
@@ -168,8 +168,7 @@ export default function BiomechanicalExplorer({ profile, sessionId, actionType }
             {profile.phases.map((phase, index) => {
               const selected = phase.id === selectedSummary?.id;
               return <button key={phase.id} type="button" role="tab" aria-selected={selected} onClick={() => setSelectedPhase(phase.id)} className={`min-h-16 rounded-2xl border p-3 text-left transition ${selected ? "border-ath-lime bg-ath-lime/15 ring-2 ring-ath-lime/30" : "border-slate-200 bg-white hover:bg-slate-50"}`}>
-                <div className="flex items-center justify-between gap-3"><span className={`text-xs font-semibold uppercase tracking-wide ${selected ? "text-ath-navy" : "text-slate-500"}`}>{index + 1} · {phase.label}</span><span className="text-xs font-semibold text-slate-500">{phase.availableMetricCount}/{phase.metricCount}</span></div>
-                <div className="mt-1.5 flex items-center justify-between gap-2"><span className="text-[0.68rem] text-slate-500">{typeof phase.score === "number" ? `Score ${Math.round(phase.score)}/100` : "Not scored"}</span></div>
+                <div className="flex items-center justify-between gap-3"><span className={`text-xs font-semibold uppercase tracking-wide ${selected ? "text-ath-navy" : "text-slate-500"}`}>{index + 1} · {phase.label}</span><span className="text-[0.68rem] text-slate-500">{phase.availableMetricCount}/{phase.metricCount} · {typeof phase.score === "number" ? `${Math.round(phase.score)}/100` : "unscored"}</span></div>
                 <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200"><div className={`h-full rounded-full ${selected ? "bg-ath-navy" : "bg-slate-400"}`} style={{ width: `${phase.metricCount ? phase.availableMetricCount / phase.metricCount * 100 : 0}%` }} /></div>
               </button>;
             })}

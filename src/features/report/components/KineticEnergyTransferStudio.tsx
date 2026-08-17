@@ -1,19 +1,15 @@
 "use client";
 
 import {
-  Activity,
-  Clock,
-  Crosshair,
   Flame,
   Gauge,
-  Scale,
   Sparkles,
-  Zap,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { MOTION_STAGES, type MotionStage } from "../motion/motion-model";
 import KineticPowerWaterfallChart from "./KineticPowerWaterfallChart";
 import KineticTimingLagLadder from "./KineticTimingLagLadder";
+import StagePhaseScrubber from "./StagePhaseScrubber";
 import SweetSpotStrikeClusterChart from "./SweetSpotStrikeClusterChart";
 
 type KineticEnergyTransferStudioProps = {
@@ -36,20 +32,6 @@ type BiomechanicalLink = {
   coachingFix: string;
   color: string;
   glowColor: string;
-};
-
-type WeightStoryboardMoment = {
-  id: string;
-  stage: MotionStage;
-  stepNum: number;
-  title: string;
-  cue: string;
-  rearFoot: number;
-  frontFoot: number;
-  comShiftCm: number;
-  status: "optimal" | "working" | "priority";
-  athleteVerdict: string;
-  proBenchmark: string;
 };
 
 // 5 Main Body Parts with everyday coaching language
@@ -131,75 +113,25 @@ const BIOMECHANICAL_LINKS: BiomechanicalLink[] = [
   },
 ];
 
-// 4-Card Weight Transfer Storyboard
-const WEIGHT_STORYBOARD: WeightStoryboardMoment[] = [
-  {
-    id: "moment_ready",
-    stage: "ready",
-    stepNum: 1,
-    title: "1. Ready Stance",
-    cue: "Balanced bounce on balls of feet",
-    rearFoot: 50,
-    frontFoot: 50,
-    comShiftCm: 0,
-    status: "optimal",
-    athleteVerdict: "50/50 balanced platform",
-    proBenchmark: "50/50 neutral split",
-  },
-  {
-    id: "moment_load",
-    stage: "unit_turn",
-    stepNum: 2,
-    title: "2. Coil & Loading",
-    cue: "Store spring power on back leg",
-    rearFoot: 75,
-    frontFoot: 25,
-    comShiftCm: -8,
-    status: "optimal",
-    athleteVerdict: "72% back foot load",
-    proBenchmark: "75% deep coil load",
-  },
-  {
-    id: "moment_strike",
-    stage: "forward_swing_contact",
-    stepNum: 3,
-    title: "3. Strike & Drive ⚡",
-    cue: "Drive full bodyweight into the ball",
-    rearFoot: 15,
-    frontFoot: 85,
-    comShiftCm: 24,
-    status: "priority",
-    athleteVerdict: "65% front foot drive (mild fall back)",
-    proBenchmark: "85% front foot commitment (+24cm)",
-  },
-  {
-    id: "moment_reset",
-    stage: "recovery",
-    stepNum: 4,
-    title: "4. Land & Reset",
-    cue: "Instant balanced split for next ball",
-    rearFoot: 50,
-    frontFoot: 50,
-    comShiftCm: 2,
-    status: "optimal",
-    athleteVerdict: "50/50 landing recovery",
-    proBenchmark: "50/50 dynamic recovery",
-  },
-];
-
 type ChartMode =
-  | "weight_transfer"
   | "waterfall"
   | "strike_cluster"
   | "timing_ladder"
   | "velocity_sequence";
+
+const CHART_MODE_OPTIONS: Array<{ id: ChartMode; label: string }> = [
+  { id: "waterfall", label: "Power Leak Waterfall" },
+  { id: "strike_cluster", label: "Sweet-Spot Cluster" },
+  { id: "timing_ladder", label: "Timing Lag Ladder" },
+  { id: "velocity_sequence", label: "Body Speed Curves" },
+];
 
 export default function KineticEnergyTransferStudio({
   currentStage,
   onSeekToStage,
   actionType = "forehand",
 }: KineticEnergyTransferStudioProps) {
-  const [chartMode, setChartMode] = useState<ChartMode>("weight_transfer");
+  const [chartMode, setChartMode] = useState<ChartMode>("waterfall");
   const [selectedLinkId, setSelectedLinkId] = useState<string>("link_wrist");
   const [comparisonMode, setComparisonMode] = useState<"both" | "athlete_only" | "pro_only">("both");
 
@@ -208,17 +140,6 @@ export default function KineticEnergyTransferStudio({
   const totalEfficiency = Math.round(
     BIOMECHANICAL_LINKS.reduce((acc, l) => acc + l.athleteEfficiency, 0) / BIOMECHANICAL_LINKS.length
   );
-
-  // Active Storyboard Moment
-  const activeMoment = useMemo(() => {
-    return WEIGHT_STORYBOARD.find((m) => m.stage === currentStage) ?? WEIGHT_STORYBOARD[2];
-  }, [currentStage]);
-
-  // Seesaw tilt angle calculation (-12 deg back to +14 deg forward)
-  const seesawAngle = useMemo(() => {
-    const diff = activeMoment.frontFoot - activeMoment.rearFoot; // -50 to +70
-    return Math.round((diff / 70) * 14);
-  }, [activeMoment]);
 
   // SVG Chart Dimensions for Velocity Mode (600 x 260)
   const chartW = 600;
@@ -259,95 +180,51 @@ export default function KineticEnergyTransferStudio({
   return (
     <div className="space-y-6 rounded-3xl border border-white/15 bg-gradient-to-br from-slate-950 via-[#0a1224] to-[#08182b] p-6 text-white shadow-2xl backdrop-blur-2xl sm:p-8">
       {/* Header & Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+      <div className="flex flex-wrap-reverse items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
-            Energy & Trajectory Suite
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+              Energy & Trajectory Suite
+            </h2>
+            <span className="rounded bg-white/10 px-1.5 py-0.5 text-[0.6rem] font-black uppercase tracking-wider text-slate-300">Illustrative</span>
+          </div>
           <p className="mt-0.5 text-xs text-slate-400">
-            Select any chart below to inspect energy flow, flight aerodynamics, and joint loads.
+            Typical energy-flow patterns for this stroke type — not measured from your video.
           </p>
         </div>
 
-        {/* Global Power Flow Score */}
-        <div className="flex items-center gap-3 rounded-2xl border border-ath-green/30 bg-ath-green/30 px-3.5 py-2 backdrop-blur">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-ath-green/20 text-ath-green">
+        {/* Illustrative Power Flow Score */}
+        <div className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3.5 py-2 backdrop-blur sm:w-auto">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-slate-300">
             <Gauge className="h-4 w-4" />
           </div>
           <div>
-            <span className="text-[0.62rem] font-bold uppercase tracking-wider text-slate-400 block">Kinetic Efficiency</span>
+            <span className="text-[0.62rem] font-bold uppercase tracking-wider text-slate-400 block">Example Kinetic Efficiency</span>
             <div className="flex items-baseline gap-1">
-              <span className="text-lg font-black text-ath-green">{totalEfficiency}%</span>
-              <span className="text-[0.65rem] text-slate-400">(Tour: 96%)</span>
+              <span className="text-lg font-black text-slate-300">{totalEfficiency}%</span>
+              <span className="text-[0.65rem] text-slate-400">(Tour example: 96%)</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 8-Tab Pro Analytics Mode Switcher */}
+      {/* Chart Mode Dropdown */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap rounded-xl border border-white/10 bg-white/5 p-1 gap-1">
-          <button
-            type="button"
-            onClick={() => setChartMode("weight_transfer")}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-              chartMode === "weight_transfer"
-                ? "bg-ath-lime text-ath-navy shadow-md font-bold"
-                : "text-slate-300 hover:text-white"
-            }`}
+        <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
+          <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">Chart:</span>
+          <select
+            aria-label="Select chart mode"
+            value={chartMode}
+            onChange={(e) => setChartMode(e.target.value as ChartMode)}
+            className="bg-transparent text-xs font-bold text-white outline-none cursor-pointer"
           >
-            <Scale className="h-3.5 w-3.5" />
-            <span>Weight Seesaw</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setChartMode("waterfall")}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-              chartMode === "waterfall"
-                ? "bg-ath-lime text-ath-navy shadow-md font-bold"
-                : "text-slate-300 hover:text-white"
-            }`}
-          >
-            <Zap className="h-3.5 w-3.5" />
-            <span>Power Leak Waterfall</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setChartMode("strike_cluster")}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-              chartMode === "strike_cluster"
-                ? "bg-ath-lime text-ath-navy shadow-md font-bold"
-                : "text-slate-300 hover:text-white"
-            }`}
-          >
-            <Crosshair className="h-3.5 w-3.5" />
-            <span>Sweet-Spot Cluster</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setChartMode("timing_ladder")}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-              chartMode === "timing_ladder"
-                ? "bg-ath-lime text-ath-navy shadow-md font-bold"
-                : "text-slate-300 hover:text-white"
-            }`}
-          >
-            <Clock className="h-3.5 w-3.5" />
-            <span>Timing Lag Ladder</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setChartMode("velocity_sequence")}
-            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-              chartMode === "velocity_sequence"
-                ? "bg-ath-lime text-ath-navy shadow-md font-bold"
-                : "text-slate-300 hover:text-white"
-            }`}
-          >
-            <Activity className="h-3.5 w-3.5" />
-            <span>Body Speed Curves</span>
-          </button>
-        </div>
+            {CHART_MODE_OPTIONS.map((option) => (
+              <option key={option.id} value={option.id} className="bg-slate-900 text-white">
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
 
         {chartMode === "velocity_sequence" ? (
           <div className="flex items-center gap-1 text-xs">
@@ -374,7 +251,7 @@ export default function KineticEnergyTransferStudio({
               type="button"
               onClick={() => setComparisonMode("pro_only")}
               className={`rounded-lg px-2.5 py-1 font-semibold transition ${
-                comparisonMode === "pro_only" ? "bg-sky-500 text-slate-950 font-bold" : "bg-white/5 text-slate-300 hover:text-white"
+                comparisonMode === "pro_only" ? "bg-ath-sky text-slate-950 font-bold" : "bg-white/5 text-slate-300 hover:text-white"
               }`}
             >
               Pro Benchmark
@@ -382,171 +259,6 @@ export default function KineticEnergyTransferStudio({
           </div>
         ) : null}
       </div>
-
-      {/* VIEW 1: INTUITIVE WEIGHT SHIFT SEESAW & 4-MOMENT STORYBOARD */}
-      {chartMode === "weight_transfer" ? (
-        <div className="space-y-6">
-          {/* Main Visual Seesaw Stage Arena */}
-          <div className="grid gap-6 lg:grid-cols-12">
-            {/* Left 7 Cols: The Physical Tilting Seesaw & Foot Sensors */}
-            <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-slate-950/80 p-5 backdrop-blur flex flex-col justify-between">
-              <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                <div className="flex items-center gap-2">
-                  <Scale className="h-4 w-4 text-ath-green" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-ath-green">
-                    Live Weight Balance Scale
-                  </span>
-                </div>
-                <span className="text-xs text-slate-400 font-mono">
-                  Center-of-Mass Drive: <strong className="text-sky-300">{activeMoment.comShiftCm > 0 ? `+${activeMoment.comShiftCm}cm forward` : `${activeMoment.comShiftCm}cm back`}</strong>
-                </span>
-              </div>
-
-              {/* Physical Tilting Seesaw Graphic */}
-              <div className="relative my-4 aspect-[16/9] w-full flex items-center justify-center">
-                <svg viewBox="0 0 500 240" className="h-full w-full select-none">
-                  {/* Court Baseline Floor */}
-                  <line x1="30" y1="210" x2="470" y2="210" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeDasharray="4 4" />
-                  <text x="470" y="225" fill="#64748b" fontSize="9" textAnchor="end" fontWeight="600">COURT BASELINE</text>
-
-                  {/* Central Fulcrum / Pivot Stand */}
-                  <polygon points="250,150 230,210 270,210" fill="#1e293b" stroke="#0ea5e9" strokeWidth="2" />
-                  <circle cx="250" cy="150" r="7" fill="#38bdf8" stroke="#ffffff" strokeWidth="2" />
-
-                  {/* Tilting Balance Seesaw Beam */}
-                  <g transform={`rotate(${seesawAngle} 250 150)`} className="transition-transform duration-500 ease-out">
-                    {/* Titanium Beam */}
-                    <rect x="50" y="143" width="400" height="14" rx="7" fill="#0f172a" stroke="#38bdf8" strokeWidth="2" />
-
-                    {/* Left Pad (Back Foot Plate) */}
-                    <g transform="translate(60, 110)">
-                      <rect x="0" y="0" width="80" height="30" rx="6" fill="rgba(15,23,42,0.9)" stroke="#f59e0b" strokeWidth="1.5" />
-                      <text x="40" y="14" fill="#94a3b8" fontSize="8" fontWeight="bold" textAnchor="middle">BACK FOOT</text>
-                      <text x="40" y="26" fill="#fbbf24" fontSize="11" fontWeight="900" textAnchor="middle">{activeMoment.rearFoot}%</text>
-                    </g>
-
-                    {/* Right Pad (Front Foot Plate) */}
-                    <g transform="translate(360, 110)">
-                      <rect x="0" y="0" width="80" height="30" rx="6" fill="rgba(15,23,42,0.9)" stroke="#06b6d4" strokeWidth="1.5" />
-                      <text x="40" y="14" fill="#94a3b8" fontSize="8" fontWeight="bold" textAnchor="middle">FRONT FOOT</text>
-                      <text x="40" y="26" fill="#22d3ee" fontSize="11" fontWeight="900" textAnchor="middle">{activeMoment.frontFoot}%</text>
-                    </g>
-
-                    {/* Dynamic Rolling Center-of-Mass (CoM) Energy Sphere */}
-                    <circle
-                      cx={250 + (activeMoment.frontFoot - activeMoment.rearFoot) * 1.8}
-                      cy="134"
-                      r="12"
-                      fill="#38bdf8"
-                      stroke="#ffffff"
-                      strokeWidth="2.5"
-                      style={{ filter: "drop-shadow(0 0 10px #38bdf8)" }}
-                    />
-                  </g>
-                </svg>
-              </div>
-
-              {/* Dynamic Insole Pressure Sole Indicators */}
-              <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-3">
-                <div className="flex items-center gap-3 rounded-xl bg-white/5 p-2.5">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-ath-warn/20 text-ath-warn font-black text-xs">
-                    👟 L
-                  </div>
-                  <div>
-                    <span className="text-[0.65rem] font-bold uppercase text-slate-400 block">Rear Foot Load</span>
-                    <span className="text-sm font-black text-ath-warn">{activeMoment.rearFoot}% Weight</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 rounded-xl bg-white/5 p-2.5">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-500/20 text-cyan-300 font-black text-xs">
-                    👟 R
-                  </div>
-                  <div>
-                    <span className="text-[0.65rem] font-bold uppercase text-slate-400 block">Front Foot Drive</span>
-                    <span className="text-sm font-black text-cyan-300">{activeMoment.frontFoot}% Drive</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right 5 Cols: Active Moment Coaching Telemetry */}
-            <div className="lg:col-span-5 flex flex-col justify-between space-y-4">
-              <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-5 backdrop-blur">
-                <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                  <span className="rounded-full bg-ath-green/20 px-3 py-1 text-xs font-extrabold uppercase text-ath-green">
-                    Phase {activeMoment.stepNum} of 4
-                  </span>
-                  <span className="text-xs text-slate-400 font-medium">Moment Details</span>
-                </div>
-
-                <h3 className="mt-3 text-lg font-bold text-white">{activeMoment.title}</h3>
-                <p className="mt-1 text-xs text-slate-300 font-medium leading-relaxed">{activeMoment.cue}</p>
-
-                <div className="mt-4 space-y-2.5">
-                  <div className="flex items-center justify-between rounded-xl bg-white/5 p-3 text-xs">
-                    <span className="text-slate-400 font-semibold">Your Measured Shift:</span>
-                    <span className={`font-bold ${activeMoment.status === "priority" ? "text-rose-300" : "text-ath-green"}`}>
-                      {activeMoment.athleteVerdict}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between rounded-xl bg-white/5 p-3 text-xs">
-                    <span className="text-slate-400 font-semibold">Pro Target Benchmark:</span>
-                    <span className="font-bold text-sky-300">{activeMoment.proBenchmark}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Actionable Weight Coaching Tip */}
-              <div className="rounded-2xl border border-ath-green/30 bg-ath-green/30 p-4 backdrop-blur ring-1 ring-ath-green/30">
-                <div className="flex items-center gap-2 text-ath-green font-bold text-xs">
-                  <Sparkles className="h-4 w-4" />
-                  <span>Weight Transfer Key</span>
-                </div>
-                <p className="mt-1.5 text-xs text-ath-green/15 font-medium leading-relaxed">
-                  {activeMoment.status === "priority"
-                    ? "Commit 85% of your weight forward onto your front shoe through impact. Leaning back robs you of free pace and depth."
-                    : "Excellent platform stability! Keep maintaining strong balanced foot pressure throughout the swing."}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* 4-Card Storyboard Timeline */}
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {WEIGHT_STORYBOARD.map((moment) => {
-              const isCurrent = moment.stage === currentStage;
-              return (
-                <button
-                  key={moment.id}
-                  type="button"
-                  onClick={() => onSeekToStage(moment.stage)}
-                  className={`group relative flex flex-col justify-between rounded-2xl p-4 text-left transition border ${
-                    isCurrent
-                      ? "border-ath-green bg-ath-green/40 shadow-lg shadow-ath-green/20 ring-2 ring-ath-green/40"
-                      : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[0.65rem] font-bold uppercase text-slate-400">Step {moment.stepNum}</span>
-                      <span className={`h-2 w-2 rounded-full ${moment.status === "priority" ? "bg-rose-400" : "bg-ath-green"}`} />
-                    </div>
-                    <h4 className="mt-1.5 text-sm font-bold text-white">{moment.title}</h4>
-                    <p className="mt-1 text-[0.68rem] text-slate-400 leading-snug">{moment.cue}</p>
-                  </div>
-
-                  <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2 text-[0.7rem]">
-                    <span className="text-ath-warn font-bold">{moment.rearFoot}% Rear</span>
-                    <span className="text-slate-500 font-bold">➔</span>
-                    <span className="text-cyan-300 font-bold">{moment.frontFoot}% Front</span>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
 
       {/* VIEW 2: ⚡ KINETIC POWER LEAK WATERFALL (TRACKMAN) */}
       {chartMode === "waterfall" ? (
@@ -575,7 +287,7 @@ export default function KineticEnergyTransferStudio({
               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 Speed Waves (°/s) Through Stroke Time (0.0s ➔ 1.8s)
               </span>
-              <span className="text-xs text-sky-400 font-mono">
+              <span className="text-xs text-ath-sky font-mono">
                 Whippy Peak: <strong className="text-white">1,580°/s at 1.28s</strong>
               </span>
             </div>
@@ -686,34 +398,7 @@ export default function KineticEnergyTransferStudio({
         </div>
       ) : null}
 
-      {/* Synchronized Stage Timeline Scrubber */}
-      <div className="border-t border-white/10 pt-4">
-        <div className="flex items-center justify-between mb-2 text-xs font-bold uppercase tracking-wider text-slate-400">
-          <span>Shot Phases</span>
-          <span className="text-sky-400">Selected: {MOTION_STAGES.find((s) => s.id === currentStage)?.label}</span>
-        </div>
-
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
-          {MOTION_STAGES.map((s, idx) => {
-            const isSelected = s.id === currentStage;
-            return (
-              <button
-                key={s.id}
-                type="button"
-                onClick={() => onSeekToStage(s.id)}
-                className={`rounded-xl p-2.5 text-center transition ${
-                  isSelected
-                    ? "bg-ath-green text-slate-950 font-bold shadow-lg shadow-ath-green/20 ring-2 ring-ath-green"
-                    : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                <span className="text-[0.62rem] font-bold uppercase block opacity-75">{idx + 1}.</span>
-                <span className="text-xs font-semibold leading-snug">{s.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <StagePhaseScrubber currentStage={currentStage} onSeekToStage={onSeekToStage} />
     </div>
   );
 }

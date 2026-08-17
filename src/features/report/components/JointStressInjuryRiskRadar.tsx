@@ -164,6 +164,11 @@ function getRiskAxesForAction(actionType: string): RiskAxis[] {
   ];
 }
 
+/** Angle (radians) of the i-th of `count` evenly-spaced radar axes, starting at 12 o'clock. */
+function axisAngle(index: number, count: number) {
+  return (index * 2 * Math.PI) / count - Math.PI / 2;
+}
+
 export default function JointStressInjuryRiskRadar({ actionType = "forehand" }: Props) {
   const axes = useMemo(() => getRiskAxesForAction(actionType), [actionType]);
   const [selectedAxisId, setSelectedAxisId] = useState<string>(axes[0]?.id ?? "lead_knee");
@@ -177,7 +182,7 @@ export default function JointStressInjuryRiskRadar({ actionType = "forehand" }: 
 
   const points = useMemo(() => {
     return axes.map((axis, i) => {
-      const angle = (i * 2 * Math.PI) / numAxes - Math.PI / 2;
+      const angle = axisAngle(i, numAxes);
       const r = (axis.athleteScore / 100) * radius;
       return {
         x: center + r * Math.cos(angle),
@@ -188,7 +193,7 @@ export default function JointStressInjuryRiskRadar({ actionType = "forehand" }: 
 
   const safePolygonPoints = useMemo(() => {
     return axes.map((axis, i) => {
-      const angle = (i * 2 * Math.PI) / numAxes - Math.PI / 2;
+      const angle = axisAngle(i, numAxes);
       const r = (axis.safeThreshold / 100) * radius;
       return {
         x: center + r * Math.cos(angle),
@@ -202,37 +207,6 @@ export default function JointStressInjuryRiskRadar({ actionType = "forehand" }: 
 
   return (
     <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 p-5 backdrop-blur-xl">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 rounded-full bg-rose-500/20 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-rose-300 ring-1 ring-rose-500/30">
-              <Shield className="h-3.5 w-3.5" />
-              Orthopedic Joint Longevity Index
-            </span>
-            <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[0.68rem] font-semibold text-slate-300">
-              {actionType.replace("_", " ").toUpperCase()} · 6-Axis Stress
-            </span>
-          </div>
-          <h3 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
-            Joint Stress & Injury Risk Radar
-          </h3>
-          <p className="mt-0.5 text-xs text-slate-300">
-            Real-time joint torque loads evaluated against clinical orthopedic safety thresholds.
-          </p>
-        </div>
-
-        {/* Overall Status Badge */}
-        <div className={`flex items-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-bold ${
-          hasHighLoad
-            ? "bg-ath-warn/20 border-ath-warn/30 text-ath-warn"
-            : "bg-ath-green/20 border-ath-green/30 text-ath-green"
-        }`}>
-          <AlertTriangle className="h-4 w-4" />
-          <span>{highLoadCount > 0 ? `${highLoadCount} High-Load Joint Alert` : "All Joints Within Safe Limits"}</span>
-        </div>
-      </div>
-
       {/* Main Radar Arena */}
       <div className="grid gap-6 lg:grid-cols-12">
         {/* Left 7 Cols: Interactive 6-Axis Radar SVG */}
@@ -264,7 +238,7 @@ export default function JointStressInjuryRiskRadar({ actionType = "forehand" }: 
               {/* Concentric Safety Web Rings */}
               {[0.25, 0.5, 0.75, 1.0].map((ring) => {
                 const ringPoints = axes.map((_, i) => {
-                  const angle = (i * 2 * Math.PI) / numAxes - Math.PI / 2;
+                  const angle = axisAngle(i, numAxes);
                   const r = ring * radius;
                   return `${center + r * Math.cos(angle)},${center + r * Math.sin(angle)}`;
                 }).join(" ");
@@ -283,7 +257,7 @@ export default function JointStressInjuryRiskRadar({ actionType = "forehand" }: 
 
               {/* Axis Spoke Lines */}
               {axes.map((_, i) => {
-                const angle = (i * 2 * Math.PI) / numAxes - Math.PI / 2;
+                const angle = axisAngle(i, numAxes);
                 const endX = center + radius * Math.cos(angle);
                 const endY = center + radius * Math.sin(angle);
                 return (
@@ -343,7 +317,7 @@ export default function JointStressInjuryRiskRadar({ actionType = "forehand" }: 
 
               {/* Axis Labels */}
               {axes.map((axis, i) => {
-                const angle = (i * 2 * Math.PI) / numAxes - Math.PI / 2;
+                const angle = axisAngle(i, numAxes);
                 const labelX = center + (radius + 24) * Math.cos(angle);
                 const labelY = center + (radius + 20) * Math.sin(angle);
                 const isSelected = axis.id === selectedAxisId;
@@ -416,10 +390,41 @@ export default function JointStressInjuryRiskRadar({ actionType = "forehand" }: 
               <Sparkles className="h-4 w-4" />
               <span>Physical Therapy & Technique Fix</span>
             </div>
-            <p className="mt-1 text-xs text-ath-green/15 font-medium leading-relaxed">
+            <p className="mt-1 text-xs text-ath-green font-medium leading-relaxed">
               {selectedAxis.preventionTip}
             </p>
           </div>
+        </div>
+      </div>
+
+      {/* Header Banner */}
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 p-5 backdrop-blur-xl">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1 rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-slate-300 ring-1 ring-white/15">
+              <Shield className="h-3.5 w-3.5" />
+              Illustrative
+            </span>
+            <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[0.68rem] font-semibold text-slate-300">
+              {actionType.replace("_", " ").toUpperCase()} · 6-Axis Stress
+            </span>
+          </div>
+          <h3 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
+            Joint Stress & Injury Risk Radar
+          </h3>
+          <p className="mt-0.5 text-xs text-slate-300">
+            Typical joint-load pattern for this stroke type — not measured from your video (no force plates or EMG in a single-camera capture).
+          </p>
+        </div>
+
+        {/* Overall Status Badge */}
+        <div className={`flex items-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-bold ${
+          hasHighLoad
+            ? "bg-ath-warn/20 border-ath-warn/30 text-ath-warn"
+            : "bg-ath-green/20 border-ath-green/30 text-ath-green"
+        }`}>
+          <AlertTriangle className="h-4 w-4" />
+          <span>{highLoadCount > 0 ? `${highLoadCount} High-Load Joint Alert` : "All Joints Within Safe Limits"}</span>
         </div>
       </div>
     </div>

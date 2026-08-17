@@ -229,14 +229,17 @@ export default function KinematicDataMatrix({ actionType = "forehand", onSelectM
       {/* Header Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
         <div>
-          <h3 className="text-lg font-black text-white">Live Stroke Telemetry</h3>
-          <p className="text-xs text-slate-400">9 core parameters from 60fps optical tracking</p>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-black text-white">Stroke Telemetry</h3>
+            <span className="rounded bg-white/10 px-1.5 py-0.5 text-[0.6rem] font-black uppercase tracking-wider text-slate-300">Illustrative</span>
+          </div>
+          <p className="text-xs text-slate-400">Typical ranges for this stroke type — not measured from your video.</p>
         </div>
 
         {/* Category Filters (iOS Segmented Pills) */}
         <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 p-1 text-xs">
           {[
-            { id: "all", label: "All (9)" },
+            { id: "all", label: `All (${metrics.length})` },
             { id: "racket", label: "Racket" },
             { id: "body_3dma", label: "Body" },
             { id: "ball_flight", label: "Ball" },

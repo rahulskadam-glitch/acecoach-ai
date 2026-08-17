@@ -21,7 +21,7 @@ export default function MobileTabBar() {
         const Icon = item.icon;
         const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
         const analyze = item.href === "/start";
-        return <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={`relative flex min-h-13 flex-col items-center justify-center gap-1 rounded-xl px-1 text-[0.66rem] font-semibold transition active:scale-95 ${analyze ? "text-[#123049]" : active ? "bg-[#e8f2ed] text-[#075f4e]" : "text-slate-500 active:bg-slate-50"}`}>{analyze ? <span className={`absolute -top-5 flex h-12 w-12 items-center justify-center rounded-2xl border-4 border-[#f3f6f2] shadow-lg ${active ? "bg-[#d7e022] text-[#123049]" : "bg-[#123049] text-white"}`}><Icon className="h-5 w-5" /></span> : <Icon className="h-4 w-4" />}<span className={analyze ? "mt-7" : ""}>{item.label}</span></Link>;
+        return <Link key={item.href} href={item.href} aria-current={active ? "page" : undefined} className={`relative flex min-h-13 flex-col items-center justify-center gap-1 rounded-xl px-1 text-[0.66rem] font-semibold transition active:scale-95 ${analyze ? "text-[#1b4332]" : active ? "bg-[#e6ede0] text-[#40916c]" : "text-slate-500 active:bg-slate-50"}`}>{analyze ? <span className={`absolute -top-5 flex h-12 w-12 items-center justify-center rounded-2xl border-4 border-[#e6ede0] shadow-lg ${active ? "bg-[#d7e022] text-[#1b4332]" : "bg-[#1b4332] text-white"}`}><Icon className="h-5 w-5" /></span> : <Icon className="h-4 w-4" />}<span className={analyze ? "mt-7" : ""}>{item.label}</span></Link>;
       })}
     </nav>
   );

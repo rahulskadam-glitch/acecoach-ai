@@ -9,8 +9,8 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/start?sport=tennis",
     scope: "/",
     display: "standalone",
-    background_color: "#123049",
-    theme_color: "#123049",
+    background_color: "#1b4332",
+    theme_color: "#1b4332",
     categories: ["sports", "education"],
     icons: [
       { src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },

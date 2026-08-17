@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { isOwnedStoragePath } from "@/lib/storage/ownership";
 import { createAdminClient, createClient } from "@/lib/supabase/server";
 
 function getSafeNext(raw: string | null) {
@@ -166,7 +167,7 @@ export async function deleteCurrentAccount() {
 
   const storagePaths = (videos ?? [])
     .map((video) => video.storage_path)
-    .filter((path): path is string => typeof path === "string" && path.startsWith(`${user.id}/`) && !path.includes(".."));
+    .filter((path): path is string => typeof path === "string" && isOwnedStoragePath(path, user.id));
 
   for (let index = 0; index < storagePaths.length; index += 100) {
     const { error } = await admin.storage.from("videos").remove(storagePaths.slice(index, index + 100));

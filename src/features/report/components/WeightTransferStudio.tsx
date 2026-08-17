@@ -1,0 +1,256 @@
+"use client";
+
+import { ChevronDown, Scale, Sparkles } from "lucide-react";
+import { useMemo } from "react";
+import type { MotionStage } from "../motion/motion-model";
+import StagePhaseScrubber from "./StagePhaseScrubber";
+
+type WeightStoryboardMoment = {
+  id: string;
+  stage: MotionStage;
+  stepNum: number;
+  title: string;
+  cue: string;
+  rearFoot: number;
+  frontFoot: number;
+  comShiftCm: number;
+  status: "optimal" | "working" | "priority";
+  athleteVerdict: string;
+  proBenchmark: string;
+};
+
+// 4-Card Weight Transfer Storyboard
+const WEIGHT_STORYBOARD: WeightStoryboardMoment[] = [
+  {
+    id: "moment_ready",
+    stage: "ready",
+    stepNum: 1,
+    title: "1. Ready Stance",
+    cue: "Balanced bounce on balls of feet",
+    rearFoot: 50,
+    frontFoot: 50,
+    comShiftCm: 0,
+    status: "optimal",
+    athleteVerdict: "50/50 balanced platform",
+    proBenchmark: "50/50 neutral split",
+  },
+  {
+    id: "moment_load",
+    stage: "unit_turn",
+    stepNum: 2,
+    title: "2. Coil & Loading",
+    cue: "Store spring power on back leg",
+    rearFoot: 75,
+    frontFoot: 25,
+    comShiftCm: -8,
+    status: "optimal",
+    athleteVerdict: "72% back foot load",
+    proBenchmark: "75% deep coil load",
+  },
+  {
+    id: "moment_strike",
+    stage: "forward_swing_contact",
+    stepNum: 3,
+    title: "3. Strike & Drive ⚡",
+    cue: "Drive full bodyweight into the ball",
+    rearFoot: 15,
+    frontFoot: 85,
+    comShiftCm: 24,
+    status: "priority",
+    athleteVerdict: "65% front foot drive (mild fall back)",
+    proBenchmark: "85% front foot commitment (+24cm)",
+  },
+  {
+    id: "moment_reset",
+    stage: "recovery",
+    stepNum: 4,
+    title: "4. Land & Reset",
+    cue: "Instant balanced split for next ball",
+    rearFoot: 50,
+    frontFoot: 50,
+    comShiftCm: 2,
+    status: "optimal",
+    athleteVerdict: "50/50 landing recovery",
+    proBenchmark: "50/50 dynamic recovery",
+  },
+];
+
+export default function WeightTransferStudio({
+  currentStage,
+  onSeekToStage,
+}: {
+  currentStage: MotionStage;
+  onSeekToStage: (stage: MotionStage) => void;
+}) {
+  const activeMoment = useMemo(() => {
+    return WEIGHT_STORYBOARD.find((m) => m.stage === currentStage) ?? WEIGHT_STORYBOARD[2];
+  }, [currentStage]);
+
+  // Seesaw tilt angle calculation (-12 deg back to +14 deg forward)
+  const seesawAngle = useMemo(() => {
+    const diff = activeMoment.frontFoot - activeMoment.rearFoot; // -50 to +70
+    return Math.round((diff / 70) * 14);
+  }, [activeMoment]);
+
+  return (
+    <div className="space-y-6 rounded-3xl border border-white/15 bg-gradient-to-br from-slate-950 via-[#0a1224] to-[#08182b] p-6 text-white shadow-2xl backdrop-blur-2xl sm:p-8">
+      <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ath-green/20 text-ath-green">
+          <Scale className="h-5 w-5" />
+        </div>
+        <div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">Weight Transfer & Balance</h2>
+            <span className="rounded bg-white/10 px-1.5 py-0.5 text-[0.6rem] font-black uppercase tracking-wider text-slate-300">Illustrative</span>
+          </div>
+          <p className="mt-0.5 text-xs text-slate-400">A typical weight-shift pattern for this stroke phase — not measured from your video.</p>
+        </div>
+      </div>
+
+      {/* Main Visual Seesaw Stage Arena */}
+      <div className="grid gap-6 lg:grid-cols-12">
+        {/* Left 7 Cols: The Physical Tilting Seesaw */}
+        <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-slate-950/80 p-5 backdrop-blur flex flex-col justify-between">
+          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <div className="flex items-center gap-2">
+              <Scale className="h-4 w-4 text-ath-green" />
+              <span className="text-xs font-bold uppercase tracking-wider text-ath-green">
+                Live Weight Balance Scale
+              </span>
+            </div>
+            <span className="text-xs text-slate-400 font-mono">
+              Center-of-Mass Drive: <strong className="text-ath-sky">{activeMoment.comShiftCm > 0 ? `+${activeMoment.comShiftCm}cm forward` : `${activeMoment.comShiftCm}cm back`}</strong>
+            </span>
+          </div>
+
+          {/* Physical Tilting Seesaw Graphic */}
+          <div className="relative my-4 aspect-[16/9] w-full flex items-center justify-center">
+            <svg viewBox="0 0 500 240" className="h-full w-full select-none">
+              {/* Court Baseline Floor */}
+              <line x1="30" y1="210" x2="470" y2="210" stroke="rgba(255,255,255,0.2)" strokeWidth="2" strokeDasharray="4 4" />
+              <text x="470" y="225" fill="#64748b" fontSize="9" textAnchor="end" fontWeight="600">COURT BASELINE</text>
+
+              {/* Central Fulcrum / Pivot Stand */}
+              <polygon points="250,150 230,210 270,210" fill="#1e293b" stroke="#0ea5e9" strokeWidth="2" />
+              <circle cx="250" cy="150" r="7" fill="#38bdf8" stroke="#ffffff" strokeWidth="2" />
+
+              {/* Tilting Balance Seesaw Beam */}
+              <g transform={`rotate(${seesawAngle} 250 150)`} className="transition-transform duration-500 ease-out">
+                {/* Titanium Beam */}
+                <rect x="50" y="143" width="400" height="14" rx="7" fill="#0f172a" stroke="#38bdf8" strokeWidth="2" />
+
+                {/* Left Pad (Back Foot Plate) */}
+                <g transform="translate(60, 110)">
+                  <rect x="0" y="0" width="80" height="30" rx="6" fill="rgba(15,23,42,0.9)" stroke="#f59e0b" strokeWidth="1.5" />
+                  <text x="40" y="14" fill="#94a3b8" fontSize="8" fontWeight="bold" textAnchor="middle">BACK FOOT</text>
+                  <text x="40" y="26" fill="#fbbf24" fontSize="11" fontWeight="900" textAnchor="middle">{activeMoment.rearFoot}%</text>
+                </g>
+
+                {/* Right Pad (Front Foot Plate) */}
+                <g transform="translate(360, 110)">
+                  <rect x="0" y="0" width="80" height="30" rx="6" fill="rgba(15,23,42,0.9)" stroke="#06b6d4" strokeWidth="1.5" />
+                  <text x="40" y="14" fill="#94a3b8" fontSize="8" fontWeight="bold" textAnchor="middle">FRONT FOOT</text>
+                  <text x="40" y="26" fill="#22d3ee" fontSize="11" fontWeight="900" textAnchor="middle">{activeMoment.frontFoot}%</text>
+                </g>
+
+                {/* Dynamic Rolling Center-of-Mass (CoM) Energy Sphere */}
+                <circle
+                  cx={250 + (activeMoment.frontFoot - activeMoment.rearFoot) * 1.8}
+                  cy="134"
+                  r="12"
+                  fill="#38bdf8"
+                  stroke="#ffffff"
+                  strokeWidth="2.5"
+                  style={{ filter: "drop-shadow(0 0 10px #38bdf8)" }}
+                />
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        {/* Right 5 Cols: Active Moment Coaching Telemetry */}
+        <div className="lg:col-span-5 flex flex-col justify-between space-y-4">
+          <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-5 backdrop-blur">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <span className="rounded-full bg-ath-green/20 px-3 py-1 text-xs font-extrabold uppercase text-ath-green">
+                Phase {activeMoment.stepNum} of 4
+              </span>
+              <span className="text-xs text-slate-400 font-medium">Moment Details</span>
+            </div>
+
+            <h3 className="mt-3 text-lg font-bold text-white">{activeMoment.title}</h3>
+            <p className="mt-1 text-xs text-slate-300 font-medium leading-relaxed">{activeMoment.cue}</p>
+
+            <div className="mt-4 space-y-2.5">
+              <div className="flex items-center justify-between rounded-xl bg-white/5 p-3 text-xs">
+                <span className="text-slate-400 font-semibold">Your Measured Shift:</span>
+                <span className={`font-bold ${activeMoment.status === "priority" ? "text-rose-300" : "text-ath-green"}`}>
+                  {activeMoment.athleteVerdict}
+                </span>
+              </div>
+              <div className="flex items-center justify-between rounded-xl bg-white/5 p-3 text-xs">
+                <span className="text-slate-400 font-semibold">Pro Target Benchmark:</span>
+                <span className="font-bold text-ath-sky">{activeMoment.proBenchmark}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Actionable Weight Coaching Tip */}
+          <div className="rounded-2xl border border-ath-green/30 bg-ath-green/10 p-4 backdrop-blur ring-1 ring-ath-green/30">
+            <div className="flex items-center gap-2 text-ath-green font-bold text-xs">
+              <Sparkles className="h-4 w-4" />
+              <span>Weight Transfer Key</span>
+            </div>
+            <p className="mt-1.5 text-xs text-slate-200 font-medium leading-relaxed">
+              {activeMoment.status === "priority"
+                ? "Commit 85% of your weight forward onto your front shoe through impact. Leaning back robs you of free pace and depth."
+                : "Excellent platform stability! Keep maintaining strong balanced foot pressure throughout the swing."}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 4-Card Storyboard, collapsed by default */}
+      <details className="group rounded-2xl border border-white/10 bg-white/5">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-300">See all 4 phases of your weight shift</span>
+          <ChevronDown className="h-4 w-4 text-slate-400 transition group-open:rotate-180" />
+        </summary>
+        <div className="grid gap-3 border-t border-white/10 p-4 sm:grid-cols-2 lg:grid-cols-4">
+          {WEIGHT_STORYBOARD.map((moment) => {
+            const isCurrent = moment.stage === currentStage;
+            return (
+              <button
+                key={moment.id}
+                type="button"
+                onClick={() => onSeekToStage(moment.stage)}
+                className={`group/card relative flex flex-col justify-between rounded-2xl p-4 text-left transition border ${
+                  isCurrent
+                    ? "border-ath-green bg-ath-green/20 shadow-lg shadow-ath-green/20 ring-2 ring-ath-green/40"
+                    : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
+                }`}
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[0.65rem] font-bold uppercase text-slate-400">Step {moment.stepNum}</span>
+                    <span className={`h-2 w-2 rounded-full ${moment.status === "priority" ? "bg-rose-400" : "bg-ath-green"}`} />
+                  </div>
+                  <h4 className="mt-1.5 text-sm font-bold text-white">{moment.title}</h4>
+                  <p className="mt-1 text-[0.68rem] text-slate-400 leading-snug">{moment.cue}</p>
+                </div>
+
+                <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2 text-[0.7rem]">
+                  <span className="text-ath-warn font-bold">{moment.rearFoot}% Rear</span>
+                  <span className="text-slate-500 font-bold">➔</span>
+                  <span className="text-ath-sky font-bold">{moment.frontFoot}% Front</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </details>
+
+      <StagePhaseScrubber currentStage={currentStage} onSeekToStage={onSeekToStage} />
+    </div>
+  );
+}

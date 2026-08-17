@@ -34,7 +34,7 @@ export default function JourneyShell({
 
   return (
     <main className="ath-app-canvas min-h-screen text-slate-950">
-      <header className="sticky top-0 z-50 border-b border-[#dce5df]/80 bg-white/88 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-[#d6e2cf]/80 bg-white/88 backdrop-blur-xl">
         <div className={`mx-auto flex ${maxWidth} items-center justify-between gap-3 px-4 pb-4 pt-[max(1rem,env(safe-area-inset-top))] sm:gap-6 sm:px-8`}>
           <AthlentraMark />
           {current !== "auth" ? <div className="flex items-center gap-2 sm:gap-4">

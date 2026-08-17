@@ -8,8 +8,10 @@ import {
   Eye,
   Gauge,
   LayoutDashboard,
+  Scale,
   ShieldAlert,
   Sparkles,
+  TrendingUp,
   Wind,
   Zap,
 } from "lucide-react";
@@ -20,6 +22,7 @@ import { getSport } from "@/lib/sports";
 import type { PlayerReportProps } from "../types";
 import { buildPlayerReportView } from "../model/view-model";
 import { concise, plainLanguage } from "../model/plain-language";
+import { resolveThreePracticeDrills } from "../model/practice-drills";
 import type { MotionStage } from "../motion/motion-model";
 import TennisBiomechanicsIndex from "./TennisBiomechanicsIndex";
 import ProTwinStudio from "./ProTwinStudio";
@@ -30,26 +33,32 @@ import BiomechanicalExplorer from "./BiomechanicalExplorer";
 import JointStressInjuryRiskRadar from "./JointStressInjuryRiskRadar";
 import RotatorCuffDecelerationBarometer from "./RotatorCuffDecelerationBarometer";
 import NetClearanceTrajectoryFunnel from "./NetClearanceTrajectoryFunnel";
+import WeightTransferStudio from "./WeightTransferStudio";
+import SessionTrend, { type SessionTrendPoint } from "./insights/SessionTrend";
 import CoachAIDrawer from "./CoachAIDrawer";
 
-type ReportTab = "hub" | "overview" | "video" | "phases" | "energy" | "telemetry" | "injury" | "tracking" | "practice";
+type ReportTab = "hub" | "overview" | "video" | "phases" | "energy" | "weight_transfer" | "telemetry" | "injury" | "tracking" | "practice" | "longitudinal";
 type VideoView = "yours" | "pro";
 type InjuryView = "joint_stress" | "shoulder_braking";
 
 export default function V6PlayerReport(props: PlayerReportProps & { sessionId: string; previewOnly?: boolean }) {
   const {
     report,
-    sportId,
     actionType,
+    sportId,
+    sessionId,
+    strokeHistory,
     athleteContext,
     videoUrl,
-    sessionId,
+    validatedBallOutcomes,
   } = props;
   const sport = getSport(sportId);
   const view = buildPlayerReportView(report);
-  const [activeTab, setActiveTab] = useState<ReportTab>("hub");
+  const [activeTab, setActiveTab] = useState<ReportTab>("overview");
   const [videoView, setVideoView] = useState<VideoView>("yours");
   const [injuryView, setInjuryView] = useState<InjuryView>("joint_stress");
+  const [videoTime, setVideoTime] = useState<number>(0);
+  const [currentStage, setCurrentStage] = useState<MotionStage>("ready");
   const [proTwinStage, setProTwinStage] = useState<MotionStage>("forward_swing_contact");
   const [isCoachDrawerOpen, setIsCoachDrawerOpen] = useState(false);
   const resolvedActionType = report.movementClassification?.analysisAction ?? actionType;
@@ -60,30 +69,29 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
     sport.actions.find((item) => item.id === actionType)?.label ??
     actionType.replaceAll("_", " ");
 
-  const drills = [...report.drills];
-  for (const finding of report.ontologyReasoning?.findings ?? []) {
-    if (drills.length >= 3 || !finding.drill || drills.some((item) => item.id === finding.drill?.id)) continue;
-    drills.push({
-      id: finding.drill.id,
-      name: finding.drill.name,
-      purpose: finding.drill.purpose ?? finding.why,
-      cue: finding.drill.cue ?? finding.cue,
-      dosage: finding.drill.dosage,
-      successMetric: finding.drill.success,
-    });
-  }
-  const practiceDrills = drills.slice(0, 3);
+  // Guarantees at least 3 structured practice drills tailored to this stroke & priority flaw
+  const practiceDrills = resolveThreePracticeDrills(report, movement);
   const firstDrill = practiceDrills[0];
+
+  const trendPoints: SessionTrendPoint[] = (strokeHistory ?? []).map((item) => ({
+    sessionId: item.sessionId,
+    date: new Date(item.recordedAt).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+    score: item.score,
+    consistency: null,
+    capture: 0,
+  }));
 
   const hubTiles: Array<{ id: ReportTab; label: string; icon: typeof LayoutDashboard }> = [
     { id: "overview", label: "Overview", icon: LayoutDashboard },
     { id: "video", label: "Video", icon: Eye },
     { id: "phases", label: "Stroke Phases", icon: Activity },
     { id: "energy", label: "Energy Flow", icon: Zap },
+    { id: "weight_transfer", label: "Weight Transfer", icon: Scale },
     { id: "telemetry", label: "Telemetry", icon: Gauge },
     { id: "injury", label: "Injury Risk", icon: ShieldAlert },
     { id: "tracking", label: "Ball Tracking", icon: Wind },
     { id: "practice", label: "Practice", icon: Dumbbell },
+    { id: "longitudinal", label: "Longitudinal Analysis", icon: TrendingUp },
   ];
   const sectionLabel = hubTiles.find((tile) => tile.id === activeTab)?.label ?? "";
 
@@ -241,6 +249,13 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
         </section>
       )}
 
+      {/* Weight Transfer: seesaw balance, moment detail, 4-phase storyboard */}
+      {activeTab === "weight_transfer" && (
+        <section className="animate-in fade-in duration-200">
+          <WeightTransferStudio currentStage={proTwinStage} onSeekToStage={setProTwinStage} />
+        </section>
+      )}
+
       {/* Telemetry: live 9-tile kinematic dashboard */}
       {activeTab === "telemetry" && (
         <section className="animate-in fade-in duration-200">
@@ -279,7 +294,7 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
       {/* Ball Tracking: 3D net clearance and spin window (Hawk-Eye style) */}
       {activeTab === "tracking" && (
         <section className="animate-in fade-in duration-200">
-          <NetClearanceTrajectoryFunnel actionType={resolvedActionType} />
+          <NetClearanceTrajectoryFunnel actionType={resolvedActionType} validatedBallOutcomes={validatedBallOutcomes} />
         </section>
       )}
 
@@ -288,7 +303,12 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
         <section className="space-y-4 animate-in fade-in duration-200">
           {firstDrill ? (
             <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-6 backdrop-blur-xl shadow-xl">
-              <div className="flex items-center justify-between">
+              <div className="flex items-baseline gap-2">
+                <span className="font-mono text-4xl font-black text-ath-lime">{practiceDrills.length}</span>
+                <span className="text-xs text-slate-400">{practiceDrills.length === 1 ? "drill" : "drills"} in today&apos;s plan</span>
+              </div>
+
+              <div className="mt-4 flex items-center justify-between">
                 <span className="rounded-full bg-ath-lime/15 px-3 py-1 text-xs font-black uppercase tracking-wider text-ath-lime ring-1 ring-ath-lime/30">
                   Daily Prescribed Drill
                 </span>
@@ -339,6 +359,19 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
           ) : (
             <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-6 text-center text-xs text-slate-300">
               Practice shadow swings focusing on: “{view.coachingCue}”
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Longitudinal Analysis: multi-session trend for this movement */}
+      {activeTab === "longitudinal" && (
+        <section className="space-y-4 animate-in fade-in duration-200">
+          {trendPoints.length >= 2 ? (
+            <SessionTrend points={trendPoints} currentSessionId={sessionId} />
+          ) : (
+            <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-6 text-center text-xs text-slate-300">
+              This is your first recorded session for this movement — your trend will appear here once you have at least two sessions to compare.
             </div>
           )}
         </section>

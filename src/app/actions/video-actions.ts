@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { getSport, supportedSports } from "@/lib/sports";
+import { assertOwnedStoragePath, isOwnedStoragePath } from "@/lib/storage/ownership";
 import { createAdminClient, createClient, requireUser } from "@/lib/supabase/server";
 
 const MAX_VIDEO_BYTES = 500 * 1024 * 1024;
@@ -62,14 +63,9 @@ function validSportId(value: string) {
   return match.id;
 }
 
-function assertOwnedStoragePath(storagePath: string, userId: string, sportId: string) {
+function assertOwnedUploadPath(storagePath: string, userId: string, sportId: string) {
   const expectedPrefix = `${userId}/${sportId}/`;
-  if (
-    !storagePath.startsWith(expectedPrefix)
-    || storagePath.includes("..")
-    || storagePath.includes("\\")
-    || storagePath.length > 500
-  ) {
+  if (!storagePath.startsWith(expectedPrefix) || !isOwnedStoragePath(storagePath, userId) || storagePath.length > 500) {
     throw new Error("The uploaded video path is invalid.");
   }
 }
@@ -214,7 +210,7 @@ export async function recordVideoMetadata(payload: {
 
   const fileName = payload.fileName.trim().slice(0, 255);
   if (!fileName) throw new Error("The video filename is required.");
-  assertOwnedStoragePath(payload.storagePath, user.id, sportId);
+  assertOwnedUploadPath(payload.storagePath, user.id, sportId);
 
   if (
     payload.fileSizeBytes !== null
@@ -329,7 +325,7 @@ export async function getVideoDownloadUrl(videoId: string) {
     .eq("user_id", user.id)
     .single();
   if (lookupError || !video) throw new Error(lookupError?.message ?? "Video not found.");
-  if (!video.storage_path.startsWith(`${user.id}/`) || video.storage_path.includes("..")) throw new Error("The stored video path failed its ownership check.");
+  assertOwnedStoragePath(video.storage_path, user.id, "The stored video path failed its ownership check.");
   const { data, error } = await supabase.storage.from("videos").createSignedUrl(video.storage_path, 60, { download: video.filename });
   if (error || !data?.signedUrl) throw new Error(error?.message ?? "Unable to prepare the video download.");
   return { url: data.signedUrl, fileName: video.filename, expiresInSeconds: 60 };
@@ -350,9 +346,7 @@ export async function deleteVideo(videoId: string) {
     throw new Error(lookupError?.message ?? "Video not found.");
   }
 
-  if (!video.storage_path.startsWith(`${user.id}/`) || video.storage_path.includes("..")) {
-    throw new Error("The stored video path failed its ownership check.");
-  }
+  assertOwnedStoragePath(video.storage_path, user.id, "The stored video path failed its ownership check.");
 
   const { error: storageError } = await supabase.storage.from("videos").remove([video.storage_path]);
   if (storageError) throw new Error(storageError.message);

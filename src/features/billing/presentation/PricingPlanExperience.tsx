@@ -8,7 +8,6 @@ import {
   HelpCircle,
   Loader2,
   Lock,
-  Quote,
   ShieldCheck,
   Sparkles,
   Star,
@@ -28,6 +27,7 @@ import {
   detectDefaultCountry,
   SUPPORTED_COUNTRIES,
 } from "../domain/currencies";
+import { PLAN_ENTITLEMENTS } from "../domain/entitlements";
 
 type SelectedPlanModal = {
   planId: "free_trial" | "single_video" | "pro";
@@ -36,6 +36,9 @@ type SelectedPlanModal = {
   periodText?: string;
   badge: string;
 } | null;
+
+const FREE_VIDEO_LIMIT = PLAN_ENTITLEMENTS.find((plan) => plan.id === "free")!.videoLimit;
+const PRO_VIDEO_LIMIT = PLAN_ENTITLEMENTS.find((plan) => plan.id === "pro")!.videoLimit;
 
 export default function PricingPlanExperience() {
   const router = useRouter();
@@ -68,10 +71,8 @@ export default function PricingPlanExperience() {
       } else {
         toast.error("Failed to activate plan. Please try again.");
       }
-    } catch {
-      toast.success(`${plan.title} confirmed! Redirecting to video upload...`);
-      setActiveModal(null);
-      router.push("/start");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to activate plan. Please try again.");
     } finally {
       setIsProcessing(false);
     }
@@ -83,13 +84,13 @@ export default function PricingPlanExperience() {
       <div className="text-center max-w-3xl mx-auto space-y-4">
         <div className="inline-flex items-center gap-2 rounded-full bg-ath-lime/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-ath-lime ring-1 ring-ath-lime/20">
           <Sparkles className="h-3.5 w-3.5 text-ath-lime" />
-          <span>Special Offer: 1st Month Free • Up to 5 Video Audits</span>
+          <span>Special Offer: 1st Month Free • Up to {FREE_VIDEO_LIMIT} Video Audits</span>
         </div>
         <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white">
           Simple, Flexible Tennis Coaching Plans
         </h1>
         <p className="text-base text-slate-400 leading-relaxed max-w-2xl mx-auto">
-          Start with 5 free video analyses, purchase single video passes as you play, or unlock up to 10 tour-grade biomechanical audits a month.
+          Start with {FREE_VIDEO_LIMIT} free video analyses, purchase single video passes as you play, or unlock up to {PRO_VIDEO_LIMIT} tour-grade biomechanical audits a month.
         </p>
 
         {/* Region / Currency Selector */}
@@ -118,7 +119,7 @@ export default function PricingPlanExperience() {
 
       {/* 3 Pricing Cards Grid */}
       <div className="grid gap-8 lg:grid-cols-3 items-stretch max-w-7xl mx-auto">
-        {/* Tier 1: Free Trial (1st Month Free - Up to 5 Videos) */}
+        {/* Tier 1: Free Trial (1st Month Free - Up to FREE_VIDEO_LIMIT Videos) */}
         <div className="relative flex flex-col justify-between rounded-3xl border border-ath-lime/30 bg-ath-navy p-7 backdrop-blur-xl transition hover:border-ath-lime/50">
           <div>
             <div className="flex items-center justify-between">
@@ -132,7 +133,7 @@ export default function PricingPlanExperience() {
             </div>
             <h3 className="mt-2 text-2xl font-black text-white">Starter Trial</h3>
             <p className="mt-1 text-xs text-slate-400">
-              Try out 5 complete video stroke analyses free during your first 30 days.
+              Try out {FREE_VIDEO_LIMIT} complete video stroke analyses free during your first 30 days.
             </p>
 
             <div className="mt-6 flex items-baseline gap-1">
@@ -145,7 +146,7 @@ export default function PricingPlanExperience() {
             <div className="mt-7 space-y-3 border-t border-white/10 pt-6">
               <div className="flex items-start gap-2.5 text-xs text-slate-200">
                 <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
-                <span><strong>5 Free Video Analyses</strong> included (Forehand, Backhand, Serve)</span>
+                <span><strong>{FREE_VIDEO_LIMIT} Free Video Analyses</strong> included (Forehand, Backhand, Serve)</span>
               </div>
               <div className="flex items-start gap-2.5 text-xs text-slate-200">
                 <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
@@ -174,12 +175,12 @@ export default function PricingPlanExperience() {
                 title: "Starter 30-Day Free Trial",
                 priceText: `${pricing.currencySymbol}0`,
                 periodText: "1st Month Free",
-                badge: "5 Free Video Audits",
+                badge: `${FREE_VIDEO_LIMIT} Free Video Audits`,
               })
             }
             className="mt-8 flex min-h-12 w-full items-center justify-center rounded-2xl border border-ath-lime/40 bg-ath-lime/10 text-xs font-bold text-ath-lime hover:bg-ath-lime/20 active:scale-[0.99] transition"
           >
-            Start 1st Month Free (5 Videos)
+            Start 1st Month Free ({FREE_VIDEO_LIMIT} Videos)
           </button>
         </div>
 
@@ -253,7 +254,7 @@ export default function PricingPlanExperience() {
           {/* Top Floating Badge */}
           <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-ath-lime px-4 py-1 text-[0.68rem] font-black uppercase tracking-wider text-slate-950 shadow-md whitespace-nowrap flex items-center gap-1">
             <Flame className="h-3 w-3 fill-slate-950" />
-            <span>10 VIDEOS/MO • BEST VALUE</span>
+            <span>{PRO_VIDEO_LIMIT} VIDEOS/MO • BEST VALUE</span>
           </div>
 
           <div>
@@ -263,7 +264,7 @@ export default function PricingPlanExperience() {
                 Pro Membership
               </span>
               <span className="rounded-full bg-ath-lime/20 px-2.5 py-0.5 text-[0.68rem] font-black text-ath-lime">
-                UP TO 10 UPLOADS/MO
+                UP TO {PRO_VIDEO_LIMIT} UPLOADS/MO
               </span>
             </div>
             <h3 className="mt-2 text-2xl font-black text-white">Pro Athlete</h3>
@@ -281,7 +282,7 @@ export default function PricingPlanExperience() {
             <div className="mt-7 space-y-3.5 border-t border-white/10 pt-6">
               <div className="flex items-start gap-2.5 text-xs text-slate-200">
                 <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
-                <span><strong>Up to 10 60fps Video Analyses/mo</strong> (All Stroke Types)</span>
+                <span><strong>Up to {PRO_VIDEO_LIMIT} 60fps Video Analyses/mo</strong> (All Stroke Types)</span>
               </div>
               <div className="flex items-start gap-2.5 text-xs text-slate-200">
                 <Check className="h-4 w-4 text-ath-lime mt-0.5 shrink-0" />
@@ -318,7 +319,7 @@ export default function PricingPlanExperience() {
                 title: "Pro Athlete Membership",
                 priceText: `${pricing.proMonthly.formatted}/month`,
                 periodText: "Billed Monthly · 1st Month Free",
-                badge: "Up to 10 Audits/mo",
+                badge: `Up to ${{PRO_VIDEO_LIMIT}} Audits/mo`,
               })
             }
             className="mt-8 flex min-h-13 w-full items-center justify-center rounded-2xl bg-ath-lime px-5 text-sm font-black text-ath-navy shadow-lg shadow-ath-lime/25 hover:brightness-95 active:scale-[0.99] transition"

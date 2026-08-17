@@ -5,7 +5,7 @@ import { APP_RELEASE_NAME, APP_VERSION, VISUAL_BENCHMARK_FEATURES } from "@/lib/
 
 export default function VersionPage() {
   return (
-    <main className="min-h-screen bg-[#f3f6f2] px-5 py-12 text-slate-950 sm:px-8 sm:py-16">
+    <main className="min-h-screen bg-[#e6ede0] px-5 py-12 text-slate-950 sm:px-8 sm:py-16">
       <section className="mx-auto max-w-5xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl shadow-slate-200/60">
         <div className="border-b border-slate-200 p-7 sm:p-9"><AthlentraMark /><div className="mt-8 flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-blue-800"><BadgeCheck className="h-5 w-5" />Installed build verification</div><h1 className="mt-4 text-4xl font-semibold tracking-[-0.035em]">Athlentra Tennis v{APP_VERSION}</h1><p className="mt-2 text-xl text-slate-600">{APP_RELEASE_NAME}</p></div>
         <div className="p-7 sm:p-9">

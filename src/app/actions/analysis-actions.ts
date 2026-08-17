@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { revalidatePath } from "next/cache";
 
 import { getSport } from "@/lib/sports";
+import { isOwnedStoragePath } from "@/lib/storage/ownership";
 import { createAdminClient, requireUser } from "@/lib/supabase/server";
 import type { AnalysisReport, EngineManifest } from "@/modules/analysis/types";
 import {
@@ -312,8 +313,7 @@ function assertOwnedVideoPath(video: VideoRow, userId: string) {
   if (
     video.user_id !== userId
     || !video.storage_path.startsWith(expectedPrefix)
-    || video.storage_path.includes("..")
-    || video.storage_path.includes("\\")
+    || !isOwnedStoragePath(video.storage_path, userId)
   ) {
     throw new Error("The video storage path failed its ownership check.");
   }
