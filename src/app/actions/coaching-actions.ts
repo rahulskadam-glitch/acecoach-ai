@@ -5,7 +5,8 @@ import { revalidatePath } from "next/cache";
 import { generateIntelligentCoachResponse, type GroundedCoachContext } from "@/lib/ai/coach-engine";
 import { createAdminClient, requireUser, visualQaEnabled } from "@/lib/supabase/server";
 import { getSport } from "@/lib/sports";
-import type { DrillDefinition } from "@/modules/analysis/types";
+import { computePlayerBiomechanicalProfile } from "@/features/report/motion/player-kinetics-engine";
+import type { AnalysisReport, DrillDefinition } from "@/modules/analysis/types";
 
 function cleanMessage(value: string) {
   return value.normalize("NFKC").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "").trim().slice(0, 1200);
@@ -27,7 +28,7 @@ async function loadGroundedContext(sessionId: string, userId: string): Promise<G
   const admin = createAdminClient();
   const { data: session, error } = await admin
     .from("analysis_sessions")
-    .select("id, sport_id, action_type, analysis_action_type, status, analysis_reports(coach_summary, overall_score, priorities, strengths, drills, next_session, coaching_playbook, limitations, quality_gate, movement_classification, knowledge_control, biomechanical_profile, phases)")
+    .select("id, sport_id, action_type, analysis_action_type, status, analysis_reports(coach_summary, overall_score, priorities, strengths, drills, next_session, coaching_playbook, limitations, quality_gate, movement_classification, knowledge_control, biomechanical_profile, phases, frame_summary)")
     .eq("id", sessionId)
     .eq("user_id", userId)
     .single();
@@ -42,12 +43,15 @@ async function loadGroundedContext(sessionId: string, userId: string): Promise<G
   const playbook = (raw.coaching_playbook ?? {}) as Record<string, unknown>;
   const movement = (raw.movement_classification ?? {}) as Record<string, unknown>;
   const sport = getSport(session.sport_id);
+  const actionType = text(session.analysis_action_type ?? session.action_type, "forehand");
 
   const rawScore = typeof raw.overall_score === "number" ? raw.overall_score : 84;
   const rawDrills = Array.isArray(raw.drills) ? (raw.drills as DrillDefinition[]) : [];
   const rawStrengths = Array.isArray(raw.strengths)
     ? raw.strengths.map((s) => typeof s === "string" ? s : (s as { title?: string; evidence?: string }).title || "Lower body kinetic coil")
     : ["Explosive lower body ground reaction loading (75% rear foot elastic coil)."];
+
+  const kinetics = computePlayerBiomechanicalProfile(raw as unknown as AnalysisReport, actionType);
 
   return {
     admin,
@@ -57,7 +61,7 @@ async function loadGroundedContext(sessionId: string, userId: string): Promise<G
     faultId: text(priority?.faultId, "technique_priority"),
     sportName: sport.name,
     movementName: text(movement.analysisActionLabel, sport.actions.find((item) => item.id === (session.analysis_action_type ?? session.action_type))?.label ?? "Forehand"),
-    actionType: text(session.analysis_action_type ?? session.action_type, "forehand"),
+    actionType,
     overallScore: Math.max(40, Math.min(99, Math.round(rawScore))),
     mainPriority: text(coach.mainPriority, text(priority?.title, "Deepen Racket Drop Lag by +12cm")),
     priorityFinding: text(priority?.finding, "Racket head is dropping 6cm shallow relative to your wrist, reducing gravitational whip into contact."),
@@ -69,6 +73,7 @@ async function loadGroundedContext(sessionId: string, userId: string): Promise<G
     drills: rawDrills,
     phases: Array.isArray(raw.phases) ? raw.phases : [],
     metrics: Array.isArray(raw.biomechanical_profile?.metrics) ? raw.biomechanical_profile.metrics : [],
+    kinetics,
     recordingPlan: text(next.recordingPlan, "Record again from the same camera position after two focused practice sessions."),
     limitations: Array.isArray(raw.limitations) ? raw.limitations.filter((item): item is string => typeof item === "string").slice(0, 10) : ["Monocular 60fps video view"],
   };
@@ -92,6 +97,7 @@ export async function sendCoachingMessage(sessionId: string, rawMessage: string)
       successTarget: "Racket head drops 10-15cm below wrist on 8 of 10 forehands.",
       primaryTimestamp: 1.15,
       strengths: ["Explosive lower body ground reaction loading (75% rear foot elastic coil)."],
+      kinetics: computePlayerBiomechanicalProfile({} as AnalysisReport, "forehand"),
       drills: [
         {
           id: "d1",
