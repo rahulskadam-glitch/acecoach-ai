@@ -101,12 +101,17 @@ export type PlayerBiomechanicalProfile = {
 };
 
 /**
- * Computes a comprehensive, player-specific biomechanical profile from
- * the athlete's 60fps video frames using peer-reviewed sports science models:
- * - Kibler Kinetic Chain Framework (Proximal-to-Distal Sequencing)
- * - Winter/Dempster Anthropometric Segment Inertia (I = m * (rho * L)^2)
- * - Brody-Cross Projectile & Racket Collision Restitution
- * - Newton-Euler Joint Deceleration Dynamics (tau = I * alpha)
+ * Computes a player-specific biomechanical profile. Two signals are genuinely
+ * measured per-frame from video pose keypoints — torso-pelvis separation
+ * (coil) angle and knee flexion angle — and vary between different videos.
+ * Everything else here (Joules, N·m torque, weight-shift %, recoverable MPH)
+ * is a heuristic scaling of those 1-2 measured angles plus, when the frame
+ * data supports it, a frame-to-frame angular-velocity estimate — not an
+ * independent measurement, and not literally computed via the named
+ * equations (E=½Iω², τ=Iα): there's no real anthropometric moment of
+ * inertia and no per-joint angular-acceleration integration here. Treat the
+ * derived numbers as internally-consistent, video-responsive estimates for
+ * coaching direction, not calibrated physical measurements.
  */
 export function computePlayerBiomechanicalProfile(
   report: AnalysisReport,
@@ -141,12 +146,13 @@ export function computePlayerBiomechanicalProfile(
     : 1.18;
   const measuredBaseWidthRatio = Number(avgBaseWidth.toFixed(2));
 
-  // Compute frame derivatives for angular velocities (deg/s)
+  // Compute frame derivatives for angular velocities (deg/s). Hip and shoulder
+  // velocities aren't independently differentiated from video — they're derived
+  // below from the torso-coil ratio, since the pipeline doesn't track separate
+  // hip/shoulder angle keypoints per frame.
   let maxWristSpeed = 0;
   let maxKneeSpeed = 0;
-  let maxHipSpeed = 0;
   let maxTorsoSpeed = 0;
-  let maxShoulderSpeed = 0;
 
   for (let i = 1; i < frames.length - 1; i++) {
     const prev = frames[i - 1];
@@ -284,7 +290,9 @@ export function computePlayerBiomechanicalProfile(
     },
   ];
 
-  // Dynamic Phase-Specific Weight Distribution (Computed from Center of Mass Keypoints)
+  // Phase-specific weight distribution, modeled from the measured coil/knee
+  // signals above — not from tracked center-of-mass (x,y) position, which
+  // this pipeline does not extract per frame.
   const weightTransferPhases: PhaseWeightDistribution[] = [
     {
       stage: "ready",
@@ -398,7 +406,6 @@ export function computePlayerBiomechanicalProfile(
 
   // Dynamic Telemetry Metrics derived directly from the player's 60fps movement
   const estimatedRacketSpeedMph = Number(((athleteWristVelocity / 1280) * (isServe ? 116 : 76)).toFixed(1));
-  const estimatedImpactHeightM = Number((isServe ? 2.82 : 0.96).toFixed(2));
   const estimatedPronationDegSec = Math.round(athleteWristVelocity * 1.15);
 
   const telemetryMetrics: DynamicTelemetryItem[] = [

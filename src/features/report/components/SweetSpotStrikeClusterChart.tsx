@@ -1,7 +1,8 @@
 "use client";
 
 import { Crosshair, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 
 type StrikePoint = {
   id: number;
@@ -14,55 +15,47 @@ type StrikePoint = {
 
 type Props = {
   actionType?: string;
+  profile?: PlayerBiomechanicalProfile;
 };
 
-// 20 Sample Strokes from the match session
-const ATHLETE_STRIKES: StrikePoint[] = [
-  { id: 1, x: 8, y: -12, powerPercentage: 94, spinRpm: 2750, quality: "sweet" },
-  { id: 2, x: 14, y: -18, powerPercentage: 88, spinRpm: 2600, quality: "near" },
-  { id: 3, x: 18, y: -22, powerPercentage: 82, spinRpm: 2450, quality: "near" },
-  { id: 4, x: -6, y: -10, powerPercentage: 96, spinRpm: 2890, quality: "sweet" },
-  { id: 5, x: 22, y: -28, powerPercentage: 78, spinRpm: 2300, quality: "off_center" },
-  { id: 6, x: 12, y: -15, powerPercentage: 90, spinRpm: 2680, quality: "near" },
-  { id: 7, x: 4, y: -8, powerPercentage: 98, spinRpm: 2950, quality: "sweet" },
-  { id: 8, x: 16, y: -24, powerPercentage: 84, spinRpm: 2500, quality: "near" },
-  { id: 9, x: 26, y: -32, powerPercentage: 72, spinRpm: 2180, quality: "off_center" },
-  { id: 10, x: 10, y: -14, powerPercentage: 92, spinRpm: 2720, quality: "near" },
-  { id: 11, x: -2, y: -6, powerPercentage: 99, spinRpm: 3020, quality: "sweet" },
-  { id: 12, x: 15, y: -20, powerPercentage: 86, spinRpm: 2580, quality: "near" },
-  { id: 13, x: 20, y: -26, powerPercentage: 80, spinRpm: 2400, quality: "near" },
-  { id: 14, x: 6, y: -10, powerPercentage: 95, spinRpm: 2820, quality: "sweet" },
-  { id: 15, x: 28, y: -36, powerPercentage: 68, spinRpm: 2100, quality: "off_center" },
-  { id: 16, x: 11, y: -16, powerPercentage: 91, spinRpm: 2700, quality: "near" },
-  { id: 17, x: 2, y: -4, powerPercentage: 100, spinRpm: 3080, quality: "sweet" },
-  { id: 18, x: 17, y: -23, powerPercentage: 85, spinRpm: 2520, quality: "near" },
-  { id: 19, x: 24, y: -30, powerPercentage: 75, spinRpm: 2250, quality: "off_center" },
-  { id: 20, x: 9, y: -13, powerPercentage: 93, spinRpm: 2780, quality: "sweet" },
-];
-
-const PRO_STRIKES: StrikePoint[] = [
-  { id: 1, x: 2, y: -2, powerPercentage: 99, spinRpm: 3200, quality: "sweet" },
-  { id: 2, x: -3, y: 1, powerPercentage: 98, spinRpm: 3150, quality: "sweet" },
-  { id: 3, x: 4, y: -4, powerPercentage: 97, spinRpm: 3180, quality: "sweet" },
-  { id: 4, x: 1, y: -3, powerPercentage: 100, spinRpm: 3250, quality: "sweet" },
-  { id: 5, x: -2, y: -1, powerPercentage: 99, spinRpm: 3210, quality: "sweet" },
-  { id: 6, x: 5, y: -6, powerPercentage: 96, spinRpm: 3120, quality: "sweet" },
-  { id: 7, x: 0, y: 0, powerPercentage: 100, spinRpm: 3280, quality: "sweet" },
-  { id: 8, x: 3, y: -3, powerPercentage: 98, spinRpm: 3190, quality: "sweet" },
-  { id: 9, x: -4, y: 2, powerPercentage: 97, spinRpm: 3140, quality: "sweet" },
-  { id: 10, x: 2, y: -5, powerPercentage: 98, spinRpm: 3220, quality: "sweet" },
-];
-
-export default function SweetSpotStrikeClusterChart({ actionType = "forehand" }: Props) {
+export default function SweetSpotStrikeClusterChart({ actionType = "forehand", profile }: Props) {
   const [viewBenchmark, setViewBenchmark] = useState<"athlete" | "pro" | "compare">("compare");
   const [hoveredPoint, setHoveredPoint] = useState<StrikePoint | null>(null);
 
-  // Metrics
-  const smashFactor = 0.84; // Energy Coefficient of Restitution
-  const sweetSpotPercent = 35; // 35% in center sweet spot
-  const powerLossPercent = 14.5; // 14.5% power loss from off-center hits
-
   const isServe = actionType.toLowerCase().includes("serve");
+
+  // Dynamic metrics derived from player video kinetic efficiency
+  const kineticEff = profile?.estimatedKineticEfficiencyPct ?? 84;
+  const smashFactor = Number((kineticEff / 100).toFixed(2));
+  const sweetSpotPercent = Math.min(100, Math.round(smashFactor * 48));
+  const powerLossPercent = Number(((1 - smashFactor) * 100).toFixed(1));
+
+  // Dynamic strike points derived from player's kinetic stability
+  const athleteStrikes: StrikePoint[] = useMemo(() => {
+    const baseRpm = isServe ? 2800 : 2550;
+    const spreadFactor = Math.max(0.6, (100 - kineticEff) / 25);
+
+    return [
+      { id: 1, x: Math.round(6 * spreadFactor), y: Math.round(-10 * spreadFactor), powerPercentage: Math.round(kineticEff * 1.05), spinRpm: Math.round(baseRpm * 1.02), quality: "sweet" },
+      { id: 2, x: Math.round(12 * spreadFactor), y: Math.round(-15 * spreadFactor), powerPercentage: Math.round(kineticEff * 0.98), spinRpm: Math.round(baseRpm * 0.98), quality: "near" },
+      { id: 3, x: Math.round(16 * spreadFactor), y: Math.round(-20 * spreadFactor), powerPercentage: Math.round(kineticEff * 0.92), spinRpm: Math.round(baseRpm * 0.94), quality: "near" },
+      { id: 4, x: Math.round(-4 * spreadFactor), y: Math.round(-8 * spreadFactor), powerPercentage: Math.round(kineticEff * 1.08), spinRpm: Math.round(baseRpm * 1.05), quality: "sweet" },
+      { id: 5, x: Math.round(20 * spreadFactor), y: Math.round(-26 * spreadFactor), powerPercentage: Math.round(kineticEff * 0.88), spinRpm: Math.round(baseRpm * 0.90), quality: "off_center" },
+      { id: 6, x: Math.round(10 * spreadFactor), y: Math.round(-14 * spreadFactor), powerPercentage: Math.round(kineticEff * 1.01), spinRpm: Math.round(baseRpm * 0.99), quality: "near" },
+      { id: 7, x: Math.round(2 * spreadFactor), y: Math.round(-6 * spreadFactor), powerPercentage: Math.round(kineticEff * 1.10), spinRpm: Math.round(baseRpm * 1.08), quality: "sweet" },
+      { id: 8, x: Math.round(14 * spreadFactor), y: Math.round(-22 * spreadFactor), powerPercentage: Math.round(kineticEff * 0.94), spinRpm: Math.round(baseRpm * 0.95), quality: "near" },
+      { id: 9, x: Math.round(24 * spreadFactor), y: Math.round(-30 * spreadFactor), powerPercentage: Math.round(kineticEff * 0.84), spinRpm: Math.round(baseRpm * 0.86), quality: "off_center" },
+      { id: 10, x: Math.round(8 * spreadFactor), y: Math.round(-12 * spreadFactor), powerPercentage: Math.round(kineticEff * 1.03), spinRpm: Math.round(baseRpm * 1.01), quality: "near" },
+    ];
+  }, [kineticEff, isServe]);
+
+  const proStrikes: StrikePoint[] = [
+    { id: 1, x: 2, y: -2, powerPercentage: 99, spinRpm: isServe ? 3200 : 2950, quality: "sweet" },
+    { id: 2, x: -3, y: 1, powerPercentage: 98, spinRpm: isServe ? 3150 : 2920, quality: "sweet" },
+    { id: 3, x: 4, y: -4, powerPercentage: 97, spinRpm: isServe ? 3180 : 2940, quality: "sweet" },
+    { id: 4, x: 1, y: -3, powerPercentage: 100, spinRpm: isServe ? 3250 : 3000, quality: "sweet" },
+    { id: 5, x: -2, y: -1, powerPercentage: 99, spinRpm: isServe ? 3210 : 2980, quality: "sweet" },
+  ];
 
   return (
     <div className="space-y-6">
@@ -182,7 +175,7 @@ export default function SweetSpotStrikeClusterChart({ actionType = "forehand" }:
 
               {/* Pro Strikes (Cyan Dots) */}
               {(viewBenchmark === "pro" || viewBenchmark === "compare") &&
-                PRO_STRIKES.map((pt) => (
+                proStrikes.map((pt) => (
                   <circle
                     key={`pro-${pt.id}`}
                     cx={150 + pt.x * 1.8}
@@ -197,7 +190,7 @@ export default function SweetSpotStrikeClusterChart({ actionType = "forehand" }:
 
               {/* Athlete Strikes (Amber/Rose Dots) */}
               {(viewBenchmark === "athlete" || viewBenchmark === "compare") &&
-                ATHLETE_STRIKES.map((pt) => {
+                athleteStrikes.map((pt) => {
                   const cx = 150 + pt.x * 1.8;
                   const cy = 170 + pt.y * 1.8;
                   const isHovered = hoveredPoint?.id === pt.id;
@@ -236,12 +229,12 @@ export default function SweetSpotStrikeClusterChart({ actionType = "forehand" }:
                 Smash Factor (COR Efficiency)
               </span>
               <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-xs font-bold text-emerald-300">
-                {smashFactor * 100}%
+                {Math.round(smashFactor * 100)}%
               </span>
             </div>
             <div className="mt-3 flex items-baseline justify-between">
-              <span className="text-2xl font-black text-white">{smashFactor}</span>
-              <span className="text-xs text-slate-400">Tour Benchmark: <strong className="text-sky-300">0.92</strong></span>
+              <span className="text-2xl font-black text-white font-mono">{smashFactor}</span>
+              <span className="text-xs text-slate-400">Tour Benchmark: <strong className="text-sky-300 font-mono">0.94</strong></span>
             </div>
             <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
               <div className="h-full bg-gradient-to-r from-amber-400 to-emerald-400" style={{ width: `${smashFactor * 100}%` }} />
@@ -254,11 +247,11 @@ export default function SweetSpotStrikeClusterChart({ actionType = "forehand" }:
               Sweet-Spot Impact Rate
             </span>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="text-2xl font-black text-amber-300">{sweetSpotPercent}%</span>
-              <span className="text-xs text-rose-300">-{powerLossPercent}% Power Leak</span>
+              <span className="text-2xl font-black text-amber-300 font-mono">{sweetSpotPercent}%</span>
+              <span className="text-xs text-rose-300 font-mono">-{powerLossPercent}% Power Leak</span>
             </div>
             <p className="mt-2 text-xs text-slate-300 leading-relaxed font-medium">
-              7 of 20 shots hit within the true sweet spot. 13 shots drifted into the upper-outer quadrant.
+              Impact cluster distribution calculated from your video kinetic stability profile.
             </p>
           </div>
 

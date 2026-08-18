@@ -1,9 +1,8 @@
 "use client";
 
-import { CheckCircle2, Dumbbell } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { useMemo } from "react";
 import type { AnalysisReport } from "@/modules/analysis/types";
-import { plainLanguage } from "../model/plain-language";
 
 import { computePlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 import { resolveThreePracticeDrills } from "../model/practice-drills";

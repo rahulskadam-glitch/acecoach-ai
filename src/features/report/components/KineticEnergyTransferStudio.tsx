@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { MOTION_STAGES, type MotionStage } from "../motion/motion-model";
-import type { PlayerBiomechanicalProfile, SegmentKineticData } from "../motion/player-kinetics-engine";
+import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 import KineticPowerWaterfallChart from "./KineticPowerWaterfallChart";
 import KineticTimingLagLadder from "./KineticTimingLagLadder";
 import StagePhaseScrubber from "./StagePhaseScrubber";
@@ -140,6 +140,7 @@ export default function KineticEnergyTransferStudio({
   const [comparisonMode, setComparisonMode] = useState<"both" | "athlete_only" | "pro_only">("both");
 
   const selectedLink = links.find((l) => l.id === selectedLinkId) ?? links[links.length - 1];
+  const peakVelocityLink = links.reduce((max, l) => (l.athletePeakVelocity > max.athletePeakVelocity ? l : max), links[0]);
 
   const totalEfficiency = profile?.estimatedKineticEfficiencyPct ?? Math.round(
     links.reduce((acc, l) => acc + l.athleteEfficiency, 0) / links.length
@@ -195,7 +196,7 @@ export default function KineticEnergyTransferStudio({
             </span>
           </div>
           <p className="mt-0.5 text-xs text-slate-400">
-            Model-derived kinetic transfer estimates based on Winter/Dempster inverse dynamics kinematics.
+            Modeled from your measured torso coil and knee-load angles, scaled against tour benchmarks — not force-plate or EMG data.
           </p>
         </div>
 
@@ -282,12 +283,12 @@ export default function KineticEnergyTransferStudio({
 
       {/* VIEW 4: 🎯 SWEET-SPOT STRIKE CLUSTER (HAWK-EYE) */}
       {chartMode === "strike_cluster" ? (
-        <SweetSpotStrikeClusterChart actionType={actionType} />
+        <SweetSpotStrikeClusterChart actionType={actionType} profile={profile} />
       ) : null}
 
       {/* VIEW 7: ⏱️ KINETIC TIMING LAG LADDER (K-VEST) */}
       {chartMode === "timing_ladder" ? (
-        <KineticTimingLagLadder actionType={actionType} />
+        <KineticTimingLagLadder actionType={actionType} profile={profile} />
       ) : null}
 
       {/* VIEW 5: TIME-SERIES BODY SPEED CURVES (5 BODY PARTS) */}
@@ -299,7 +300,7 @@ export default function KineticEnergyTransferStudio({
                 Speed Waves (°/s) Through Stroke Time (0.0s ➔ 1.8s)
               </span>
               <span className="text-xs text-ath-sky font-mono">
-                Whippy Peak: <strong className="text-white">1,580°/s at 1.28s</strong>
+                Whippy Peak: <strong className="text-white">{peakVelocityLink.athletePeakVelocity.toLocaleString()}°/s at {peakVelocityLink.peakTime.toFixed(2)}s</strong>
               </span>
             </div>
 

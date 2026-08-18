@@ -2,10 +2,12 @@
 
 import { Clock } from "lucide-react";
 import type { AnalysisReport } from "@/modules/analysis/types";
+import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 
 type Props = {
   report?: AnalysisReport;
   actionType: string;
+  profile?: PlayerBiomechanicalProfile;
 };
 
 type TimingStep = {
@@ -19,114 +21,81 @@ type TimingStep = {
   insight: string;
 };
 
-export default function KineticTimingLagLadder({ actionType }: Props) {
+export default function KineticTimingLagLadder({ actionType, profile }: Props) {
   const isServe = actionType.toLowerCase().includes("serve");
 
-  const steps: TimingStep[] = isServe
-    ? [
-        {
-          id: "legs",
-          segment: "1. Ground Spring & Knee Extension",
-          athleteTimeMs: 0,
-          proTimeMs: 0,
-          lagMs: 0,
-          proLagMs: 0,
-          status: "optimal",
-          insight: "Explosive upward launch from deep knee loading.",
-        },
-        {
-          id: "hips",
-          segment: "2. Pelvis Cartwheel & Uncoil",
-          athleteTimeMs: 110,
-          proTimeMs: 125,
-          lagMs: 110,
-          proLagMs: 125,
-          status: "optimal",
-          insight: "Pelvis tilts and uncoils upward toward the ball.",
-        },
-        {
-          id: "torso",
-          segment: "3. Thoracic Spine & Chest Whip",
-          athleteTimeMs: 145,
-          proTimeMs: 175,
-          lagMs: 35,
-          proLagMs: 50,
-          status: "early_leak",
-          insight: "Upper body fired 15ms too quickly before full shoulder tilt.",
-        },
-        {
-          id: "arm",
-          segment: "4. Upper Arm & Elbow Cartwheel",
-          athleteTimeMs: 180,
-          proTimeMs: 215,
-          lagMs: 35,
-          proLagMs: 40,
-          status: "optimal",
-          insight: "Elbow leads into the high trophy slot.",
-        },
-        {
-          id: "wrist",
-          segment: "5. Forearm Pronation & Contact Snap",
-          athleteTimeMs: 210,
-          proTimeMs: 245,
-          lagMs: 30,
-          proLagMs: 30,
-          status: "optimal",
-          insight: "Peak contact snap delivers maximum racket head velocity.",
-        },
-      ]
-    : [
-        {
-          id: "legs",
-          segment: "1. Ground Reaction Drive",
-          athleteTimeMs: 0,
-          proTimeMs: 0,
-          lagMs: 0,
-          proLagMs: 0,
-          status: "optimal",
-          insight: "Back foot push initiates forward momentum.",
-        },
-        {
-          id: "hips",
-          segment: "2. Pelvis Rotational Uncoil",
-          athleteTimeMs: 95,
-          proTimeMs: 120,
-          lagMs: 95,
-          proLagMs: 120,
-          status: "early_leak",
-          insight: "Hips opened 25ms prematurely before shoulder turn was set.",
-        },
-        {
-          id: "torso",
-          segment: "3. Torso Core Uncoiling (X-Factor)",
-          athleteTimeMs: 130,
-          proTimeMs: 165,
-          lagMs: 35,
-          proLagMs: 45,
-          status: "optimal",
-          insight: "Elastic recoil whips from abdominal obliques.",
-        },
-        {
-          id: "arm",
-          segment: "4. Racket Drop Lag Slot",
-          athleteTimeMs: 160,
-          proTimeMs: 200,
-          lagMs: 30,
-          proLagMs: 35,
-          status: "early_leak",
-          insight: "Shallow racket drop limits gravitational whip.",
-        },
-        {
-          id: "wrist",
-          segment: "5. Terminal Forearm Pronation Snap",
-          athleteTimeMs: 190,
-          proTimeMs: 230,
-          lagMs: 30,
-          proLagMs: 30,
-          status: "optimal",
-          insight: "Clean wrist snap through the hitting window.",
-        },
-      ];
+  const lag = profile?.measuredTimingLagMs ?? (isServe ? 110 : 70);
+  const proLag = profile?.proBenchmarkTimingLagMs ?? (isServe ? 120 : 95);
+  const coil = profile?.measuredTorsoCoilDeg ?? 28;
+
+  const hipTime = Math.round(lag * 1.25);
+  const torsoTime = hipTime + Math.round((coil / 34) * 40);
+  const armTime = torsoTime + 30;
+  const wristTime = armTime + 30;
+
+  const proHipTime = Math.round(proLag * 1.25);
+  const proTorsoTime = proHipTime + 45;
+  const proArmTime = proTorsoTime + 35;
+  const proWristTime = proArmTime + 30;
+
+  const steps: TimingStep[] = [
+    {
+      id: "legs",
+      segment: isServe ? "1. Trophy Leg Push" : "1. Ground Reaction Drive",
+      athleteTimeMs: 0,
+      proTimeMs: 0,
+      lagMs: 0,
+      proLagMs: 0,
+      status: "optimal",
+      insight: profile?.kneeStatus === "optimal"
+        ? "Ground reaction force initiated on time from deep knee dip."
+        : "Leg push initiates forward momentum.",
+    },
+    {
+      id: "hips",
+      segment: "2. Pelvis Rotational Uncoil",
+      athleteTimeMs: hipTime,
+      proTimeMs: proHipTime,
+      lagMs: lag,
+      proLagMs: proLag,
+      status: lag >= proLag - 15 ? "optimal" : "early_leak",
+      insight: lag >= proLag - 15
+        ? `Hips uncoil with ${lag}ms lead, cleanly setting the kinetic sequence.`
+        : `Hips opened early (${lag}ms lead vs optimal ${proLag}ms), reducing torso coil tension.`,
+    },
+    {
+      id: "torso",
+      segment: "3. Torso Core Uncoiling (X-Factor)",
+      athleteTimeMs: torsoTime,
+      proTimeMs: proTorsoTime,
+      lagMs: torsoTime - hipTime,
+      proLagMs: proTorsoTime - proHipTime,
+      status: coil >= 32 ? "optimal" : "early_leak",
+      insight: coil >= 32
+        ? `Torso separation of ${coil}° delivers full elastic core spring.`
+        : `Torso separation reached ${coil}° (${Math.abs(coil - 34)}° below tour optimal).`,
+    },
+    {
+      id: "arm",
+      segment: isServe ? "4. Upper Arm & Elbow Drop" : "4. Racket Drop Lag Slot",
+      athleteTimeMs: armTime,
+      proTimeMs: proArmTime,
+      lagMs: armTime - torsoTime,
+      proLagMs: proArmTime - proTorsoTime,
+      status: "optimal",
+      insight: "Arm and racket drop into hitting slot.",
+    },
+    {
+      id: "wrist",
+      segment: "5. Terminal Forearm Pronation & Contact",
+      athleteTimeMs: wristTime,
+      proTimeMs: proWristTime,
+      lagMs: wristTime - armTime,
+      proLagMs: proWristTime - proArmTime,
+      status: "optimal",
+      insight: "Forearm pronates through contact window for terminal ball acceleration.",
+    },
+  ];
 
   return (
     <div className="rounded-[2rem] border border-white/10 bg-gradient-to-b from-[#090e1a] via-[#060a14] to-[#04060c] p-5 shadow-2xl text-white">

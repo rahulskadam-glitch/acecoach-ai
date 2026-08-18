@@ -127,7 +127,7 @@ export default function WeightTransferStudio({
             <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">Weight Transfer & Balance</h2>
             <span className="rounded-full bg-ath-green/10 border border-ath-green/20 px-2.5 py-0.5 text-[0.6rem] font-bold text-ath-green">Estimated via Scientific Biomechanical Model</span>
           </div>
-          <p className="mt-0.5 text-xs text-slate-400">Center of mass linear shift & balance distribution derived from Winter/Dempster segment models.</p>
+          <p className="mt-0.5 text-xs text-slate-400">Modeled from your measured torso coil and knee-load angles — not tracked center-of-mass position.</p>
         </div>
       </div>
 

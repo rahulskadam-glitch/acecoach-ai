@@ -58,8 +58,6 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
   const [activeTab, setActiveTab] = useState<ReportTab>("overview");
   const [videoView, setVideoView] = useState<VideoView>("yours");
   const [injuryView, setInjuryView] = useState<InjuryView>("joint_stress");
-  const [videoTime, setVideoTime] = useState<number>(0);
-  const [currentStage, setCurrentStage] = useState<MotionStage>("ready");
   const [proTwinStage, setProTwinStage] = useState<MotionStage>("forward_swing_contact");
   const [isCoachDrawerOpen, setIsCoachDrawerOpen] = useState(false);
   const resolvedActionType = report.movementClassification?.analysisAction ?? actionType;
@@ -273,6 +271,7 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
           <KinematicDataMatrix
             actionType={resolvedActionType}
             profile={kinetics}
+            report={report}
           />
         </section>
       )}
