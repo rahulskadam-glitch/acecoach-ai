@@ -8,7 +8,7 @@ if (serverUrl && !/^https:\/\//.test(serverUrl)) {
 
 const config: CapacitorConfig = {
   appId: "com.athlentra.tennis",
-  appName: "Athlentra Tennis",
+  appName: "Athlentra: AI Tennis Coach 3D",
   webDir: "mobile-shell",
   backgroundColor: "#071b2d",
   loggingBehavior: process.env.NODE_ENV === "production" ? "none" : "debug",
