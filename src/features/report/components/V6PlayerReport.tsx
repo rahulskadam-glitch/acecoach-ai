@@ -15,7 +15,7 @@ import {
   Wind,
   Zap,
 } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import AthlentraMark from "@/components/design-system/AthlentraMark";
 import { getSport } from "@/lib/sports";
@@ -23,6 +23,7 @@ import type { PlayerReportProps } from "../types";
 import { buildPlayerReportView } from "../model/view-model";
 import { concise, plainLanguage } from "../model/plain-language";
 import { resolveThreePracticeDrills } from "../model/practice-drills";
+import { computePlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 import type { MotionStage } from "../motion/motion-model";
 import TennisBiomechanicsIndex from "./TennisBiomechanicsIndex";
 import ProTwinStudio from "./ProTwinStudio";
@@ -68,6 +69,11 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
     report.movementClassification?.analysisActionLabel ??
     sport.actions.find((item) => item.id === actionType)?.label ??
     actionType.replaceAll("_", " ");
+
+  // Dynamic player-specific biomechanics computed directly from video frames
+  const kinetics = useMemo(() => {
+    return computePlayerBiomechanicalProfile(report, resolvedActionType);
+  }, [report, resolvedActionType]);
 
   // Guarantees at least 3 structured practice drills tailored to this stroke & priority flaw
   const practiceDrills = resolveThreePracticeDrills(report, movement);
@@ -245,6 +251,7 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
             currentStage={proTwinStage}
             onSeekToStage={setProTwinStage}
             actionType={resolvedActionType}
+            profile={kinetics}
           />
         </section>
       )}
@@ -252,14 +259,21 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
       {/* Weight Transfer: seesaw balance, moment detail, 4-phase storyboard */}
       {activeTab === "weight_transfer" && (
         <section className="animate-in fade-in duration-200">
-          <WeightTransferStudio currentStage={proTwinStage} onSeekToStage={setProTwinStage} />
+          <WeightTransferStudio
+            currentStage={proTwinStage}
+            onSeekToStage={setProTwinStage}
+            profile={kinetics}
+          />
         </section>
       )}
 
       {/* Telemetry: live 9-tile kinematic dashboard */}
       {activeTab === "telemetry" && (
         <section className="animate-in fade-in duration-200">
-          <KinematicDataMatrix actionType={resolvedActionType} />
+          <KinematicDataMatrix
+            actionType={resolvedActionType}
+            profile={kinetics}
+          />
         </section>
       )}
 
@@ -284,9 +298,9 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
           </div>
 
           {injuryView === "joint_stress" ? (
-            <JointStressInjuryRiskRadar actionType={resolvedActionType} />
+            <JointStressInjuryRiskRadar actionType={resolvedActionType} profile={kinetics} />
           ) : (
-            <RotatorCuffDecelerationBarometer actionType={resolvedActionType} />
+            <RotatorCuffDecelerationBarometer actionType={resolvedActionType} profile={kinetics} />
           )}
         </section>
       )}

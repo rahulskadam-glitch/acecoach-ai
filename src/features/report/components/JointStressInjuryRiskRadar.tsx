@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Shield, ShieldAlert, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
+import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 
 type RiskAxis = {
   id: string;
@@ -17,9 +18,28 @@ type RiskAxis = {
 
 type Props = {
   actionType?: string;
+  profile?: PlayerBiomechanicalProfile;
 };
 
-function getRiskAxesForAction(actionType: string): RiskAxis[] {
+function getRiskAxesForAction(actionType: string, profile?: PlayerBiomechanicalProfile): RiskAxis[] {
+  if (profile && profile.jointStressAxes.length > 0) {
+    return profile.jointStressAxes.map((axis) => {
+      const athleteScore = Math.min(100, Math.round((axis.torqueNm / axis.proBenchmarkNm) * 58));
+      const status: "safe" | "moderate" | "high" = axis.riskLevel === "elevated" ? "high" : axis.riskLevel === "moderate" ? "moderate" : "safe";
+      return {
+        id: axis.jointId,
+        label: axis.label,
+        shortName: axis.label.split(" ")[0] || "Joint",
+        athleteScore,
+        safeThreshold: 60,
+        status,
+        clinicalNote: `${axis.label} braking load estimated at ${axis.torqueNm} N·m (${axis.decelerationRateDegSec2}°/s² deceleration rate).`,
+        injuryRisk: status === "high" ? "Elevated Deceleration Braking Torque" : "Safe Joint Load Distribution",
+        preventionTip: axis.coachingAdvice,
+      };
+    });
+  }
+
   const norm = actionType.toLowerCase();
 
   if (norm.includes("serve")) {
@@ -169,8 +189,8 @@ function axisAngle(index: number, count: number) {
   return (index * 2 * Math.PI) / count - Math.PI / 2;
 }
 
-export default function JointStressInjuryRiskRadar({ actionType = "forehand" }: Props) {
-  const axes = useMemo(() => getRiskAxesForAction(actionType), [actionType]);
+export default function JointStressInjuryRiskRadar({ actionType = "forehand", profile }: Props) {
+  const axes = useMemo(() => getRiskAxesForAction(actionType, profile), [actionType, profile]);
   const [selectedAxisId, setSelectedAxisId] = useState<string>(axes[0]?.id ?? "lead_knee");
 
   const selectedAxis = axes.find((a) => a.id === selectedAxisId) ?? axes[0];

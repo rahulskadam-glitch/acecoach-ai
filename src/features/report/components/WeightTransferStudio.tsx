@@ -2,6 +2,7 @@
 
 import { ChevronDown, Scale, Sparkles } from "lucide-react";
 import { useMemo } from "react";
+import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 import type { MotionStage } from "../motion/motion-model";
 import StagePhaseScrubber from "./StagePhaseScrubber";
 
@@ -19,8 +20,8 @@ type WeightStoryboardMoment = {
   proBenchmark: string;
 };
 
-// 4-Card Weight Transfer Storyboard
-const WEIGHT_STORYBOARD: WeightStoryboardMoment[] = [
+// Default Weight Transfer Storyboard
+const DEFAULT_WEIGHT_STORYBOARD: WeightStoryboardMoment[] = [
   {
     id: "moment_ready",
     stage: "ready",
@@ -78,17 +79,40 @@ const WEIGHT_STORYBOARD: WeightStoryboardMoment[] = [
 export default function WeightTransferStudio({
   currentStage,
   onSeekToStage,
+  profile,
 }: {
   currentStage: MotionStage;
   onSeekToStage: (stage: MotionStage) => void;
+  profile?: PlayerBiomechanicalProfile;
 }) {
+  const storyboard = useMemo(() => {
+    if (!profile || !profile.weightTransferPhases.length) return DEFAULT_WEIGHT_STORYBOARD;
+    return profile.weightTransferPhases.map((phase, idx) => ({
+      id: `moment_${phase.stage}`,
+      stage: phase.stage,
+      stepNum: idx + 1,
+      title: `${idx + 1}. ${phase.stageLabel}`,
+      cue: phase.balanceStatus === "loaded_rear"
+        ? "Store spring power on back leg"
+        : phase.balanceStatus === "loaded_front"
+        ? "Drive full bodyweight into the ball"
+        : "Balanced platform on balls of feet",
+      rearFoot: phase.rearFootPct,
+      frontFoot: phase.frontFootPct,
+      comShiftCm: Math.round(phase.comDisplacementX * 30),
+      status: (phase.balanceStatus === "loaded_front" && phase.frontFootPct < 70 ? "priority" : "optimal") as "optimal" | "working" | "priority",
+      athleteVerdict: `${phase.rearFootPct}/${phase.frontFootPct} weight split`,
+      proBenchmark: phase.balanceStatus === "loaded_front" ? "15/85 front drive" : phase.balanceStatus === "loaded_rear" ? "75/25 deep load" : "50/50 split",
+    }));
+  }, [profile]);
+
   const activeMoment = useMemo(() => {
-    return WEIGHT_STORYBOARD.find((m) => m.stage === currentStage) ?? WEIGHT_STORYBOARD[2];
-  }, [currentStage]);
+    return storyboard.find((m) => m.stage === currentStage) ?? storyboard[Math.min(2, storyboard.length - 1)];
+  }, [storyboard, currentStage]);
 
   // Seesaw tilt angle calculation (-12 deg back to +14 deg forward)
   const seesawAngle = useMemo(() => {
-    const diff = activeMoment.frontFoot - activeMoment.rearFoot; // -50 to +70
+    const diff = activeMoment.frontFoot - activeMoment.rearFoot;
     return Math.round((diff / 70) * 14);
   }, [activeMoment]);
 
@@ -217,7 +241,7 @@ export default function WeightTransferStudio({
           <ChevronDown className="h-4 w-4 text-slate-400 transition group-open:rotate-180" />
         </summary>
         <div className="grid gap-3 border-t border-white/10 p-4 sm:grid-cols-2 lg:grid-cols-4">
-          {WEIGHT_STORYBOARD.map((moment) => {
+          {storyboard.map((moment) => {
             const isCurrent = moment.stage === currentStage;
             return (
               <button

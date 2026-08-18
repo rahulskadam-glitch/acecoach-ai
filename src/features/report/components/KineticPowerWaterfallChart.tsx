@@ -3,11 +3,13 @@
 import { AlertTriangle } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { MotionStage } from "../motion/motion-model";
+import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 
 type Props = {
   currentStage?: MotionStage;
   onSeekToStage?: (stage: MotionStage) => void;
   actionType?: string;
+  profile?: PlayerBiomechanicalProfile;
 };
 
 type WaterfallStep = {
@@ -23,8 +25,83 @@ type WaterfallStep = {
   color: string;
 };
 
-function getWaterfallStepsForAction(actionType: string): WaterfallStep[] {
+function getWaterfallStepsForAction(actionType: string, profile?: PlayerBiomechanicalProfile): WaterfallStep[] {
   const norm = actionType.toLowerCase();
+  const isServe = norm.includes("serve");
+
+  if (profile) {
+    const w = profile.waterfallJoules;
+    const leakJoules = Math.round((profile.proKineticEfficiencyPct - profile.estimatedKineticEfficiencyPct) * 1.5);
+
+    return [
+      {
+        id: "ground_reaction",
+        name: isServe ? "1. Trophy Leg Push" : "1. Ground Leg Drive",
+        category: "gain",
+        joules: w.legs,
+        cumulativeJoules: w.legs,
+        benchmarkJoules: isServe ? 420 : 95,
+        stage: "backswing",
+        description: `Ground reaction force from knee loading (${profile.measuredKneeFlexionDeg}° flexion).`,
+        coachingFix: profile.kneeStatus === "optimal"
+          ? "Knee loading depth is synchronized with unit turn."
+          : `Bend knees deeper during setup for higher kinetic energy generation.`,
+        color: "#10b981",
+      },
+      {
+        id: "hip_transfer",
+        name: "2. Pelvis & Torso Coil",
+        category: "gain",
+        joules: w.torso - w.legs,
+        cumulativeJoules: w.torso,
+        benchmarkJoules: isServe ? 620 : 245,
+        stage: "forward_swing_contact",
+        description: `Rotational energy stored in shoulder-pelvis separation (${profile.measuredTorsoCoilDeg}° coil).`,
+        coachingFix: profile.coilStatus === "optimal"
+          ? "Torso coil and stretch-shortening cycle are on track."
+          : `Create full shoulder turn past the ball line to eliminate rotational power leak.`,
+        color: "#06b6d4",
+      },
+      {
+        id: "kinetic_leak",
+        name: "3. Kinetic Transfer Leak",
+        category: "leak",
+        joules: -leakJoules,
+        cumulativeJoules: Math.max(20, w.torso - leakJoules),
+        benchmarkJoules: isServe ? 600 : 240,
+        stage: "forward_swing_contact",
+        description: profile.timingLagStatus === "optimal"
+          ? "Clean proximal-to-distal sequencing from hips to arm."
+          : `Early uncoil reduces kinetic transfer efficiency to ${profile.estimatedKineticEfficiencyPct}%.`,
+        coachingFix: `Timing lag measured at ${profile.measuredTimingLagMs}ms. Lead with the hips before releasing the arm.`,
+        color: "#ef4444",
+      },
+      {
+        id: "arm_whip",
+        name: "4. Arm & Racket Acceleration",
+        category: "gain",
+        joules: w.racket - (w.torso - leakJoules),
+        cumulativeJoules: w.racket,
+        benchmarkJoules: isServe ? 920 : 320,
+        stage: "forward_swing_contact",
+        description: `Final kinetic delivery into stringbed velocity (+${profile.estimatedRecoverableMph} MPH potential).`,
+        coachingFix: "Maintain loose grip tension through impact to maximize terminal racket whip.",
+        color: "#d7e022",
+      },
+      {
+        id: "terminal_energy",
+        name: "5. Total Impact Energy",
+        category: "total",
+        joules: w.racket,
+        cumulativeJoules: w.racket,
+        benchmarkJoules: isServe ? 920 : 320,
+        stage: "forward_swing_contact",
+        description: `Total deliverable kinetic energy: ${w.racket} Joules at ${profile.estimatedKineticEfficiencyPct}% efficiency.`,
+        coachingFix: `Fixing the primary leak unlocks an estimated +${profile.estimatedRecoverableMph} MPH on your stroke.`,
+        color: "#38bdf8",
+      },
+    ];
+  }
 
   if (norm.includes("serve")) {
     return [
@@ -260,16 +337,19 @@ function getWaterfallStepsForAction(actionType: string): WaterfallStep[] {
 export default function KineticPowerWaterfallChart({
   onSeekToStage,
   actionType = "forehand",
+  profile,
 }: Props) {
-  const steps = useMemo(() => getWaterfallStepsForAction(actionType), [actionType]);
-  const [selectedStepId, setSelectedStepId] = useState<string>(steps[1]?.id ?? "pelvis_leak");
+  const steps = useMemo(() => getWaterfallStepsForAction(actionType, profile), [actionType, profile]);
+  const [selectedStepId, setSelectedStepId] = useState<string>(steps[1]?.id ?? "hip_transfer");
 
   const selectedStep = steps.find((s) => s.id === selectedStepId) ?? steps[1];
-  const maxJoules = normMaxJoules(actionType);
+  const maxJoules = profile ? profile.waterfallJoules.racket * 1.25 : normMaxJoules(actionType);
 
   const totalLeaked = Math.abs(steps.filter((s) => s.joules < 0).reduce((acc, s) => acc + s.joules, 0));
   const finalEnergy = steps.find((s) => s.category === "total")?.joules || 705;
-  const potentialRecoverableMph = ((totalLeaked / finalEnergy) * 78 * 0.95).toFixed(1);
+  const potentialRecoverableMph = profile?.estimatedRecoverableMph
+    ? profile.estimatedRecoverableMph.toFixed(1)
+    : ((totalLeaked / finalEnergy) * 78 * 0.95).toFixed(1);
 
   return (
     <div className="space-y-6">

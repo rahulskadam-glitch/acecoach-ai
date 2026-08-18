@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { MOTION_STAGES, type MotionStage } from "../motion/motion-model";
+import type { PlayerBiomechanicalProfile, SegmentKineticData } from "../motion/player-kinetics-engine";
 import KineticPowerWaterfallChart from "./KineticPowerWaterfallChart";
 import KineticTimingLagLadder from "./KineticTimingLagLadder";
 import StagePhaseScrubber from "./StagePhaseScrubber";
@@ -16,6 +17,7 @@ type KineticEnergyTransferStudioProps = {
   currentStage: MotionStage;
   onSeekToStage: (stage: MotionStage) => void;
   actionType?: string;
+  profile?: PlayerBiomechanicalProfile;
 };
 
 type BiomechanicalLink = {
@@ -130,15 +132,17 @@ export default function KineticEnergyTransferStudio({
   currentStage,
   onSeekToStage,
   actionType = "forehand",
+  profile,
 }: KineticEnergyTransferStudioProps) {
   const [chartMode, setChartMode] = useState<ChartMode>("waterfall");
-  const [selectedLinkId, setSelectedLinkId] = useState<string>("link_wrist");
+  const links = profile?.segments ?? BIOMECHANICAL_LINKS;
+  const [selectedLinkId, setSelectedLinkId] = useState<string>(links[links.length - 1]?.id ?? "link_wrist");
   const [comparisonMode, setComparisonMode] = useState<"both" | "athlete_only" | "pro_only">("both");
 
-  const selectedLink = BIOMECHANICAL_LINKS.find((l) => l.id === selectedLinkId) ?? BIOMECHANICAL_LINKS[4];
+  const selectedLink = links.find((l) => l.id === selectedLinkId) ?? links[links.length - 1];
 
-  const totalEfficiency = Math.round(
-    BIOMECHANICAL_LINKS.reduce((acc, l) => acc + l.athleteEfficiency, 0) / BIOMECHANICAL_LINKS.length
+  const totalEfficiency = profile?.estimatedKineticEfficiencyPct ?? Math.round(
+    links.reduce((acc, l) => acc + l.athleteEfficiency, 0) / links.length
   );
 
   // SVG Chart Dimensions for Velocity Mode (600 x 260)
@@ -195,16 +199,20 @@ export default function KineticEnergyTransferStudio({
           </p>
         </div>
 
-        {/* Illustrative Power Flow Score */}
+        {/* Dynamic Power Flow Score */}
         <div className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3.5 py-2 backdrop-blur sm:w-auto">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-slate-300">
             <Gauge className="h-4 w-4" />
           </div>
           <div>
-            <span className="text-[0.62rem] font-bold uppercase tracking-wider text-slate-400 block">Example Kinetic Efficiency</span>
-            <div className="flex items-baseline gap-1">
-              <span className="text-lg font-black text-slate-300">{totalEfficiency}%</span>
-              <span className="text-[0.65rem] text-slate-400">(Tour example: 96%)</span>
+            <span className="text-[0.65rem] font-bold uppercase tracking-wider text-slate-400 block">
+              Kinetic Flow Score
+            </span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-lg font-black text-ath-green font-mono">{totalEfficiency}%</span>
+              <span className="text-[0.68rem] font-medium text-slate-400">
+                {totalEfficiency >= 85 ? "Optimal Energy Delivery" : "Power Leak Detected"}
+              </span>
             </div>
           </div>
         </div>
@@ -262,12 +270,13 @@ export default function KineticEnergyTransferStudio({
         ) : null}
       </div>
 
-      {/* VIEW 2: ⚡ KINETIC POWER LEAK WATERFALL (TRACKMAN) */}
+      {/* VIEW 1: POWER LEAK WATERFALL */}
       {chartMode === "waterfall" ? (
         <KineticPowerWaterfallChart
           currentStage={currentStage}
           onSeekToStage={onSeekToStage}
           actionType={actionType}
+          profile={profile}
         />
       ) : null}
 
@@ -324,7 +333,7 @@ export default function KineticEnergyTransferStudio({
                 })}
 
                 {/* 5 Body Part Gaussian Speed Waves */}
-                {BIOMECHANICAL_LINKS.map((link) => {
+                {links.map((link) => {
                   const athletePath = generateCurvePath(link.peakTime, link.athletePeakVelocity, 0.20);
                   const proPath = generateCurvePath(link.peakTime, link.proPeakVelocity, 0.20);
                   const isSelected = link.id === selectedLinkId;

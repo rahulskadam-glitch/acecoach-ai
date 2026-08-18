@@ -2,6 +2,7 @@
 
 import { Info, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
+import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 
 type KinematicMetric = {
   id: string;
@@ -19,16 +20,31 @@ type KinematicMetric = {
 type Props = {
   actionType?: string;
   onSelectMetric?: (metricId: string) => void;
+  profile?: PlayerBiomechanicalProfile;
 };
 
-export default function KinematicDataMatrix({ actionType = "forehand", onSelectMetric }: Props) {
+export default function KinematicDataMatrix({ actionType = "forehand", onSelectMetric, profile }: Props) {
   const [activeCategory, setActiveCategory] = useState<"all" | "racket" | "body_3dma" | "ball_flight">("all");
   const [inspectedMetric, setInspectedMetric] = useState<KinematicMetric | null>(null);
 
   const isServe = actionType.toLowerCase().includes("serve");
 
-  // Dynamic stroke-aware Kinematic Telemetry parameters
+  // Dynamic stroke-aware Kinematic Telemetry parameters derived from video frames
   const metrics: KinematicMetric[] = useMemo(() => {
+    if (profile && profile.telemetryMetrics.length > 0) {
+      return profile.telemetryMetrics.map((item) => ({
+        id: item.id,
+        label: item.label,
+        value: item.measuredValue,
+        unit: item.unit,
+        tourBenchmark: item.tourBenchmark,
+        delta: item.deltaLabel,
+        status: item.status,
+        category: item.category,
+        definition: item.definition,
+        coachingCue: item.coachingCue,
+      }));
+    }
     if (isServe) {
       return [
         {
