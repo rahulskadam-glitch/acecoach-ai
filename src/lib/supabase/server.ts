@@ -194,7 +194,7 @@ export async function getUserDashboardStats(userId: string) {
         current_stage,
         created_at,
         completed_at,
-        videos!inner(filename),
+        videos(filename),
         analysis_reports(overall_score, score_label, coach_summary, knowledge_control, knowledge_policy_version, knowledge_manifest_hash)
       `)
       .eq("user_id", userId)

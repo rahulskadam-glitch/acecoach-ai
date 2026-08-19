@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Mobile native build artifacts
+    "android/**",
+    "ios/**",
     // Python runtime and generated cache files are not application sources.
     "**/.venv/**",
     "**/__pycache__/**",

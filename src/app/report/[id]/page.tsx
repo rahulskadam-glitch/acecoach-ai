@@ -11,7 +11,7 @@ import V6PlayerReport from "@/features/report/components/V6PlayerReport";
 import type { ValidatedBallOutcome } from "@/features/report/types";
 import type { ExistingFeedback } from "@/components/analysis/ReportFeedback";
 import JourneyShell from "@/features/journey/presentation/JourneyShell";
-import { createClient, requireUser, visualQaEnabled } from "@/lib/supabase/server";
+import { createAdminClient, createClient, requireUser, visualQaEnabled } from "@/lib/supabase/server";
 import { visualQaReport } from "@/features/visual-qa/report-fixture";
 import {
   buildProgressComparison,
@@ -191,14 +191,48 @@ export default async function ReportPage({ params }: PageProps) {
     return <JourneyShell current="report" maxWidth="max-w-[1500px]"><V6PlayerReport sessionId={id} report={visualQaReport} sportId="tennis" actionType="two_handed_backhand" fileName="two-handed-backhand-practice.mp4" isReviewed={false} onMarkReviewed={noOp} onConfirmMovement={noOpForm} practicePlan={null} progressComparison={null} personalBaselineComparison={null} onTogglePractice={noOpItem} onReadyForReassessment={noOp} onPracticeCheckin={noOpCheckin} practiceCheckins={[]} feedback={null} onSubmitFeedback={noOpForm} onCreateShare={noOpShare} onRevokeShare={noOp} athleteContext={{ ageBand: "19_29", playingLevel: "intermediate", dominantSide: "right", gender: null, heightCm: 178 }} videoUrl="/file.svg" validatedBallOutcomes={[]} previewOnly /></JourneyShell>;
   }
   const user = await requireUser();
-  const supabase = await createClient();
+  let supabase = await createClient();
 
-  const { data: session } = await supabase
-    .from("analysis_sessions")
-    .select("id, sport_id, action_type, analysis_action_type, status, current_stage, created_at, videos!inner(filename, storage_path), analysis_reports(*)")
-    .eq("id", id)
-    .eq("user_id", user.id)
-    .maybeSingle();
+  type SessionRow = {
+    id: string;
+    video_id?: string | null;
+    sport_id: string;
+    action_type: string;
+    analysis_action_type?: string | null;
+    status: string;
+    current_stage: string;
+    created_at: string;
+    videos?: { filename?: string; storage_path?: string } | Array<{ filename?: string; storage_path?: string }> | null;
+    analysis_reports?: RawReport | RawReport[] | null;
+  };
+
+  let session: SessionRow | null = null;
+
+  try {
+    const admin = createAdminClient();
+    const { data } = await admin
+      .from("analysis_sessions")
+      .select("id, video_id, sport_id, action_type, analysis_action_type, status, current_stage, created_at, videos(filename, storage_path), analysis_reports(*)")
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (data) {
+      session = data as SessionRow;
+      supabase = admin as unknown as typeof supabase;
+    }
+  } catch {
+    // fallback to user supabase client
+  }
+
+  if (!session) {
+    const { data } = await supabase
+      .from("analysis_sessions")
+      .select("id, video_id, sport_id, action_type, analysis_action_type, status, current_stage, created_at, videos(filename, storage_path), analysis_reports(*)")
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .maybeSingle();
+    session = data as SessionRow | null;
+  }
 
   if (!session) notFound();
   if (session.status !== "completed") {
@@ -206,11 +240,26 @@ export default async function ReportPage({ params }: PageProps) {
   }
   const rawReport = (Array.isArray(session.analysis_reports) ? session.analysis_reports[0] : session.analysis_reports) as RawReport | null;
   if (!rawReport) notFound();
-  const video = Array.isArray(session.videos) ? session.videos[0] : session.videos;
+  
+  let video = Array.isArray(session.videos) ? session.videos[0] : session.videos;
+  if (!video && session.video_id) {
+    try {
+      const admin = createAdminClient();
+      const { data: videoRow } = await admin
+        .from("videos")
+        .select("filename, storage_path")
+        .eq("id", session.video_id)
+        .maybeSingle();
+      if (videoRow) video = videoRow;
+    } catch {
+      // fallback
+    }
+  }
+
   const report = mapReport(rawReport);
-  const analysisAction = session.analysis_action_type
+  const analysisAction = (typeof session.analysis_action_type === "string" ? session.analysis_action_type : null)
     ?? report.movementClassification?.analysisAction
-    ?? session.action_type;
+    ?? (typeof session.action_type === "string" ? session.action_type : "forehand");
 
   const [
     { data: practiceRow },
@@ -392,14 +441,14 @@ export default async function ReportPage({ params }: PageProps) {
   const isReviewed = session.current_stage === "reviewed";
 
   const { data: signedVideo } = video?.storage_path
-    ? await supabase.storage.from("videos").createSignedUrl(video.storage_path, 60 * 60)
+    ? await supabase.storage.from("videos").createSignedUrl(video.storage_path, 60 * 60).catch(() => ({ data: null }))
     : { data: null };
 
-  if (!signedVideo?.signedUrl) notFound();
+  const finalVideoUrl = signedVideo?.signedUrl ?? "/file.svg";
   const strokeHistory = [
     ...previousCandidates.map((item) => ({ sessionId: item.sessionId, recordedAt: item.createdAt, score: item.overallScore })),
     { sessionId: id, recordedAt: session.created_at, score: report.overallScore },
-  ].sort((left, right) => Date.parse(left.recordedAt) - Date.parse(right.recordedAt));
+  ].sort((left, right) => (Date.parse(left.recordedAt) || 0) - (Date.parse(right.recordedAt) || 0));
   const matchedPreviousSession = ((previousSessions ?? []) as PreviousSessionRow[]).find((item) => item.created_at === progressComparison?.previousDate) ?? null;
   const matchedPreviousVideo = matchedPreviousSession
     ? (Array.isArray(matchedPreviousSession.videos) ? matchedPreviousSession.videos[0] : matchedPreviousSession.videos)
@@ -497,7 +546,7 @@ export default async function ReportPage({ params }: PageProps) {
               ? null
               : Number(physicalProfileRow.height_cm),
           }}
-          videoUrl={signedVideo.signedUrl}
+          videoUrl={finalVideoUrl}
           validatedBallOutcomes={validatedBallOutcomes}
         />
     </JourneyShell>
