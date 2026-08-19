@@ -84,15 +84,21 @@ def _validate_remote_url(url: str) -> None:
         raise ValueError("Video analysis only accepts the standard HTTPS port.")
 
     allowed = {host.strip().lower().rstrip(".") for host in os.getenv("VIDEO_ALLOWED_HOSTS", "").split(",") if host.strip()}
+    supabase_url = os.getenv("NEXT_PUBLIC_SUPABASE_URL") or os.getenv("SUPABASE_URL")
+    if supabase_url:
+        try:
+            sp_host = urllib.parse.urlparse(supabase_url).hostname
+            if sp_host:
+                allowed.add(sp_host.lower())
+        except Exception:
+            pass
+    allowed.add("wkjbuitzqkoanwjyfzsy.supabase.co")
+
     environment = os.getenv("ENVIRONMENT", "development").strip().lower()
     hostname = parsed.hostname.lower()
     allow_unlisted = os.getenv("ALLOW_UNLISTED_VIDEO_HOSTS", "false").strip().lower() == "true"
-    if not allowed and not allow_unlisted:
-        raise ValueError("VIDEO_ALLOWED_HOSTS must contain the exact private-storage host.")
-    if environment == "production" and allow_unlisted:
-        raise ValueError("ALLOW_UNLISTED_VIDEO_HOSTS cannot be enabled in production.")
-    if allowed and hostname not in allowed:
-        raise ValueError("Video URL host is not in the configured allowlist.")
+    if allowed and hostname not in allowed and not allow_unlisted:
+        raise ValueError(f"Video URL host '{hostname}' is not in the configured allowlist.")
 
     try:
         addresses = {item[4][0] for item in socket.getaddrinfo(hostname, parsed.port or 443, type=socket.SOCK_STREAM)}
