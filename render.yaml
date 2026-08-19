@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: athlentra-analysis-api
+    runtime: docker
+    dockerfilePath: services/api/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: ANALYSIS_API_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndramJ1aXR6cWtvYW53anlmenN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0NzY3ODEsImV4cCI6MjA5OTA1Mjc4MX0.jbXrtD-gIQg-IbF0E6G7AfT8B4JBOXk84UgW_Q9GXPY
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://acecoach-ai.vercel.app,http://localhost:3000
+      - key: VIDEO_ALLOWED_HOSTS
+        value: wkjbuitzqkoanwjyfzsy.supabase.co
