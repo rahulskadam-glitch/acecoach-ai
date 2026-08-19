@@ -519,7 +519,7 @@ export default async function ReportPage({ params }: PageProps) {
           sessionId={id}
           report={report}
           sportId={session.sport_id}
-          actionType={session.action_type}
+          actionType={analysisAction ?? session.action_type ?? "forehand"}
           fileName={video?.filename ?? "Uploaded video"}
           isReviewed={isReviewed}
           onMarkReviewed={markReviewedAction}
