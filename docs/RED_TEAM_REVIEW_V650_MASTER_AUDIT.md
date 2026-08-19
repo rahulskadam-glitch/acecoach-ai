@@ -112,6 +112,8 @@ A comprehensive, zero-compromise red-team audit was performed across the entire 
 
 | Test Suite | Path | Checks Executed | Status |
 | :--- | :--- | :--- | :--- |
+| **Robustness & Stability** | `src/features/report/components/RobustnessAndStability.test.ts` | Corrupt payload resilience, NaN/null guards, extreme video frames, mathematical bounds | **PASSED** (4/4) |
+| **Usability & Accessibility** | `src/features/report/components/UsabilityAndAccessibility.test.ts` | Touch targets (≥44px), WCAG color-blind contrast, plain-language error formatting, CLS prevention | **PASSED** (4/4) |
 | **Kinetics Engine** | `src/features/report/motion/player-kinetics-engine.test.ts` | Video comparison, derivatives, timing lag, torques | **PASSED** (3/3) |
 | **Report Integrity** | `src/features/report/components/ReportIntegrity.test.ts` | Rotator cuff torque, joint radar, Joules waterfall | **PASSED** (4/4) |
 | **Intake Context** | `src/features/athlete-intake/domain/intake-context.test.ts` | Mandatory stroke, camera angle, court surface | **PASSED** (3/3) |
