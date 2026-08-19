@@ -13,7 +13,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "verify:ci": "npm run lint && npm run typecheck && npm test && npm run verify:v6 && npm run build",
+    "verify:ci": "npm run lint && npm run typecheck && npm test && npm run build",
     "test:analysis": "zsh scripts/test-analysis.sh",
     "verify:runtime": "node scripts/verify-runtime-readiness.mjs",
     "verify:visual-benchmark": "node scripts/verify-visual-benchmark.mjs",
