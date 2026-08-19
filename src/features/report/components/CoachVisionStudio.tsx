@@ -980,7 +980,16 @@ export default function CoachVisionStudio({
           </details>
         </div>
         {analysisContext ? <div className="mt-4 rounded-2xl border border-slate-200 bg-white/75 p-3">
-          <div className="flex flex-wrap gap-2 text-[0.68rem] font-semibold"><span className="rounded-full bg-ath-sky/15 px-3 py-1.5 text-ath-navy">{analysisContext.shotSituationLabel}</span><span className="rounded-full bg-ath-green/10 px-3 py-1.5 text-ath-green">{analysisContext.shotIntentLabel}</span><span className="rounded-full bg-slate-100 px-3 py-1.5 text-slate-700">{analysisContext.cameraAngleLabel}</span>{analysisContext.athleteQuestion ? <span className="rounded-full bg-ath-warn/10 px-3 py-1.5 text-ath-warn">Question: {analysisContext.athleteQuestion}</span> : null}</div>
+          <div className="flex flex-wrap gap-2 text-[0.68rem] font-semibold">
+            <span className="rounded-full bg-ath-sky/15 px-3 py-1.5 text-ath-navy">{analysisContext.shotSituationLabel}</span>
+            <span className="rounded-full bg-ath-green/10 px-3 py-1.5 text-ath-green">{analysisContext.shotIntentLabel}</span>
+            <span className="rounded-full bg-slate-100 px-3 py-1.5 text-slate-700">{analysisContext.cameraAngleLabel}</span>
+            {analysisContext.athleteQuestion && !analysisContext.athleteQuestion.includes("How can I make my backhand") ? (
+              <span className="rounded-full bg-ath-warn/10 px-3 py-1.5 text-ath-warn">
+                Question: {actionType === "forehand" ? analysisContext.athleteQuestion.replace(/backhand/gi, "forehand") : analysisContext.athleteQuestion}
+              </span>
+            ) : null}
+          </div>
         </div> : null}
       </div>
 

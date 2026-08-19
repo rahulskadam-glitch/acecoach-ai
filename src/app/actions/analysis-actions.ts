@@ -7,7 +7,7 @@ import { getSport } from "@/lib/sports";
 import { isOwnedStoragePath } from "@/lib/storage/ownership";
 import { createAdminClient, requireUser } from "@/lib/supabase/server";
 import { visualQaReport } from "@/features/visual-qa/report-fixture";
-import type { AnalysisReport, EngineManifest, RepetitionInsights } from "@/modules/analysis/types";
+import type { AnalysisReport, CoachingPlaybook, EngineManifest, RepetitionInsights } from "@/modules/analysis/types";
 import {
   reduceDevelopmentState,
   reduceSharedRootConstruct,
@@ -415,6 +415,68 @@ function buildFallbackAnalysisApiResponse(payload: Record<string, unknown>): Ana
     coachPrinciple: "Create time, stay quiet, finish the swing.",
   };
 
+  const userQuestion = typeof payload.athlete_question === "string" && payload.athlete_question.trim() ? payload.athlete_question.trim() : null;
+  const cameraAngle = typeof payload.camera_angle === "string" ? payload.camera_angle : "side";
+  const shotSituation = typeof payload.shot_situation === "string" ? payload.shot_situation : "neutral_rally";
+  const shotIntent = typeof payload.shot_intent === "string" ? payload.shot_intent : "depth";
+
+  const drills = [
+    {
+      id: `${actionType}_contact_rehearsal`,
+      name: `${label} contact-point rehearsal`,
+      purpose: `Keep the visual and postural reference steady through ${lowerLabel} contact.`,
+      cue: "Chin over the shoulder; see it through.",
+      dosage: `3 sets of 10 controlled ${lowerLabel}s`,
+      successMetric: `Keep the head quiet through 8 of 10 ${lowerLabel}s`,
+      regression: "Shadow the stroke without a ball",
+      progression: `Add a gentle cross-court feed for ${lowerLabel}`,
+    },
+    {
+      id: `${actionType}_finish_recover`,
+      name: `Swing-through and recover on ${lowerLabel}`,
+      purpose: `Carry the ${lowerLabel} swing through its intended line before the first recovery step.`,
+      cue: "Through first, finish free, recover.",
+      dosage: "3 sets of 8 fed balls",
+      successMetric: "Swing through and recover in balance in 8 of 10 repetitions",
+      regression: "Start from the power position",
+      progression: "Alternate stroke and recovery targets",
+    },
+    {
+      id: `${actionType}_split_pivot_move`,
+      name: `Split-pivot-move ${lowerLabel} sequence`,
+      purpose: `Connect the first turn to efficient movement and a functional base on ${lowerLabel}.`,
+      cue: "Split, pivot, move, set.",
+      dosage: "3 sets of 6 movement patterns",
+      successMetric: "Arrive balanced before 8 of 10 swings",
+      regression: "Rehearse without a racket",
+      progression: "Add a live directional feed",
+    },
+  ];
+
+  const nextSession = {
+    objective: `Quieter head through contact on ${lowerLabel}`,
+    recordingPlan: `Record again after two focused sessions of ${lowerLabel} practice from the same camera position.`,
+    successCriteria: [`Keep the head quiet through contact in eight of ten controlled ${lowerLabel}s.`],
+    sessionPlan: [{ block: "Warm-up", duration: "5 min", focus: `Chin-over-shoulder shadow swings for ${lowerLabel}` }],
+  };
+
+  const coachingPlaybook: CoachingPlaybook = {
+    todayFocus: `Build the complete ${lowerLabel}`,
+    feelCue: "Chin over the shoulder; see it through.",
+    visualCue: `Keep the head quiet through ${lowerLabel} contact.`,
+    commonCompensation: "Lifting the head early to watch the ball.",
+    successTest: `Keep the head quiet through 8 of 10 controlled ${lowerLabel}s.`,
+    transferChallenge: `Maintain contact discipline during live ${lowerLabel} rally feeds.`,
+    coachQuestion: `How did your contact feel on your ${lowerLabel}?`,
+  };
+
+  const visualMoments = (visualQaReport.visualMoments ?? []).map((moment) => ({
+    ...moment,
+    title: moment.title.replace(/backhand/gi, lowerLabel),
+    explanation: moment.explanation.replace(/backhand/gi, lowerLabel),
+    cue: moment.cue ? moment.cue.replace(/backhand/gi, lowerLabel) : undefined,
+  }));
+
   const frameSummary = {
     ...visualQaReport.frameSummary!,
     analysisAction: actionType,
@@ -422,6 +484,20 @@ function buildFallbackAnalysisApiResponse(payload: Record<string, unknown>): Ana
       ...visualQaReport.frameSummary!.biomechanicalProfile!,
       actionType,
       version: visualQaReport.frameSummary!.biomechanicalProfile?.version ?? "acecoach-kinematic-profile-v3.0.0",
+    },
+    analysisContext: {
+      cameraAngle,
+      cameraAngleLabel: cameraAngle === "side" ? "side view" : cameraAngle === "rear" ? "rear view" : cameraAngle === "front" ? "front view" : "diagonal view",
+      shotSituation,
+      shotSituationLabel: shotSituation.replaceAll("_", " "),
+      shotIntent,
+      shotIntentLabel: shotIntent.replaceAll("_", " "),
+      athleteQuestion: userQuestion,
+      source: "athlete_supplied" as const,
+      statement: `Read as a ${shotSituation.replaceAll("_", " ")} with an intention of ${shotIntent.replaceAll("_", " ")} for ${lowerLabel}.`,
+      athleteHeightCm: typeof payload.height_cm === "number" ? payload.height_cm : 178,
+      heightSource: "athlete_supplied" as const,
+      calibrationStatement: `Athlete-supplied height is used to contextualize body-relative reach and spacing for ${lowerLabel}.`,
     },
   };
 
@@ -438,17 +514,17 @@ function buildFallbackAnalysisApiResponse(payload: Record<string, unknown>): Ana
     metric_scores: visualQaReport.metricScores,
     strengths: visualQaReport.strengths,
     priorities: visualQaReport.priorities,
-    drills: visualQaReport.drills,
-    next_session: visualQaReport.nextSession,
+    drills,
+    next_session: nextSession,
     coach_summary: coachSummary,
     performance_story: performanceStory,
-    visual_moments: visualQaReport.visualMoments,
+    visual_moments: visualMoments,
     measurement_coverage: visualQaReport.measurementCoverage,
     practice_plan: {
       ...visualQaReport.practicePlan,
       title: `Quieter contact, complete ${lowerLabel} finish`,
     },
-    coaching_playbook: visualQaReport.coachingPlaybook!,
+    coaching_playbook: coachingPlaybook,
     repetition_insights: repetitionInsights,
     evidence: visualQaReport.evidence,
     safety_note: visualQaReport.safetyNote,
