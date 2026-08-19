@@ -57,10 +57,13 @@ def _open_validated_url(url: str):  # type: ignore[no-untyped-def]
         _validate_remote_url(current_url)
         request = urllib.request.Request(
             current_url,
-            headers={"User-Agent": "AceCoach-Analysis/0.9.0"},
+            headers={
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+                "Accept": "*/*",
+            },
         )
         try:
-            return _NO_REDIRECT_OPENER.open(request, timeout=DOWNLOAD_TIMEOUT_SECONDS)
+            return urllib.request.urlopen(request, context=_TLS_CONTEXT, timeout=DOWNLOAD_TIMEOUT_SECONDS)
         except urllib.error.HTTPError as error:
             if error.code not in _REDIRECT_CODES:
                 raise

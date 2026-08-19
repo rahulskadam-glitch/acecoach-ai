@@ -1622,11 +1622,11 @@ export async function queueAnalysisVideo(
   const queuedIsStale = existing?.status === "queued" && Date.now() - existingUpdatedAt > 2 * 60 * 1000;
   const processingIsStale = existing?.status === "processing" && Date.now() - existingUpdatedAt > 12 * 60 * 1000;
 
-  if (existing && existing.action_type === actionType && (existing.status === "completed" || (existing.status === "processing" && !processingIsStale) || (existing.status === "queued" && !queuedIsStale))) {
+  if (existing && existing.action_type === actionType && existing.status === "processing" && !processingIsStale) {
     return { sessionId: existing.id, status: existing.status, contextPersistence: "skipped_existing" as const };
   }
 
-  if (existing?.status === "failed" || queuedIsStale || processingIsStale) {
+  if (existing) {
     const { error: resetError } = await supabase
       .from("analysis_sessions")
       .update({
