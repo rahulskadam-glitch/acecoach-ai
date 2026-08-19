@@ -136,24 +136,48 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
         </div>
       ) : (
         <>
-          {/* Header: back to hub, section name, Ask Coach */}
-          <header className="flex items-center justify-between gap-3 pt-1">
-            <button
-              type="button"
-              onClick={() => goTo("hub")}
-              className="flex min-h-10 items-center gap-2 rounded-full border border-white/10 bg-slate-900/80 px-3.5 text-xs font-bold text-white transition active:scale-95"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span>Hub</span>
-            </button>
-            <h1 className="text-xs font-black uppercase tracking-[0.14em] text-white">{sectionLabel}</h1>
-            <button
-              type="button"
-              onClick={() => setIsCoachDrawerOpen(true)}
-              className="flex min-h-10 items-center gap-2 rounded-full bg-ath-lime px-3.5 text-xs font-black text-ath-navy shadow-lg shadow-black/20 transition active:scale-95"
-            >
-              <Sparkles className="h-4 w-4" />
-            </button>
+          {/* Header: section switcher tabs & Ask Coach */}
+          <header className="sticky top-16 z-30 -mx-3 bg-[#060b13]/90 px-3 py-2 backdrop-blur-xl border-b border-white/10 space-y-2">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="rounded bg-ath-lime px-2 py-0.5 text-[0.62rem] font-black uppercase tracking-wider text-ath-navy capitalize">
+                  {movement}
+                </span>
+                <h1 className="text-sm font-black text-white">{sectionLabel}</h1>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsCoachDrawerOpen(true)}
+                className="flex min-h-8 items-center gap-1.5 rounded-full bg-ath-lime px-3 text-xs font-black text-ath-navy shadow-md shadow-ath-lime/20 transition hover:opacity-95 active:scale-95"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>Coach AI</span>
+              </button>
+            </div>
+
+            {/* Horizontal Scrollable Section Bar */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-xs">
+              {hubTiles.map((tile) => {
+                const isActive = activeTab === tile.id;
+                const Icon = tile.icon;
+                return (
+                  <button
+                    key={tile.id}
+                    type="button"
+                    onClick={() => goTo(tile.id)}
+                    className={`flex items-center gap-1.5 whitespace-nowrap rounded-xl px-3 py-1.5 font-bold transition shrink-0 active:scale-95 ${
+                      isActive
+                        ? "bg-white text-slate-950 shadow-md font-black"
+                        : "border border-white/10 bg-white/5 text-slate-300 hover:border-white/20 hover:text-white"
+                    }`}
+                  >
+                    <Icon className={`h-3.5 w-3.5 ${isActive ? "text-slate-950" : "text-slate-400"}`} />
+                    <span>{tile.label}</span>
+                  </button>
+                );
+              })}
+            </div>
           </header>
 
       {/* Overview: score + top priority */}
