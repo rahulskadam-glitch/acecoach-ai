@@ -54,13 +54,13 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
     validatedBallOutcomes,
   } = props;
   const sport = getSport(sportId);
-  const view = buildPlayerReportView(report);
+  const resolvedActionType = report.movementClassification?.analysisAction ?? actionType;
+  const view = buildPlayerReportView(report, resolvedActionType);
   const [activeTab, setActiveTab] = useState<ReportTab>("overview");
   const [videoView, setVideoView] = useState<VideoView>("yours");
   const [injuryView, setInjuryView] = useState<InjuryView>("joint_stress");
   const [proTwinStage, setProTwinStage] = useState<MotionStage>("forward_swing_contact");
   const [isCoachDrawerOpen, setIsCoachDrawerOpen] = useState(false);
-  const resolvedActionType = report.movementClassification?.analysisAction ?? actionType;
   const actionOptions = sport.actions.map((item) => ({ id: item.id, label: item.label }));
 
   const movement =
