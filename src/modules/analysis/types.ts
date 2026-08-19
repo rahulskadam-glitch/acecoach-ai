@@ -188,6 +188,14 @@ export type FrameMetric = {
   dominantAnkleAngle?: number | null;
   oppositeAnkleAngle?: number | null;
   trunkAngleDegrees?: number | null;
+  shoulderLineDegrees?: number | null;
+  pelvisLineDegrees?: number | null;
+  shoulderLineAngularSpeed?: number | null;
+  pelvisLineAngularSpeed?: number | null;
+  dominantWristSpeedBodyPerSecond?: number | null;
+  dominantElbowSpeedBodyPerSecond?: number | null;
+  kneeChainSpeedBodyPerSecond?: number | null;
+  hipChainSpeedBodyPerSecond?: number | null;
   headToComNormalized?: number | null;
   handToTorsoNormalized?: number | null;
   motionEnergy?: number;

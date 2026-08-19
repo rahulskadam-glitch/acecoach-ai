@@ -4,6 +4,9 @@ import { Crosshair, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 
+import { computePlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
+import type { AnalysisReport } from "@/modules/analysis/types";
+
 type StrikePoint = {
   id: number;
   x: number; // mm offset from sweet spot center (-50 to +50)
@@ -23,9 +26,10 @@ export default function SweetSpotStrikeClusterChart({ actionType = "forehand", p
   const [hoveredPoint, setHoveredPoint] = useState<StrikePoint | null>(null);
 
   const isServe = actionType.toLowerCase().includes("serve");
+  const resolvedProfile = profile ?? computePlayerBiomechanicalProfile({} as AnalysisReport, actionType);
 
   // Dynamic metrics derived from player video kinetic efficiency
-  const kineticEff = profile?.estimatedKineticEfficiencyPct ?? 84;
+  const kineticEff = resolvedProfile.estimatedKineticEfficiencyPct;
   const smashFactor = Number((kineticEff / 100).toFixed(2));
   const sweetSpotPercent = Math.min(100, Math.round(smashFactor * 48));
   const powerLossPercent = Number(((1 - smashFactor) * 100).toFixed(1));

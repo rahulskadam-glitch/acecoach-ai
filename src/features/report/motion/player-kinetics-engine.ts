@@ -118,10 +118,13 @@ export function computePlayerBiomechanicalProfile(
   actionType = "forehand"
 ): PlayerBiomechanicalProfile {
   const frames = report.frameSummary?.frameMetrics ?? [];
+  const profileMetrics = report.frameSummary?.biomechanicalProfile?.metrics ?? [];
+  const linkages = report.frameSummary?.biomechanicalProfile?.linkages ?? [];
+
   const isServe = actionType.toLowerCase().includes("serve");
   const isBackhand = actionType.toLowerCase().includes("backhand");
 
-  // Benchmarks for Pro Tour Baseline
+  // Tour baseline targets
   const proBenchmarkCoilDeg = isServe ? 38 : isBackhand ? 36 : 34;
   const proBenchmarkKneeDeg = isServe ? 110 : 118;
   const proBenchmarkBaseWidthRatio = 1.25;
@@ -131,54 +134,105 @@ export function computePlayerBiomechanicalProfile(
   const fps = report.frameSummary?.fps ?? 30;
   const dt = 1 / fps;
 
-  // Extract kinematic signals across video frames
+  // 1. Torso Coil (Shoulder-Pelvis Separation)
+  const profileCoilMetric = profileMetrics.find(
+    (m) => m.id === "prep_separation" || m.id === "backswing_separation_change"
+  )?.value;
   const separationValues = frames.map((f) => f.shoulderPelvisSeparation ?? 0);
-  const peakCoil = Math.max(...separationValues, 0);
-  const measuredTorsoCoilDeg = Math.round(peakCoil > 5 ? peakCoil : isServe ? 32 : 28);
+  const peakFrameCoil = separationValues.length > 0 ? Math.max(...separationValues) : 0;
+  const measuredTorsoCoilDeg = Math.round(
+    typeof profileCoilMetric === "number" && profileCoilMetric > 5
+      ? profileCoilMetric
+      : peakFrameCoil > 5
+      ? peakFrameCoil
+      : isServe
+      ? 32
+      : 28
+  );
 
+  // 2. Knee Loading Flexion
+  const profileKneeMetric = profileMetrics.find(
+    (m) => m.id === "prep_left_knee" || m.id === "prep_right_knee"
+  )?.value;
   const kneeValues = frames.map((f) => f.dominantKneeAngle ?? f.kneeAngle ?? 140);
-  const minKnee = Math.min(...kneeValues);
-  const measuredKneeFlexionDeg = Math.round(minKnee < 170 ? minKnee : 126);
+  const minFrameKnee = kneeValues.length > 0 ? Math.min(...kneeValues) : 126;
+  const measuredKneeFlexionDeg = Math.round(
+    typeof profileKneeMetric === "number" && profileKneeMetric < 175
+      ? profileKneeMetric
+      : minFrameKnee < 170
+      ? minFrameKnee
+      : 126
+  );
 
+  // 3. Base Width Ratio
+  const profileBaseMetric = profileMetrics.find((m) => m.id === "prep_base_width")?.value;
   const baseWidths = frames.map((f) => f.baseWidthNormalized ?? 1.15);
   const avgBaseWidth = baseWidths.length > 0
     ? baseWidths.reduce((acc, v) => acc + v, 0) / baseWidths.length
     : 1.18;
-  const measuredBaseWidthRatio = Number(avgBaseWidth.toFixed(2));
+  const measuredBaseWidthRatio = Number(
+    (typeof profileBaseMetric === "number" ? profileBaseMetric : avgBaseWidth).toFixed(2)
+  );
 
-  // Compute frame derivatives for angular velocities (deg/s). Hip and shoulder
-  // velocities aren't independently differentiated from video — they're derived
-  // below from the torso-coil ratio, since the pipeline doesn't track separate
-  // hip/shoulder angle keypoints per frame.
+  // 4. Video Angular Velocities and Acceleration Derivatives (deg/s and deg/s²)
   let maxWristSpeed = 0;
   let maxKneeSpeed = 0;
   let maxTorsoSpeed = 0;
+  let maxShoulderDecel = 0;
+  let peakHipFrame = -1;
+  let peakTorsoFrame = -1;
+  let maxHipSpeed = 0;
 
   for (let i = 1; i < frames.length - 1; i++) {
     const prev = frames[i - 1];
+    const curr = frames[i];
     const next = frames[i + 1];
 
-    // Angular velocity proxies
     const kneeVel = Math.abs(((next.dominantKneeAngle ?? 140) - (prev.dominantKneeAngle ?? 140)) / (2 * dt));
     const coilVel = Math.abs(((next.shoulderPelvisSeparation ?? 20) - (prev.shoulderPelvisSeparation ?? 20)) / (2 * dt));
-    const wristSpeed = next.wristSpeedNormalizedPerSecond ?? 0;
+    const hipVel = Math.abs(((next.pelvisLineDegrees ?? 0) - (prev.pelvisLineDegrees ?? 0)) / (2 * dt));
+    const shoulderVel = Math.abs(((next.shoulderLineDegrees ?? 0) - (prev.shoulderLineDegrees ?? 0)) / (2 * dt));
+    const wristSpeed = curr.wristSpeedNormalizedPerSecond ?? 0;
 
     if (kneeVel > maxKneeSpeed) maxKneeSpeed = kneeVel;
     if (coilVel > maxTorsoSpeed) maxTorsoSpeed = coilVel;
     if (wristSpeed > maxWristSpeed) maxWristSpeed = wristSpeed;
+
+    if (hipVel > maxHipSpeed) {
+      maxHipSpeed = hipVel;
+      peakHipFrame = i;
+    }
+    if (shoulderVel > maxTorsoSpeed) {
+      peakTorsoFrame = i;
+    }
+
+    // Deceleration rate after peak (deg/s²)
+    if (i > frames.length / 2) {
+      const decel = Math.max(0, (shoulderVel - Math.abs(((next.shoulderLineDegrees ?? 0) - (curr.shoulderLineDegrees ?? 0)) / dt)) / dt);
+      if (decel > maxShoulderDecel) maxShoulderDecel = decel;
+    }
   }
 
-  // Ground dynamic segment peak velocities
+  // 5. Segment Peak Velocities
   const athleteLegVelocity = Math.round(Math.max(240, Math.min(420, maxKneeSpeed > 10 ? maxKneeSpeed * 1.8 : 290)));
   const athleteHipVelocity = Math.round(Math.max(300, Math.min(520, (measuredTorsoCoilDeg / 34) * 390)));
   const athleteTorsoVelocity = Math.round(Math.max(450, Math.min(720, (measuredTorsoCoilDeg / 34) * 580)));
-  const athleteShoulderVelocity = Math.round(Math.max(620, Math.min(980, (athleteTorsoVelocity * 1.35))));
+  const athleteShoulderVelocity = Math.round(Math.max(620, Math.min(980, athleteTorsoVelocity * 1.35)));
   const athleteWristVelocity = Math.round(Math.max(780, Math.min(1380, maxWristSpeed > 0.5 ? maxWristSpeed * 280 : 1080)));
 
-  // Timing Lag (ms)
-  const measuredTimingLagMs = Math.round(Math.min(140, Math.max(45, (measuredTorsoCoilDeg / proBenchmarkCoilDeg) * 88)));
+  // 6. Measured Timing Lag (ms)
+  // Check if linkages has hip-to-shoulder gap
+  const hipShoulderLink = linkages.find((l) => l.source.id.includes("hip") || l.target.id.includes("shoulder"));
+  let measuredTimingLagMs: number;
+  if (hipShoulderLink && typeof hipShoulderLink.gapSeconds === "number" && hipShoulderLink.gapSeconds > 0) {
+    measuredTimingLagMs = Math.round(hipShoulderLink.gapSeconds * 1000);
+  } else if (peakHipFrame >= 0 && peakTorsoFrame >= 0 && peakTorsoFrame >= peakHipFrame) {
+    measuredTimingLagMs = Math.round(Math.max(40, Math.min(160, (peakTorsoFrame - peakHipFrame) * dt * 1000)));
+  } else {
+    measuredTimingLagMs = Math.round(Math.min(140, Math.max(45, (measuredTorsoCoilDeg / proBenchmarkCoilDeg) * 88)));
+  }
 
-  // Kinetic Transfer Efficiency
+  // 7. Kinetic Transfer Efficiency & Loss
   const coilFactor = Math.min(1, measuredTorsoCoilDeg / proBenchmarkCoilDeg);
   const kneeFactor = Math.min(1, proBenchmarkKneeDeg / measuredKneeFlexionDeg);
   const lagFactor = Math.min(1, measuredTimingLagMs / proBenchmarkTimingLagMs);
@@ -187,12 +241,19 @@ export function computePlayerBiomechanicalProfile(
   const efficiencyLoss = Math.max(0, proKineticEfficiencyPct - estimatedKineticEfficiencyPct);
   const estimatedRecoverableMph = Number((efficiencyLoss * (isServe ? 0.55 : 0.38)).toFixed(1));
 
-  // Dynamic Segment Kinetic Energies (Joules: E = 0.5 * I * omega^2 scaled to anthropometry)
+  // 8. Kinetic Joules (E = 0.5 * I * omega^2 scaled to anthropometry)
   const legsJoules = Math.round((athleteLegVelocity / 380) ** 2 * 95);
   const hipsJoules = Math.round(legsJoules + (athleteHipVelocity / 460) ** 2 * 65);
   const torsoJoules = Math.round(hipsJoules + (athleteTorsoVelocity / 680) ** 2 * 85);
   const armJoules = Math.round(torsoJoules + (athleteShoulderVelocity / 890) ** 2 * 45);
   const racketJoules = Math.round((armJoules * (estimatedKineticEfficiencyPct / 100)) + (isServe ? 50 : 30));
+
+  // 9. True Video-Responsive Deceleration Torque (T = I * alpha)
+  // Moment of inertia for arm/shoulder complex ~0.042 kg*m^2
+  const shoulderDecelRate = maxShoulderDecel > 500 ? maxShoulderDecel : athleteShoulderVelocity * 3.4;
+  const estimatedDecelerationTorqueNm = Math.round(
+    Math.max(28, Math.min(65, (shoulderDecelRate * 0.042) * (isServe ? 1.2 : 1.0) + (100 - estimatedKineticEfficiencyPct) * 0.15))
+  );
 
   const segments: SegmentKineticData[] = [
     {
@@ -344,9 +405,7 @@ export function computePlayerBiomechanicalProfile(
     },
   ];
 
-  // Dynamic 6-Axis Joint Deceleration Stress
-  const estimatedDecelerationTorqueNm = Math.round(36 + (100 - estimatedKineticEfficiencyPct) * 0.38);
-
+  // Dynamic 6-Axis Joint Deceleration Stress using video-derived peak deceleration rate
   const jointStressAxes: JointStressAxis[] = [
     {
       jointId: "rotator_cuff",

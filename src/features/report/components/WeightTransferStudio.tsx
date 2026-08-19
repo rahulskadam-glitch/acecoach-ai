@@ -20,74 +20,23 @@ type WeightStoryboardMoment = {
   proBenchmark: string;
 };
 
-// Default Weight Transfer Storyboard
-const DEFAULT_WEIGHT_STORYBOARD: WeightStoryboardMoment[] = [
-  {
-    id: "moment_ready",
-    stage: "ready",
-    stepNum: 1,
-    title: "1. Ready Stance",
-    cue: "Balanced bounce on balls of feet",
-    rearFoot: 50,
-    frontFoot: 50,
-    comShiftCm: 0,
-    status: "optimal",
-    athleteVerdict: "50/50 balanced platform",
-    proBenchmark: "50/50 neutral split",
-  },
-  {
-    id: "moment_load",
-    stage: "unit_turn",
-    stepNum: 2,
-    title: "2. Coil & Loading",
-    cue: "Store spring power on back leg",
-    rearFoot: 75,
-    frontFoot: 25,
-    comShiftCm: -8,
-    status: "optimal",
-    athleteVerdict: "72% back foot load",
-    proBenchmark: "75% deep coil load",
-  },
-  {
-    id: "moment_strike",
-    stage: "forward_swing_contact",
-    stepNum: 3,
-    title: "3. Strike & Drive ⚡",
-    cue: "Drive full bodyweight into the ball",
-    rearFoot: 15,
-    frontFoot: 85,
-    comShiftCm: 24,
-    status: "priority",
-    athleteVerdict: "65% front foot drive (mild fall back)",
-    proBenchmark: "85% front foot commitment (+24cm)",
-  },
-  {
-    id: "moment_reset",
-    stage: "recovery",
-    stepNum: 4,
-    title: "4. Land & Reset",
-    cue: "Instant balanced split for next ball",
-    rearFoot: 50,
-    frontFoot: 50,
-    comShiftCm: 2,
-    status: "optimal",
-    athleteVerdict: "50/50 landing recovery",
-    proBenchmark: "50/50 dynamic recovery",
-  },
-];
+import { computePlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
+import type { AnalysisReport } from "@/modules/analysis/types";
 
 export default function WeightTransferStudio({
   currentStage,
   onSeekToStage,
   profile,
+  actionType = "forehand",
 }: {
   currentStage: MotionStage;
   onSeekToStage: (stage: MotionStage) => void;
   profile?: PlayerBiomechanicalProfile;
+  actionType?: string;
 }) {
   const storyboard = useMemo(() => {
-    if (!profile || !profile.weightTransferPhases.length) return DEFAULT_WEIGHT_STORYBOARD;
-    return profile.weightTransferPhases.map((phase, idx) => ({
+    const resolvedProfile = profile ?? computePlayerBiomechanicalProfile({} as AnalysisReport, actionType);
+    return resolvedProfile.weightTransferPhases.map((phase, idx) => ({
       id: `moment_${phase.stage}`,
       stage: phase.stage,
       stepNum: idx + 1,
@@ -104,7 +53,7 @@ export default function WeightTransferStudio({
       athleteVerdict: `${phase.rearFootPct}/${phase.frontFootPct} weight split`,
       proBenchmark: phase.balanceStatus === "loaded_front" ? "15/85 front drive" : phase.balanceStatus === "loaded_rear" ? "75/25 deep load" : "50/50 split",
     }));
-  }, [profile]);
+  }, [profile, actionType]);
 
   const activeMoment = useMemo(() => {
     return storyboard.find((m) => m.stage === currentStage) ?? storyboard[Math.min(2, storyboard.length - 1)];

@@ -3,7 +3,8 @@
 import { AlertTriangle } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { MotionStage } from "../motion/motion-model";
-import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
+import { computePlayerBiomechanicalProfile, type PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
+import type { AnalysisReport } from "@/modules/analysis/types";
 
 type Props = {
   currentStage?: MotionStage;
@@ -26,309 +27,79 @@ type WaterfallStep = {
 };
 
 function getWaterfallStepsForAction(actionType: string, profile?: PlayerBiomechanicalProfile): WaterfallStep[] {
-  const norm = actionType.toLowerCase();
-  const isServe = norm.includes("serve");
+  const isServe = actionType.toLowerCase().includes("serve");
+  const p = profile ?? computePlayerBiomechanicalProfile({} as AnalysisReport, actionType);
 
-  if (profile) {
-    const w = profile.waterfallJoules;
-    const leakJoules = Math.round((profile.proKineticEfficiencyPct - profile.estimatedKineticEfficiencyPct) * 1.5);
+  const w = p.waterfallJoules;
+  const leakJoules = Math.max(12, Math.round((p.proKineticEfficiencyPct - p.estimatedKineticEfficiencyPct) * 1.6));
+  const hipEnergy = Math.max(25, w.torso - w.legs);
+  const armEnergy = Math.max(30, w.racket - (w.torso - leakJoules));
 
-    return [
-      {
-        id: "ground_reaction",
-        name: isServe ? "1. Trophy Leg Push" : "1. Ground Leg Drive",
-        category: "gain",
-        joules: w.legs,
-        cumulativeJoules: w.legs,
-        benchmarkJoules: isServe ? 420 : 95,
-        stage: "backswing",
-        description: `Ground reaction force from knee loading (${profile.measuredKneeFlexionDeg}° flexion).`,
-        coachingFix: profile.kneeStatus === "optimal"
-          ? "Knee loading depth is synchronized with unit turn."
-          : `Bend knees deeper during setup for higher kinetic energy generation.`,
-        color: "#10b981",
-      },
-      {
-        id: "hip_transfer",
-        name: "2. Pelvis & Torso Coil",
-        category: "gain",
-        joules: w.torso - w.legs,
-        cumulativeJoules: w.torso,
-        benchmarkJoules: isServe ? 620 : 245,
-        stage: "forward_swing_contact",
-        description: `Rotational energy stored in shoulder-pelvis separation (${profile.measuredTorsoCoilDeg}° coil).`,
-        coachingFix: profile.coilStatus === "optimal"
-          ? "Torso coil and stretch-shortening cycle are on track."
-          : `Create full shoulder turn past the ball line to eliminate rotational power leak.`,
-        color: "#06b6d4",
-      },
-      {
-        id: "kinetic_leak",
-        name: "3. Kinetic Transfer Leak",
-        category: "leak",
-        joules: -leakJoules,
-        cumulativeJoules: Math.max(20, w.torso - leakJoules),
-        benchmarkJoules: isServe ? 600 : 240,
-        stage: "forward_swing_contact",
-        description: profile.timingLagStatus === "optimal"
-          ? "Clean proximal-to-distal sequencing from hips to arm."
-          : `Early uncoil reduces kinetic transfer efficiency to ${profile.estimatedKineticEfficiencyPct}%.`,
-        coachingFix: `Timing lag measured at ${profile.measuredTimingLagMs}ms. Lead with the hips before releasing the arm.`,
-        color: "#ef4444",
-      },
-      {
-        id: "arm_whip",
-        name: "4. Arm & Racket Acceleration",
-        category: "gain",
-        joules: w.racket - (w.torso - leakJoules),
-        cumulativeJoules: w.racket,
-        benchmarkJoules: isServe ? 920 : 320,
-        stage: "forward_swing_contact",
-        description: `Final kinetic delivery into stringbed velocity (+${profile.estimatedRecoverableMph} MPH potential).`,
-        coachingFix: "Maintain loose grip tension through impact to maximize terminal racket whip.",
-        color: "#d7e022",
-      },
-      {
-        id: "terminal_energy",
-        name: "5. Total Impact Energy",
-        category: "total",
-        joules: w.racket,
-        cumulativeJoules: w.racket,
-        benchmarkJoules: isServe ? 920 : 320,
-        stage: "forward_swing_contact",
-        description: `Total deliverable kinetic energy: ${w.racket} Joules at ${profile.estimatedKineticEfficiencyPct}% efficiency.`,
-        coachingFix: `Fixing the primary leak unlocks an estimated +${profile.estimatedRecoverableMph} MPH on your stroke.`,
-        color: "#38bdf8",
-      },
-    ];
-  }
-
-  if (norm.includes("serve")) {
-    return [
-      {
-        id: "ground_reaction",
-        name: "1. Trophy Leg Push",
-        category: "gain",
-        joules: 450,
-        cumulativeJoules: 450,
-        benchmarkJoules: 510,
-        stage: "backswing",
-        description: "Explosive vertical jump loading out of deep knee bend.",
-        coachingFix: "Bend knees 8° deeper in trophy stance for +60 Joules of upward launch.",
-        color: "#10b981",
-      },
-      {
-        id: "toss_leak",
-        name: "2. Shoulder Dip Leak",
-        category: "leak",
-        joules: -55,
-        cumulativeJoules: 395,
-        benchmarkJoules: 500,
-        stage: "forward_swing_contact",
-        description: "Left tossing arm dropped too quickly, collapsing the shoulder cartwheel axis.",
-        coachingFix: "Keep tossing arm extended up toward the sky until the racket starts ascending.",
-        color: "#f43f5e",
-      },
-      {
-        id: "torso_cartwheel",
-        name: "3. Torso Cartwheel Arch",
-        category: "gain",
-        joules: 240,
-        cumulativeJoules: 635,
-        benchmarkJoules: 760,
-        stage: "forward_swing_contact",
-        description: "Vertical-to-forward spinal arch uncoiling through ball launch.",
-        coachingFix: "Drive right shoulder up and over your left shoulder for cleaner vertical leverage.",
-        color: "#06b6d4",
-      },
-      {
-        id: "scratch_leak",
-        name: "4. Shallow Racket Drop",
-        category: "leak",
-        joules: -35,
-        cumulativeJoules: 600,
-        benchmarkJoules: 750,
-        stage: "forward_swing_contact",
-        description: "Racket head did not drop fully down the back scratch position.",
-        coachingFix: "Relax grip completely at the top of the loop to allow full vertical drop.",
-        color: "#f43f5e",
-      },
-      {
-        id: "pronation_whip",
-        name: "5. Forearm Pronation Whip",
-        category: "gain",
-        joules: 290,
-        cumulativeJoules: 890,
-        benchmarkJoules: 1050,
-        stage: "forward_swing_contact",
-        description: "Internal shoulder rotation and outward pronation through the ball peak.",
-        coachingFix: "Pronate wrist outward past contact so the racket face finishes facing right.",
-        color: "#8b5cf6",
-      },
-      {
-        id: "final_ball_energy",
-        name: "6. Ball Launch Energy",
-        category: "total",
-        joules: 890,
-        cumulativeJoules: 890,
-        benchmarkJoules: 1050,
-        stage: "forward_swing_contact",
-        description: "Total kinetic launch energy delivered into the serve.",
-        coachingFix: "Fixing shoulder dip + racket drop recovers +90 Joules = +11.8 mph serve speed.",
-        color: "#38bdf8",
-      },
-    ];
-  }
-
-  if (norm.includes("backhand")) {
-    return [
-      {
-        id: "ground_reaction",
-        name: "1. Back Leg Loading",
-        category: "gain",
-        joules: 350,
-        cumulativeJoules: 350,
-        benchmarkJoules: 390,
-        stage: "backswing",
-        description: "Firm linear loading onto the outside foot during unit turn.",
-        coachingFix: "Load 75% bodyweight onto back foot before stepping into the line of the ball.",
-        color: "#10b981",
-      },
-      {
-        id: "hip_leak",
-        name: "2. Hip Over-Rotation Leak",
-        category: "leak",
-        joules: -40,
-        cumulativeJoules: 310,
-        benchmarkJoules: 380,
-        stage: "forward_swing_contact",
-        description: "Hips squared up too early, pulling the racket across instead of through the ball.",
-        coachingFix: "Keep back hip closed sideways until after ball contact.",
-        color: "#f43f5e",
-      },
-      {
-        id: "torso_uncoil",
-        name: "3. Core Rotational Drive",
-        category: "gain",
-        joules: 200,
-        cumulativeJoules: 510,
-        benchmarkJoules: 600,
-        stage: "forward_swing_contact",
-        description: "Elastic rotational thrust of the core and non-dominant side.",
-        coachingFix: "Drive dominant and non-dominant obliques together through contact.",
-        color: "#06b6d4",
-      },
-      {
-        id: "extension_leak",
-        name: "4. Cramped Extension Drag",
-        category: "leak",
-        joules: -25,
-        cumulativeJoules: 485,
-        benchmarkJoules: 590,
-        stage: "forward_swing_contact",
-        description: "Hitting arms pulled inward 5cm too close to chest at contact.",
-        coachingFix: "Extend arms through an 18-inch hitting zone toward your target.",
-        color: "#f43f5e",
-      },
-      {
-        id: "whip_finish",
-        name: "5. Racket Acceleration Whip",
-        category: "gain",
-        joules: 195,
-        cumulativeJoules: 680,
-        benchmarkJoules: 810,
-        stage: "forward_swing_contact",
-        description: "Clean upward-and-through kinetic whip into the ball strike.",
-        coachingFix: "Finish high over opposite shoulder with fluid deceleration.",
-        color: "#8b5cf6",
-      },
-      {
-        id: "final_ball_energy",
-        name: "6. Ball Impact Energy",
-        category: "total",
-        joules: 680,
-        cumulativeJoules: 680,
-        benchmarkJoules: 810,
-        stage: "forward_swing_contact",
-        description: "Net kinetic energy delivered to the tennis ball at contact.",
-        coachingFix: "Fixing hip over-rotation + extension recovers +65 Joules = +8.5 mph exit speed.",
-        color: "#38bdf8",
-      },
-    ];
-  }
-
-  // Default: Forehand
   return [
     {
       id: "ground_reaction",
-      name: "1. Ground Drive (Legs)",
+      name: isServe ? "1. Trophy Leg Push" : "1. Ground Leg Drive",
       category: "gain",
-      joules: 380,
-      cumulativeJoules: 380,
-      benchmarkJoules: 420,
+      joules: w.legs,
+      cumulativeJoules: w.legs,
+      benchmarkJoules: isServe ? 420 : 95,
       stage: "backswing",
-      description: "Explosive upward and forward thrust off court baseline.",
-      coachingFix: "Bend knees 6° deeper to load 40 more Joules of ground spring.",
+      description: `Ground reaction force from knee loading (${p.measuredKneeFlexionDeg}° flexion).`,
+      coachingFix: p.kneeStatus === "optimal"
+        ? "Knee loading depth is synchronized with unit turn."
+        : "Bend knees deeper during setup for higher kinetic energy generation.",
       color: "#10b981",
     },
     {
-      id: "pelvis_leak",
-      name: "2. Pelvis Leak (Early Open)",
-      category: "leak",
-      joules: -45,
-      cumulativeJoules: 335,
-      benchmarkJoules: 410,
-      stage: "forward_swing_contact",
-      description: "Hips opened 0.04s too early before torso could stretch.",
-      coachingFix: "Delay pelvic rotation until the racket starts dropping into the slot.",
-      color: "#f43f5e",
-    },
-    {
-      id: "torso_coil",
-      name: "3. Torso Coil Boost",
+      id: "hip_transfer",
+      name: "2. Pelvis & Torso Coil",
       category: "gain",
-      joules: 190,
-      cumulativeJoules: 525,
-      benchmarkJoules: 620,
+      joules: hipEnergy,
+      cumulativeJoules: w.torso,
+      benchmarkJoules: isServe ? 620 : 245,
       stage: "forward_swing_contact",
-      description: "Elastic rotational recoil of thoracic spine & obliques.",
-      coachingFix: "Maximize X-Factor separation for +30 Joules of core snap.",
+      description: `Rotational energy stored in shoulder-pelvis separation (${p.measuredTorsoCoilDeg}° coil).`,
+      coachingFix: p.coilStatus === "optimal"
+        ? "Torso coil and stretch-shortening cycle are on track."
+        : "Create full shoulder turn past the ball line to eliminate rotational power leak.",
       color: "#06b6d4",
     },
     {
-      id: "lag_leak",
-      name: "4. Lag Slot Drag (Cramp)",
+      id: "kinetic_leak",
+      name: "3. Kinetic Transfer Leak",
       category: "leak",
-      joules: -30,
-      cumulativeJoules: 495,
-      benchmarkJoules: 610,
+      joules: -leakJoules,
+      cumulativeJoules: Math.max(20, w.torso - leakJoules),
+      benchmarkJoules: isServe ? 600 : 240,
       stage: "forward_swing_contact",
-      description: "Racket drop was 6cm shallow, losing gravitational sling.",
-      coachingFix: "Let the racket head drop below hand height before forward drive.",
-      color: "#f43f5e",
+      description: p.timingLagStatus === "optimal"
+        ? "Clean proximal-to-distal sequencing from hips to arm."
+        : `Early uncoil reduces kinetic transfer efficiency to ${p.estimatedKineticEfficiencyPct}%.`,
+      coachingFix: `Timing lag measured at ${p.measuredTimingLagMs}ms. Lead with the hips before releasing the arm.`,
+      color: "#ef4444",
     },
     {
-      id: "wrist_whip",
-      name: "5. Forearm & Wrist Whip",
+      id: "arm_whip",
+      name: "4. Arm & Racket Acceleration",
       category: "gain",
-      joules: 210,
-      cumulativeJoules: 705,
-      benchmarkJoules: 840,
+      joules: armEnergy,
+      cumulativeJoules: w.racket,
+      benchmarkJoules: isServe ? 920 : 320,
       stage: "forward_swing_contact",
-      description: "Pronation snap and kinetic whip into the ball strike.",
-      coachingFix: "Keep grip loose (4/10 tension) to maximize whip snap velocity.",
-      color: "#8b5cf6",
+      description: `Final kinetic delivery into stringbed velocity (+${p.estimatedRecoverableMph} MPH potential).`,
+      coachingFix: "Maintain loose grip tension through impact to maximize terminal racket whip.",
+      color: "#d7e022",
     },
     {
-      id: "final_ball_energy",
-      name: "6. Ball Impact Energy",
+      id: "terminal_energy",
+      name: "5. Total Impact Energy",
       category: "total",
-      joules: 705,
-      cumulativeJoules: 705,
-      benchmarkJoules: 840,
+      joules: w.racket,
+      cumulativeJoules: w.racket,
+      benchmarkJoules: isServe ? 920 : 320,
       stage: "forward_swing_contact",
-      description: "Net kinetic energy delivered to the tennis ball at contact.",
-      coachingFix: "Fixing the 2 leaks recovers +75 Joules = +9.4 mph ball exit speed.",
+      description: `Total deliverable kinetic energy: ${w.racket} Joules at ${p.estimatedKineticEfficiencyPct}% efficiency.`,
+      coachingFix: `Fixing the primary leak unlocks an estimated +${p.estimatedRecoverableMph} MPH on your stroke.`,
       color: "#38bdf8",
     },
   ];
@@ -343,13 +114,13 @@ export default function KineticPowerWaterfallChart({
   const [selectedStepId, setSelectedStepId] = useState<string>(steps[1]?.id ?? "hip_transfer");
 
   const selectedStep = steps.find((s) => s.id === selectedStepId) ?? steps[1];
-  const maxJoules = profile ? profile.waterfallJoules.racket * 1.25 : normMaxJoules(actionType);
+  const maxJoules = Math.max(100, Math.max(...steps.map((s) => Math.abs(s.cumulativeJoules))) * 1.25);
 
   const totalLeaked = Math.abs(steps.filter((s) => s.joules < 0).reduce((acc, s) => acc + s.joules, 0));
-  const finalEnergy = steps.find((s) => s.category === "total")?.joules || 705;
+  const finalEnergy = steps.find((s) => s.category === "total")?.joules || (profile?.waterfallJoules.racket ?? 320);
   const potentialRecoverableMph = profile?.estimatedRecoverableMph
     ? profile.estimatedRecoverableMph.toFixed(1)
-    : ((totalLeaked / finalEnergy) * 78 * 0.95).toFixed(1);
+    : ((totalLeaked / Math.max(1, finalEnergy)) * 78 * 0.95).toFixed(1);
 
   return (
     <div className="space-y-6">

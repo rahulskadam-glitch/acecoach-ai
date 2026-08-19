@@ -13,107 +13,15 @@ import KineticTimingLagLadder from "./KineticTimingLagLadder";
 import StagePhaseScrubber from "./StagePhaseScrubber";
 import SweetSpotStrikeClusterChart from "./SweetSpotStrikeClusterChart";
 
+import { computePlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
+import type { AnalysisReport } from "@/modules/analysis/types";
+
 type KineticEnergyTransferStudioProps = {
   currentStage: MotionStage;
   onSeekToStage: (stage: MotionStage) => void;
   actionType?: string;
   profile?: PlayerBiomechanicalProfile;
 };
-
-type BiomechanicalLink = {
-  id: string;
-  name: string;
-  simpleAction: string;
-  peakStage: MotionStage;
-  peakTime: number; // in seconds
-  athletePeakVelocity: number; // deg/s
-  proPeakVelocity: number; // deg/s
-  athleteEfficiency: number; // e.g. 72%
-  proEfficiency: number; // e.g. 96%
-  lossReason: string;
-  coachingFix: string;
-  color: string;
-  glowColor: string;
-};
-
-// 5 Main Body Parts with everyday coaching language
-const BIOMECHANICAL_LINKS: BiomechanicalLink[] = [
-  {
-    id: "link_legs",
-    name: "1. Legs & Feet",
-    simpleAction: "Push off the ground",
-    peakStage: "backswing",
-    peakTime: 0.85,
-    athletePeakVelocity: 290,
-    proPeakVelocity: 380,
-    athleteEfficiency: 76,
-    proEfficiency: 95,
-    lossReason: "Shallow knee bend reduces power from the ground.",
-    coachingFix: "Bend your knees deeper so you can push up explosively off the court.",
-    color: "#10b981",
-    glowColor: "rgba(16, 185, 129, 0.4)",
-  },
-  {
-    id: "link_hips",
-    name: "2. Hips",
-    simpleAction: "Turn hips forward first",
-    peakStage: "forward_swing_contact",
-    peakTime: 1.08,
-    athletePeakVelocity: 340,
-    proPeakVelocity: 460,
-    athleteEfficiency: 68,
-    proEfficiency: 94,
-    lossReason: "Hips and shoulders turn together instead of hips leading.",
-    coachingFix: "Turn your hips toward the net first, just before your upper body swings.",
-    color: "#06b6d4",
-    glowColor: "rgba(6, 182, 212, 0.4)",
-  },
-  {
-    id: "link_torso",
-    name: "3. Chest & Torso",
-    simpleAction: "Uncoil upper body",
-    peakStage: "forward_swing_contact",
-    peakTime: 1.15,
-    athletePeakVelocity: 510,
-    proPeakVelocity: 690,
-    athleteEfficiency: 62,
-    proEfficiency: 92,
-    lossReason: "Upper body uncoils too early, losing core rotational spring power.",
-    coachingFix: "Keep your chest turned sideways until your hips start pulling it forward.",
-    color: "#8b5cf6",
-    glowColor: "rgba(139, 92, 246, 0.4)",
-  },
-  {
-    id: "link_shoulder",
-    name: "4. Arm & Shoulder",
-    simpleAction: "Pull racket into hitting slot",
-    peakStage: "forward_swing_contact",
-    peakTime: 1.22,
-    athletePeakVelocity: 780,
-    proPeakVelocity: 1120,
-    athleteEfficiency: 70,
-    proEfficiency: 97,
-    lossReason: "Arm pulls forward without lagging behind, shortening the swing whip.",
-    coachingFix: "Let your racket head drop back and lag behind your hand like a whip.",
-    color: "#f59e0b",
-    glowColor: "rgba(245, 158, 11, 0.4)",
-  },
-  {
-    id: "link_wrist",
-    name: "5. Wrist & Racket",
-    simpleAction: "Whip racket through the ball",
-    peakStage: "forward_swing_contact",
-    peakTime: 1.28,
-    athletePeakVelocity: 1140,
-    proPeakVelocity: 1580,
-    athleteEfficiency: 60,
-    proEfficiency: 99,
-    lossReason: "Tense wrist slows down racket head acceleration through the ball.",
-    coachingFix: "Hold a relaxed grip (4 out of 10) so the racket head snaps forward freely at impact.",
-    color: "#f43f5e",
-    glowColor: "rgba(244, 63, 94, 0.4)",
-  },
-];
 
 type ChartMode =
   | "waterfall"
@@ -135,16 +43,15 @@ export default function KineticEnergyTransferStudio({
   profile,
 }: KineticEnergyTransferStudioProps) {
   const [chartMode, setChartMode] = useState<ChartMode>("waterfall");
-  const links = profile?.segments ?? BIOMECHANICAL_LINKS;
-  const [selectedLinkId, setSelectedLinkId] = useState<string>(links[links.length - 1]?.id ?? "link_wrist");
+  const resolvedProfile = profile ?? computePlayerBiomechanicalProfile({} as AnalysisReport, actionType);
+  const links = resolvedProfile.segments;
+  const [selectedLinkId, setSelectedLinkId] = useState<string>(links[links.length - 1]?.id ?? "link_racket");
   const [comparisonMode, setComparisonMode] = useState<"both" | "athlete_only" | "pro_only">("both");
 
   const selectedLink = links.find((l) => l.id === selectedLinkId) ?? links[links.length - 1];
   const peakVelocityLink = links.reduce((max, l) => (l.athletePeakVelocity > max.athletePeakVelocity ? l : max), links[0]);
 
-  const totalEfficiency = profile?.estimatedKineticEfficiencyPct ?? Math.round(
-    links.reduce((acc, l) => acc + l.athleteEfficiency, 0) / links.length
-  );
+  const totalEfficiency = resolvedProfile.estimatedKineticEfficiencyPct;
 
   // SVG Chart Dimensions for Velocity Mode (600 x 260)
   const chartW = 600;

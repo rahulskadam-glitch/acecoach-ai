@@ -5,24 +5,29 @@ import { useState } from "react";
 import type { AnalysisReport } from "@/modules/analysis/types";
 import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 
+import { computePlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
+
 type Props = {
   report?: AnalysisReport;
   actionType: string;
   profile?: PlayerBiomechanicalProfile;
 };
 
-export default function RotatorCuffDecelerationBarometer({ actionType, profile }: Props) {
+export default function RotatorCuffDecelerationBarometer({ report, actionType, profile }: Props) {
   const [showPtExercises, setShowPtExercises] = useState(false);
   const isServe = actionType.toLowerCase().includes("serve");
 
+  const resolvedProfile = profile ?? (report ? computePlayerBiomechanicalProfile(report, actionType) : undefined);
+  const rotatorCuffAxis = resolvedProfile?.jointStressAxes.find((j) => j.jointId === "rotator_cuff") ?? resolvedProfile?.jointStressAxes[0];
+
   // Deceleration telemetry values derived from follow-through kinematics
-  const brakingTorqueNm = profile ? profile.jointStressAxes[0]?.torqueNm ?? (isServe ? 48.0 : 42.0) : isServe ? 68.4 : 52.0;
-  const safeLimitNm = profile ? profile.jointStressAxes[0]?.proBenchmarkNm ?? 45.0 : 45.0;
-  const decelerationWindowMs = profile ? Math.round(profile.measuredTimingLagMs * 1.1) : isServe ? 75 : 95;
-  const followThroughArcLengthCm = 62; // Distance of deceleration wrap
+  const brakingTorqueNm = rotatorCuffAxis?.torqueNm ?? (isServe ? 46.0 : 36.0);
+  const safeLimitNm = rotatorCuffAxis?.proBenchmarkNm ?? (isServe ? 44.0 : 38.0);
+  const decelerationWindowMs = resolvedProfile ? Math.round(resolvedProfile.measuredTimingLagMs * 1.05) : (isServe ? 85 : 95);
+  const followThroughArcLengthCm = resolvedProfile ? Math.round(Math.max(45, Math.min(85, (resolvedProfile.measuredTorsoCoilDeg / 34) * 64))) : 60;
   const loadPercentage = Math.min(100, Math.round((brakingTorqueNm / (safeLimitNm * 1.5)) * 100));
 
-  const isHighRisk = brakingTorqueNm > safeLimitNm + 5;
+  const isHighRisk = rotatorCuffAxis ? rotatorCuffAxis.riskLevel === "elevated" : brakingTorqueNm > safeLimitNm + 4;
 
   return (
     <div className="rounded-[2rem] border border-white/10 bg-gradient-to-b from-[#090e1a] via-[#060a14] to-[#04060c] p-5 shadow-2xl text-white">

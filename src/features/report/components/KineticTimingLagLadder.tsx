@@ -4,6 +4,8 @@ import { Clock } from "lucide-react";
 import type { AnalysisReport } from "@/modules/analysis/types";
 import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 
+import { computePlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
+
 type Props = {
   report?: AnalysisReport;
   actionType: string;
@@ -21,12 +23,13 @@ type TimingStep = {
   insight: string;
 };
 
-export default function KineticTimingLagLadder({ actionType, profile }: Props) {
+export default function KineticTimingLagLadder({ report, actionType, profile }: Props) {
   const isServe = actionType.toLowerCase().includes("serve");
+  const resolvedProfile = profile ?? computePlayerBiomechanicalProfile(report ?? ({} as AnalysisReport), actionType);
 
-  const lag = profile?.measuredTimingLagMs ?? (isServe ? 110 : 70);
-  const proLag = profile?.proBenchmarkTimingLagMs ?? (isServe ? 120 : 95);
-  const coil = profile?.measuredTorsoCoilDeg ?? 28;
+  const lag = resolvedProfile.measuredTimingLagMs;
+  const proLag = resolvedProfile.proBenchmarkTimingLagMs;
+  const coil = resolvedProfile.measuredTorsoCoilDeg;
 
   const hipTime = Math.round(lag * 1.25);
   const torsoTime = hipTime + Math.round((coil / 34) * 40);
