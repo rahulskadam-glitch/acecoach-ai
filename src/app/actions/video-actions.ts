@@ -75,13 +75,21 @@ function validatedCaptureContext(payload?: {
   shotSituation?: string;
   shotIntent?: string;
   specificQuestion?: string;
+  courtSurface?: string;
+  footworkStance?: string;
 }) {
   const cameraAngles = new Set(["unknown", "side", "rear", "front", "diagonal"]);
   const shotSituations = new Set(["controlled_practice", "neutral_rally", "attacking", "defensive_on_run", "return_of_serve", "unknown"]);
   const shotIntents = new Set(["consistency", "depth", "heavy_topspin", "flatter_drive", "angle", "approach", "defensive_height", "unknown"]);
-  const cameraAngle = payload?.cameraAngle ?? "unknown";
-  const shotSituation = payload?.shotSituation ?? "unknown";
-  const shotIntent = payload?.shotIntent ?? "unknown";
+  const courtSurfaces = new Set(["hard_court", "clay", "grass", "indoor", "all_court", "unknown"]);
+  const footworkStances = new Set(["open", "semi_open", "neutral_square", "closed", "auto_detect", "unknown"]);
+
+  const cameraAngle = payload?.cameraAngle ?? "side";
+  const shotSituation = payload?.shotSituation ?? "controlled_practice";
+  const shotIntent = payload?.shotIntent ?? "consistency";
+  const courtSurface = payload?.courtSurface ?? "hard_court";
+  const footworkStance = payload?.footworkStance ?? "auto_detect";
+
   if (!cameraAngles.has(cameraAngle) || !shotSituations.has(shotSituation) || !shotIntents.has(shotIntent)) {
     throw new Error("The video context is invalid.");
   }
@@ -89,6 +97,8 @@ function validatedCaptureContext(payload?: {
     cameraAngle,
     shotSituation,
     shotIntent,
+    courtSurface: courtSurfaces.has(courtSurface) ? courtSurface : "hard_court",
+    footworkStance: footworkStances.has(footworkStance) ? footworkStance : "auto_detect",
     specificQuestion: (payload?.specificQuestion ?? "").trim().slice(0, 500),
   };
 }
@@ -195,6 +205,8 @@ export async function recordVideoMetadata(payload: {
     cameraAngle?: string;
     shotSituation?: string;
     shotIntent?: string;
+    courtSurface?: string;
+    footworkStance?: string;
     specificQuestion?: string;
   };
 }) {
@@ -306,7 +318,14 @@ export async function recordVideoMetadata(payload: {
 
 export async function updateVideoCaptureContext(
   videoId: string,
-  payload: { cameraAngle?: string; shotSituation?: string; shotIntent?: string; specificQuestion?: string },
+  payload: {
+    cameraAngle?: string;
+    shotSituation?: string;
+    shotIntent?: string;
+    courtSurface?: string;
+    footworkStance?: string;
+    specificQuestion?: string;
+  },
 ) {
   const user = await requireUser();
   const supabase = await createClient();

@@ -96,6 +96,8 @@ type CaptureContextInput = {
   cameraAngle?: string;
   shotSituation?: string;
   shotIntent?: string;
+  courtSurface?: string;
+  footworkStance?: string;
   specificQuestion?: string;
 };
 
@@ -256,9 +258,11 @@ function athleteContextFingerprint(
     dominantSide: context.dominantSide,
     primaryGoal: context.primaryGoal ?? "",
     heightCm: context.heightCm ?? "",
-    cameraAngle: captureContextValue(captureContext, "cameraAngle", 32) ?? "",
-    shotSituation: captureContextValue(captureContext, "shotSituation", 64) ?? "",
-    shotIntent: captureContextValue(captureContext, "shotIntent", 64) ?? "",
+    cameraAngle: captureContextValue(captureContext, "cameraAngle", 32) ?? "side",
+    shotSituation: captureContextValue(captureContext, "shotSituation", 64) ?? "controlled_practice",
+    shotIntent: captureContextValue(captureContext, "shotIntent", 64) ?? "consistency",
+    courtSurface: captureContextValue(captureContext, "courtSurface", 32) ?? "hard_court",
+    footworkStance: captureContextValue(captureContext, "footworkStance", 32) ?? "auto_detect",
     athleteQuestion: captureContextValue(captureContext, "specificQuestion", 500) ?? "",
   });
   return createHash("sha256").update(payload).digest("hex");
@@ -276,16 +280,17 @@ function captureContextValue(
 }
 
 function normalizeCaptureContext(input?: CaptureContextInput | Record<string, unknown> | null) {
-  const cameraAngle = captureContextValue(input, "cameraAngle", 32) ?? "unknown";
-  const shotSituation = captureContextValue(input, "shotSituation", 64) ?? "unknown";
-  const shotIntent = captureContextValue(input, "shotIntent", 64) ?? "unknown";
-  if (!["unknown", "side", "rear", "front", "diagonal"].includes(cameraAngle)) throw new Error("Choose a supported camera angle.");
-  if (!["controlled_practice", "neutral_rally", "attacking", "defensive_on_run", "return_of_serve", "unknown"].includes(shotSituation)) throw new Error("Choose a supported shot situation.");
-  if (!["consistency", "depth", "heavy_topspin", "flatter_drive", "angle", "approach", "defensive_height", "unknown"].includes(shotIntent)) throw new Error("Choose a supported shot intention.");
+  const cameraAngle = captureContextValue(input, "cameraAngle", 32) ?? "side";
+  const shotSituation = captureContextValue(input, "shotSituation", 64) ?? "controlled_practice";
+  const shotIntent = captureContextValue(input, "shotIntent", 64) ?? "consistency";
+  const courtSurface = captureContextValue(input, "courtSurface", 32) ?? "hard_court";
+  const footworkStance = captureContextValue(input, "footworkStance", 32) ?? "auto_detect";
   return {
-    cameraAngle,
-    shotSituation,
-    shotIntent,
+    cameraAngle: ["unknown", "side", "rear", "front", "diagonal"].includes(cameraAngle) ? cameraAngle : "side",
+    shotSituation: ["controlled_practice", "neutral_rally", "attacking", "defensive_on_run", "return_of_serve", "unknown"].includes(shotSituation) ? shotSituation : "controlled_practice",
+    shotIntent: ["consistency", "depth", "heavy_topspin", "flatter_drive", "angle", "approach", "defensive_height", "unknown"].includes(shotIntent) ? shotIntent : "consistency",
+    courtSurface: ["hard_court", "clay", "grass", "indoor", "all_court", "unknown"].includes(courtSurface) ? courtSurface : "hard_court",
+    footworkStance: ["open", "semi_open", "neutral_square", "closed", "auto_detect", "unknown"].includes(footworkStance) ? footworkStance : "auto_detect",
     specificQuestion: captureContextValue(input, "specificQuestion", 500) ?? "",
   };
 }
@@ -1348,6 +1353,8 @@ async function executeAnalysis({
       camera_angle: captureContext.cameraAngle,
       shot_situation: captureContext.shotSituation,
       shot_intent: captureContext.shotIntent,
+      court_surface: captureContext.courtSurface,
+      footwork_stance: captureContext.footworkStance,
       athlete_question: captureContext.specificQuestion || null,
       validated_outcomes: validatedOutcomeRows ?? [],
     });

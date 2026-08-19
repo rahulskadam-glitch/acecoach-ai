@@ -49,6 +49,8 @@ class AnalysisRequest(BaseModel):
     camera_angle: str | None = Field(default=None, max_length=32)
     shot_situation: str | None = Field(default=None, max_length=64)
     shot_intent: str | None = Field(default=None, max_length=64)
+    court_surface: str | None = Field(default=None, max_length=32)
+    footwork_stance: str | None = Field(default=None, max_length=32)
     athlete_question: str | None = Field(default=None, max_length=500)
     height_cm: float | None = Field(default=None, ge=80, le=230)
     validated_outcomes: list[ValidatedOutcomeLabel] = Field(default_factory=list, max_length=12)
@@ -70,6 +72,8 @@ class AnalysisRequest(BaseModel):
         "camera_angle",
         "shot_situation",
         "shot_intent",
+        "court_surface",
+        "footwork_stance",
         "athlete_question",
     )
     @classmethod

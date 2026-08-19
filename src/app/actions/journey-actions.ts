@@ -72,6 +72,8 @@ export async function saveJourneyIntake(payload: {
   cameraAngle?: string;
   shotSituation?: string;
   shotIntent?: string;
+  courtSurface?: string;
+  footworkStance?: string;
   specificQuestion?: string;
 }) {
   const user = await requireUser();
@@ -84,15 +86,17 @@ export async function saveJourneyIntake(payload: {
   const cameraAngles = new Set(["unknown", "side", "rear", "front", "diagonal"]);
   const shotSituations = new Set(["controlled_practice", "neutral_rally", "attacking", "defensive_on_run", "return_of_serve", "unknown"]);
   const shotIntents = new Set(["consistency", "depth", "heavy_topspin", "flatter_drive", "angle", "approach", "defensive_height", "unknown"]);
+  const courtSurfaces = new Set(["hard_court", "clay", "grass", "indoor", "all_court", "unknown"]);
+  const footworkStances = new Set(["open", "semi_open", "neutral_square", "closed", "auto_detect", "unknown"]);
   const sport = supportedSports.find((item) => item.id === sportId);
   if (!normalizedAgeBand) throw new Error("Choose an age band.");
   if (requiresGuardianConfirmation(normalizedAgeBand) && !payload.guardianConsent) throw new Error("Parent or guardian approval is required for players aged 13–17.");
   if (!levels.has(payload.playingLevel)) throw new Error("Choose your playing level.");
   if (!dominantSides.has(payload.dominantSide)) throw new Error("Choose a dominant side.");
   if (!sport?.actions.some((action) => action.id === payload.actionType)) throw new Error("Choose a supported movement for this sport.");
-  if (!cameraAngles.has(payload.cameraAngle ?? "unknown")) throw new Error("Choose a supported camera angle.");
-  if (!shotSituations.has(payload.shotSituation ?? "unknown")) throw new Error("Choose a supported shot situation.");
-  if (!shotIntents.has(payload.shotIntent ?? "unknown")) throw new Error("Choose a supported shot intention.");
+  if (!cameraAngles.has(payload.cameraAngle ?? "side")) throw new Error("Choose a supported camera angle.");
+  if (!shotSituations.has(payload.shotSituation ?? "controlled_practice")) throw new Error("Choose a supported shot situation.");
+  if (!shotIntents.has(payload.shotIntent ?? "consistency")) throw new Error("Choose a supported shot intention.");
   if (!payload.serviceProcessing) throw new Error("Analysis-processing consent is required.");
   const silhouette = silhouettes.has(payload.silhouettePreference ?? "") ? payload.silhouettePreference! : "player-matched";
   const profileGender = silhouette === "female" || silhouette === "male" || silhouette === "neutral" ? silhouette : "neutral";
