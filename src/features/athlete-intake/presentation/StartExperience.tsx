@@ -12,6 +12,7 @@ import { createClient } from "@/lib/supabase/client";
 import { normalizePlayerAgeBand, PLAYER_AGE_BANDS, requiresGuardianConfirmation } from "@/lib/athlete/age-bands";
 import type { SportDefinition } from "@/lib/sports";
 
+import PreRecordingChecklistModal from "./PreRecordingChecklistModal";
 import VideoCaptureMasterGuide from "./VideoCaptureMasterGuide";
 
 const MAX_BYTES = 500 * 1024 * 1024; // 500 MB capacity
@@ -124,6 +125,7 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
   const [busy, setBusy] = useState(false);
   const [uploadStage, setUploadStage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [checklistTarget, setChecklistTarget] = useState<"camera" | "upload" | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -174,6 +176,40 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
   }, [ageBand, cameraAngle, courtSurface, dominantSide, footworkStance, heightCm, movement, playingLevel, primaryGoal, shotIntent, shotSituation, silhouettePreference, specificQuestion, sport.id]);
 
   useEffect(() => () => { if (video?.previewUrl) URL.revokeObjectURL(video.previewUrl); }, [video?.previewUrl]);
+
+  function handleInitiateRecord() {
+    try {
+      if (window.sessionStorage.getItem("athlentra_skip_recording_checklist") === "true") {
+        cameraInputRef.current?.click();
+        return;
+      }
+    } catch {
+      // ignore
+    }
+    setChecklistTarget("camera");
+  }
+
+  function handleInitiateUpload() {
+    try {
+      if (window.sessionStorage.getItem("athlentra_skip_recording_checklist") === "true") {
+        inputRef.current?.click();
+        return;
+      }
+    } catch {
+      // ignore
+    }
+    setChecklistTarget("upload");
+  }
+
+  function handleConfirmChecklist() {
+    const target = checklistTarget;
+    setChecklistTarget(null);
+    if (target === "camera") {
+      cameraInputRef.current?.click();
+    } else if (target === "upload") {
+      inputRef.current?.click();
+    }
+  }
 
   async function selectFile(file: File | undefined) {
     if (!file) return;
@@ -487,8 +523,8 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
                     {["Turn the phone sideways (landscape or clean portrait).", "Stand 4–6 metres (15–20 ft) away at chest height.", "Keep full body, feet, racket, and ball path visible.", "Capture 4 clean repetitions in good light (10–25s)."].map((tip) => <li key={tip} className="flex gap-3"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-700" />{tip}</li>)}
                   </ul>
                   <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    <button type="button" onClick={() => cameraInputRef.current?.click()} className="ath-primary inline-flex min-h-12 items-center justify-center gap-2 px-5 text-sm"><Camera className="h-4 w-4" />Record</button>
-                    <button type="button" onClick={() => inputRef.current?.click()} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[#d6e2cf] bg-white px-5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-[#e6ede0]"><Images className="h-4 w-4" />Choose video</button>
+                    <button type="button" onClick={handleInitiateRecord} className="ath-primary inline-flex min-h-12 items-center justify-center gap-2 px-5 text-sm"><Camera className="h-4 w-4" />Record</button>
+                    <button type="button" onClick={handleInitiateUpload} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[#d6e2cf] bg-white px-5 text-sm font-semibold text-slate-800 shadow-sm hover:bg-[#e6ede0]"><Images className="h-4 w-4" />Choose video</button>
                   </div>
                 </div>
               </div>
@@ -505,6 +541,15 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
             )}
             <input ref={cameraInputRef} type="file" accept="video/*" capture="environment" className="sr-only" onChange={(event) => selectFile(event.target.files?.[0])} />
             <input ref={inputRef} type="file" accept="video/mp4,video/quicktime,video/webm,.m4v" className="sr-only" onChange={(event) => selectFile(event.target.files?.[0])} />
+
+            <PreRecordingChecklistModal
+              isOpen={checklistTarget !== null}
+              targetAction={checklistTarget}
+              cameraAngle={cameraAngle}
+              strokeLabel={selectedMovement?.label ?? "Your Stroke"}
+              onClose={() => setChecklistTarget(null)}
+              onConfirm={handleConfirmChecklist}
+            />
           </section>
         ) : null}
 

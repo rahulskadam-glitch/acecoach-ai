@@ -78,4 +78,31 @@ describe("Video Capture Best Practices, Quality Gating & Sizing Suite", () => {
     expect(() => validateVideoPreflight({ name: "forehand.mp4", sizeBytes: 30 * 1024 * 1024 }, 45.0)).toThrow("too long");
     expect(() => validateVideoPreflight({ name: "forehand.avi", sizeBytes: 30 * 1024 * 1024 }, 10.0)).toThrow("Invalid video format");
   });
+
+  it("handles pre-recording checklist modal target resolution and session skipping", () => {
+    function resolveChecklistFlow(
+      action: "camera" | "upload",
+      sessionSkipSetting: string | null,
+    ) {
+      if (sessionSkipSetting === "true") {
+        return { showModal: false, immediateAction: action };
+      }
+      return { showModal: true, pendingAction: action };
+    }
+
+    expect(resolveChecklistFlow("camera", null)).toEqual({
+      showModal: true,
+      pendingAction: "camera",
+    });
+
+    expect(resolveChecklistFlow("upload", null)).toEqual({
+      showModal: true,
+      pendingAction: "upload",
+    });
+
+    expect(resolveChecklistFlow("camera", "true")).toEqual({
+      showModal: false,
+      immediateAction: "camera",
+    });
+  });
 });
