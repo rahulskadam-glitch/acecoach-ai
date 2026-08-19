@@ -3,7 +3,7 @@ services:
     name: athlentra-analysis-api
     runtime: docker
     dockerfilePath: services/api/Dockerfile
-    dockerContext: .
+    dockerContext: services/api
     plan: free
     healthCheckPath: /health
     envVars:
