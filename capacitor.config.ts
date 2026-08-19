@@ -1,9 +1,10 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const serverUrl = process.env.CAPACITOR_SERVER_URL?.trim().replace(/\/+$/, "");
+const isLocalUrl = Boolean(serverUrl && /^http:\/\/(localhost|127\.0\.0\.1|192\.168\.|[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)/.test(serverUrl));
 
-if (serverUrl && !/^https:\/\//.test(serverUrl)) {
-  throw new Error("CAPACITOR_SERVER_URL must use HTTPS.");
+if (serverUrl && !isLocalUrl && !/^https:\/\//.test(serverUrl)) {
+  throw new Error("CAPACITOR_SERVER_URL must use HTTPS for remote hosts.");
 }
 
 const config: CapacitorConfig = {
@@ -25,7 +26,7 @@ const config: CapacitorConfig = {
     ? {
       server: {
         url: serverUrl,
-        cleartext: false,
+        cleartext: isLocalUrl,
         allowNavigation: [new URL(serverUrl).host],
       },
     }
