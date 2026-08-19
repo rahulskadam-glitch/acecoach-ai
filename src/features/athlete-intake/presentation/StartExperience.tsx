@@ -12,7 +12,9 @@ import { createClient } from "@/lib/supabase/client";
 import { normalizePlayerAgeBand, PLAYER_AGE_BANDS, requiresGuardianConfirmation } from "@/lib/athlete/age-bands";
 import type { SportDefinition } from "@/lib/sports";
 
-const MAX_BYTES = 50 * 1024 * 1024;
+import VideoCaptureMasterGuide from "./VideoCaptureMasterGuide";
+
+const MAX_BYTES = 500 * 1024 * 1024; // 500 MB capacity
 const MAX_SECONDS = 30.25;
 const ACCEPTED = new Set(["video/mp4", "video/quicktime", "video/webm", "video/x-m4v"]);
 // Versioned so drafts created with the retired overlapping 16–18 band cannot
@@ -460,7 +462,7 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
 
         {/* Step 3: Add Video */}
         {movement ? (
-          <section className="ath-card p-5 sm:p-8 animate-in fade-in duration-200">
+          <section className="ath-card p-5 sm:p-8 animate-in fade-in duration-200 space-y-6">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#40916c]">3 · Add video</p>
@@ -468,6 +470,10 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
               </div>
               <span className="shrink-0 rounded-full bg-[#e6ede0] px-3 py-1.5 text-xs font-medium text-[#40916c]">≤ 30 sec</span>
             </div>
+
+            {/* Visual Do's & Don'ts Master Recording Guide */}
+            <VideoCaptureMasterGuide />
+
             {!video ? (
               <div className="mt-6 grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
                 <div className="relative min-h-60 overflow-hidden rounded-2xl bg-[#1b4332] p-5 text-white">
