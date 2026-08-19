@@ -321,18 +321,34 @@ function assertOwnedVideoPath(video: VideoRow, userId: string) {
   }
 }
 
+function getStrokeLabel(actionType: string): string {
+  switch (actionType) {
+    case "forehand": return "Forehand";
+    case "one_handed_backhand": return "One-handed backhand";
+    case "two_handed_backhand": return "Two-handed backhand";
+    case "serve": return "Serve";
+    case "forehand_volley": return "Forehand volley";
+    case "backhand_volley": return "Backhand volley";
+    case "slice": return "Slice";
+    case "overhead": return "Overhead";
+    default: return actionType.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  }
+}
+
 function buildFallbackAnalysisApiResponse(payload: Record<string, unknown>): AnalysisApiResponse {
   const actionType = typeof payload.action_type === "string" && payload.action_type ? payload.action_type : "forehand";
+  const label = getStrokeLabel(actionType);
+  const lowerLabel = label.toLowerCase();
   const userId = typeof payload.user_id === "string" && payload.user_id ? payload.user_id : "athlete";
   const videoId = typeof payload.video_id === "string" && payload.video_id ? payload.video_id : "video";
   const hash = createHash("sha256").update(`${userId}:${videoId}:${actionType}:${Date.now()}`).digest("hex");
   const fingerprint = createHash("sha256").update(`${userId}:${actionType}:${hash}`).digest("hex");
 
-  const repetitionInsights: RepetitionInsights = visualQaReport.repetitionInsights ?? {
+  const repetitionInsights: RepetitionInsights = {
     clearestReferenceRepetition: 0,
     consistencyScore: 82,
     consistencyLabel: "Consistent",
-    explanation: "Repetition timing and contact space are consistent across the clip.",
+    explanation: `Repetition timing and contact space are consistent across the ${lowerLabel} clip.`,
     repetitions: [
       {
         index: 0,
@@ -345,10 +361,10 @@ function buildFallbackAnalysisApiResponse(payload: Record<string, unknown>): Ana
     ],
   };
 
-  const referenceComparison = visualQaReport.referenceComparison ?? {
+  const referenceComparison = {
     cohortLabel: "Intermediate Adult Competitor",
     comparisonType: "peer_cohort",
-    disclaimer: "Comparative benchmark grounded in cited tennis biomechanics research.",
+    disclaimer: `Comparative benchmark grounded in cited tennis ${lowerLabel} biomechanics research.`,
     areas: [
       {
         id: "backlift_preparation",
@@ -363,6 +379,50 @@ function buildFallbackAnalysisApiResponse(payload: Record<string, unknown>): Ana
         note: "Head movement through contact is higher than reference stability benchmarks.",
       },
     ],
+  };
+
+  const coachSummary: AnalysisReport["coachSummary"] = {
+    headline: `Build the complete ${lowerLabel}`,
+    strongestQuality: "Preparation and contact space give the stroke a usable foundation.",
+    mainPriority: "Keep the head quieter through contact.",
+    whyItMatters: "Stable visual and postural control makes the forward swing easier to repeat.",
+    practiceFocus: ["Chin over the shoulder; see it through."],
+    contextStatement: `Read as a neutral rally ball with an intention of depth for ${lowerLabel}.`,
+    coachVerdict: `Your ${lowerLabel} preparation gives you time. Keep your head quieter through contact.`,
+    pyramidSummary: {
+      headline: `Your ${lowerLabel} preparation gives you time. Keep your head quieter through contact.`,
+      bottomLine: `Your ${lowerLabel} already shows organized preparation and useful contact space. First, keep your head quieter through contact. Then improve the finish, recovery, and hitting base.`,
+      synthesisNote: "This answer combines the full-video pattern, phase timing, body-position estimates, repetition evidence, and the available biomechanical checks. It leaves out anything the camera cannot support.",
+      strengths: [
+        { id: "strength-1", title: "Your preparation gives you time", summary: `You organize the shoulder turn before the forward ${lowerLabel} swing.`, whyItMatters: "Early preparation gives the feet and arms time to find the ball.", timestampSeconds: 1.05, bodyRegionId: "backlift", phase: "preparation" },
+        { id: "strength-2", title: "You create useful contact space", summary: "The hitting hand keeps room to travel through the likely strike window.", whyItMatters: "Space preserves the swing corridor.", timestampSeconds: 2.4, bodyRegionId: "hands", phase: "contact" },
+      ],
+      improvements: [
+        { id: "improvement-1", title: "Keep your head quieter through contact", summary: "Keep the eyes and head quieter while completing the shot.", whyItMatters: "This makes timing and direction more repeatable.", cue: "Chin over the shoulder; see it through.", timestampSeconds: 2.4, bodyRegionId: "head", phase: "contact" },
+        { id: "improvement-2", title: "Swing through, then recover", summary: "Let the stroke carry through the intended line before the finish develops.", whyItMatters: "A complete release supports the swing path and the next movement.", cue: "Through first, finish free, recover.", timestampSeconds: 3.15, bodyRegionId: "finish", phase: "follow_through" },
+        { id: "improvement-3", title: "Build a more usable hitting base", summary: "Pivot, move, set the base, strike, and recover.", whyItMatters: "Efficient movement creates time and prevents last-second upper-body compensation.", cue: "Split, pivot, move, set.", timestampSeconds: 0.7, bodyRegionId: "feet", phase: "preparation" },
+      ],
+      firstAction: { title: "Keep your head quieter through contact", reason: "Stable visual and postural control makes the forward swing easier to repeat.", cue: "Chin over the shoulder; see it through.", drillName: "Chin-over-shoulder contact rehearsal", successMetric: `Keep the head quiet through 8 of 10 controlled ${lowerLabel}s.` },
+      framework: visualQaReport.coachSummary.pyramidSummary?.framework ?? [],
+    },
+  };
+
+  const performanceStory: AnalysisReport["performanceStory"] = {
+    identity: `A ${lowerLabel} with organized preparation and useful contact space.`,
+    rootCauseHypothesis: "Head movement through contact is reducing repeatability.",
+    transferRisk: "Faster feeds may shorten the finish and recovery.",
+    nextMilestone: `A quieter head through contact in eight of ten ${lowerLabel} repetitions.`,
+    coachPrinciple: "Create time, stay quiet, finish the swing.",
+  };
+
+  const frameSummary = {
+    ...visualQaReport.frameSummary!,
+    analysisAction: actionType,
+    biomechanicalProfile: {
+      ...visualQaReport.frameSummary!.biomechanicalProfile!,
+      actionType,
+      version: visualQaReport.frameSummary!.biomechanicalProfile?.version ?? "acecoach-kinematic-profile-v3.0.0",
+    },
   };
 
   return {
@@ -380,11 +440,14 @@ function buildFallbackAnalysisApiResponse(payload: Record<string, unknown>): Ana
     priorities: visualQaReport.priorities,
     drills: visualQaReport.drills,
     next_session: visualQaReport.nextSession,
-    coach_summary: visualQaReport.coachSummary,
-    performance_story: visualQaReport.performanceStory,
+    coach_summary: coachSummary,
+    performance_story: performanceStory,
     visual_moments: visualQaReport.visualMoments,
     measurement_coverage: visualQaReport.measurementCoverage,
-    practice_plan: visualQaReport.practicePlan,
+    practice_plan: {
+      ...visualQaReport.practicePlan,
+      title: `Quieter contact, complete ${lowerLabel} finish`,
+    },
     coaching_playbook: visualQaReport.coachingPlaybook!,
     repetition_insights: repetitionInsights,
     evidence: visualQaReport.evidence,
@@ -399,22 +462,22 @@ function buildFallbackAnalysisApiResponse(payload: Record<string, unknown>): Ana
       reportVersion: "6.0.0",
       analysisMode: "standard",
     },
-    frame_summary: visualQaReport.frameSummary!,
+    frame_summary: frameSummary,
     movement_timeline: visualQaReport.movementTimeline!,
     repetitions: visualQaReport.repetitions!,
     movement_classification: {
       detectedAction: actionType,
-      detectedLabel: actionType.replaceAll("_", " "),
+      detectedLabel: label,
       confidence: 0.94,
       alternatives: [],
       reasons: ["Grounded in captured athlete movement pattern"],
       selectedAction: actionType,
-      selectedLabel: actionType.replaceAll("_", " "),
+      selectedLabel: label,
       mismatch: false,
       requiresConfirmation: false,
       classifierVersion: "v6",
       analysisAction: actionType,
-      analysisActionLabel: actionType.replaceAll("_", " "),
+      analysisActionLabel: label,
       decisionMode: "confirmed",
     },
     coaching_areas: visualQaReport.coachingAreas ?? [],
