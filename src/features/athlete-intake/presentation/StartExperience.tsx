@@ -484,7 +484,7 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
                 <div>
                   <h3 className="text-lg font-semibold text-slate-950">Before you record</h3>
                   <ul className="mt-4 space-y-3 text-sm leading-6 text-slate-600">
-                    {["Turn the phone sideways.", "Stand 3–5 metres away at waist or chest height.", "Keep your full body, feet, racket, and ball path visible.", "Capture 2–5 natural repetitions in good light."].map((tip) => <li key={tip} className="flex gap-3"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-700" />{tip}</li>)}
+                    {["Turn the phone sideways (landscape or clean portrait).", "Stand 4–6 metres (15–20 ft) away at chest height.", "Keep full body, feet, racket, and ball path visible.", "Capture 4 clean repetitions in good light (10–25s)."].map((tip) => <li key={tip} className="flex gap-3"><CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-emerald-700" />{tip}</li>)}
                   </ul>
                   <div className="mt-6 grid gap-3 sm:grid-cols-2">
                     <button type="button" onClick={() => cameraInputRef.current?.click()} className="ath-primary inline-flex min-h-12 items-center justify-center gap-2 px-5 text-sm"><Camera className="h-4 w-4" />Record</button>

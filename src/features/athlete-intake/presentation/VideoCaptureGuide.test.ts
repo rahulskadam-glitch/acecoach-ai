@@ -8,7 +8,7 @@ describe("Video Capture Best Practices, Quality Gating & Sizing Suite", () => {
       "Court lines visible for scale and 3D depth calibration",
       "Camera distance 15–20 ft (4.5–6m) at chest/waist height",
       "High frame rate (60fps or 120fps)",
-      "1–3 clean repetitions (5–15 seconds)",
+      "4 clean repetitions for rhythm consistency (10–25 seconds)",
     ];
 
     expect(requiredDos).toHaveLength(6);

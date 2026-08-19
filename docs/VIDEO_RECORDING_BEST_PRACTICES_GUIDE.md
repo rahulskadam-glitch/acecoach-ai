@@ -36,9 +36,9 @@ Our computer vision engine extracts 33 full-body anatomical landmarks, triangula
 - **Rule**: Set your smartphone camera to **1080p at 60 FPS** (or 120 FPS slow-motion).
 - **Why**: A tennis racket travels at 60–100+ mph during forward swing. 30 FPS only captures ~1 frame during the critical 30ms contact window, causing motion blur. 60–120 FPS provides crystal-clear frames for velocity derivatives.
 
-### 6. Clean 1–3 Repetitions (5–15 Seconds)
-- **Rule**: Trim clips to 5–15 seconds containing 1 to 3 clean repetitions of the stroke.
-- **Why**: Eliminates dead time, ball retrieval, and background noise, accelerating cloud processing and delivering focused insights.
+### 6. Clean 4 Repetitions (10–25 Seconds)
+- **Rule**: Capture **4 clean, natural repetitions** (3 to 5 reps in 10–25 seconds) without dead time or ball retrieval.
+- **Why**: Capturing at least 4 repetitions allows our AI engine to measure stroke consistency, rhythm repeatability, and longitudinal stability, distinguishing habitual mechanics from single-shot outliers.
 
 ---
 

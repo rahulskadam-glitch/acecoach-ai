@@ -57,10 +57,10 @@ export default function VideoCaptureMasterGuide() {
       badge: "Precision",
     },
     {
-      title: "1–3 Clean Repetitions (5–15 Seconds)",
-      detail: "Keep clips concise (5 to 15 seconds) containing 1 to 3 natural strokes without dead time or ball retrieval.",
+      title: "4 Clean Repetitions (10–25 Seconds)",
+      detail: "Capturing 3 to 5 natural repetitions (at least 4 recommended) allows the AI to analyze stroke repeatability, rhythm consistency, and eliminate single-shot flukes.",
       icon: Video,
-      badge: "Duration",
+      badge: "Consistency",
     },
   ];
 
@@ -99,9 +99,9 @@ export default function VideoCaptureMasterGuide() {
 
   const specsMatrix = [
     {
-      metric: "Optimal Duration",
-      recommendation: "5 to 15 seconds (1–3 repetitions)",
-      limit: "Max 30.25 seconds",
+      metric: "Repetitions & Duration",
+      recommendation: "4 clean repetitions in 10 to 25 seconds",
+      limit: "Max 30.25 seconds (1 to 6 repetitions)",
     },
     {
       metric: "File Size",

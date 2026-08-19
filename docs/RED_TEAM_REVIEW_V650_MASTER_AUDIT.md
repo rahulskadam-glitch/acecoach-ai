@@ -141,7 +141,7 @@ A comprehensive, zero-compromise red-team audit was performed across the entire 
     3. *Court Lines Visible* (baseline/alleys for 3D scale calibration).
     4. *Optimal Distance & Height* (15–20 ft / 4.5–6m away, chest/waist height).
     5. *High Frame Rate* (60 FPS or 120 FPS for racket whip tracking).
-    6. *1–3 Clean Repetitions* (5–15 seconds total).
+    6. *4 Clean Repetitions* (3 to 5 reps in 10–25 seconds for rhythm consistency & repeatability).
   - **The 5 Critical DON'TS**:
     1. No multiple people in view.
     2. No cropped limbs or racket.
