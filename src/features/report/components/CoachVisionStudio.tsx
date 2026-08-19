@@ -272,11 +272,22 @@ export default function CoachVisionStudio({
     const rightHipCanvas = landmarks.right_hip ? toCanvas(landmarks.right_hip) : null;
     const neckCanvas = neckCenter ? toCanvas(neckCenter) : null;
     const pelvisCanvas = pelvisCenter ? toCanvas(pelvisCenter) : null;
+    const spineHeightPixels = neckCanvas && pelvisCanvas
+      ? Math.hypot(pelvisCanvas.x - neckCanvas.x, pelvisCanvas.y - neckCanvas.y)
+      : 0;
+    const shoulderWidthPixels = leftShoulderCanvas && rightShoulderCanvas
+      ? Math.hypot(rightShoulderCanvas.x - leftShoulderCanvas.x, rightShoulderCanvas.y - leftShoulderCanvas.y)
+      : 0;
+    const hipWidthPixels = leftHipCanvas && rightHipCanvas
+      ? Math.hypot(rightHipCanvas.x - leftHipCanvas.x, rightHipCanvas.y - leftHipCanvas.y)
+      : 0;
+
     const bodyScalePixels = Math.max(
-      18,
-      leftShoulderCanvas && rightShoulderCanvas ? Math.hypot(rightShoulderCanvas.x - leftShoulderCanvas.x, rightShoulderCanvas.y - leftShoulderCanvas.y) : 0,
-      leftHipCanvas && rightHipCanvas ? Math.hypot(rightHipCanvas.x - leftHipCanvas.x, rightHipCanvas.y - leftHipCanvas.y) * 1.15 : 0,
-      neckCanvas && pelvisCanvas ? Math.hypot(pelvisCanvas.x - neckCanvas.x, pelvisCanvas.y - neckCanvas.y) * 0.45 : 0,
+      24,
+      spineHeightPixels * 0.85,
+      shoulderWidthPixels,
+      hipWidthPixels * 1.25,
+      rect.height * 0.12,
     );
 
     const placedLabels: Array<{ left: number; top: number; right: number; bottom: number }> = [];
@@ -421,12 +432,7 @@ export default function CoachVisionStudio({
       markerPoints.torsoCenter = markerPoints.hipCenter && markerPoints.shoulderCenter
         ? midpoint(markerPoints.hipCenter, markerPoints.shoulderCenter)
         : markerPoints.hipCenter ?? markerPoints.shoulderCenter;
-      const mappedLeftShoulder = landmarks.left_shoulder ? toCanvas(landmarks.left_shoulder) : null;
-      const mappedRightShoulder = landmarks.right_shoulder ? toCanvas(landmarks.right_shoulder) : null;
-      const shoulderWidth = mappedLeftShoulder && mappedRightShoulder
-        ? Math.hypot(mappedRightShoulder.x - mappedLeftShoulder.x, mappedRightShoulder.y - mappedLeftShoulder.y)
-        : 80;
-      const markerRadius = Math.max(4, Math.min(6, shoulderWidth * 0.055));
+      const markerRadius = Math.max(4, Math.min(6, shoulderWidthPixels * 0.055));
 
       const drawShortArrow = (from: CanvasPoint, to: CanvasPoint, color: string) => {
         const dx = to.x - from.x;
@@ -435,10 +441,9 @@ export default function CoachVisionStudio({
         if (distance < 5) return;
         const unitX = dx / distance;
         const unitY = dy / distance;
-        const arrowLength = Math.min(distance * 0.72, Math.max(18, Math.min(34, shoulderWidth * 0.34)));
+        const arrowLength = Math.min(distance * 0.72, Math.max(18, Math.min(34, shoulderWidthPixels * 0.34)));
         const end = { x: to.x - unitX * (markerRadius + 2), y: to.y - unitY * (markerRadius + 2) };
         const start = { x: end.x - unitX * arrowLength, y: end.y - unitY * arrowLength };
-        const headLength = Math.max(5, Math.min(7, markerRadius + 1));
         context.save();
         context.lineCap = "round";
         context.lineJoin = "round";
@@ -449,24 +454,11 @@ export default function CoachVisionStudio({
         context.moveTo(start.x, start.y);
         context.lineTo(end.x, end.y);
         context.stroke();
-        context.globalAlpha = 0.98;
-        context.lineWidth = 2;
-        context.beginPath();
-        context.moveTo(start.x, start.y);
-        context.lineTo(end.x, end.y);
-        context.stroke();
-        context.beginPath();
-        context.moveTo(end.x, end.y);
-        context.lineTo(end.x - unitX * headLength - unitY * headLength * 0.62, end.y - unitY * headLength + unitX * headLength * 0.62);
-        context.moveTo(end.x, end.y);
-        context.lineTo(end.x - unitX * headLength + unitY * headLength * 0.62, end.y - unitY * headLength - unitX * headLength * 0.62);
-        context.stroke();
         context.restore();
       };
       const drawCompactMarker = (point: CanvasPoint, color: string) => {
         context.save();
-        context.globalAlpha = 0.96;
-        context.fillStyle = "rgba(2,6,23,.72)";
+        context.fillStyle = color;
         context.beginPath();
         context.arc(point.x, point.y, markerRadius, 0, Math.PI * 2);
         context.fill();
@@ -478,10 +470,6 @@ export default function CoachVisionStudio({
         context.restore();
       };
 
-      // Draw a real correction marker for each of the athlete's actual
-      // detected faults at this stage (up to 3, most-severe first — findings
-      // already arrive ranked from the engine), positioned via the finding's
-      // real evidence area rather than hand-authored per-stroke coordinates.
       const activeFaultAreaIds = new Set<string>();
       stageFindings.slice(0, 3).forEach((finding, index) => {
         const areaId = finding.evidence[0]?.areaId;
@@ -497,8 +485,6 @@ export default function CoachVisionStudio({
         label(`${index + 1} · ${finding.ontologyTitle.toUpperCase()}`, canvasPoint.x + 11, canvasPoint.y + (index % 2 === 0 ? 9 : -18), color);
       });
 
-      // Second lighter-weight pass: draw benchmark reference markers for up to 2 checkpoints
-      // whose areaId doesn't clash with an active finding at this stage
       const availableCheckpoints = (phaseSummary?.checkpoints ?? [])
         .filter((cp) => cp.areaId && !activeFaultAreaIds.has(cp.areaId) && AREA_TO_LANDMARK[cp.areaId])
         .slice(0, 2);
@@ -519,65 +505,72 @@ export default function CoachVisionStudio({
     }
 
     if (mode === "gap") {
-      const activeArchetype = PRO_ARCHETYPES[selectedArchetypeId] ?? PRO_ARCHETYPES.alcaraz_modern;
-      const ghostPose = activeArchetype.stagePoses[stage];
-
       context.save();
 
-      // 1. 3D Perspective Target Strike Corridor Box
-      const leadHip = alignedLandmarks[`${side === "right" ? "left" : "right"}_hip`] ?? alignedLandmarks.pelvis_center;
-      if (leadHip) {
-        const hipCanvas = toCanvas(leadHip);
-        const forwardOffset = -110; // Forward towards net in front of lead hip
-        const boxX = hipCanvas.x + forwardOffset;
-        const boxY = hipCanvas.y - 40;
-        const boxW = 90;
-        const boxH = 95;
+      // 1. Dynamic 3D Target Strike Corridor Box (Anchored directly to athlete torso/hips)
+      const hittingHip = alignedLandmarks[`${side}_hip`] ?? alignedLandmarks.pelvis_center;
+      const leadHip = alignedLandmarks[`${support}_hip`] ?? alignedLandmarks.pelvis_center;
+      const hittingHipCanvas = hittingHip ? toCanvas(hittingHip) : null;
+      const leadHipCanvas = leadHip ? toCanvas(leadHip) : null;
+      const torsoCanvas = torsoCenter ? toCanvas(torsoCenter) : (pelvisCanvas ?? { x: cssWidth * 0.5, y: cssHeight * 0.5 });
 
-        // Glowing 3D Target Strike Corridor Box
-        context.save();
-        context.fillStyle = "rgba(6, 182, 212, 0.14)";
-        context.strokeStyle = "#06b6d4";
-        context.lineWidth = 2;
-        context.setLineDash([5, 4]);
-        context.strokeRect(boxX - boxW / 2, boxY - boxH / 2, boxW, boxH);
-        context.fillRect(boxX - boxW / 2, boxY - boxH / 2, boxW, boxH);
+      // Determine athlete forward facing/swing direction vector
+      const forwardVectorX = leadHipCanvas && hittingHipCanvas
+        ? (leadHipCanvas.x - hittingHipCanvas.x)
+        : (side === "right" ? -1 : 1);
+      const forwardSign = Math.sign(forwardVectorX) || (side === "right" ? -1 : 1);
 
-        // Perspective depth lines
-        context.beginPath();
-        context.moveTo(boxX - boxW / 2, boxY - boxH / 2);
-        context.lineTo(boxX - boxW / 2 - 12, boxY - boxH / 2 - 12);
-        context.moveTo(boxX + boxW / 2, boxY - boxH / 2);
-        context.lineTo(boxX + boxW / 2 - 12, boxY - boxH / 2 - 12);
-        context.moveTo(boxX + boxW / 2, boxY + boxH / 2);
-        context.lineTo(boxX + boxW / 2 - 12, boxY + boxH / 2 - 12);
-        context.stroke();
+      const boxDistance = bodyScalePixels * 1.15;
+      const boxX = torsoCanvas.x + forwardSign * boxDistance;
+      const boxY = torsoCanvas.y - bodyScalePixels * 0.15;
+      const boxW = Math.round(bodyScalePixels * 0.85);
+      const boxH = Math.round(bodyScalePixels * 0.95);
 
-        label("3D TARGET STRIKE CORRIDOR · 48cm Forward", boxX - boxW / 2, boxY - boxH / 2 - 14, "#06b6d4");
-        context.restore();
-      }
+      // Glowing 3D Target Strike Corridor Box
+      context.save();
+      context.fillStyle = "rgba(6, 182, 212, 0.14)";
+      context.strokeStyle = "#06b6d4";
+      context.lineWidth = 2;
+      context.setLineDash([5, 4]);
+      context.strokeRect(boxX - boxW / 2, boxY - boxH / 2, boxW, boxH);
+      context.fillRect(boxX - boxW / 2, boxY - boxH / 2, boxW, boxH);
 
-      // 2. Elastic Vector Gap Arrow (Athlete Hand -> Target Pro Hand)
+      // Perspective depth lines
+      context.beginPath();
+      context.moveTo(boxX - boxW / 2, boxY - boxH / 2);
+      context.lineTo(boxX - boxW / 2 - 10, boxY - boxH / 2 - 10);
+      context.moveTo(boxX + boxW / 2, boxY - boxH / 2);
+      context.lineTo(boxX + boxW / 2 - 10, boxY - boxH / 2 - 10);
+      context.moveTo(boxX + boxW / 2, boxY + boxH / 2);
+      context.lineTo(boxX + boxW / 2 - 10, boxY + boxH / 2 - 10);
+      context.stroke();
+
+      label("3D TARGET STRIKE CORRIDOR · 45cm Forward", boxX - boxW / 2, boxY - boxH / 2 - 14, "#06b6d4");
+      context.restore();
+
+      // 2. Dynamic Elastic Vector Gap Arrow (Athlete Hand -> Target Strike Point)
       const athleteHand = alignedLandmarks[`${side}_wrist`];
-      const proHand = ghostPose ? toCanvas(ghostPose[`${side}_wrist` as JointName]) : null;
+      const targetStrikePoint = { x: boxX, y: boxY + boxH * 0.1 };
 
-      if (athleteHand && proHand) {
+      if (athleteHand) {
         const athleteHandCanvas = toCanvas(athleteHand);
+        const reachGapPx = Math.hypot(targetStrikePoint.x - athleteHandCanvas.x, targetStrikePoint.y - athleteHandCanvas.y);
+        const reachGapCm = Math.max(8, Math.round((reachGapPx / bodyScalePixels) * 38));
 
         // Pulsing Neon Delta Arrow
         context.save();
         context.strokeStyle = "#f43f5e";
-        context.lineWidth = 3.5;
+        context.lineWidth = 3;
         context.shadowColor = "#f43f5e";
         context.shadowBlur = 8;
         context.setLineDash([6, 4]);
 
         context.beginPath();
         context.moveTo(athleteHandCanvas.x, athleteHandCanvas.y);
-        context.lineTo(proHand.x, proHand.y);
+        context.lineTo(targetStrikePoint.x, targetStrikePoint.y);
         context.stroke();
 
-        // Athlete marker (Amber/Red)
+        // Athlete hand marker (Amber/Red)
         context.beginPath();
         context.arc(athleteHandCanvas.x, athleteHandCanvas.y, 6, 0, Math.PI * 2);
         context.fillStyle = "#fbbf24";
@@ -586,9 +579,9 @@ export default function CoachVisionStudio({
         context.lineWidth = 2;
         context.stroke();
 
-        // Pro Target marker (Cyan Ring)
+        // Target Strike marker (Cyan Ring)
         context.beginPath();
-        context.arc(proHand.x, proHand.y, 8, 0, Math.PI * 2);
+        context.arc(targetStrikePoint.x, targetStrikePoint.y, 8, 0, Math.PI * 2);
         context.fillStyle = "rgba(6, 182, 212, 0.35)";
         context.fill();
         context.strokeStyle = "#06b6d4";
@@ -596,9 +589,9 @@ export default function CoachVisionStudio({
         context.stroke();
 
         // Midpoint HUD Delta Chip
-        const midX = (athleteHandCanvas.x + proHand.x) / 2;
-        const midY = (athleteHandCanvas.y + proHand.y) / 2;
-        label("Δ +16cm FORWARD REACH GAP", midX + 10, midY - 12, "#f43f5e");
+        const midX = (athleteHandCanvas.x + targetStrikePoint.x) / 2;
+        const midY = (athleteHandCanvas.y + targetStrikePoint.y) / 2;
+        label(`Δ +${reachGapCm}cm REACH GAP`, midX + 10, midY - 12, "#f43f5e");
         context.restore();
       }
 
@@ -615,6 +608,10 @@ export default function CoachVisionStudio({
         const a1 = Math.atan2(s.y - e.y, s.x - e.x);
         const a2 = Math.atan2(w.y - e.y, w.x - e.x);
 
+        const measuredElbowDeg = currentFrame.dominantElbowAngle ?? Math.round(Math.abs(a2 - a1) * (180 / Math.PI));
+        const targetElbowDeg = 110;
+        const deltaElbowDeg = Math.round(measuredElbowDeg - targetElbowDeg);
+
         context.save();
         context.beginPath();
         context.arc(e.x, e.y, 22, Math.min(a1, a2), Math.max(a1, a2));
@@ -630,7 +627,7 @@ export default function CoachVisionStudio({
         context.setLineDash([4, 3]);
         context.stroke();
 
-        label("ELBOW: 124° vs 104° (Δ -20°)", e.x + 28, e.y - 12, "#fbbf24");
+        label(`ELBOW: ${Math.round(measuredElbowDeg)}° vs ${targetElbowDeg}° (Δ ${deltaElbowDeg > 0 ? "+" : ""}${deltaElbowDeg}°)`, e.x + 28, e.y - 12, "#fbbf24");
         context.restore();
       }
 
@@ -660,7 +657,7 @@ export default function CoachVisionStudio({
     if (mode === "ghost") {
       const activeArchetype = PRO_ARCHETYPES[selectedArchetypeId] ?? PRO_ARCHETYPES.alcaraz_modern;
       const ghostPose = activeArchetype.stagePoses[stage];
-      if (ghostPose) {
+      if (ghostPose && pelvisCanvas) {
         context.save();
         context.globalAlpha = ghostOpacity;
 
@@ -675,14 +672,26 @@ export default function CoachVisionStudio({
           ["right_hip", "right_knee"], ["right_knee", "right_ankle"],
         ];
 
+        // Anchor ghost pose directly to athlete pelvisCanvas & scale to bodyScalePixels
+        const ghostPelvisX = (ghostPose.left_hip.x + ghostPose.right_hip.x) / 2;
+        const ghostPelvisY = (ghostPose.left_hip.y + ghostPose.right_hip.y) / 2;
+        const ghostShoulderWidthNorm = Math.hypot(ghostPose.right_shoulder.x - ghostPose.left_shoulder.x, ghostPose.right_shoulder.y - ghostPose.left_shoulder.y) || 0.16;
+        const scaleRatio = bodyScalePixels / (rect.width * ghostShoulderWidthNorm);
+
+        const toGhostCanvas = (point: Point) => {
+          const dx = (point.x - ghostPelvisX) * rect.width * scaleRatio;
+          const dy = (point.y - ghostPelvisY) * rect.height * scaleRatio;
+          return { x: pelvisCanvas.x + dx, y: pelvisCanvas.y + dy };
+        };
+
         context.shadowColor = activeArchetype.themeColor;
         context.shadowBlur = 10;
         context.strokeStyle = activeArchetype.themeColor;
         context.lineWidth = 2.8;
 
         GHOST_BONES.forEach(([j1, j2]) => {
-          const p1 = toCanvas(ghostPose[j1]);
-          const p2 = toCanvas(ghostPose[j2]);
+          const p1 = toGhostCanvas(ghostPose[j1]);
+          const p2 = toGhostCanvas(ghostPose[j2]);
           context.beginPath();
           context.moveTo(p1.x, p1.y);
           context.lineTo(p2.x, p2.y);
@@ -690,7 +699,7 @@ export default function CoachVisionStudio({
         });
 
         (Object.keys(ghostPose) as JointName[]).forEach((joint) => {
-          const p = toCanvas(ghostPose[joint]);
+          const p = toGhostCanvas(ghostPose[joint]);
           context.beginPath();
           context.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
           context.fillStyle = "#ffffff";
@@ -700,7 +709,7 @@ export default function CoachVisionStudio({
           context.stroke();
         });
 
-        const headPos = toCanvas(ghostPose.head);
+        const headPos = toGhostCanvas(ghostPose.head);
         label(`PRO GHOST · ${activeArchetype.name.toUpperCase()}`, headPos.x + 14, headPos.y - 12, activeArchetype.themeColor);
 
         context.restore();

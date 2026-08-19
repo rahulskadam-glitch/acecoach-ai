@@ -173,4 +173,34 @@ describe("Report & Visualizer Biomechanical Integrity Suite", () => {
     expect(serveProfile.segments[0].proPeakVelocity).toBeGreaterThan(forehandProfile.segments[0].proPeakVelocity);
     expect(serveProfile.segments[4].proPeakVelocity).toBeGreaterThan(forehandProfile.segments[4].proPeakVelocity);
   });
+
+  it("calculates dynamically anchored strike corridor and reach gap from athlete body scale", () => {
+    function computeDynamicStrikeCorridor(
+      torsoX: number,
+      torsoY: number,
+      bodyScalePixels: number,
+      swingDirection: -1 | 1,
+    ) {
+      const boxDistance = bodyScalePixels * 1.15;
+      const boxX = torsoX + swingDirection * boxDistance;
+      const boxY = torsoY - bodyScalePixels * 0.15;
+      const boxW = Math.round(bodyScalePixels * 0.85);
+      const boxH = Math.round(bodyScalePixels * 0.95);
+      return { boxX, boxY, boxW, boxH };
+    }
+
+    // Player positioned at x: 300, y: 400 with 100px body scale
+    const playerA = computeDynamicStrikeCorridor(300, 400, 100, -1);
+    expect(playerA.boxX).toBe(185);
+    expect(playerA.boxY).toBe(385);
+    expect(playerA.boxW).toBe(85);
+    expect(playerA.boxH).toBe(95);
+
+    // Player positioned at x: 700, y: 500 with 150px body scale
+    const playerB = computeDynamicStrikeCorridor(700, 500, 150, -1);
+    expect(playerB.boxX).toBe(527.5);
+    expect(playerB.boxY).toBe(477.5);
+    expect(playerB.boxW).toBe(128);
+    expect(playerB.boxH).toBe(143);
+  });
 });
