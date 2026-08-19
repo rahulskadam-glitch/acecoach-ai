@@ -1504,9 +1504,10 @@ export async function queueAnalysisVideo(
 
   const { data: existingRows, error: existingError } = await supabase
     .from("analysis_sessions")
-    .select("id, status, updated_at")
+    .select("id, status, updated_at, action_type")
     .eq("video_id", videoId)
     .eq("user_id", user.id)
+    .eq("action_type", actionType)
     .eq("engine_version", ENGINE_VERSION)
     .eq("athlete_context_fingerprint", contextFingerprint)
     .order("created_at", { ascending: false })
@@ -1518,7 +1519,7 @@ export async function queueAnalysisVideo(
   const queuedIsStale = existing?.status === "queued" && Date.now() - existingUpdatedAt > 2 * 60 * 1000;
   const processingIsStale = existing?.status === "processing" && Date.now() - existingUpdatedAt > 12 * 60 * 1000;
 
-  if (existing?.status === "completed" || (existing?.status === "processing" && !processingIsStale) || (existing?.status === "queued" && !queuedIsStale)) {
+  if (existing && existing.action_type === actionType && (existing.status === "completed" || (existing.status === "processing" && !processingIsStale) || (existing.status === "queued" && !queuedIsStale))) {
     return { sessionId: existing.id, status: existing.status, contextPersistence: "skipped_existing" as const };
   }
 

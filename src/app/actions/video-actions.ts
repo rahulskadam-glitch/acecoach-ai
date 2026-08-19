@@ -241,9 +241,14 @@ export async function recordVideoMetadata(payload: {
   if (checksumSha256) {
     const { data: duplicate } = await supabase.from("videos").select("id, sport_id, action_type, storage_path, file_size_bytes, mime_type, duration").eq("user_id", user.id).eq("sha256_checksum", checksumSha256).maybeSingle();
     if (duplicate) {
-      const { error: contextError } = await supabase.from("videos").update({ capture_context: captureContext }).eq("id", duplicate.id).eq("user_id", user.id);
+      const { error: contextError } = await supabase.from("videos").update({ 
+        capture_context: captureContext,
+        action_type: actionType,
+        stroke_type: payload.strokeType.slice(0, 80),
+        sport_id: sportId,
+      }).eq("id", duplicate.id).eq("user_id", user.id);
       if (contextError && !missingCaptureContextColumn(contextError)) throw new Error(contextError.message);
-      return { ...duplicate, capture_context: captureContext };
+      return { ...duplicate, action_type: actionType, capture_context: captureContext };
     }
   }
 
