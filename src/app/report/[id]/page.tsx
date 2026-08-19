@@ -114,8 +114,126 @@ type TrackerOutcomeRow = {
   model_version: string | null;
 };
 
-function mapReport(rawReport: RawReport): Report {
-  const coachSummary = (rawReport.coach_summary ?? {}) as Record<string, unknown>;
+function contextualizeText(text: string | null | undefined, actionType?: string): string {
+  if (!text) return "";
+  if (!actionType) return text;
+  const lowerAction = actionType.toLowerCase().replaceAll("_", " ");
+  if (lowerAction.includes("forehand")) {
+    return text
+      .replace(/two-handed backhand/gi, "forehand")
+      .replace(/one-handed backhand/gi, "forehand")
+      .replace(/backhand/gi, "forehand");
+  }
+  if (lowerAction.includes("serve")) {
+    return text
+      .replace(/two-handed backhand/gi, "serve")
+      .replace(/one-handed backhand/gi, "serve")
+      .replace(/backhand/gi, "serve");
+  }
+  if (lowerAction.includes("volley")) {
+    return text
+      .replace(/two-handed backhand/gi, lowerAction)
+      .replace(/one-handed backhand/gi, lowerAction)
+      .replace(/backhand/gi, lowerAction);
+  }
+  return text;
+}
+
+function mapReport(rawReport: RawReport, actionType?: string): Report {
+  const rawCoachSummary = (rawReport.coach_summary ?? {}) as Record<string, unknown>;
+  const rawFrameSummary = (rawReport.frame_summary ?? {}) as Record<string, unknown>;
+  const rawAnalysisContext = (rawFrameSummary.analysisContext ?? {}) as Record<string, unknown>;
+
+  const frameSummary = rawReport.frame_summary ? {
+    ...rawFrameSummary,
+    analysisAction: actionType ?? (rawFrameSummary.analysisAction as string | undefined),
+    analysisContext: rawFrameSummary.analysisContext ? {
+      ...rawAnalysisContext,
+      athleteQuestion: (
+        typeof rawAnalysisContext.athleteQuestion === "string" &&
+        !rawAnalysisContext.athleteQuestion.toLowerCase().includes("how can i make my backhand")
+      ) ? contextualizeText(rawAnalysisContext.athleteQuestion, actionType) : null,
+      statement: contextualizeText(typeof rawAnalysisContext.statement === "string" ? rawAnalysisContext.statement : "", actionType),
+    } : undefined,
+  } as Report["frameSummary"] : undefined;
+
+  const coachSummary = {
+    ...rawCoachSummary,
+    headline: contextualizeText(typeof rawCoachSummary.headline === "string" ? rawCoachSummary.headline : "Analysis report", actionType),
+    strongestQuality: contextualizeText(typeof rawCoachSummary.strongestQuality === "string" ? rawCoachSummary.strongestQuality : "Review the measured strengths below.", actionType),
+    mainPriority: contextualizeText(typeof rawCoachSummary.mainPriority === "string" ? rawCoachSummary.mainPriority : "Review the first coaching priority.", actionType),
+    whyItMatters: contextualizeText(typeof rawCoachSummary.whyItMatters === "string" ? rawCoachSummary.whyItMatters : "Focus on one change at a time.", actionType),
+    practiceFocus: Array.isArray(rawCoachSummary.practiceFocus) ? rawCoachSummary.practiceFocus.map((f: unknown) => contextualizeText(String(f), actionType)) : [],
+  };
+
+  const rawPerformanceStory = (rawReport.performance_story ?? {}) as Record<string, unknown>;
+  const performanceStory = rawReport.performance_story ? {
+    ...rawPerformanceStory,
+    identity: contextualizeText(typeof rawPerformanceStory.identity === "string" ? rawPerformanceStory.identity : "", actionType),
+    rootCauseHypothesis: contextualizeText(typeof rawPerformanceStory.rootCauseHypothesis === "string" ? rawPerformanceStory.rootCauseHypothesis : "", actionType),
+    transferRisk: contextualizeText(typeof rawPerformanceStory.transferRisk === "string" ? rawPerformanceStory.transferRisk : "", actionType),
+    nextMilestone: contextualizeText(typeof rawPerformanceStory.nextMilestone === "string" ? rawPerformanceStory.nextMilestone : "", actionType),
+    coachPrinciple: contextualizeText(typeof rawPerformanceStory.coachPrinciple === "string" ? rawPerformanceStory.coachPrinciple : "", actionType),
+  } as Report["performanceStory"] : {
+    identity: "This report contains a measured movement baseline.",
+    rootCauseHypothesis: "Review the first priority before changing secondary details.",
+    transferRisk: "The priority may become more visible under faster or less predictable feeds.",
+    nextMilestone: "Complete the prescribed drill and record a comparable reassessment.",
+    coachPrinciple: "Change one constraint, preserve the strongest quality, then reassess.",
+  };
+
+  const rawDrills = Array.isArray(rawReport.drills) ? rawReport.drills : [];
+  const drills = rawDrills.map((drillItem: unknown) => {
+    const drill = (drillItem ?? {}) as Record<string, unknown>;
+    return {
+      ...drill,
+      name: contextualizeText(typeof drill.name === "string" ? drill.name : "", actionType),
+      purpose: contextualizeText(typeof drill.purpose === "string" ? drill.purpose : "", actionType),
+      cue: contextualizeText(typeof drill.cue === "string" ? drill.cue : "", actionType),
+      dosage: contextualizeText(typeof drill.dosage === "string" ? drill.dosage : "", actionType),
+      successMetric: contextualizeText(typeof drill.successMetric === "string" ? drill.successMetric : "", actionType),
+    };
+  });
+
+  const rawNextSession = (rawReport.next_session ?? {}) as Record<string, unknown>;
+  const nextSession = rawReport.next_session ? {
+    ...rawNextSession,
+    objective: contextualizeText(typeof rawNextSession.objective === "string" ? rawNextSession.objective : "", actionType),
+    recordingPlan: contextualizeText(typeof rawNextSession.recordingPlan === "string" ? rawNextSession.recordingPlan : "", actionType),
+    successCriteria: Array.isArray(rawNextSession.successCriteria)
+      ? rawNextSession.successCriteria.map((c: unknown) => contextualizeText(String(c), actionType))
+      : [],
+  } as Report["nextSession"] : {
+    objective: "Technical progression",
+    recordingPlan: "Record from the same angle for comparable assessment.",
+    successCriteria: ["Execute controlled repetitions with balance."],
+    sessionPlan: [],
+  };
+
+  const rawPracticePlan = (rawReport.practice_plan ?? {}) as Record<string, unknown>;
+  const practicePlan = rawReport.practice_plan ? {
+    ...rawPracticePlan,
+    title: contextualizeText(typeof rawPracticePlan.title === "string" ? rawPracticePlan.title : "", actionType),
+    primaryGoal: contextualizeText(typeof rawPracticePlan.primaryGoal === "string" ? rawPracticePlan.primaryGoal : "", actionType),
+    cue: contextualizeText(typeof rawPracticePlan.cue === "string" ? rawPracticePlan.cue : "", actionType),
+  } as Report["practicePlan"] : {
+    title: "Practice plan",
+    primaryGoal: "Review the first coaching priority",
+    cue: "One change at a time.",
+    sessions: [],
+  };
+
+  const rawVisualMoments = Array.isArray(rawReport.visual_moments) ? rawReport.visual_moments : [];
+  const visualMoments = rawVisualMoments.map((momentItem: unknown) => {
+    const moment = (momentItem ?? {}) as Record<string, unknown>;
+    return {
+      ...moment,
+      title: contextualizeText(typeof moment.title === "string" ? moment.title : "", actionType),
+      explanation: contextualizeText(typeof moment.explanation === "string" ? moment.explanation : "", actionType),
+      cue: typeof moment.cue === "string" ? contextualizeText(moment.cue, actionType) : undefined,
+    };
+  });
+
   return {
     overallScore: rawReport.overall_score,
     scoreStatus: rawReport.score_status ?? "legacy",
@@ -134,48 +252,31 @@ function mapReport(rawReport: RawReport): Report {
     metricScores: rawReport.metric_scores as Report["metricScores"],
     strengths: rawReport.strengths as Report["strengths"],
     priorities: rawReport.priorities as Report["priorities"],
-    drills: rawReport.drills as Report["drills"],
-    nextSession: rawReport.next_session as Report["nextSession"],
-    coachSummary: (rawReport.coach_summary ?? {
-      headline: "Analysis report",
-      strongestQuality: "Review the measured strengths below.",
-      mainPriority: "Review the first coaching priority.",
-      whyItMatters: "Focus on one change at a time.",
-      practiceFocus: [],
-    }) as Report["coachSummary"],
-    performanceStory: (rawReport.performance_story ?? {
-      identity: "This report contains a measured movement baseline.",
-      rootCauseHypothesis: "Review the first priority before changing secondary details.",
-      transferRisk: "The priority may become more visible under faster or less predictable feeds.",
-      nextMilestone: "Complete the prescribed drill and record a comparable reassessment.",
-      coachPrinciple: "Change one constraint, preserve the strongest quality, then reassess.",
-    }) as Report["performanceStory"],
-    visualMoments: (rawReport.visual_moments ?? []) as Report["visualMoments"],
+    drills: drills as Report["drills"],
+    nextSession: nextSession as Report["nextSession"],
+    coachSummary: coachSummary as Report["coachSummary"],
+    performanceStory: performanceStory as Report["performanceStory"],
+    visualMoments: visualMoments as Report["visualMoments"],
     measurementCoverage: (rawReport.measurement_coverage ?? {
       measured: [],
       estimated: [],
       unavailable: [],
     }) as Report["measurementCoverage"],
-    practicePlan: (rawReport.practice_plan ?? {
-      title: "Practice plan",
-      primaryGoal: "Review the first coaching priority",
-      cue: "One change at a time.",
-      sessions: [],
-    }) as Report["practicePlan"],
+    practicePlan: practicePlan as Report["practicePlan"],
     coachingPlaybook: rawReport.coaching_playbook as Report["coachingPlaybook"],
     repetitionInsights: rawReport.repetition_insights as Report["repetitionInsights"],
     evidence: rawReport.evidence as Report["evidence"],
     safetyNote: rawReport.safety_note,
     limitations: rawReport.limitations as string[],
     engineManifest: rawReport.engine_manifest as Report["engineManifest"],
-    frameSummary: rawReport.frame_summary as Report["frameSummary"],
+    frameSummary: frameSummary as Report["frameSummary"],
     movementTimeline: rawReport.movement_timeline as Report["movementTimeline"],
     repetitions: (rawReport.repetitions ?? []) as Report["repetitions"],
     movementClassification: rawReport.movement_classification as Report["movementClassification"],
     coachingAreas: rawReport.coaching_areas as Report["coachingAreas"],
     referenceComparison: rawReport.reference_comparison as Report["referenceComparison"],
-    nextGenerationStory: coachSummary.nextGenerationStory as Report["nextGenerationStory"],
-    ontologyReasoning: coachSummary.ontologyReasoning as Report["ontologyReasoning"],
+    nextGenerationStory: rawCoachSummary.nextGenerationStory as Report["nextGenerationStory"],
+    ontologyReasoning: rawCoachSummary.ontologyReasoning as Report["ontologyReasoning"],
     knowledgeControl: rawReport.knowledge_control as Report["knowledgeControl"],
   };
 }
@@ -256,10 +357,10 @@ export default async function ReportPage({ params }: PageProps) {
     }
   }
 
-  const report = mapReport(rawReport);
   const analysisAction = (typeof session.analysis_action_type === "string" ? session.analysis_action_type : null)
-    ?? report.movementClassification?.analysisAction
+    ?? (rawReport.movement_classification as { analysisAction?: string } | undefined)?.analysisAction
     ?? (typeof session.action_type === "string" ? session.action_type : "forehand");
+  const report = mapReport(rawReport, analysisAction);
 
   const [
     { data: practiceRow },

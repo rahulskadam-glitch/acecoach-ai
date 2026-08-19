@@ -26,16 +26,34 @@ export function resolveThreePracticeDrills(
   const primaryCue = topPriority?.cue ?? report.coachSummary?.practiceFocus?.[0] ?? "Turn early, accelerate out in front";
   const primaryFlaw = topPriority?.title ?? `${movementName} kinetic chain timing`;
 
+function contextualizeDrill(text: string, movement: string): string {
+  if (!text) return "";
+  const lower = movement.toLowerCase();
+  if (lower.includes("forehand")) {
+    return text
+      .replace(/two-handed backhand/gi, "forehand")
+      .replace(/one-handed backhand/gi, "forehand")
+      .replace(/backhand/gi, "forehand");
+  }
+  if (lower.includes("serve")) {
+    return text
+      .replace(/two-handed backhand/gi, "serve")
+      .replace(/one-handed backhand/gi, "serve")
+      .replace(/backhand/gi, "serve");
+  }
+  return text;
+}
+
   // Start with any engine-provided drills
   const existing: ResolvedPracticeDrill[] = (report.drills ?? []).map((d, index) => ({
     id: d.id ?? `drill_${index + 1}`,
     number: index + 1,
-    name: plainLanguage(d.name),
+    name: contextualizeDrill(plainLanguage(d.name), movementName),
     stageLabel: index === 0 ? "1. Isolation & Feel" : index === 1 ? "2. Progressive Live Feed" : "3. Situational Court Transfer",
-    purpose: d.purpose,
-    cue: plainLanguage(d.cue),
-    dosage: plainLanguage(d.dosage),
-    successMetric: plainLanguage(d.successMetric),
+    purpose: contextualizeDrill(d.purpose, movementName),
+    cue: contextualizeDrill(plainLanguage(d.cue), movementName),
+    dosage: contextualizeDrill(plainLanguage(d.dosage), movementName),
+    successMetric: contextualizeDrill(plainLanguage(d.successMetric), movementName),
     focusArea: index === 0 ? "Biomechanical Fix" : index === 1 ? "Timing & Ball Strike" : "Match Play & Recovery",
   }));
 
