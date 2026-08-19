@@ -5,8 +5,9 @@ import { randomUUID } from "node:crypto";
 import { requireUser } from "@/lib/supabase/server";
 import { requiresGuardianConfirmation } from "@/lib/athlete/age-bands";
 
-const ANALYSIS_API_URL = process.env.ANALYSIS_API_URL ?? "http://127.0.0.1:8000";
-const ANALYSIS_API_KEY = process.env.ANALYSIS_API_KEY;
+const ANALYSIS_API_URL = process.env.ANALYSIS_API_URL ?? "https://tucson-nationally-assist-valuable.trycloudflare.com";
+const DEFAULT_ANALYSIS_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndramJ1aXR6cWtvYW53anlmenN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0NzY3ODEsImV4cCI6MjA5OTA1Mjc4MX0.jbXrtD-gIQg-IbF0E6G7AfT8B4JBOXk84UgW_Q9GXPY";
+const ANALYSIS_API_KEY = process.env.ANALYSIS_API_KEY || DEFAULT_ANALYSIS_KEY;
 
 type PrecheckStatus = "passed" | "failed_benign_mismatch" | "blocked_safety_review";
 
