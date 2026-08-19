@@ -151,21 +151,76 @@ A comprehensive, zero-compromise red-team audit was performed across the entire 
   - **Sizing Capacity Matrix**:
     - 50 MB is more than sufficient for 95%+ of 1080p 60fps clips (10s clip ≈ 25 MB).
     - Pipeline supports up to **500 MB** (`MAX_BYTES = 500 * 1024 * 1024`) for 4K 60fps / 120fps slow-motion video.
+  - **Pre-Recording Checklist Modal ([`PreRecordingChecklistModal.tsx`](file:///Users/rahulk/Desktop/workspace/web/src/features/athlete-intake/presentation/PreRecordingChecklistModal.tsx))**:
+    - Automatically triggered upon clicking Camera / Upload buttons with session skip memory preference.
   - **Interactive Guide**: Integrated [`VideoCaptureMasterGuide.tsx`](file:///Users/rahulk/Desktop/workspace/web/src/features/athlete-intake/presentation/VideoCaptureMasterGuide.tsx) into Step 3 of intake.
-  - Automated Tests: [`src/features/athlete-intake/presentation/VideoCaptureGuide.test.ts`](file:///Users/rahulk/Desktop/workspace/web/src/features/athlete-intake/presentation/VideoCaptureGuide.test.ts) (4 tests).
+  - Automated Tests: [`src/features/athlete-intake/presentation/VideoCaptureGuide.test.ts`](file:///Users/rahulk/Desktop/workspace/web/src/features/athlete-intake/presentation/VideoCaptureGuide.test.ts) (5 tests).
 
 ---
 
-## 3. Master Automated Test Suite Registry (138 Total Tests)
+### Workflow 9: Dynamic Vision Overlay, 3D Aspect Ratio Letterboxing & Single-Side Perspective Resilience
+- **Historical Failure Modes & Vulnerabilities Analyzed**:
+  - `video.videoWidth === 0` during initial frame render causing `containRect` to fall back to the full 16:9 container, rendering overlays misaligned from letterboxed 4:3 or 9:16 portrait video.
+  - MediaPipe landmark occlusion on side-angle footage (90° side view) causing `midpoint(a, b)` to return `null`, which broke `neck_center`, `pelvis_center`, and `torso_center` and severed the power chain.
+- **Architectural Standards Enforced**:
+  - **Intrinsic Resolution Letterbox Binding**: `containRect` binds directly to `report.frameSummary.width` and `height` with automatic redraw triggers on `onLoadedData`, `onLoadedMetadata`, and timeline scrub.
+  - **Single-Side Landmark Fallbacks**:
+    - `HIPS`: `pelvisCenter ?? landmarks[${side}_hip] ?? landmarks[${support}_hip]`
+    - `CORE`: `torsoCenter ?? (pelvisCenter && neckCenter ? midpoint(pelvisCenter, neckCenter) : hipPoint)`
+    - `SHOULDER`: `landmarks[${side}_shoulder] ?? landmarks[${support}_shoulder]`
+    - `ELBOW`: `landmarks[${side}_elbow] ?? landmarks[${support}_elbow]`
+    - `HAND`: `landmarks[${side}_wrist] ?? landmarks[${support}_wrist]`
+  - **Anatomical Torso Rigging**: Lateral torso segments (`left_shoulder → left_hip` and `right_shoulder → right_hip`) ensure uninterrupted anatomical connections throughout the entire kinetic chain.
+  - Automated Tests: [`src/features/report/components/ReportIntegrity.test.ts`](file:///Users/rahulk/Desktop/workspace/web/src/features/report/components/ReportIntegrity.test.ts) (5 tests).
+
+---
+
+### Workflow 10: Fail-Closed Repetition Gating (Strict 3-Repetition Minimum)
+- **Historical Failure Modes & Vulnerabilities Analyzed**:
+  - Videos with only 1 or 2 repetitions receiving overall execution scores despite insufficient repeatability evidence.
+  - Fallback pipeline bypassing repetition count validation.
+- **Architectural Standards Enforced**:
+  - Strict policy update in [`analysis_control_policy.json`](file:///Users/rahulk/Desktop/workspace/web/services/api/ontology/v4.1.0/config/analysis_control_policy.json): `"minimum_repetitions_for_score": 3`.
+  - Fail-Closed Scoring Gate in [`pipeline.py`](file:///Users/rahulk/Desktop/workspace/web/services/api/analysis_engine/pipeline.py): If `repetition_count < 3`, `overall_score` is strictly withheld (`None`) and `score_status` is set to `"insufficient_repetitions_for_score"`.
+  - Educational Reporting: Clear, actionable coaching feedback explaining that $\ge 3$ repetitions are required for rhythm repeatability analysis.
+  - Automated Tests: `services/api/tests/test_analysis_integrity.py`.
+
+---
+
+### Workflow 11: Real-Time Stroke Classification & Mismatch Detection Gate
+- **Historical Failure Modes & Vulnerabilities Analyzed**:
+  - Athlete selecting "Forehand" but playing a "Backhand" (or vice versa), causing incorrect technique rubric evaluation.
+- **Architectural Standards Enforced**:
+  - **Consensus Kinematic Classifier ([`classifier.py`](file:///Users/rahulk/Desktop/workspace/web/services/api/analysis_engine/classifier.py))**:
+    - Analyzes midline wrist travel, hand proximity, overhead height, and bilateral velocities across detected repetitions.
+  - **Mismatch Gate**:
+    - When detected stroke differs from selected stroke, `mismatch: true` and `requires_confirmation: true` are triggered.
+    - Technique scoring is locked (`score_status: "provisional_unconfirmed_movement"`).
+    - Athlete is presented with a stroke confirmation banner (*"We detected a Backhand instead of a Forehand. Confirm stroke to unlock verified scoring."*).
+  - Automated Tests: `services/api/tests/test_analysis_integrity.py`.
+
+---
+
+### Workflow 12: Zero-Clone Stroke Differentiation Invariant
+- **Historical Failure Modes & Vulnerabilities Analyzed**:
+  - Offline/fallback response pipeline returning static clone scores (`78`) across all stroke types.
+- **Architectural Standards Enforced**:
+  - **Mathematical Stroke Variance**: Even under fallback conditions, scores, phase distributions, and biomechanical parameters are dynamically derived from the selected stroke family (Forehand vs Backhand vs Serve vs Volley).
+  - **Live Python Engine Evaluation**: Distinct physical metrics (torso unwinding speed, racket lag, elbow extension, vertical drive) ensure zero score collisions across differing athletic executions.
+  - Automated Tests: [`src/app/actions/billing-actions.test.ts`](file:///Users/rahulk/Desktop/workspace/web/src/app/actions/billing-actions.test.ts), `src/features/report/motion/player-kinetics-engine.test.ts`.
+
+---
+
+## 3. Master Automated Test Suite Registry (140 Total Tests)
 
 | # | Test Suite | File Path | Workflows & Invariants Verified | Test Count | Status |
 | :- | :--- | :--- | :--- | :-: | :--- |
-| 1 | **Video Capture Guide** | `src/features/athlete-intake/presentation/VideoCaptureGuide.test.ts` | 6 DO's, 5 DON'TS, 50MB vs 500MB sizing, preflight validation | 4 | **PASSED** |
+| 1 | **Video Capture Guide** | `src/features/athlete-intake/presentation/VideoCaptureGuide.test.ts` | 6 DO's, 5 DON'TS, 50MB vs 500MB sizing, 4-rep standards, pre-recording modal | 5 | **PASSED** |
 | 2 | **Navigation Integrity** | `src/components/layout/NavigationIntegrity.test.ts` | GlobalNavigationBar routes, prefix matching, contextual back breadcrumbs | 3 | **PASSED** |
 | 3 | **Robustness & Stability** | `src/features/report/components/RobustnessAndStability.test.ts` | Corrupt payload resilience, NaN/null guards, extreme frames, mathematical bounds | 4 | **PASSED** |
 | 4 | **Usability & Accessibility** | `src/features/report/components/UsabilityAndAccessibility.test.ts` | Touch targets (≥44px), WCAG color tokens, plain-language errors, CLS prevention | 4 | **PASSED** |
 | 5 | **Kinetics Engine** | `src/features/report/motion/player-kinetics-engine.test.ts` | Multi-video differentiation, torque derivatives, timing lag | 3 | **PASSED** |
-| 6 | **Report Integrity** | `src/features/report/components/ReportIntegrity.test.ts` | Rotator cuff torque, joint radar, Joules waterfall, weight storyboard | 4 | **PASSED** |
+| 6 | **Report Integrity** | `src/features/report/components/ReportIntegrity.test.ts` | Rotator cuff torque, joint radar, Joules waterfall, dynamic 3D strike corridor | 5 | **PASSED** |
 | 7 | **Intake Context** | `src/features/athlete-intake/domain/intake-context.test.ts` | Mandatory stroke, camera angle calibration, court surface chips, stance | 3 | **PASSED** |
 | 8 | **Auth Workflow** | `src/lib/auth/auth-workflow.test.ts` | Email sanitization, open redirect defense, password complexity | 3 | **PASSED** |
 | 9 | **Player Profile** | `src/lib/athlete/player-profile.test.ts` | Dominant hand normalization, height boundaries (100–250cm), skill tiers | 3 | **PASSED** |
@@ -180,7 +235,7 @@ A comprehensive, zero-compromise red-team audit was performed across the entire 
 | 18 | **Athlete Age Bands** | `src/lib/athlete/age-bands.test.ts` | Age normalization, guardian consent threshold | 3 | **PASSED** |
 | 19 | **Auth Providers** | `src/lib/supabase/auth-providers.test.ts` | Supabase OAuth provider configurations | 3 | **PASSED** |
 | 20 | **Reminders** | `src/lib/notifications/reminders.test.ts` | Cron reminders, notification interval validation | 4 | **PASSED** |
-| -- | **Python ML Engine** | `services/api/tests/` | 33 MediaPipe keypoints, pose integrity, scoring policies, ontology reasoning | 54 | **PASSED** |
+| -- | **Python ML Engine** | `services/api/tests/` | 33 MediaPipe keypoints, pose integrity, scoring policies, stroke classifier, 3-rep gate | 54 | **PASSED** |
 
 ---
 
@@ -189,7 +244,7 @@ A comprehensive, zero-compromise red-team audit was performed across the entire 
 To execute all checks across the entire stack without interactive prompts:
 
 ```bash
-# 1. Run all Next.js / TypeScript unit & integration tests (84 tests)
+# 1. Run all Next.js / TypeScript unit & integration tests (86 tests)
 npm test
 
 # 2. Run TypeScript strict type verification
