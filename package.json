@@ -6,6 +6,7 @@
     "dev": "next dev",
     "dev:all": "zsh scripts/dev-all.sh",
     "dev:analysis": "zsh scripts/dev-analysis.sh",
+    "tunnel": "zsh scripts/tunnel.sh",
     "setup:analysis": "zsh scripts/setup-analysis.sh",
     "build": "next build",
     "start": "next start",
