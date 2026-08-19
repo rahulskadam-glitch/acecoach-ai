@@ -26,7 +26,6 @@ import { resolveThreePracticeDrills } from "../model/practice-drills";
 import { computePlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 import type { MotionStage } from "../motion/motion-model";
 import TennisBiomechanicsIndex from "./TennisBiomechanicsIndex";
-import ProTwinStudio from "./ProTwinStudio";
 import KinematicDataMatrix from "./KinematicDataMatrix";
 import KineticEnergyTransferStudio from "./KineticEnergyTransferStudio";
 import CoachVisionStudio from "./CoachVisionStudio";
@@ -39,7 +38,6 @@ import SessionTrend, { type SessionTrendPoint } from "./insights/SessionTrend";
 import CoachAIDrawer from "./CoachAIDrawer";
 
 type ReportTab = "hub" | "overview" | "video" | "phases" | "energy" | "weight_transfer" | "telemetry" | "injury" | "tracking" | "practice" | "longitudinal";
-type VideoView = "yours" | "pro";
 type InjuryView = "joint_stress" | "shoulder_braking";
 
 export default function V6PlayerReport(props: PlayerReportProps & { sessionId: string; previewOnly?: boolean }) {
@@ -57,9 +55,8 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
   const resolvedActionType = report.movementClassification?.analysisAction ?? actionType;
   const view = buildPlayerReportView(report, resolvedActionType);
   const [activeTab, setActiveTab] = useState<ReportTab>("overview");
-  const [videoView, setVideoView] = useState<VideoView>("yours");
+  const [selectedStage, setSelectedStage] = useState<MotionStage>("forward_swing_contact");
   const [injuryView, setInjuryView] = useState<InjuryView>("joint_stress");
-  const [proTwinStage, setProTwinStage] = useState<MotionStage>("forward_swing_contact");
   const [isCoachDrawerOpen, setIsCoachDrawerOpen] = useState(false);
   const actionOptions = sport.actions.map((item) => ({ id: item.id, label: item.label }));
 
@@ -187,47 +184,18 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
         </section>
       )}
 
-      {/* Video: your swing (real corrections) or a pro comparison, plus optional detail */}
+      {/* Video: Player's raw video movement analysis */}
       {activeTab === "video" && (
         <section className="space-y-4 animate-in fade-in duration-200">
-          <div className="grid grid-cols-2 gap-1 rounded-xl border border-white/10 bg-slate-900/80 p-1">
-            <button
-              type="button"
-              onClick={() => setVideoView("yours")}
-              className={`min-h-9 rounded-lg text-xs font-bold transition ${videoView === "yours" ? "bg-ath-lime text-ath-navy" : "text-slate-400 hover:text-white"}`}
-            >
-              Your swing
-            </button>
-            <button
-              type="button"
-              onClick={() => setVideoView("pro")}
-              className={`min-h-9 rounded-lg text-xs font-bold transition ${videoView === "pro" ? "bg-ath-lime text-ath-navy" : "text-slate-400 hover:text-white"}`}
-            >
-              vs Pro
-            </button>
-          </div>
-
-          {videoView === "yours" ? (
-            <CoachVisionStudio
-              videoUrl={videoUrl}
-              previewOnly={props.previewOnly}
-              report={report}
-              sessionId={sessionId}
-              actionType={resolvedActionType}
-              actionOptions={actionOptions}
-              athleteContext={athleteContext}
-            />
-          ) : (
-            <ProTwinStudio
-              report={report}
-              actionType={resolvedActionType}
-              currentStage={proTwinStage}
-              currentTime={0}
-              onSeekToStage={setProTwinStage}
-              dominantSide={(athleteContext?.dominantSide ?? "right").toLowerCase().startsWith("left") ? "left" : "right"}
-              videoUrl={videoUrl}
-            />
-          )}
+          <CoachVisionStudio
+            videoUrl={videoUrl}
+            previewOnly={props.previewOnly}
+            report={report}
+            sessionId={sessionId}
+            actionType={resolvedActionType}
+            actionOptions={actionOptions}
+            athleteContext={athleteContext}
+          />
         </section>
       )}
 
@@ -246,8 +214,8 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
       {activeTab === "energy" && (
         <section className="animate-in fade-in duration-200">
           <KineticEnergyTransferStudio
-            currentStage={proTwinStage}
-            onSeekToStage={setProTwinStage}
+            currentStage={selectedStage}
+            onSeekToStage={setSelectedStage}
             actionType={resolvedActionType}
             profile={kinetics}
           />
@@ -258,8 +226,8 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
       {activeTab === "weight_transfer" && (
         <section className="animate-in fade-in duration-200">
           <WeightTransferStudio
-            currentStage={proTwinStage}
-            onSeekToStage={setProTwinStage}
+            currentStage={selectedStage}
+            onSeekToStage={setSelectedStage}
             profile={kinetics}
           />
         </section>
