@@ -12,7 +12,7 @@ import { createClient } from "@/lib/supabase/client";
 import { normalizePlayerAgeBand, PLAYER_AGE_BANDS, requiresGuardianConfirmation } from "@/lib/athlete/age-bands";
 import type { SportDefinition } from "@/lib/sports";
 
-const MAX_BYTES = 150 * 1024 * 1024;
+const MAX_BYTES = 50 * 1024 * 1024;
 const MAX_SECONDS = 30.25;
 const ACCEPTED = new Set(["video/mp4", "video/quicktime", "video/webm", "video/x-m4v"]);
 // Versioned so drafts created with the retired overlapping 16–18 band cannot
@@ -68,7 +68,7 @@ async function fileMetadata(file: File): Promise<VideoCheck> {
   }
   if (file.size > MAX_BYTES) {
     quality = "fail";
-    messages.push("The file is larger than 150 MB. Trim the clip before uploading.");
+    messages.push(`The file is ${(file.size / (1024 * 1024)).toFixed(1)} MB (max 50 MB). Trim the clip before uploading.`);
   }
   if (duration < 1.5 || duration > MAX_SECONDS) {
     quality = "fail";
@@ -258,7 +258,14 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
       window.sessionStorage.removeItem(DRAFT_KEY);
       router.push(`/analysis/${queued.sessionId}`);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to start the analysis.");
+      const msg = cause instanceof Error ? cause.message : "Unable to start the analysis.";
+      if (/exceeded|size|413|large/i.test(msg)) {
+        setError("This video exceeds the 50 MB storage limit. Please trim the video to a single stroke (3–8 seconds) or record in 1080p/720p.");
+      } else if (/Load failed|NetworkError|fetch/i.test(msg)) {
+        setError("Video upload was interrupted. Please ensure a stable connection and try a shorter 3–6 second video clip.");
+      } else {
+        setError(msg);
+      }
       setBusy(false);
       setUploadStage(null);
     }
