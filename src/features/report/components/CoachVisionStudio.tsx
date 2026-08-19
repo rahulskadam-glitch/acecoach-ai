@@ -56,7 +56,6 @@ type MarkerPoints = {
 };
 
 const BODY_CONNECTIONS: Array<[string, string]> = [
-  ["nose", "neck_center"],
   ["neck_center", "left_shoulder"], ["neck_center", "right_shoulder"],
   ["left_shoulder", "left_elbow"], ["left_elbow", "left_wrist"],
   ["right_shoulder", "right_elbow"], ["right_elbow", "right_wrist"],
@@ -64,6 +63,10 @@ const BODY_CONNECTIONS: Array<[string, string]> = [
   ["pelvis_center", "left_hip"], ["pelvis_center", "right_hip"],
   ["left_hip", "left_knee"], ["left_knee", "left_ankle"],
   ["right_hip", "right_knee"], ["right_knee", "right_ankle"],
+  ["left_shoulder", "right_shoulder"],
+  ["left_hip", "right_hip"],
+  ["left_shoulder", "left_hip"],
+  ["right_shoulder", "right_hip"],
 ];
 
 const BODY_AXES: Array<[string, string]> = [
@@ -135,8 +138,12 @@ function phaseTitle(stage: MotionStage) {
 }
 
 function midpoint(a?: Landmark, b?: Landmark): Landmark | null {
-  if (!a || !b) return null;
-  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, visibility: Math.min(a.visibility, b.visibility) };
+  if (a && b) {
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, visibility: Math.min(a.visibility, b.visibility) };
+  }
+  if (a) return { ...a };
+  if (b) return { ...b };
+  return null;
 }
 
 function stageArea(report: AnalysisReport, stage: MotionStage) {
@@ -164,19 +171,19 @@ export default function CoachVisionStudio({
   videoUrl: string;
   previewOnly?: boolean;
   report: AnalysisReport;
-  sessionId: string;
+  sessionId?: string;
   actionType: string;
   actionOptions: Array<{ id: string; label: string }>;
   athleteContext?: AthleteReferenceContext;
 }) {
   const router = useRouter();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const mediaSurfaceRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const mediaSurfaceRef = useRef<HTMLDivElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationRef = useRef<number | null>(null);
   const videoFrameRef = useRef<number | null>(null);
+  const primary = report.repetitions?.[report.frameSummary?.primaryRepetitionIndex ?? 0];
   const primaryIndex = report.frameSummary?.primaryRepetitionIndex ?? report.repetitions?.[0]?.index ?? null;
-  const primary = report.repetitions?.find((item) => item.index === primaryIndex) ?? report.repetitions?.[0];
   const start = primary?.startSeconds ?? 0;
   const end = primary?.endSeconds ?? Math.max(report.frameSummary?.durationSeconds ?? 1, 1);
   const priorityTime = report.priorities[0]?.timestampSeconds;
@@ -188,6 +195,7 @@ export default function CoachVisionStudio({
   const profile = report.frameSummary?.biomechanicalProfile;
   const analysisContext = report.frameSummary?.analysisContext;
   const side: "left" | "right" = (athleteContext?.dominantSide ?? report.frameSummary?.dominantSide ?? "right").toLowerCase().startsWith("left") ? "left" : "right";
+  const support = side === "right" ? "left" : "right";
   const [time, setTime] = useState(initialTime);
   const [playing, setPlaying] = useState(false);
   const [rate, setRate] = useState(1);
@@ -228,7 +236,7 @@ export default function CoachVisionStudio({
     const video = videoRef.current;
     const surface = mediaSurfaceRef.current;
     const canvas = canvasRef.current;
-    const media = video ?? surface;
+    const media = surface ?? video;
     if (!media || !canvas) return;
     const cssWidth = media.clientWidth;
     const cssHeight = media.clientHeight;
@@ -243,22 +251,39 @@ export default function CoachVisionStudio({
     context.clearRect(0, 0, cssWidth, cssHeight);
     if (seeking || mode === "clean" || !currentFrame?.keyLandmarks) return;
     const registration = report.frameSummary?.videoRegistration;
-    const rect = video
-      ? containRect(video.clientWidth, video.clientHeight, video.videoWidth, video.videoHeight)
-      : { x: 0, y: 0, width: cssWidth, height: cssHeight };
+
+    const videoWidth = (video && video.videoWidth > 0 ? video.videoWidth : undefined)
+      ?? report.frameSummary?.width
+      ?? 1920;
+    const videoHeight = (video && video.videoHeight > 0 ? video.videoHeight : undefined)
+      ?? report.frameSummary?.height
+      ?? 1080;
+
+    const rect = containRect(cssWidth, cssHeight, videoWidth, videoHeight);
     const toCanvas = (point: { x: number; y: number }) => {
       const calibrated = calibratedNormalizedPoint(point, registration);
       return { x: rect.x + calibrated.x * rect.width, y: rect.y + calibrated.y * rect.height };
     };
+
     const landmarks = currentFrame.keyLandmarks;
-    const neckCenter = midpoint(landmarks.left_shoulder, landmarks.right_shoulder);
-    const pelvisCenter = midpoint(landmarks.left_hip, landmarks.right_hip);
-    const torsoCenter = neckCenter && pelvisCenter ? midpoint(neckCenter, pelvisCenter) : null;
+    const neckCenter = midpoint(landmarks.left_shoulder, landmarks.right_shoulder)
+      ?? (landmarks[`${side}_shoulder`] ? { ...landmarks[`${side}_shoulder`] } : null)
+      ?? (landmarks[`${support}_shoulder`] ? { ...landmarks[`${support}_shoulder`] } : null);
+
+    const pelvisCenter = midpoint(landmarks.left_hip, landmarks.right_hip)
+      ?? (landmarks[`${side}_hip`] ? { ...landmarks[`${side}_hip`] } : null)
+      ?? (landmarks[`${support}_hip`] ? { ...landmarks[`${support}_hip`] } : null);
+
+    const torsoCenter = neckCenter && pelvisCenter
+      ? midpoint(neckCenter, pelvisCenter)
+      : (pelvisCenter ?? neckCenter);
+
     const navelCenter = neckCenter && pelvisCenter ? {
       x: neckCenter.x + (pelvisCenter.x - neckCenter.x) * 0.72,
       y: neckCenter.y + (pelvisCenter.y - neckCenter.y) * 0.72,
       visibility: Math.min(neckCenter.visibility, pelvisCenter.visibility),
-    } : null;
+    } : (pelvisCenter ?? null);
+
     const alignedLandmarks: Record<string, Landmark | undefined> = {
       ...landmarks,
       neck_center: neckCenter ?? undefined,
@@ -374,7 +399,6 @@ export default function CoachVisionStudio({
     const linkColor = (index: number) => STATUS_STYLE[chainLinks[index]?.status ?? "unavailable"].color;
     const held = (name: string) => stabilizerRef.current.isContinuityHeld(name);
     const hit = side;
-    const support = side === "right" ? "left" : "right";
     const assessmentColor = area?.status === "strength" ? VISUAL_STATUS.good.color : area ? VISUAL_STATUS.correction.color : VISUAL_STATUS.confirm.color;
 
     {
@@ -717,14 +741,33 @@ export default function CoachVisionStudio({
     }
 
     if (mode === "chain") {
-      const nodes: Array<{ name: string; point: Landmark | undefined; held: boolean }> = [
-        { name: "BASE", point: midpoint(alignedLandmarks.left_ankle, alignedLandmarks.right_ankle) ?? alignedLandmarks[`${side}_ankle`], held: held("left_ankle") || held("right_ankle") },
-        { name: "KNEES", point: midpoint(alignedLandmarks.left_knee, alignedLandmarks.right_knee) ?? alignedLandmarks[`${side}_knee`], held: held("left_knee") || held("right_knee") },
-        { name: "HIPS", point: alignedLandmarks.pelvis_center ?? alignedLandmarks[`${side}_hip`], held: held("left_hip") || held("right_hip") },
-        { name: "CORE", point: alignedLandmarks.torso_center, held: held("left_hip") || held("right_hip") || held("left_shoulder") || held("right_shoulder") },
-        { name: "SHOULDER", point: alignedLandmarks[`${side}_shoulder`], held: held(`${side}_shoulder`) },
-        { name: "ELBOW", point: alignedLandmarks[`${side}_elbow`], held: held(`${side}_elbow`) },
-        { name: "HAND", point: alignedLandmarks[`${side}_wrist`], held: held(`${side}_wrist`) },
+      const basePoint = midpoint(landmarks.left_ankle, landmarks.right_ankle)
+        ?? landmarks[`${side}_ankle`]
+        ?? landmarks[`${support}_ankle`];
+      const kneePoint = midpoint(landmarks.left_knee, landmarks.right_knee)
+        ?? landmarks[`${side}_knee`]
+        ?? landmarks[`${support}_knee`];
+      const hipPoint = pelvisCenter
+        ?? landmarks[`${side}_hip`]
+        ?? landmarks[`${support}_hip`];
+      const corePoint = torsoCenter
+        ?? (pelvisCenter && neckCenter ? midpoint(pelvisCenter, neckCenter) : null)
+        ?? hipPoint;
+      const shoulderPoint = landmarks[`${side}_shoulder`]
+        ?? landmarks[`${support}_shoulder`];
+      const elbowPoint = landmarks[`${side}_elbow`]
+        ?? landmarks[`${support}_elbow`];
+      const wristPoint = landmarks[`${side}_wrist`]
+        ?? landmarks[`${support}_wrist`];
+
+      const nodes: Array<{ name: string; point: Landmark | null | undefined; held: boolean }> = [
+        { name: "BASE", point: basePoint, held: held("left_ankle") || held("right_ankle") },
+        { name: "KNEES", point: kneePoint, held: held("left_knee") || held("right_knee") },
+        { name: "HIPS", point: hipPoint, held: held("left_hip") || held("right_hip") },
+        { name: "CORE", point: corePoint, held: held("left_hip") || held("right_hip") || held("left_shoulder") || held("right_shoulder") },
+        { name: "SHOULDER", point: shoulderPoint, held: held(`${side}_shoulder`) || held(`${support}_shoulder`) },
+        { name: "ELBOW", point: elbowPoint, held: held(`${side}_elbow`) || held(`${support}_elbow`) },
+        { name: "HAND", point: wristPoint, held: held(`${side}_wrist`) || held(`${support}_wrist`) },
       ];
       const activeSegment = Math.min(5, Math.floor(chainProgress * 6));
       for (let index = 0; index < nodes.length - 1; index += 1) {
@@ -958,7 +1001,7 @@ export default function CoachVisionStudio({
   }
 
   async function correctMovement() {
-    if (selectedAction === actionType) return;
+    if (!sessionId || selectedAction === actionType) return;
     setCorrecting(true);
     setCorrectionError(null);
     try {
@@ -998,7 +1041,7 @@ export default function CoachVisionStudio({
       <div className="grid xl:grid-cols-[minmax(0,1.48fr)_minmax(360px,.72fr)]">
         <div className="border-b border-slate-200 p-4 sm:p-6 xl:border-b-0 xl:border-r">
           <div ref={mediaSurfaceRef} className="relative aspect-video overflow-hidden rounded-2xl border border-white/10 bg-black">
-            {previewOnly ? <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_32%,rgba(30,64,175,.25),transparent_34%),linear-gradient(145deg,#020617,#0f172a)]" aria-label="Visual QA movement preview"><div className="absolute inset-x-0 bottom-16 text-center text-[0.65rem] font-medium uppercase tracking-[0.16em] text-slate-500">Visual QA movement preview</div></div> : <video ref={videoRef} src={videoUrl} muted playsInline preload="metadata" className="h-full w-full object-contain" style={{ transform: report.frameSummary?.videoRegistration?.mirrored ? "scaleX(-1)" : undefined }} onLoadedMetadata={() => seek(initialTime)} onSeeked={handleSeeked} onPlay={() => setPlaying(true)} onPause={() => { setPlaying(false); cancelFrameSync(); }} />}
+            {previewOnly ? <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_32%,rgba(30,64,175,.25),transparent_34%),linear-gradient(145deg,#020617,#0f172a)]" aria-label="Visual QA movement preview"><div className="absolute inset-x-0 bottom-16 text-center text-[0.65rem] font-medium uppercase tracking-[0.16em] text-slate-500">Visual QA movement preview</div></div> : <video ref={videoRef} src={videoUrl} muted playsInline preload="metadata" className="h-full w-full object-contain" style={{ transform: report.frameSummary?.videoRegistration?.mirrored ? "scaleX(-1)" : undefined }} onLoadedMetadata={() => { drawOverlay(); seek(initialTime); }} onLoadedData={drawOverlay} onSeeked={handleSeeked} onPlay={() => setPlaying(true)} onPause={() => { setPlaying(false); cancelFrameSync(); }} />}
             <canvas ref={canvasRef} className="pointer-events-none absolute inset-0" aria-hidden="true" />
             {storyCaption ? <div className="pointer-events-none absolute inset-x-3 bottom-3 flex justify-center"><p className="max-w-xl rounded-2xl border border-white/15 bg-slate-950/88 px-4 py-3 text-center text-sm font-semibold leading-6 text-white shadow-xl backdrop-blur">{storyCaption}</p></div> : null}
             <div data-testid="video-stage-reference" className="absolute left-3 top-3 rounded-xl border border-white/10 bg-slate-950/90 px-3 py-2 backdrop-blur"><p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-white">{phaseTitle(stage)} · {time.toFixed(2)}s</p><p className="mt-1 text-[0.65rem] text-slate-300">{phaseTitle(stage)} frame {currentFrame?.frameIndex ?? "—"} · {mode === "clean" ? "original video" : MODE_OPTIONS.find((item) => item.id === mode)?.label}</p></div>
