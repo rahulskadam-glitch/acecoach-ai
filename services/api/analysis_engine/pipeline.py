@@ -310,7 +310,7 @@ class AnalysisPipeline:
             elif no_repetitions:
                 overall = None
                 score_status = "blocked_no_complete_repetition"
-            elif insufficient_repetitions and movement_confirmed:
+            elif insufficient_repetitions:
                 overall = None
                 score_status = "insufficient_repetitions_for_score"
 

@@ -292,7 +292,7 @@
     "minimum_pose_coverage": 0.7,
     "maximum_edge_clipping_ratio": 0.2,
     "minimum_body_height_ratio": 0.28,
-    "minimum_repetitions_for_score": 2,
+    "minimum_repetitions_for_score": 3,
     "low_measurement_confidence_notice": 0.60,
     "unknown_classification_confidence": 0.35,
     "classification_confidence_floor": 0.3
