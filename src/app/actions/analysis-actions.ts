@@ -6,8 +6,7 @@ import { revalidatePath } from "next/cache";
 import { getSport } from "@/lib/sports";
 import { isOwnedStoragePath } from "@/lib/storage/ownership";
 import { createAdminClient, requireUser } from "@/lib/supabase/server";
-import { visualQaReport } from "@/features/visual-qa/report-fixture";
-import type { AnalysisReport, CoachingPlaybook, EngineManifest, RepetitionInsights } from "@/modules/analysis/types";
+import type { AnalysisReport, EngineManifest } from "@/modules/analysis/types";
 import {
   reduceDevelopmentState,
   reduceSharedRootConstruct,
@@ -326,308 +325,15 @@ function assertOwnedVideoPath(video: VideoRow, userId: string) {
   }
 }
 
-function getStrokeLabel(actionType: string): string {
-  switch (actionType) {
-    case "forehand": return "Forehand";
-    case "one_handed_backhand": return "One-handed backhand";
-    case "two_handed_backhand": return "Two-handed backhand";
-    case "serve": return "Serve";
-    case "forehand_volley": return "Forehand volley";
-    case "backhand_volley": return "Backhand volley";
-    case "slice": return "Slice";
-    case "overhead": return "Overhead";
-    default: return actionType.replaceAll("_", " ").replace(/\b\w/g, (c) => c.toUpperCase());
-  }
-}
-
-function buildFallbackAnalysisApiResponse(payload: Record<string, unknown>): AnalysisApiResponse {
-  const actionType = typeof payload.action_type === "string" && payload.action_type ? payload.action_type : "forehand";
-  const label = getStrokeLabel(actionType);
-  const lowerLabel = label.toLowerCase();
-  const userId = typeof payload.user_id === "string" && payload.user_id ? payload.user_id : "athlete";
-  const videoId = typeof payload.video_id === "string" && payload.video_id ? payload.video_id : "video";
-  const hash = createHash("sha256").update(`${userId}:${videoId}:${actionType}:${Date.now()}`).digest("hex");
-  const fingerprint = createHash("sha256").update(`${userId}:${actionType}:${hash}`).digest("hex");
-
-  const repetitionInsights: RepetitionInsights = {
-    clearestReferenceRepetition: 0,
-    consistencyScore: 82,
-    consistencyLabel: "Consistent",
-    explanation: `Repetition timing and contact space are consistent across the ${lowerLabel} clip.`,
-    repetitions: [
-      {
-        index: 0,
-        timestampSeconds: 2.4,
-        reviewScore: 78,
-        label: "Primary repetition",
-        strengths: ["Organized preparation", "Useful contact space"],
-        watchouts: ["Quiet head through contact"],
-      },
-    ],
-  };
-
-  const referenceComparison = {
-    cohortLabel: "Intermediate Adult Competitor",
-    comparisonType: "peer_cohort",
-    disclaimer: `Comparative benchmark grounded in cited tennis ${lowerLabel} biomechanics research.`,
-    areas: [
-      {
-        id: "backlift_preparation",
-        label: "Preparation & coil",
-        assessment: "within_reference" as const,
-        note: "Coil timing is consistent with intermediate-to-advanced benchmarks.",
-      },
-      {
-        id: "contact_stability",
-        label: "Contact head stability",
-        assessment: "slightly_below_reference" as const,
-        note: "Head movement through contact is higher than reference stability benchmarks.",
-      },
-    ],
-  };
-
-  const coachSummary: AnalysisReport["coachSummary"] = {
-    headline: `Build the complete ${lowerLabel}`,
-    strongestQuality: "Preparation and contact space give the stroke a usable foundation.",
-    mainPriority: "Keep the head quieter through contact.",
-    whyItMatters: "Stable visual and postural control makes the forward swing easier to repeat.",
-    practiceFocus: ["Chin over the shoulder; see it through."],
-    contextStatement: `Read as a neutral rally ball with an intention of depth for ${lowerLabel}.`,
-    coachVerdict: `Your ${lowerLabel} preparation gives you time. Keep your head quieter through contact.`,
-    pyramidSummary: {
-      headline: `Your ${lowerLabel} preparation gives you time. Keep your head quieter through contact.`,
-      bottomLine: `Your ${lowerLabel} already shows organized preparation and useful contact space. First, keep your head quieter through contact. Then improve the finish, recovery, and hitting base.`,
-      synthesisNote: "This answer combines the full-video pattern, phase timing, body-position estimates, repetition evidence, and the available biomechanical checks. It leaves out anything the camera cannot support.",
-      strengths: [
-        { id: "strength-1", title: "Your preparation gives you time", summary: `You organize the shoulder turn before the forward ${lowerLabel} swing.`, whyItMatters: "Early preparation gives the feet and arms time to find the ball.", timestampSeconds: 1.05, bodyRegionId: "backlift", phase: "preparation" },
-        { id: "strength-2", title: "You create useful contact space", summary: "The hitting hand keeps room to travel through the likely strike window.", whyItMatters: "Space preserves the swing corridor.", timestampSeconds: 2.4, bodyRegionId: "hands", phase: "contact" },
-      ],
-      improvements: [
-        { id: "improvement-1", title: "Keep your head quieter through contact", summary: "Keep the eyes and head quieter while completing the shot.", whyItMatters: "This makes timing and direction more repeatable.", cue: "Chin over the shoulder; see it through.", timestampSeconds: 2.4, bodyRegionId: "head", phase: "contact" },
-        { id: "improvement-2", title: "Swing through, then recover", summary: "Let the stroke carry through the intended line before the finish develops.", whyItMatters: "A complete release supports the swing path and the next movement.", cue: "Through first, finish free, recover.", timestampSeconds: 3.15, bodyRegionId: "finish", phase: "follow_through" },
-        { id: "improvement-3", title: "Build a more usable hitting base", summary: "Pivot, move, set the base, strike, and recover.", whyItMatters: "Efficient movement creates time and prevents last-second upper-body compensation.", cue: "Split, pivot, move, set.", timestampSeconds: 0.7, bodyRegionId: "feet", phase: "preparation" },
-      ],
-      firstAction: { title: "Keep your head quieter through contact", reason: "Stable visual and postural control makes the forward swing easier to repeat.", cue: "Chin over the shoulder; see it through.", drillName: "Chin-over-shoulder contact rehearsal", successMetric: `Keep the head quiet through 8 of 10 controlled ${lowerLabel}s.` },
-      framework: visualQaReport.coachSummary.pyramidSummary?.framework ?? [],
-    },
-  };
-
-  const performanceStory: AnalysisReport["performanceStory"] = {
-    identity: `A ${lowerLabel} with organized preparation and useful contact space.`,
-    rootCauseHypothesis: "Head movement through contact is reducing repeatability.",
-    transferRisk: "Faster feeds may shorten the finish and recovery.",
-    nextMilestone: `A quieter head through contact in eight of ten ${lowerLabel} repetitions.`,
-    coachPrinciple: "Create time, stay quiet, finish the swing.",
-  };
-
-  const userQuestion = typeof payload.athlete_question === "string" && payload.athlete_question.trim() ? payload.athlete_question.trim() : null;
-  const cameraAngle = typeof payload.camera_angle === "string" ? payload.camera_angle : "side";
-  const shotSituation = typeof payload.shot_situation === "string" ? payload.shot_situation : "neutral_rally";
-  const shotIntent = typeof payload.shot_intent === "string" ? payload.shot_intent : "depth";
-
-  const drills = [
-    {
-      id: `${actionType}_contact_rehearsal`,
-      name: `${label} contact-point rehearsal`,
-      purpose: `Keep the visual and postural reference steady through ${lowerLabel} contact.`,
-      cue: "Chin over the shoulder; see it through.",
-      dosage: `3 sets of 10 controlled ${lowerLabel}s`,
-      successMetric: `Keep the head quiet through 8 of 10 ${lowerLabel}s`,
-      regression: "Shadow the stroke without a ball",
-      progression: `Add a gentle cross-court feed for ${lowerLabel}`,
-    },
-    {
-      id: `${actionType}_finish_recover`,
-      name: `Swing-through and recover on ${lowerLabel}`,
-      purpose: `Carry the ${lowerLabel} swing through its intended line before the first recovery step.`,
-      cue: "Through first, finish free, recover.",
-      dosage: "3 sets of 8 fed balls",
-      successMetric: "Swing through and recover in balance in 8 of 10 repetitions",
-      regression: "Start from the power position",
-      progression: "Alternate stroke and recovery targets",
-    },
-    {
-      id: `${actionType}_split_pivot_move`,
-      name: `Split-pivot-move ${lowerLabel} sequence`,
-      purpose: `Connect the first turn to efficient movement and a functional base on ${lowerLabel}.`,
-      cue: "Split, pivot, move, set.",
-      dosage: "3 sets of 6 movement patterns",
-      successMetric: "Arrive balanced before 8 of 10 swings",
-      regression: "Rehearse without a racket",
-      progression: "Add a live directional feed",
-    },
-  ];
-
-  const nextSession = {
-    objective: `Quieter head through contact on ${lowerLabel}`,
-    recordingPlan: `Record again after two focused sessions of ${lowerLabel} practice from the same camera position.`,
-    successCriteria: [`Keep the head quiet through contact in eight of ten controlled ${lowerLabel}s.`],
-    sessionPlan: [{ block: "Warm-up", duration: "5 min", focus: `Chin-over-shoulder shadow swings for ${lowerLabel}` }],
-  };
-
-  const coachingPlaybook: CoachingPlaybook = {
-    todayFocus: `Build the complete ${lowerLabel}`,
-    feelCue: "Chin over the shoulder; see it through.",
-    visualCue: `Keep the head quiet through ${lowerLabel} contact.`,
-    commonCompensation: "Lifting the head early to watch the ball.",
-    successTest: `Keep the head quiet through 8 of 10 controlled ${lowerLabel}s.`,
-    transferChallenge: `Maintain contact discipline during live ${lowerLabel} rally feeds.`,
-    coachQuestion: `How did your contact feel on your ${lowerLabel}?`,
-  };
-
-  const visualMoments = (visualQaReport.visualMoments ?? []).map((moment) => ({
-    ...moment,
-    title: moment.title.replace(/backhand/gi, lowerLabel),
-    explanation: moment.explanation.replace(/backhand/gi, lowerLabel),
-    cue: moment.cue ? moment.cue.replace(/backhand/gi, lowerLabel) : undefined,
-  }));
-
-  const frameSummary = {
-    ...visualQaReport.frameSummary!,
-    analysisAction: actionType,
-    biomechanicalProfile: {
-      ...visualQaReport.frameSummary!.biomechanicalProfile!,
-      actionType,
-      version: visualQaReport.frameSummary!.biomechanicalProfile?.version ?? "acecoach-kinematic-profile-v3.0.0",
-    },
-    analysisContext: {
-      cameraAngle,
-      cameraAngleLabel: cameraAngle === "side" ? "side view" : cameraAngle === "rear" ? "rear view" : cameraAngle === "front" ? "front view" : "diagonal view",
-      shotSituation,
-      shotSituationLabel: shotSituation.replaceAll("_", " "),
-      shotIntent,
-      shotIntentLabel: shotIntent.replaceAll("_", " "),
-      athleteQuestion: userQuestion,
-      source: "athlete_supplied" as const,
-      statement: `Read as a ${shotSituation.replaceAll("_", " ")} with an intention of ${shotIntent.replaceAll("_", " ")} for ${lowerLabel}.`,
-      athleteHeightCm: typeof payload.height_cm === "number" ? payload.height_cm : 178,
-      heightSource: "athlete_supplied" as const,
-      calibrationStatement: `Athlete-supplied height is used to contextualize body-relative reach and spacing for ${lowerLabel}.`,
-    },
-  };
-
-  const baseScoreByStroke: Record<string, { overall: number; phases: number[] }> = {
-    forehand: { overall: 81, phases: [79, 82, 80, 84, 78, 80] },
-    two_handed_backhand: { overall: 76, phases: [74, 76, 75, 78, 77, 76] },
-    one_handed_backhand: { overall: 74, phases: [72, 75, 73, 76, 74, 74] },
-    slice_backhand: { overall: 77, phases: [76, 78, 77, 79, 75, 77] },
-    serve: { overall: 84, phases: [82, 85, 84, 87, 83, 83] },
-    forehand_volley: { overall: 79, phases: [78, 80, 79, 81, 78, 78] },
-    backhand_volley: { overall: 78, phases: [77, 79, 78, 80, 77, 77] },
-    overhead: { overall: 80, phases: [78, 81, 80, 83, 79, 79] },
-  };
-  const strokeScores = baseScoreByStroke[actionType] ?? { overall: 78, phases: [74, 75, 76, 77, 78, 79] };
-  const phaseScores = ["Preparation", "Load", "Swing", "Contact", "Finish", "Recovery"].map((phaseName, idx) => ({
-    id: phaseName.toLowerCase(),
-    label: phaseName,
-    score: strokeScores.phases[idx] ?? (74 + idx),
-    note: `Measured from the clearest ${lowerLabel} repetition.`,
-    confidence: 0.88,
-    basis: "measured in image plane",
-  }));
-
-  return {
-    input_fingerprint: fingerprint,
-    content_hash: hash,
-    overall_score: strokeScores.overall,
-    score_status: visualQaReport.scoreStatus,
-    score_label: visualQaReport.scoreLabel,
-    confidence: visualQaReport.confidence,
-    capture_quality: visualQaReport.captureQuality,
-    quality_gate: visualQaReport.qualityGate,
-    phase_scores: phaseScores,
-    metric_scores: visualQaReport.metricScores,
-    strengths: visualQaReport.strengths,
-    priorities: visualQaReport.priorities,
-    drills,
-    next_session: nextSession,
-    coach_summary: coachSummary,
-    performance_story: performanceStory,
-    visual_moments: visualMoments,
-    measurement_coverage: visualQaReport.measurementCoverage,
-    practice_plan: {
-      ...visualQaReport.practicePlan,
-      title: `Quieter contact, complete ${lowerLabel} finish`,
-    },
-    coaching_playbook: coachingPlaybook,
-    repetition_insights: repetitionInsights,
-    evidence: visualQaReport.evidence,
-    safety_note: visualQaReport.safetyNote,
-    limitations: visualQaReport.limitations,
-    engine_manifest: {
-      engineVersion: ENGINE_VERSION,
-      poseModelVersion: "movenet-thunder-v4",
-      biomechanicsVersion: "3dma-kinematics-v2.0",
-      scoringVersion: "tennis-composite-v6",
-      knowledgeVersion: "4.1.0",
-      reportVersion: "6.0.0",
-      analysisMode: "standard",
-    },
-    frame_summary: frameSummary,
-    movement_timeline: visualQaReport.movementTimeline!,
-    repetitions: visualQaReport.repetitions!,
-    movement_classification: {
-      detectedAction: actionType,
-      detectedLabel: label,
-      confidence: 0.94,
-      alternatives: [],
-      reasons: ["Grounded in captured athlete movement pattern"],
-      selectedAction: actionType,
-      selectedLabel: label,
-      mismatch: false,
-      requiresConfirmation: false,
-      classifierVersion: "v6",
-      analysisAction: actionType,
-      analysisActionLabel: label,
-      decisionMode: "confirmed",
-    },
-    coaching_areas: visualQaReport.coachingAreas ?? [],
-    reference_comparison: referenceComparison,
-    knowledge_control: {
-      status: "CONTROLLED",
-      failClosed: true,
-      policyVersion: "1.0.0",
-      ontologyVersion: "4.1.0",
-      manifestHash: "visual-qa-manifest",
-      domains: {
-        calculations: { authorized: true, decision: "ontology_calculations", policyIds: ["AC-SCORE-001"] },
-        insights: { authorized: true, decision: "ontology_fault_insights", policyIds: ["AC-INSIGHT-001"] },
-        recommendations: { authorized: true, decision: "ontology_fault_links", policyIds: ["AC-RECOMMEND-001"] },
-        benchmarks: { authorized: true, decision: "peer_benchmarks", policyIds: ["AC-BENCHMARK-001"] },
-        records: { authorized: true, decision: "traced_records", policyIds: ["AC-RECORD-001"] },
-        report: { authorized: true, decision: "standard_report", policyIds: ["AC-REPORT-001"] },
-      },
-      legacyRecordPolicy: "read_only_excluded_from_derived_records",
-      reportFallbacksAllowed: false,
-      contracts: {
-        comparisons: {
-          maximumCaptureScoreDifference: 15,
-          improvedScoreDelta: 4,
-          unchangedLowerScoreDelta: -4,
-          requireSameEngine: true,
-          requireSameRuntime: true,
-          requireSameContext: true,
-          requireSameKnowledgePolicy: true,
-          requireSameManifestHash: true,
-        },
-        longitudinal: {
-          distributionSpreadDivisor: 2,
-          minimumHistorySessions: 2,
-          historyWindowSessions: 3,
-          meaningfulShiftPoints: 4,
-        },
-      },
-    },
-  };
-}
 
 async function callAnalysisApi(payload: Record<string, unknown>): Promise<AnalysisApiResponse> {
   const apiKey = ANALYSIS_API_KEY || DEFAULT_ANALYSIS_KEY;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), ANALYSIS_API_TIMEOUT_MS);
 
+  let response: Response;
   try {
-    const response = await fetch(`${ANALYSIS_API_URL}/analysis`, {
+    response = await fetch(`${ANALYSIS_API_URL}/analysis`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -637,36 +343,43 @@ async function callAnalysisApi(payload: Record<string, unknown>): Promise<Analys
       signal: controller.signal,
       cache: "no-store",
     });
-
-    if (!response.ok) {
-      const detail = (await response.json().catch(() => null)) as { detail?: string } | null;
-      const message = detail?.detail ?? `Analysis service returned HTTP ${response.status}.`;
-      console.warn(`Analysis service returned HTTP ${response.status}, generating fallback: ${message}`);
-      return buildFallbackAnalysisApiResponse(payload);
-    }
-
-    const declaredLength = Number(response.headers.get("content-length") ?? 0);
-    if (declaredLength > MAX_ANALYSIS_RESPONSE_BYTES) {
-      throw new Error("Analysis service response exceeded the safe size limit.");
-    }
-    const responseText = await response.text();
-    if (Buffer.byteLength(responseText, "utf8") > MAX_ANALYSIS_RESPONSE_BYTES) {
-      throw new Error("Analysis service response exceeded the safe size limit.");
-    }
-    let body: unknown;
-    try {
-      body = JSON.parse(responseText);
-    } catch {
-      return buildFallbackAnalysisApiResponse(payload);
-    }
-    validateAnalysisApiResponse(body);
-    return body;
   } catch (error) {
-    console.warn("Analysis service unreachable, generating resilient cloud analysis report:", error);
-    return buildFallbackAnalysisApiResponse(payload);
+    const timedOut = error instanceof Error && error.name === "AbortError";
+    throw new RetryableAnalysisError(
+      timedOut
+        ? "Analysis service timed out."
+        : `Analysis service is unreachable. ${error instanceof Error ? error.message : String(error)}`,
+    );
   } finally {
     clearTimeout(timeout);
   }
+
+  if (!response.ok) {
+    const detail = (await response.json().catch(() => null)) as { detail?: string } | null;
+    const message = detail?.detail ?? `Analysis service returned HTTP ${response.status}.`;
+    if (response.status >= 500 || response.status === 429) {
+      throw new RetryableAnalysisError(`Analysis service is temporarily unavailable. ${message}`);
+    }
+    throw new Error(message);
+  }
+
+  const declaredLength = Number(response.headers.get("content-length") ?? 0);
+  if (declaredLength > MAX_ANALYSIS_RESPONSE_BYTES) {
+    throw new Error("Analysis service response exceeded the safe size limit.");
+  }
+  const responseText = await response.text();
+  if (Buffer.byteLength(responseText, "utf8") > MAX_ANALYSIS_RESPONSE_BYTES) {
+    throw new Error("Analysis service response exceeded the safe size limit.");
+  }
+
+  let body: unknown;
+  try {
+    body = JSON.parse(responseText);
+  } catch {
+    throw new RetryableAnalysisError("Analysis service returned a malformed response.");
+  }
+  validateAnalysisApiResponse(body);
+  return body;
 }
 
 async function loadAthleteContext(supabase: SupabaseClient, userId: string, sportId: string): Promise<AthleteContext> {
