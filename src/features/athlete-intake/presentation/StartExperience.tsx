@@ -71,7 +71,7 @@ async function fileMetadata(file: File): Promise<VideoCheck> {
   }
   if (file.size > MAX_BYTES) {
     quality = "fail";
-    messages.push(`The file is ${(file.size / (1024 * 1024)).toFixed(1)} MB (max 50 MB). Trim the clip before uploading.`);
+    messages.push(`The file is ${(file.size / (1024 * 1024)).toFixed(1)} MB (max ${Math.round(MAX_BYTES / (1024 * 1024))} MB). Trim the clip before uploading.`);
   }
   if (duration < 1.5 || duration > MAX_SECONDS) {
     quality = "fail";
@@ -357,7 +357,8 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
     } catch (cause) {
       const msg = cause instanceof Error ? cause.message : "Unable to start the analysis.";
       if (/exceeded|size|413|large/i.test(msg)) {
-        setError("This video exceeds the 50 MB storage limit. Please trim the video to a single stroke (3–8 seconds) or record in 1080p/720p.");
+        const maxMb = Math.round(MAX_BYTES / (1024 * 1024));
+        setError(`This video is larger than our upload limit (up to ${maxMb} MB, though the storage platform may cap it lower). Please trim the video to a single stroke (3–8 seconds) or record in 1080p/720p.`);
       } else if (/Load failed|NetworkError|fetch/i.test(msg)) {
         setError("Video upload was interrupted. Please ensure a stable connection and try a shorter 3–6 second video clip.");
       } else {
