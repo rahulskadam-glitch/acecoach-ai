@@ -51,14 +51,16 @@ export default function CoachAIDrawer({
   report,
   movementName,
 }: Props) {
-  const topPriority = report.priorities?.[0]?.title || "Deepen Racket Drop Lag by +12cm";
+  const topPriority = report.priorities?.[0]?.title || null;
+  const fps = report.frameSummary?.fps;
+  const fpsClause = fps ? `${Math.round(fps)}fps ` : "";
 
   const [selectedCategory, setSelectedCategory] = useState<CoachQuestionCategory>("all");
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
     {
       id: "welcome",
       role: "assistant",
-      message: `Hi! I am your AI Tennis Coach. I have analyzed your 60fps ${movementName.toLowerCase()} video. Your primary mechanical focus is to ${topPriority.toLowerCase()}. Pick a category below or ask me any question about your technique, charts, or practice drills!`,
+      message: `Hi! I am your AI Tennis Coach. I have analyzed your ${fpsClause}${movementName.toLowerCase()} video.${topPriority ? ` Your primary mechanical focus is to ${topPriority.toLowerCase()}.` : ""} Pick a category below or ask me any question about your technique, charts, or practice drills!`,
     },
   ]);
   const [input, setInput] = useState("");

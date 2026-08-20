@@ -19,7 +19,7 @@ type TimingStep = {
   proTimeMs: number;
   lagMs: number;
   proLagMs: number;
-  status: "optimal" | "early_leak" | "delayed";
+  status: "optimal" | "early_leak" | "modeled";
   insight: string;
 };
 
@@ -41,6 +41,9 @@ export default function KineticTimingLagLadder({ report, actionType, profile }: 
   const proArmTime = proTorsoTime + 35;
   const proWristTime = proArmTime + 30;
 
+  const legsOptimal = profile?.kneeStatus === "optimal";
+  const hipsOptimal = lag >= proLag - 15;
+  const torsoOptimal = coil >= 32;
   const steps: TimingStep[] = [
     {
       id: "legs",
@@ -49,10 +52,10 @@ export default function KineticTimingLagLadder({ report, actionType, profile }: 
       proTimeMs: 0,
       lagMs: 0,
       proLagMs: 0,
-      status: "optimal",
-      insight: profile?.kneeStatus === "optimal"
+      status: legsOptimal ? "optimal" : "early_leak",
+      insight: legsOptimal
         ? "Ground reaction force initiated on time from deep knee dip."
-        : "Leg push initiates forward momentum.",
+        : "Leg push initiates forward momentum, but knee load was below the developing benchmark.",
     },
     {
       id: "hips",
@@ -61,8 +64,8 @@ export default function KineticTimingLagLadder({ report, actionType, profile }: 
       proTimeMs: proHipTime,
       lagMs: lag,
       proLagMs: proLag,
-      status: lag >= proLag - 15 ? "optimal" : "early_leak",
-      insight: lag >= proLag - 15
+      status: hipsOptimal ? "optimal" : "early_leak",
+      insight: hipsOptimal
         ? `Hips uncoil with ${lag}ms lead, cleanly setting the kinetic sequence.`
         : `Hips opened early (${lag}ms lead vs optimal ${proLag}ms), reducing torso coil tension.`,
     },
@@ -73,8 +76,8 @@ export default function KineticTimingLagLadder({ report, actionType, profile }: 
       proTimeMs: proTorsoTime,
       lagMs: torsoTime - hipTime,
       proLagMs: proTorsoTime - proHipTime,
-      status: coil >= 32 ? "optimal" : "early_leak",
-      insight: coil >= 32
+      status: torsoOptimal ? "optimal" : "early_leak",
+      insight: torsoOptimal
         ? `Torso separation of ${coil}° delivers full elastic core spring.`
         : `Torso separation reached ${coil}° (${Math.abs(coil - 34)}° below tour optimal).`,
     },
@@ -85,8 +88,8 @@ export default function KineticTimingLagLadder({ report, actionType, profile }: 
       proTimeMs: proArmTime,
       lagMs: armTime - torsoTime,
       proLagMs: proArmTime - proTorsoTime,
-      status: "optimal",
-      insight: "Arm and racket drop into hitting slot.",
+      status: "modeled",
+      insight: "Arm and racket drop into hitting slot. Timing here is modeled from your torso-coil rhythm, not independently measured for this joint.",
     },
     {
       id: "wrist",
@@ -95,8 +98,8 @@ export default function KineticTimingLagLadder({ report, actionType, profile }: 
       proTimeMs: proWristTime,
       lagMs: wristTime - armTime,
       proLagMs: proWristTime - proArmTime,
-      status: "optimal",
-      insight: "Forearm pronates through contact window for terminal ball acceleration.",
+      status: "modeled",
+      insight: "Forearm pronates through contact window for terminal ball acceleration. Timing here is modeled from your sequence rhythm, not independently measured for this joint.",
     },
   ];
 
@@ -122,16 +125,13 @@ export default function KineticTimingLagLadder({ report, actionType, profile }: 
             </p>
           </div>
         </div>
-
-        <span className="rounded-full bg-indigo-500/20 px-3 py-1 text-xs font-bold text-indigo-300 ring-1 ring-indigo-500/30">
-          Kinetic Sequence Index: 78%
-        </span>
       </div>
 
       {/* Timing Ladder Visualization */}
       <div className="mt-5 space-y-3">
         {steps.map((step, index) => {
           const isEarly = step.status === "early_leak";
+          const isModeled = step.status === "modeled";
           return (
             <div
               key={step.id}
@@ -151,7 +151,7 @@ export default function KineticTimingLagLadder({ report, actionType, profile }: 
 
                 <div className="flex items-center gap-3 text-xs">
                   <div className="flex items-center gap-1.5 font-mono">
-                    <span className="text-slate-400">You:</span>
+                    <span className="text-slate-400">{isModeled ? "Modeled:" : "You:"}</span>
                     <span className="font-black text-emerald-400">+{step.athleteTimeMs} ms</span>
                   </div>
                   <div className="flex items-center gap-1.5 font-mono">
@@ -162,10 +162,12 @@ export default function KineticTimingLagLadder({ report, actionType, profile }: 
                     className={`rounded-full px-2 py-0.5 text-[0.62rem] font-extrabold uppercase ${
                       isEarly
                         ? "bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30"
-                        : "bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/30"
+                        : isModeled
+                          ? "bg-slate-500/20 text-slate-300 ring-1 ring-slate-500/30"
+                          : "bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/30"
                     }`}
                   >
-                    {isEarly ? "PREMATURE LEAK (-25ms)" : "OPTIMAL SEQUENCE"}
+                    {isEarly ? "PREMATURE LEAK" : isModeled ? "MODELED, NOT MEASURED" : "OPTIMAL SEQUENCE"}
                   </span>
                 </div>
               </div>

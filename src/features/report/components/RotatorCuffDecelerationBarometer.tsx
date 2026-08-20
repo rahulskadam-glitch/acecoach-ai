@@ -25,7 +25,9 @@ export default function RotatorCuffDecelerationBarometer({ report, actionType, p
   const safeLimitNm = rotatorCuffAxis?.proBenchmarkNm ?? (isServe ? 44.0 : 38.0);
   const decelerationWindowMs = resolvedProfile ? Math.round(resolvedProfile.measuredTimingLagMs * 1.05) : (isServe ? 85 : 95);
   const followThroughArcLengthCm = resolvedProfile ? Math.round(Math.max(45, Math.min(85, (resolvedProfile.measuredTorsoCoilDeg / 34) * 64))) : 60;
-  const loadPercentage = Math.min(100, Math.round((brakingTorqueNm / (safeLimitNm * 1.5)) * 100));
+  const gaugeMaxNm = safeLimitNm * 1.5;
+  const loadPercentage = Math.min(100, Math.round((brakingTorqueNm / gaugeMaxNm) * 100));
+  const safeLimitPercentage = Math.min(100, Math.round((safeLimitNm / gaugeMaxNm) * 100));
 
   const isHighRisk = rotatorCuffAxis ? rotatorCuffAxis.riskLevel === "elevated" : brakingTorqueNm > safeLimitNm + 4;
 
@@ -100,18 +102,18 @@ export default function RotatorCuffDecelerationBarometer({ report, actionType, p
                 }`}
                 style={{ width: `${loadPercentage}%` }}
               />
-              {/* Clinical Limit Tick Marker at 45 N·m (approx 56%) */}
+              {/* Clinical limit tick marker, positioned from the athlete's own safe-limit value */}
               <div
                 className="absolute top-0 bottom-0 w-1 bg-white shadow-md"
-                style={{ left: "56%" }}
+                style={{ left: `${safeLimitPercentage}%` }}
                 title="Safe Orthopedic Threshold"
               />
             </div>
 
             <div className="flex justify-between text-[0.68rem] font-bold text-slate-400">
               <span className="text-ath-green">0 N·m (Fluid Wrap)</span>
-              <span className="text-white">45 N·m (Safe Limit)</span>
-              <span className="text-rose-400">80 N·m (Abrupt Brake)</span>
+              <span className="text-white">{safeLimitNm} N·m (Safe Limit)</span>
+              <span className="text-rose-400">{gaugeMaxNm.toFixed(0)} N·m (Abrupt Brake)</span>
             </div>
           </div>
         </div>

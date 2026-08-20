@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, CheckCircle2, Zap } from "lucide-react";
+import { Activity, Zap } from "lucide-react";
 import type { MotionStage } from "../motion/motion-model";
 
 type KineticSequenceWaveformProps = {
@@ -40,7 +40,7 @@ const KINETIC_SEGMENTS: KineticSegment[] = [
     relativePeakFraction: 0.52,
     color: "#06b6d4", // Cyan
     glowColor: "rgba(6, 182, 212, 0.4)",
-    description: "Pelvis uncoiling initiates forward rotation 18ms before torso.",
+    description: "Pelvis uncoiling typically initiates forward rotation just before the torso, in an efficient kinetic chain.",
   },
   {
     id: "torso",
@@ -101,12 +101,11 @@ export default function KineticSequenceWaveform({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold uppercase tracking-[0.14em] text-emerald-400">Kinetic Chain Velocity</span>
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[0.62rem] font-semibold text-emerald-300 ring-1 ring-emerald-500/30">
-                <CheckCircle2 className="h-3 w-3" />
-                Connected Sequencing
+              <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-2 py-0.5 text-[0.62rem] font-semibold text-slate-300 ring-1 ring-white/20">
+                Reference Sequence
               </span>
             </div>
-            <p className="text-[0.68rem] text-slate-300">Segmental Acceleration Waveforms · Ground ➔ Racket Transfer</p>
+            <p className="text-[0.68rem] text-slate-300">Illustrative ground-to-racket transfer order, synced to your video playback — not measured per joint.</p>
           </div>
         </div>
 
@@ -182,7 +181,7 @@ export default function KineticSequenceWaveform({
       <div className="mt-3.5 flex items-start gap-2.5 rounded-xl border border-white/10 bg-white/5 p-2.5 text-xs leading-5 text-slate-300">
         <Activity className="h-4 w-4 shrink-0 text-emerald-400 mt-0.5" />
         <p>
-          <span className="font-semibold text-white">Kinetic Flow:</span> Energy transfers smoothly from the lower limb loading through the torso uncoiling into the hitting wrist. Peak speed reaches the racket head exactly inside the forward contact corridor.
+          <span className="font-semibold text-white">Kinetic Flow:</span> In an efficient stroke, energy transfers from the lower limb loading through the torso uncoiling into the hitting wrist, reaching peak racket-head speed near contact. This is a reference pattern, not a per-joint measurement of your swing.
         </p>
       </div>
     </div>
