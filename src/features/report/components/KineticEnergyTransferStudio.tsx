@@ -89,46 +89,21 @@ export default function KineticEnergyTransferStudio({
   ];
 
   return (
-    <div className="space-y-6 rounded-3xl border border-white/15 bg-gradient-to-br from-slate-950 via-[#0a1224] to-[#08182b] p-6 text-white shadow-2xl backdrop-blur-2xl sm:p-8">
-      {/* Header & Controls */}
-      <div className="flex flex-wrap-reverse items-center justify-between gap-4 border-b border-white/10 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
-              Energy & Trajectory Suite
-            </h2>
-            <span className="rounded-full bg-ath-sky/10 border border-ath-sky/20 px-2.5 py-0.5 text-[0.6rem] font-bold text-ath-sky">
-              Estimated via Scientific Biomechanical Model
-            </span>
-          </div>
-          <p className="mt-0.5 text-xs text-slate-400">
-            Modeled from your measured torso coil and knee-load angles, scaled against tour benchmarks — not force-plate or EMG data.
-          </p>
-        </div>
-
-        {/* Dynamic Power Flow Score */}
-        <div className="flex w-full items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3.5 py-2 backdrop-blur sm:w-auto">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-slate-300">
-            <Gauge className="h-4 w-4" />
-          </div>
+    <div className="space-y-5 rounded-3xl border border-white/10 bg-ath-navy p-6 text-white sm:p-8">
+      {/* Score + chart controls, one row instead of a separate hero */}
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div className="flex items-center gap-3">
+          <Gauge className="h-5 w-5 text-slate-400" />
           <div>
-            <span className="text-[0.65rem] font-bold uppercase tracking-wider text-slate-400 block">
-              Kinetic Flow Score
-            </span>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-lg font-black text-ath-green font-mono">{totalEfficiency}%</span>
-              <span className="text-[0.68rem] font-medium text-slate-400">
-                {totalEfficiency >= 85 ? "Optimal Energy Delivery" : "Power Leak Detected"}
-              </span>
+              <span className="font-mono text-lg font-bold text-ath-green">{totalEfficiency}%</span>
+              <span className="text-[0.68rem] font-medium text-slate-400">{totalEfficiency >= 85 ? "Optimal energy delivery" : "Power leak detected"}</span>
             </div>
+            <p className="text-[0.65rem] text-slate-500">Kinetic flow, modeled from your torso coil and knee-load angles — not force-plate or EMG data</p>
           </div>
         </div>
-      </div>
-
-      {/* Chart Mode Dropdown */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <label className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
-          <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">Chart:</span>
+        <label className="flex items-center gap-2 rounded-lg border border-white/10 px-3 py-1.5">
+          <span className="text-[0.68rem] font-semibold text-slate-400">Chart</span>
           <select
             aria-label="Select chart mode"
             value={chartMode}
@@ -200,7 +175,7 @@ export default function KineticEnergyTransferStudio({
       {/* VIEW 5: TIME-SERIES BODY SPEED CURVES (5 BODY PARTS) */}
       {chartMode === "velocity_sequence" ? (
         <div className="space-y-6">
-          <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 p-5 backdrop-blur">
+          <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-5">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
                 Speed Waves (°/s) Through Stroke Time (0.0s ➔ 1.8s)
@@ -279,7 +254,7 @@ export default function KineticEnergyTransferStudio({
           </div>
 
           {/* 5 Core Body Parts Summary & Simple Coaching Cues */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-5 backdrop-blur">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
                 <span className="h-3 w-3 rounded-full" style={{ backgroundColor: selectedLink.color }} />

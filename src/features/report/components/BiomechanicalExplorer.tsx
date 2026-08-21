@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Activity, ArrowRight, CheckCircle2, CircleAlert, Eye, GitBranch, Info, LoaderCircle, ScanLine } from "lucide-react";
+import { ArrowRight, CheckCircle2, CircleAlert, Eye, GitBranch, LoaderCircle, ScanLine } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, ResponsiveContainer } from "recharts";
 
@@ -89,33 +89,20 @@ export default function BiomechanicalExplorer({ profile, sessionId, actionType }
 
   return (
     <section id="movement-map" className="scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-200 bg-ath-navy p-6 text-white sm:p-9">
-        <div className="flex flex-wrap-reverse items-start justify-between gap-6">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-ath-lime"><ScanLine className="h-4 w-4" />Stroke Phases</div>
-            <h2 className="mt-3 text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">Every stage of your stroke</h2>
-            <p className="mt-3 max-w-2xl text-sm leading-7 text-white/80">See what each part of your body did, when it happened, and how movement passed from the ground through the hitting hand.</p>
-          </div>
-          <div className="grid w-full grid-cols-3 gap-2 text-center sm:w-auto">
-            <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur"><p className="text-2xl font-semibold">6</p><p className="text-[0.68rem] uppercase tracking-wide text-ath-sky">swing phases</p></div>
-            <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur"><p className="text-2xl font-semibold">{profile.availableMetricCount}</p><p className="text-[0.68rem] uppercase tracking-wide text-ath-sky">of {profile.metricCount} visible</p></div>
-            <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur"><p className="text-2xl font-semibold">{profile.connectedLinkCount}/{availableLinks || "—"}</p><p className="text-[0.68rem] uppercase tracking-wide text-ath-sky">links on time</p></div>
-          </div>
+      <div className="border-b border-slate-200 bg-ath-navy p-5 text-white sm:p-6">
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <div><p className="text-2xl font-semibold">6</p><p className="text-[0.65rem] text-white/60">swing phases</p></div>
+          <div><p className="text-2xl font-semibold">{profile.availableMetricCount}</p><p className="text-[0.65rem] text-white/60">of {profile.metricCount} visible</p></div>
+          <div><p className="text-2xl font-semibold">{profile.connectedLinkCount}/{availableLinks || "—"}</p><p className="text-[0.65rem] text-white/60">links on time</p></div>
         </div>
-        <div className="mt-6 flex items-start gap-2 rounded-2xl border border-white/15 bg-black/10 p-4 text-xs leading-6 text-white/80"><Info className="mt-0.5 h-4 w-4 shrink-0" /><p>These are {profile.metricCount} transparent checks from one camera—not {profile.metricCount} sensors. “Likely contact” is the strongest whole-body motion moment; racket face, ball speed, force, joint load, and muscle activity are not claimed.</p></div>
+        <p className="mt-4 text-xs leading-6 text-white/70">{profile.metricCount} transparent checks from one camera, not {profile.metricCount} sensors — racket face, ball speed, force, and muscle activity aren&apos;t claimed.</p>
       </div>
 
       <div className="space-y-8 p-6 sm:p-9">
         <div>
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-ath-navy"><Activity className="h-4 w-4" />All measurements</div>
-              <h3 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-slate-950">Explore the stroke phase by phase</h3>
-            </div>
-            <p className="text-xs text-slate-500">Select a phase to see every check and what it means.</p>
-          </div>
+          <p className="text-xs text-slate-500">Select a phase to see every check and what it means.</p>
 
-          <div className="mt-5 h-56 w-full rounded-2xl border border-slate-200 bg-slate-50/60 p-2" aria-label="Camera coverage across the six phases">
+          <div className="mt-4 h-56 w-full rounded-2xl border border-slate-200 bg-slate-50/60 p-2" aria-label="Camera coverage across the six phases">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={profile.phases.map((phase) => ({
                 phase: phase.label,
@@ -181,15 +168,12 @@ export default function BiomechanicalExplorer({ profile, sessionId, actionType }
         </div>
 
         <div className="border-t border-slate-200 pt-8">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-ath-navy"><GitBranch className="h-4 w-4" />Body linkage</div>
-              <h3 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-slate-950">How movement travelled through your body</h3>
-            </div>
-            <p className="max-w-md text-xs leading-5 text-slate-500">Each link compares the timing of two movement peaks. It describes order—not force or power output.</p>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-sm font-semibold text-ath-navy"><GitBranch className="h-4 w-4" />Body linkage</div>
+            <p className="max-w-md text-xs leading-5 text-slate-500">Each link compares the timing of two movement peaks — order, not force or power.</p>
           </div>
 
-          {chainNodes.length > 0 ? <div className="mt-5 flex gap-2 overflow-x-auto pb-2">
+          {chainNodes.length > 0 ? <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
             {chainNodes.map((node, index) => {
               const incoming = index > 0 ? profile.linkages[index - 1] : null;
               const style = incoming ? linkageStyle[incoming.status] : null;

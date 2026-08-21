@@ -92,7 +92,7 @@ export default function KineticSequenceWaveform({
   const activeSegment = KINETIC_SEGMENTS[activeSegmentIndex >= 0 ? activeSegmentIndex : 0];
 
   return (
-    <div className="mt-4 rounded-2xl border border-white/10 bg-slate-950/90 p-4 text-white shadow-xl backdrop-blur-xl">
+    <div className="mt-4 rounded-2xl border border-white/10 bg-ath-navy p-4 text-white">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/40">

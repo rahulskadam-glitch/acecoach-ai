@@ -70,9 +70,9 @@ export default function NetClearanceTrajectoryFunnel({ actionType, validatedBall
   }, [isServe]);
 
   return (
-    <div className="rounded-[2rem] border border-white/10 bg-gradient-to-b from-[#090e1a] via-[#060a14] to-[#04060c] p-5 shadow-2xl text-white">
+    <div className="rounded-3xl border border-white/10 bg-ath-navy p-5 text-white">
       {/* 3D Side-Profile Trajectory Arena */}
-      <div className="relative mt-5 aspect-[16/7] w-full overflow-hidden rounded-2xl border border-white/10 bg-slate-950/80 p-4">
+      <div className="relative mt-5 aspect-[16/7] w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4">
         <svg viewBox="0 0 700 220" className="h-full w-full">
           <defs>
             <linearGradient id="playerBallGradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -177,7 +177,7 @@ export default function NetClearanceTrajectoryFunnel({ actionType, validatedBall
       <div className="mt-4 grid gap-3 sm:grid-cols-3">
         {hasRealData ? (
           <>
-            <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">
                 Avg Net Clearance
               </span>
@@ -189,7 +189,7 @@ export default function NetClearanceTrajectoryFunnel({ actionType, validatedBall
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">
                 Repetitions Tracked
               </span>
@@ -201,7 +201,7 @@ export default function NetClearanceTrajectoryFunnel({ actionType, validatedBall
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-slate-900/60 p-4 sm:col-span-1">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 sm:col-span-1">
               <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">
                 Placement Zones Seen
               </span>
@@ -211,7 +211,7 @@ export default function NetClearanceTrajectoryFunnel({ actionType, validatedBall
             </div>
           </>
         ) : (
-          <div className="sm:col-span-3 rounded-2xl border border-white/10 bg-slate-900/60 p-4 text-xs leading-relaxed text-slate-400">
+          <div className="sm:col-span-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-xs leading-relaxed text-slate-400">
             Ball tracking was not available in this recording — trajectory estimated using standard aerodynamic physics models.
           </div>
         )}

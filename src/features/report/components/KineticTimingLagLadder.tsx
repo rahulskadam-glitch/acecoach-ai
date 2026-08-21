@@ -100,31 +100,23 @@ export default function KineticTimingLagLadder({ report, actionType, profile }: 
     },
   ];
 
+  const optimalSequencePct = Math.round((steps.filter((s) => s.status !== "early_leak").length / steps.length) * 100);
+
   return (
-    <div className="rounded-[2rem] border border-white/10 bg-gradient-to-b from-[#090e1a] via-[#060a14] to-[#04060c] p-5 shadow-2xl text-white">
+    <div className="text-white">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-500/20 text-indigo-400 ring-1 ring-indigo-500/50 shadow-lg shadow-indigo-500/20">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-500/20 text-indigo-400 ring-1 ring-indigo-500/50">
             <Clock className="h-5 w-5" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded bg-indigo-500 px-2 py-0.5 text-[0.62rem] font-black uppercase tracking-wider text-black">
-                KINEMATIC TIMING CASCADE
-              </span>
-              <h3 className="text-base font-bold text-white tracking-tight">
-                Kinetic Timing Lag Ladder
-              </h3>
-            </div>
-            <p className="text-xs text-slate-400">
-              Millisecond Sequential Handoff Delays vs. ATP/WTA Gold Standard
-            </p>
-          </div>
+          <p className="text-xs text-slate-400">
+            Millisecond sequential handoff delays vs. ATP/WTA gold standard
+          </p>
         </div>
 
         <span className="rounded-full bg-indigo-500/20 px-3 py-1 text-xs font-bold text-indigo-300 ring-1 ring-indigo-500/30">
-          Kinetic Sequence Index: 78%
+          Sequence Timing: {optimalSequencePct}% On Target
         </span>
       </div>
 
@@ -138,7 +130,7 @@ export default function KineticTimingLagLadder({ report, actionType, profile }: 
               className={`rounded-2xl border p-4 transition ${
                 isEarly
                   ? "border-amber-500/30 bg-amber-950/10"
-                  : "border-white/10 bg-slate-900/60"
+                  : "border-white/10 bg-white/5"
               }`}
             >
               <div className="flex flex-wrap items-center justify-between gap-2">

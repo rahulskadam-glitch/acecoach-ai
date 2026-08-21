@@ -26,7 +26,7 @@ export default function ProMotionTwinControls({
   const delta = activeArchetype.keyDeltas[currentStage];
 
   return (
-    <div className="mt-4 rounded-2xl border border-sky-500/20 bg-slate-950/90 p-4 text-white shadow-xl backdrop-blur-xl">
+    <div className="mt-4 rounded-2xl border border-sky-500/20 bg-ath-navy p-4 text-white">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-500/20 text-sky-400 ring-1 ring-sky-500/40">
@@ -84,20 +84,20 @@ export default function ProMotionTwinControls({
       </div>
 
       {delta ? (
-        <div className="mt-3.5 grid gap-3 rounded-xl border border-sky-500/20 bg-sky-950/30 p-3 sm:grid-cols-3">
-          <div className="rounded-lg bg-black/40 p-2.5">
+        <div className="mt-3.5 grid gap-3 border-t border-white/10 pt-3 sm:grid-cols-3">
+          <div className="rounded-lg bg-white/5 p-2.5">
             <span className="text-[0.62rem] font-bold uppercase tracking-wider text-slate-400">Signature Style</span>
             <p className="mt-1 text-xs font-semibold text-white">{activeArchetype.signature}</p>
             <p className="mt-0.5 text-[0.65rem] text-sky-300">{activeArchetype.stanceType}</p>
           </div>
 
-          <div className="rounded-lg bg-black/40 p-2.5">
+          <div className="rounded-lg bg-white/5 p-2.5">
             <span className="text-[0.62rem] font-bold uppercase tracking-wider text-sky-400">Target Checkpoint</span>
             <p className="mt-1 text-xs font-semibold text-white">{delta.joint}</p>
             <p className="mt-0.5 font-mono text-[0.68rem] text-sky-300">{delta.targetMetric}</p>
           </div>
 
-          <div className="rounded-lg bg-black/40 p-2.5">
+          <div className="rounded-lg bg-white/5 p-2.5">
             <div className="flex items-center gap-1 text-[0.62rem] font-bold uppercase tracking-wider text-emerald-400">
               <Zap className="h-3 w-3" />
               <span>Coach Kinematic Cue</span>

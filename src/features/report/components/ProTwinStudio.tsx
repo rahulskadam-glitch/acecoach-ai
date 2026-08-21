@@ -178,11 +178,11 @@ export default function ProTwinStudio({
   return (
     <div className="space-y-3.5">
       {/* 🍏 HERO FULL-BLEED VIDEO & 3D MOTION STUDIO CONTAINER */}
-      <div className="relative overflow-hidden rounded-[28px] border border-white/15 bg-slate-950 shadow-2xl">
+      <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-ath-navy">
         {/* Top Floating Controls Bar */}
         <div className="absolute top-3 left-3 right-3 z-30 flex items-center justify-between pointer-events-auto">
           {/* Pro Archetype Switcher Pill */}
-          <div className="flex items-center gap-1 rounded-full border border-white/20 bg-slate-900/80 p-1 backdrop-blur-xl shadow-lg">
+          <div className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 p-1 backdrop-blur-xl shadow-lg">
             {availableArchetypes.map((a) => {
               const isSelected = a.id === activeArchetype.id;
               return (
@@ -204,7 +204,7 @@ export default function ProTwinStudio({
           </div>
 
           {/* View Mode Pill (50/50 Dual vs Curtain Wipe) */}
-          <div className="flex items-center gap-1 rounded-full border border-white/20 bg-slate-900/80 p-1 backdrop-blur-xl shadow-lg">
+          <div className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 p-1 backdrop-blur-xl shadow-lg">
             <button
               type="button"
               onClick={() => setViewMode("side_by_side")}
@@ -322,7 +322,7 @@ export default function ProTwinStudio({
         )}
 
         {/* Bottom Video Action Bar (Play/Pause & 0.5x Slow-Mo) */}
-        <div className="flex items-center justify-between border-t border-white/10 bg-slate-900/60 px-4 py-2.5 backdrop-blur-xl">
+        <div className="flex items-center justify-between border-t border-white/10 bg-white/5 px-4 py-2.5">
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -392,7 +392,7 @@ export default function ProTwinStudio({
               className={`rounded-2xl p-2.5 text-center transition active:scale-95 border ${
                 isCurrent
                   ? "border-emerald-400 bg-emerald-500/20 text-white shadow-lg shadow-emerald-500/20 ring-1 ring-emerald-400"
-                  : "border-white/10 bg-slate-900/60 text-slate-400 hover:border-white/20 hover:text-white"
+                  : "border-white/10 bg-white/5 text-slate-400 hover:border-white/20 hover:text-white"
               }`}
             >
               <span className="text-[0.6rem] font-bold uppercase tracking-wider block opacity-70">
@@ -407,7 +407,7 @@ export default function ProTwinStudio({
       </div>
 
       {/* 🍏 COMPACT COMPARISON DELTA & COACH CUE (ALL ON ONE SCREEN) */}
-      <div className="rounded-[24px] border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-950 p-4 sm:p-5 backdrop-blur-xl shadow-xl">
+      <div className="rounded-2xl border border-white/10 bg-ath-navy p-4 sm:p-5">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-emerald-400" />

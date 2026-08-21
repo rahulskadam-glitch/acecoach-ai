@@ -30,26 +30,16 @@ export default function RotatorCuffDecelerationBarometer({ report, actionType, p
   const isHighRisk = rotatorCuffAxis ? rotatorCuffAxis.riskLevel === "elevated" : brakingTorqueNm > safeLimitNm + 4;
 
   return (
-    <div className="rounded-[2rem] border border-white/10 bg-gradient-to-b from-[#090e1a] via-[#060a14] to-[#04060c] p-5 shadow-2xl text-white">
+    <div className="rounded-3xl border border-white/10 bg-ath-navy p-5 text-white">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-ath-warn/20 text-ath-warn ring-1 ring-ath-warn/50 shadow-lg shadow-ath-warn/20">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-ath-warn/20 text-ath-warn ring-1 ring-ath-warn/50">
             <ShieldAlert className="h-5 w-5" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="rounded bg-ath-warn px-2 py-0.5 text-[0.62rem] font-black uppercase tracking-wider text-black">
-                CLINICAL ORTHOPEDIC SHIELD
-              </span>
-              <h3 className="text-base font-bold text-white tracking-tight">
-                Rotator Cuff Deceleration Load Barometer
-              </h3>
-            </div>
-            <p className="text-xs text-slate-400">
-              Posterior Shoulder Eccentric Braking Stress (Infraspinatus & Teres Minor)
-            </p>
-          </div>
+          <p className="text-xs text-slate-400">
+            Posterior shoulder eccentric braking stress (infraspinatus & teres minor)
+          </p>
         </div>
 
         <button
@@ -65,7 +55,7 @@ export default function RotatorCuffDecelerationBarometer({ report, actionType, p
       {/* Main Barometer Load Dial Arena */}
       <div className="mt-5 grid gap-6 lg:grid-cols-2">
         {/* Visual Barometer Gauge */}
-        <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-slate-950/80 p-5">
+        <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/5 p-5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
               Eccentric Braking Torque
@@ -117,7 +107,7 @@ export default function RotatorCuffDecelerationBarometer({ report, actionType, p
         </div>
 
         {/* Biomechanical Cause & Solution Card */}
-        <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-slate-900/60 p-5">
+        <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-white/5 p-5">
           <div>
             <div className="flex items-center gap-2 text-xs font-bold text-ath-warn uppercase tracking-wider">
               <AlertTriangle className="h-4 w-4" />
@@ -147,7 +137,7 @@ export default function RotatorCuffDecelerationBarometer({ report, actionType, p
 
       {/* PT Protocols Drawer */}
       {showPtExercises && (
-        <div className="mt-5 rounded-2xl border border-white/10 bg-slate-950/90 p-5 backdrop-blur-xl animate-in fade-in slide-in-from-top-2">
+        <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-5 animate-in fade-in slide-in-from-top-2">
           <h4 className="text-sm font-bold text-white flex items-center gap-2">
             <Dumbbell className="h-4 w-4 text-ath-warn" />
             Prescribed Shoulder Eccentric Strengthening Exercises

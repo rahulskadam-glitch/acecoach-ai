@@ -64,7 +64,7 @@ export default function SweetSpotStrikeClusterChart({ actionType = "forehand", p
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 p-5 backdrop-blur-xl">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 p-5">
         <div>
           <div className="flex items-center gap-2">
             <span className="flex items-center gap-1 rounded-full bg-cyan-500/20 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-cyan-300 ring-1 ring-cyan-500/30">
@@ -75,16 +75,13 @@ export default function SweetSpotStrikeClusterChart({ actionType = "forehand", p
               {actionType.replace("_", " ").toUpperCase()} · 20-Shot Cluster
             </span>
           </div>
-          <h3 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
-            Sweet-Spot Precision & Smash Factor
-          </h3>
-          <p className="mt-0.5 text-xs text-slate-300">
+          <p className="mt-2 text-xs text-slate-300">
             Impact cluster distribution across stringbed vs. energy transfer coefficient (COR).
           </p>
         </div>
 
         {/* View Switcher Toggle */}
-        <div className="flex rounded-xl border border-white/10 bg-white/5 p-1 backdrop-blur-md">
+        <div className="flex rounded-xl border border-white/10 bg-white/5 p-1">
           <button
             type="button"
             onClick={() => setViewBenchmark("athlete")}
@@ -118,7 +115,7 @@ export default function SweetSpotStrikeClusterChart({ actionType = "forehand", p
       {/* Main Stringbed Cluster Viewport */}
       <div className="grid gap-6 lg:grid-cols-12">
         {/* Left 7 Cols: Interactive 2D Stringbed Graphic */}
-        <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-slate-950/90 p-5 backdrop-blur-xl flex flex-col items-center justify-center">
+        <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-white/5 p-5 flex flex-col items-center justify-center">
           <div className="flex w-full items-center justify-between border-b border-white/10 pb-3 mb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
               Stringbed Grid (16x19 Pattern)
@@ -227,7 +224,7 @@ export default function SweetSpotStrikeClusterChart({ actionType = "forehand", p
         {/* Right 5 Cols: Biomechanical Impact Telemetry */}
         <div className="lg:col-span-5 space-y-4">
           {/* Smash Factor KPI Card */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-4 backdrop-blur-xl">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
               <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">
                 Smash Factor (COR Efficiency)
@@ -246,7 +243,7 @@ export default function SweetSpotStrikeClusterChart({ actionType = "forehand", p
           </div>
 
           {/* Center Sweet-Spot Ratio Card */}
-          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-4 backdrop-blur-xl">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400 block">
               Sweet-Spot Impact Rate
             </span>

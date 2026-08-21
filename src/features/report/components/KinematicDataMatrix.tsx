@@ -53,16 +53,10 @@ export default function KinematicDataMatrix({ actionType = "forehand", onSelectM
   }, [metrics, activeCategory]);
 
   return (
-    <div className="space-y-4 rounded-[28px] border border-white/10 bg-slate-950/80 p-5 sm:p-7 backdrop-blur-2xl shadow-2xl">
+    <div className="space-y-4 rounded-3xl border border-white/10 bg-ath-navy p-5 sm:p-7">
       {/* Header Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h3 className="text-lg font-black text-white">Stroke Telemetry</h3>
-            <span className="rounded-full bg-ath-sky/10 border border-ath-sky/20 px-2.5 py-0.5 text-[0.6rem] font-bold text-ath-sky">Estimated via Scientific Biomechanical Model</span>
-          </div>
-          <p className="text-xs text-slate-400">Kinematic telemetry derived from 3D joint velocity models & tour reference benchmarks.</p>
-        </div>
+        <p className="text-xs text-slate-400">Derived from 3D joint velocity models & tour reference benchmarks.</p>
 
         {/* Category Filters (iOS Segmented Pills) */}
         <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 p-1 text-xs">
@@ -103,7 +97,7 @@ export default function KinematicDataMatrix({ actionType = "forehand", onSelectM
               className={`group relative flex flex-col justify-between rounded-2xl border p-4 text-left transition active:scale-[0.98] ${
                 isInspected
                   ? "border-ath-lime bg-ath-lime/10 shadow-lg shadow-ath-lime/10 ring-1 ring-ath-lime"
-                  : "border-white/10 bg-slate-900/60 hover:border-white/20 hover:bg-slate-900/90"
+                  : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
               }`}
             >
               {/* Top Row: Metric Label & Status Dot */}

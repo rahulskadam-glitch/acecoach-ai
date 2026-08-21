@@ -118,9 +118,9 @@ export default function CoachAIDrawer({
       <div className="absolute inset-0" onClick={onClose} />
 
       {/* Slide-in Drawer Container */}
-      <div className="relative z-10 flex h-full w-full max-w-lg flex-col border-l border-white/15 bg-gradient-to-b from-slate-950 via-[#071120] to-slate-950 shadow-2xl text-white">
+      <div className="relative z-10 flex h-full w-full max-w-lg flex-col border-l border-white/15 bg-ath-navy shadow-2xl text-white">
         {/* Drawer Header */}
-        <header className="flex items-center justify-between border-b border-white/10 p-4 sm:p-5 bg-slate-900/80 backdrop-blur-xl">
+        <header className="flex items-center justify-between border-b border-white/10 p-4 sm:p-5 bg-white/5">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-ath-lime text-ath-navy shadow-lg shadow-ath-lime/20 ring-1 ring-ath-lime/40">
               <Bot className="h-5 w-5" />
@@ -153,7 +153,7 @@ export default function CoachAIDrawer({
         </header>
 
         {/* Category Filter Pills (Horizontal Scroll) */}
-        <div className="border-b border-white/10 bg-slate-950/60 px-4 py-2.5 backdrop-blur overflow-x-auto no-scrollbar">
+        <div className="border-b border-white/10 bg-white/5 px-4 py-2.5 overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-1.5 min-w-max">
             {CATEGORIES.map((cat) => (
               <button
@@ -183,7 +183,7 @@ export default function CoachAIDrawer({
                 className={`max-w-[90%] rounded-2xl p-4 text-xs leading-relaxed font-medium sm:text-sm ${
                   m.role === "user"
                     ? "bg-gradient-to-r from-ath-navy to-[#182642] border border-white/15 text-white shadow-xl"
-                    : "border border-white/10 bg-slate-900/90 text-slate-200 backdrop-blur-xl shadow-lg"
+                    : "border border-white/10 bg-white/5 text-slate-200"
                 }`}
               >
                 {m.role === "assistant" && (
@@ -235,7 +235,7 @@ export default function CoachAIDrawer({
         </div>
 
         {/* Quick Question Selector for Current Category */}
-        <div className="border-t border-white/10 bg-slate-950/80 p-3.5 backdrop-blur-xl">
+        <div className="border-t border-white/10 bg-white/5 p-3.5">
           <div className="flex items-center justify-between mb-2">
             <span className="text-[0.64rem] font-bold uppercase tracking-wider text-slate-400">
               Suggested Questions ({filteredQuestions.length})
@@ -261,7 +261,7 @@ export default function CoachAIDrawer({
         </div>
 
         {/* Custom Question Input Form */}
-        <footer className="border-t border-white/10 p-4 bg-slate-900/90 backdrop-blur-xl">
+        <footer className="border-t border-white/10 p-4 bg-white/5">
           <form
             onSubmit={(e) => {
               e.preventDefault();

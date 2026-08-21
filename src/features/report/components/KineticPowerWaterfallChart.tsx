@@ -125,26 +125,18 @@ export default function KineticPowerWaterfallChart({
   return (
     <div className="space-y-6">
       {/* Header Summary Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 p-5 backdrop-blur-xl">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/5 p-5">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400 font-mono">
-              Kinetic Energy Transfer Cascade
-            </span>
-            <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[0.68rem] font-semibold text-slate-300">
-              {actionType.replace("_", " ").toUpperCase()}
-            </span>
-          </div>
-          <h3 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
-            Kinetic Power Leak Waterfall
-          </h3>
-          <p className="mt-0.5 text-xs text-slate-300">
+          <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[0.68rem] font-semibold text-slate-300">
+            {actionType.replace("_", " ").toUpperCase()}
+          </span>
+          <p className="mt-2 text-xs text-slate-300">
             Step-by-step energy generated along the body vs. power leaked before ball impact.
           </p>
         </div>
 
         {/* Recoverable Power KPI Pill */}
-        <div className="flex items-center gap-3 rounded-2xl border border-rose-500/30 bg-rose-950/40 px-4 py-2.5 backdrop-blur">
+        <div className="flex items-center gap-3 rounded-2xl border border-rose-500/30 bg-rose-950/40 px-4 py-2.5">
           <AlertTriangle className="h-5 w-5 text-rose-400 shrink-0 animate-pulse" />
           <div>
             <span className="text-[0.65rem] font-extrabold uppercase tracking-wider text-rose-300 block">
@@ -159,7 +151,7 @@ export default function KineticPowerWaterfallChart({
       </div>
 
       {/* Main Interactive Waterfall Chart Arena */}
-      <div className="rounded-2xl border border-white/10 bg-slate-950/90 p-5 backdrop-blur-xl">
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
         <div className="flex items-center justify-between border-b border-white/10 pb-3">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
             Energy Transfer Flow (Joules)
@@ -342,7 +334,7 @@ export default function KineticPowerWaterfallChart({
       </div>
 
       {/* Selected Step Detailed Diagnostic Card */}
-      <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-5 backdrop-blur-xl">
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
           <div className="flex items-center gap-3">
             <span

@@ -191,7 +191,7 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
           <button
             type="button"
             onClick={() => goTo("video")}
-            className="w-full flex items-center justify-between rounded-3xl border border-white/10 bg-slate-900/60 p-5 text-left transition hover:border-white/20 active:scale-[0.99] backdrop-blur-xl group"
+            className="w-full flex items-center justify-between rounded-3xl border border-white/10 bg-ath-navy p-5 text-left transition hover:border-white/20 active:scale-[0.99] group"
           >
             <div className="flex items-center gap-3.5">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ath-lime/15 text-ath-lime ring-1 ring-ath-lime/30">
@@ -214,7 +214,7 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
       {/* Video: your swing (real corrections) or a pro comparison, plus optional detail */}
       {activeTab === "video" && (
         <section className="space-y-4 animate-in fade-in duration-200">
-          <div className="grid grid-cols-2 gap-1 rounded-xl border border-white/10 bg-slate-900/80 p-1">
+          <div className="grid grid-cols-2 gap-1 rounded-xl border border-white/10 bg-white/5 p-1">
             <button
               type="button"
               onClick={() => setVideoView("yours")}
@@ -303,7 +303,7 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
       {/* Injury Risk: every joint-load/safety view lives here, nowhere else */}
       {activeTab === "injury" && (
         <section className="space-y-4 animate-in fade-in duration-200">
-          <div className="grid grid-cols-2 gap-1 rounded-xl border border-white/10 bg-slate-900/80 p-1">
+          <div className="grid grid-cols-2 gap-1 rounded-xl border border-white/10 bg-white/5 p-1">
             <button
               type="button"
               onClick={() => setInjuryView("joint_stress")}
@@ -339,7 +339,7 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
       {activeTab === "practice" && (
         <section className="space-y-4 animate-in fade-in duration-200">
           {firstDrill ? (
-            <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-6 backdrop-blur-xl shadow-xl">
+            <div className="rounded-3xl border border-white/10 bg-ath-navy p-6">
               <div className="flex items-baseline gap-2">
                 <span className="font-mono text-4xl font-black text-ath-lime">{practiceDrills.length}</span>
                 <span className="text-xs text-slate-400">{practiceDrills.length === 1 ? "drill" : "drills"} in today&apos;s plan</span>
@@ -394,7 +394,7 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
               )}
             </div>
           ) : (
-            <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-6 text-center text-xs text-slate-300">
+            <div className="rounded-3xl border border-white/10 bg-ath-navy p-6 text-center text-xs text-slate-300">
               Practice shadow swings focusing on: “{view.coachingCue}”
             </div>
           )}
@@ -407,7 +407,7 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
           {trendPoints.length >= 2 ? (
             <SessionTrend points={trendPoints} currentSessionId={sessionId} />
           ) : (
-            <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-6 text-center text-xs text-slate-300">
+            <div className="rounded-3xl border border-white/10 bg-ath-navy p-6 text-center text-xs text-slate-300">
               This is your first recorded session for this movement — your trend will appear here once you have at least two sessions to compare.
             </div>
           )}

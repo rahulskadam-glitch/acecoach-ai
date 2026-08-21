@@ -26,7 +26,7 @@ export default function SessionTrend({ points, currentSessionId }: { points: Ses
   const delta = first && last && first !== last && first.score !== null && last.score !== null ? last.score - first.score : null;
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-slate-900/60 p-5 backdrop-blur-xl">
+    <div className="rounded-3xl border border-white/10 bg-ath-navy p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 text-sm font-semibold text-white"><TrendingUp className="h-4 w-4 text-ath-green" />Your trend for this movement</div>

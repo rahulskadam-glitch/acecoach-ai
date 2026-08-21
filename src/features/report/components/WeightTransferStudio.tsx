@@ -65,23 +65,13 @@ export default function WeightTransferStudio({
   }, [activeMoment]);
 
   return (
-    <div className="space-y-6 rounded-3xl border border-white/15 bg-gradient-to-br from-slate-950 via-[#0a1224] to-[#08182b] p-6 text-white shadow-2xl backdrop-blur-2xl sm:p-8">
-      <div className="flex items-center gap-3 border-b border-white/10 pb-4">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-ath-green/20 text-ath-green">
-          <Scale className="h-5 w-5" />
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">Weight Transfer & Balance</h2>
-            <span className="rounded-full bg-ath-green/10 border border-ath-green/20 px-2.5 py-0.5 text-[0.6rem] font-bold text-ath-green">Estimated via Scientific Biomechanical Model</span>
-          </div>
-          <p className="mt-0.5 text-xs text-slate-400">Modeled from your measured torso coil and knee-load angles — not tracked center-of-mass position.</p>
-        </div>
+    <div className="space-y-5 rounded-3xl border border-white/10 bg-ath-navy p-6 text-white sm:p-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+        <p className="text-xs text-slate-400">Modeled from your torso coil and knee-load angles — not tracked center-of-mass position.</p>
       </div>
 
-      {/* Stage Navigation Dropdown */}
-      <label className="flex w-fit items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
-        <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">Stage:</span>
+      <label className="flex w-fit items-center gap-2 rounded-lg border border-white/10 px-3 py-1.5">
+        <span className="text-[0.68rem] font-semibold text-slate-400">Stage</span>
         <select
           aria-label="Select shot stage"
           value={currentStage}
@@ -99,7 +89,7 @@ export default function WeightTransferStudio({
       {/* Main Visual Seesaw Stage Arena */}
       <div className="grid gap-6 lg:grid-cols-12">
         {/* Left 7 Cols: The Physical Tilting Seesaw */}
-        <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-slate-950/80 p-5 backdrop-blur flex flex-col justify-between">
+        <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-white/5 p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between border-b border-white/10 pb-3">
             <div className="flex items-center gap-2">
               <Scale className="h-4 w-4 text-ath-green" />
@@ -159,7 +149,7 @@ export default function WeightTransferStudio({
 
         {/* Right 5 Cols: Active Moment Coaching Telemetry */}
         <div className="lg:col-span-5 flex flex-col justify-between space-y-4">
-          <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-5 backdrop-blur">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <span className="rounded-full bg-ath-green/20 px-3 py-1 text-xs font-extrabold uppercase text-ath-green">
                 Phase {activeMoment.stepNum} of {storyboard.length}

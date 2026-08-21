@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, Shield, ShieldAlert, Sparkles } from "lucide-react";
+import { AlertTriangle, ShieldAlert, Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 
@@ -161,7 +161,7 @@ export default function JointStressInjuryRiskRadar({ actionType = "forehand", pr
       {/* Main Radar Arena */}
       <div className="grid gap-6 lg:grid-cols-12">
         {/* Left 7 Cols: Interactive 6-Axis Radar SVG */}
-        <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-slate-950/90 p-5 backdrop-blur-xl flex flex-col items-center justify-center">
+        <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-ath-navy p-5 flex flex-col items-center justify-center">
           <div className="flex w-full items-center justify-between border-b border-white/10 pb-3 mb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
               6-Axis Torque Load (0 - 100%)
@@ -295,7 +295,7 @@ export default function JointStressInjuryRiskRadar({ actionType = "forehand", pr
 
         {/* Right 5 Cols: Selected Joint Risk Diagnostic */}
         <div className="lg:col-span-5 space-y-4">
-          <div className="rounded-2xl border border-white/10 bg-slate-900/90 p-4 backdrop-blur-xl">
+          <div className="rounded-2xl border border-white/10 bg-ath-navy p-4">
             <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
               <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">
                 Selected Joint Assessment
@@ -348,27 +348,9 @@ export default function JointStressInjuryRiskRadar({ actionType = "forehand", pr
         </div>
       </div>
 
-      {/* Header Banner */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 p-5 backdrop-blur-xl">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 rounded-full bg-ath-sky/10 border border-ath-sky/20 px-2.5 py-0.5 text-xs font-bold text-ath-sky">
-              <Shield className="h-3.5 w-3.5" />
-              Estimated via Scientific Biomechanical Model
-            </span>
-            <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-[0.68rem] font-semibold text-slate-300">
-              {actionType.replace("_", " ").toUpperCase()} · 6-Axis Stress
-            </span>
-          </div>
-          <h3 className="mt-2 text-xl font-bold tracking-tight text-white sm:text-2xl">
-            Joint Stress & Injury Risk Radar
-          </h3>
-          <p className="mt-0.5 text-xs text-slate-300">
-            Joint deceleration stress estimated via Kibler-Ellenbecker kinetic chain models & video angular deceleration (not direct EMG/force plates).
-          </p>
-        </div>
-
-        {/* Overall Status Badge */}
+      {/* Status summary */}
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-white/10 bg-ath-navy p-5">
+        <p className="max-w-md text-xs text-slate-300">Estimated via Kibler-Ellenbecker kinetic chain models & video angular deceleration — not direct EMG or force plates.</p>
         <div className={`flex items-center gap-2 rounded-xl border px-3.5 py-2 text-xs font-bold ${
           hasHighLoad
             ? "bg-ath-warn/20 border-ath-warn/30 text-ath-warn"
