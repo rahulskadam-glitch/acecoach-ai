@@ -116,7 +116,11 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
   const [specificQuestion, setSpecificQuestion] = useState("");
   const [ageBand, setAgeBand] = useState(() => normalizePlayerAgeBand(initialProfile.ageBand));
   const [playingLevel, setPlayingLevel] = useState(initialProfile.playingLevel);
-  const [dominantSide, setDominantSide] = useState(initialProfile.dominantSide || "right");
+  // No "right" pre-fill: every hitting-arm measurement in the report depends on this
+  // being an active, correct choice, not an inherited default a left-handed athlete
+  // never noticed and never corrected. Leaving it unset also lets the existing
+  // required-field check below actually block submission instead of trivially passing.
+  const [dominantSide, setDominantSide] = useState(initialProfile.dominantSide || "");
   const [primaryGoal, setPrimaryGoal] = useState(initialProfile.primaryGoal);
   const [silhouettePreference, setSilhouettePreference] = useState(initialProfile.silhouettePreference);
   const [heightCm, setHeightCm] = useState(initialProfile.heightCm?.toString() ?? "");
@@ -144,7 +148,7 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
         setSpecificQuestion(draft.specificQuestion ?? "");
         setAgeBand(normalizePlayerAgeBand(draft.ageBand ?? initialProfile.ageBand));
         setPlayingLevel(draft.playingLevel ?? initialProfile.playingLevel);
-        setDominantSide(draft.dominantSide ?? initialProfile.dominantSide ?? "right");
+        setDominantSide(draft.dominantSide ?? initialProfile.dominantSide ?? "");
         setPrimaryGoal(draft.primaryGoal ?? initialProfile.primaryGoal);
         setSilhouettePreference(draft.silhouettePreference ?? initialProfile.silhouettePreference);
         setHeightCm(draft.heightCm ?? initialProfile.heightCm?.toString() ?? "");
@@ -307,7 +311,9 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
 
       setUploadStage("Running safety precheck");
       const checksum = await sha256(video.file);
-      const precheck = await runSafetyPrecheck(checksum);
+      // Fast inline feedback only — throws on a real block/failure. The authoritative
+      // check now runs server-side inside queueAnalysisVideo against the on-file hash.
+      await runSafetyPrecheck(checksum);
 
       let uploaded = registered;
       if (!uploaded) {
@@ -342,14 +348,14 @@ export default function StartExperience({ userId, sport, initialProfile }: { use
         await updateVideoCaptureContext(uploaded.id, { cameraAngle, shotSituation, shotIntent, courtSurface, footworkStance, specificQuestion });
       }
       setUploadStage("Creating your analysis session");
+      // queueAnalysisVideo now runs its own authoritative safety precheck server-side
+      // against the video's on-file checksum, so this client-computed `precheck` above
+      // is purely for fast inline feedback during upload — it's not trusted as the
+      // real check anymore (it previously was, and could be skipped by triggering
+      // analysis from a different entry point, e.g. the video library).
       const queued = await queueAnalysisVideo(
         uploaded.id,
         { cameraAngle, shotSituation, shotIntent, courtSurface, footworkStance, specificQuestion },
-        {
-          sourceVideoHash: checksum,
-          precheckStatus: precheck.status,
-          message: precheck.message,
-        },
       );
       await connectJourneyAnalysis(queued.sessionId, uploaded.id);
       window.sessionStorage.removeItem(DRAFT_KEY);

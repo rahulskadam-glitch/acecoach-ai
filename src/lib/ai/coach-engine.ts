@@ -317,6 +317,10 @@ export function generateIntelligentCoachResponse(
   const recovMph = k?.estimatedRecoverableMph ?? 7.4;
   const decelTorque = k?.estimatedDecelerationTorqueNm ?? 42;
 
+  const contactWeightPhase = k?.weightTransferPhases.find((phase) => phase.stage === "forward_swing_contact");
+  const frontFootAtContact = contactWeightPhase?.frontFootPct ?? 65;
+  const rearFootAtContact = contactWeightPhase?.rearFootPct ?? 35;
+
   const drill1 = context.drills[0]?.name || "Lag-and-Snap Shadow Swings";
   const dosage1 = context.drills[0]?.dosage || "3 sets of 12 controlled repetitions";
   const cue1 = context.drills[0]?.cue || context.cue;
@@ -351,12 +355,13 @@ export function generateIntelligentCoachResponse(
 
   // 3. Weight Transfer Seesaw Explanation
   if (/weight|seesaw|balance|foot|feet|center of mass|shift|lean|stance/.test(lower)) {
+    const isForward = frontFootAtContact >= rearFootAtContact;
     return {
-      message: `The Weight Transfer Seesaw tracks your Center of Mass shifting from your rear foot to your front foot across the 4 swing phases. In your video, you loaded well during the backswing, but at contact your weight remained 35% on your back foot. Elite tour players commit 85% of their bodyweight onto the front foot through impact. Stepping into the shot and driving your weight forward gives your ball heavy penetration and pushes your opponent behind the baseline.`,
+      message: `The Weight Transfer Seesaw tracks your Center of Mass shifting from your rear foot to your front foot across the swing phases. At contact in your video, your weight was ${frontFootAtContact}% on your front foot and ${rearFootAtContact}% on your back foot. Elite tour players commit around 85% of their bodyweight onto the front foot through impact, so ${isForward ? "you're already driving forward well — keep that same commitment as your intensity increases" : "stepping into the shot and driving your weight forward gives your ball heavier penetration and pushes your opponent behind the baseline"}.`,
       references: [
         { type: "phase", label: "Weight Transfer Tab", value: "weight_transfer" },
-        { type: "finding", label: "Front Foot Drive: 65%" },
-        { type: "finding", label: "Pro Target: 85%" },
+        { type: "finding", label: `Front Foot at Contact: ${frontFootAtContact}%` },
+        { type: "finding", label: "Pro Target: ~85%" },
       ],
     };
   }
@@ -398,8 +403,9 @@ export function generateIntelligentCoachResponse(
 
   // 7. Tennis Biomechanics Index (TBI Score) & Tier
   if (/tbi|score|overall grade|rating|index|tier|level/.test(lower)) {
+    const strongestAsset = context.strengths[0] ?? null;
     return {
-      message: `Your Tennis Biomechanics Index is ${context.overallScore} out of 100. This index scores your movement efficiency, balance platform, kinetic sequencing, and joint safety against tour benchmarks. Your strongest asset is your preparation balance, and your single highest-leverage opportunity is deepening your torso coil and racket lag to unlock an estimated +${recovMph} MPH of effortless pace.`,
+      message: `Your Tennis Biomechanics Index is ${context.overallScore} out of 100. This index scores your movement efficiency, balance platform, kinetic sequencing, and joint safety against tour benchmarks. ${strongestAsset ? `Your strongest asset is ${strongestAsset.toLowerCase()}, and ` : ""}Your single highest-leverage opportunity is to ${context.mainPriority.toLowerCase()}${recovMph > 0 ? ` to unlock an estimated +${recovMph} MPH of effortless pace` : ""}.`,
       references: [
         { type: "phase", label: "Overview Tab", value: "overview" },
         { type: "finding", label: `TBI Score: ${context.overallScore}/100` },

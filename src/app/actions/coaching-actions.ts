@@ -53,9 +53,13 @@ async function loadGroundedContext(sessionId: string, userId: string): Promise<G
   }
   const rawScore = raw.overall_score;
   const rawDrills = Array.isArray(raw.drills) ? (raw.drills as DrillDefinition[]) : [];
+  // No invented specifics when a real strength is missing a title/evidence, or when
+  // the report has none at all — an empty list is honest; a fabricated stat isn't.
   const rawStrengths = Array.isArray(raw.strengths)
-    ? raw.strengths.map((s) => typeof s === "string" ? s : (s as { title?: string; evidence?: string }).title || "Lower body kinetic coil")
-    : ["Explosive lower body ground reaction loading (75% rear foot elastic coil)."];
+    ? raw.strengths
+        .map((s) => typeof s === "string" ? s : (s as { title?: string; evidence?: string }).title || (s as { evidence?: string }).evidence || null)
+        .filter((s): s is string => Boolean(s))
+    : [];
 
   const kinetics = computePlayerBiomechanicalProfile(raw as unknown as AnalysisReport, actionType);
 

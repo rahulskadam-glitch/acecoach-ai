@@ -178,6 +178,13 @@ class AnalysisPipeline:
             if not pose_frames:
                 raise ValueError("No frames could be decoded from the video.")
 
+            # Every "dominant"/"opposite" limb channel feeding the biomechanical profile
+            # depends on this being correct — an unset value silently defaulting here
+            # (with no downstream signal) previously meant a left-handed athlete who
+            # skipped this field got measured almost entirely from their non-hitting arm
+            # with no confidence penalty or limitation shown. Track the default so it can
+            # be surfaced honestly instead.
+            dominant_side_was_defaulted = not payload.dominant_side
             dominant_side = payload.dominant_side or "right"
             biomechanics = compute_frame_metrics(
                 pose_frames,
@@ -352,6 +359,11 @@ class AnalysisPipeline:
                     "policyVersion": control_policy["version"],
                     "knowledgeControlled": True,
                 })
+            if dominant_side_was_defaulted:
+                limitations.append(
+                    "No dominant hand was supplied, so this report assumed right-handed. "
+                    "Every hitting-arm measurement will describe the wrong side of the body if the athlete is left-handed."
+                )
 
             if capture_blocked:
                 coach_summary = {

@@ -47,7 +47,7 @@ export default function PlayerProfileForm({ initialProfile }: ProfileProps) {
     countryCode: initialProfile.countryCode,
     primarySportId: initialProfile.primarySportId || "tennis",
     playingLevel: initialProfile.playingLevel || "Beginner",
-    dominantSide: initialProfile.dominantSide || "right",
+    dominantSide: initialProfile.dominantSide || "",
     gender: initialProfile.gender || "neutral",
     primaryGoal: initialProfile.primaryGoal,
     yearsPlaying: initialProfile.yearsPlaying === null ? "" : String(initialProfile.yearsPlaying),
@@ -112,7 +112,7 @@ export default function PlayerProfileForm({ initialProfile }: ProfileProps) {
         age: "",
         primarySportId: "tennis",
         playingLevel: "Beginner",
-        dominantSide: "right",
+        dominantSide: "",
         gender: "neutral",
         primaryGoal: "",
         yearsPlaying: "",
@@ -223,7 +223,8 @@ export default function PlayerProfileForm({ initialProfile }: ProfileProps) {
           <div className="grid gap-4 md:grid-cols-3">
             <label className="space-y-2 text-sm font-medium text-slate-700">
               Dominant side
-              <select value={form.dominantSide} onChange={(event) => update("dominantSide", event.target.value)} className={inputClass}>
+              <select required value={form.dominantSide} onChange={(event) => update("dominantSide", event.target.value)} className={inputClass}>
+                <option value="" disabled>Select…</option>
                 <option value="right">Right</option>
                 <option value="left">Left</option>
               </select>

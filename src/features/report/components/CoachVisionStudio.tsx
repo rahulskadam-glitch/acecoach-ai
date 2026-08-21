@@ -39,7 +39,7 @@ import {
   type Point,
   type JointName,
 } from "../motion/motion-model";
-import { PRO_ARCHETYPES, type ProArchetypeId } from "../motion/pro-archetypes";
+import { PRO_ARCHETYPES, getProArchetypesForAction, type ProArchetypeId } from "../motion/pro-archetypes";
 import ProMotionTwinControls from "./ProMotionTwinControls";
 import KineticSequenceWaveform from "./KineticSequenceWaveform";
 
@@ -202,7 +202,13 @@ export default function CoachVisionStudio({
   const [playing, setPlaying] = useState(false);
   const [rate, setRate] = useState(1);
   const [mode, setMode] = useState<OverlayMode>("coach");
-  const [selectedArchetypeId, setSelectedArchetypeId] = useState<ProArchetypeId>("alcaraz_modern");
+  // Seeded from the archetype list for this specific stroke, not a fixed literal —
+  // "alcaraz_modern" is a two-handed-backhand archetype and previously stayed selected
+  // (with no pill showing as active) for forehand/serve sessions, silently overlaying a
+  // mismatched pro's pose.
+  const [selectedArchetypeId, setSelectedArchetypeId] = useState<ProArchetypeId>(
+    () => getProArchetypesForAction(actionType)[0]?.id ?? "alcaraz_modern",
+  );
   const [ghostOpacity, setGhostOpacity] = useState<number>(0.75);
   const [stage, setStage] = useState<MotionStage>(stageForTime(initialTime, anchors));
   const [selectedAction, setSelectedAction] = useState(actionType);
@@ -571,7 +577,9 @@ export default function CoachVisionStudio({
       context.lineTo(boxX + boxW / 2 - 10, boxY + boxH / 2 - 10);
       context.stroke();
 
-      label("3D TARGET STRIKE CORRIDOR · 45cm Forward", boxX - boxW / 2, boxY - boxH / 2 - 14, "#06b6d4");
+      // boxDistance is a body-scaled pixel offset, not a real-world distance — a single
+      // uncalibrated camera can't recover that, so the label doesn't claim a fake cm figure.
+      label("3D TARGET STRIKE CORRIDOR", boxX - boxW / 2, boxY - boxH / 2 - 14, "#06b6d4");
       context.restore();
 
       // 2. Dynamic Elastic Vector Gap Arrow (Athlete Hand -> Target Strike Point)

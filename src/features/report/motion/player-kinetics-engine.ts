@@ -113,6 +113,17 @@ export type PlayerBiomechanicalProfile = {
  * derived numbers as internally-consistent, video-responsive estimates for
  * coaching direction, not calibrated physical measurements.
  */
+// Derives a joint's risk label from the same torque/benchmark ratio the Injury Risk
+// radar already renders as its "% Load" bar and dot color (JointStressInjuryRiskRadar.tsx),
+// so the text label can never disagree with what the athlete sees drawn on the chart —
+// previously 4 of 6 joints hardcoded "low" regardless of their computed torque.
+function jointRiskLevel(torqueNm: number, proBenchmarkNm: number): "low" | "moderate" | "elevated" {
+  const ratio = torqueNm / proBenchmarkNm;
+  if (ratio > 1.0) return "elevated";
+  if (ratio > 0.85) return "moderate";
+  return "low";
+}
+
 export function computePlayerBiomechanicalProfile(
   report: AnalysisReport,
   actionType = "forehand"
@@ -430,7 +441,7 @@ export function computePlayerBiomechanicalProfile(
       label: "Lumbar Spine Rotation Torque",
       torqueNm: Math.round((measuredTorsoCoilDeg / 34) * 52),
       proBenchmarkNm: 55,
-      riskLevel: "low",
+      riskLevel: jointRiskLevel(Math.round((measuredTorsoCoilDeg / 34) * 52), 55),
       decelerationRateDegSec2: Math.round(athleteTorsoVelocity * 2.2),
       coachingAdvice: "Engage core abdominal bracing during the unit turn.",
     },
@@ -439,7 +450,7 @@ export function computePlayerBiomechanicalProfile(
       label: "Lead Knee Ground Impact",
       torqueNm: Math.round((athleteLegVelocity / 380) * 64),
       proBenchmarkNm: 68,
-      riskLevel: "low",
+      riskLevel: jointRiskLevel(Math.round((athleteLegVelocity / 380) * 64), 68),
       decelerationRateDegSec2: Math.round(athleteLegVelocity * 1.9),
       coachingAdvice: "Land balanced over a flexed front knee to absorb ground reaction forces safely.",
     },
@@ -448,7 +459,7 @@ export function computePlayerBiomechanicalProfile(
       label: "Lead Hip Internal Rotation",
       torqueNm: Math.round((athleteHipVelocity / 460) * 48),
       proBenchmarkNm: 50,
-      riskLevel: "low",
+      riskLevel: jointRiskLevel(Math.round((athleteHipVelocity / 460) * 48), 50),
       decelerationRateDegSec2: Math.round(athleteHipVelocity * 2.4),
       coachingAdvice: "Allow the rear foot to pivot through to avoid blocking the lead hip joint.",
     },
@@ -457,7 +468,7 @@ export function computePlayerBiomechanicalProfile(
       label: "Wrist Extension Braking",
       torqueNm: Math.round(estimatedDecelerationTorqueNm * 0.38),
       proBenchmarkNm: 15,
-      riskLevel: "low",
+      riskLevel: jointRiskLevel(Math.round(estimatedDecelerationTorqueNm * 0.38), 15),
       decelerationRateDegSec2: Math.round(athleteWristVelocity * 3.8),
       coachingAdvice: "Maintain relaxed fingers on the grip through contact.",
     },

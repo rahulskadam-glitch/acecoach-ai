@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { getSport } from "@/lib/sports";
 import { isOwnedStoragePath } from "@/lib/storage/ownership";
 import { createAdminClient, requireUser } from "@/lib/supabase/server";
+import { runSafetyPrecheck } from "@/app/actions/context-safety-actions";
 import type { AnalysisReport, EngineManifest } from "@/modules/analysis/types";
 import {
   reduceDevelopmentState,
@@ -1310,7 +1311,6 @@ async function executeAnalysis({
 export async function queueAnalysisVideo(
   videoId: string,
   suppliedCaptureContext?: CaptureContextInput,
-  safetyPrecheck?: SafetyPrecheckInput,
 ) {
   const user = await requireUser();
   const supabase = createAdminClient();
@@ -1323,6 +1323,18 @@ export async function queueAnalysisVideo(
     .single();
 
   if (videoError || !video) throw new Error(videoError?.message ?? "Video not found.");
+
+  // Run the safety precheck here, authoritatively, against the video's own on-file
+  // checksum — not a caller-supplied result. It previously only ran when the intake
+  // wizard's own client code happened to call it and pass the result through; any
+  // other trigger of analysis (e.g. "Analyze" from the video library on an
+  // already-uploaded video) skipped it entirely with no error, since
+  // persistV220Context silently no-ops when the precheck fields are absent.
+  const sourceVideoHash = video.sha256_checksum ?? video.content_hash;
+  if (!sourceVideoHash) {
+    throw new Error("This video has no recorded checksum and can't pass the safety precheck. Please re-upload it.");
+  }
+  const precheck = await runSafetyPrecheck(sourceVideoHash);
 
   const sportId = video.sport_id ?? "tennis";
   const actionType = video.action_type ?? "forehand";
@@ -1375,9 +1387,9 @@ export async function queueAnalysisVideo(
         actionType,
         captureContext,
         athleteContext: context,
-        sourceVideoHash: safetyPrecheck?.sourceVideoHash,
-        precheckStatus: safetyPrecheck?.precheckStatus,
-        precheckMessage: safetyPrecheck?.message,
+        sourceVideoHash,
+        precheckStatus: precheck.status,
+        precheckMessage: precheck.message,
       });
       reportContextPersistence(existing.id, "persisted", "queued_session_reset");
     } catch (error) {
@@ -1437,9 +1449,9 @@ export async function queueAnalysisVideo(
       actionType,
       captureContext,
       athleteContext: context,
-      sourceVideoHash: safetyPrecheck?.sourceVideoHash,
-      precheckStatus: safetyPrecheck?.precheckStatus,
-      precheckMessage: safetyPrecheck?.message,
+      sourceVideoHash,
+      precheckStatus: precheck.status,
+      precheckMessage: precheck.message,
     });
     reportContextPersistence(session.id, "persisted", "new_queued_session");
   } catch (error) {
