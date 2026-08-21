@@ -66,11 +66,15 @@ export default function GlobalNavigationBar({
     router.refresh();
   }
 
-  // Close dropdowns on route change
-  useEffect(() => {
+  // Close dropdowns on route change. Adjusted during render (React's recommended
+  // pattern for "reset state when a prop changes") rather than in an effect, which
+  // would cause an extra, avoidable render pass after every navigation.
+  const [lastPathname, setLastPathname] = useState(pathname);
+  if (pathname !== lastPathname) {
+    setLastPathname(pathname);
     setIsMobileMenuOpen(false);
     setIsProfileMenuOpen(false);
-  }, [pathname]);
+  }
 
   // Close profile dropdown when clicking outside
   useEffect(() => {
