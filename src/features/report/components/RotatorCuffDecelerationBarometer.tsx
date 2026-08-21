@@ -137,7 +137,7 @@ export default function RotatorCuffDecelerationBarometer({ report, actionType, p
 
       {/* PT Protocols Drawer */}
       {showPtExercises && (
-        <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-5 animate-in fade-in slide-in-from-top-2">
+        <div className="mt-5 border-t border-white/10 pt-5 animate-in fade-in slide-in-from-top-2">
           <h4 className="text-sm font-bold text-white flex items-center gap-2">
             <Dumbbell className="h-4 w-4 text-ath-warn" />
             Prescribed Shoulder Eccentric Strengthening Exercises

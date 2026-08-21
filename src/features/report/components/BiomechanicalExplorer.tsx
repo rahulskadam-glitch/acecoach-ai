@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import { ArrowRight, CheckCircle2, CircleAlert, Eye, GitBranch, LoaderCircle, ScanLine } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { PolarAngleAxis, PolarGrid, Radar, RadarChart, ResponsiveContainer } from "recharts";
 
 import { confirmMovementAndReanalyze } from "@/app/actions/analysis-actions";
 import type { BiomechanicalLinkage, BiomechanicalMetric, BiomechanicalProfile } from "@/modules/analysis/types";
@@ -72,7 +71,7 @@ export default function BiomechanicalExplorer({ profile, sessionId, actionType }
         <div className="flex items-start gap-3">
           <ScanLine className="mt-0.5 h-5 w-5 text-ath-navy" />
           <div>
-            <h2 className="text-xl font-semibold text-slate-950">Stroke Phases</h2>
+            <h2 className="text-xl font-semibold text-slate-950">No phase data yet</h2>
             <p className="mt-2 text-sm leading-7 text-slate-600">Re-analyse this recording to generate the six-phase movement and body-linkage profile.</p>
             <button type="button" onClick={() => void reanalyze()} disabled={reanalyzing} className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-ath-navy px-4 text-sm font-semibold text-white hover:bg-ath-navy-raised disabled:opacity-60">{reanalyzing ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <ScanLine className="h-4 w-4" />}{reanalyzing ? "Building the stroke phases…" : "Re-analyse this video"}</button>
             {reanalyzeError ? <p role="alert" className="mt-3 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{reanalyzeError}</p> : null}
@@ -100,33 +99,24 @@ export default function BiomechanicalExplorer({ profile, sessionId, actionType }
 
       <div className="space-y-8 p-6 sm:p-9">
         <div>
-          <p className="text-xs text-slate-500">Select a phase to see every check and what it means.</p>
-
-          <div className="mt-4 h-56 w-full rounded-2xl border border-slate-200 bg-slate-50/60 p-2" aria-label="Camera coverage across the six phases">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={profile.phases.map((phase) => ({
-                phase: phase.label,
-                coveragePercent: phase.metricCount ? Math.round((phase.availableMetricCount / phase.metricCount) * 100) : 0,
-              }))}>
-                <PolarGrid stroke="#e2e8f0" />
-                <PolarAngleAxis dataKey="phase" tick={{ fontSize: 11, fill: "#475569" }} />
-                <Radar dataKey="coveragePercent" stroke="#1d4ed8" fill="#1d4ed8" fillOpacity={0.25} />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-          <p className="mt-2 text-[0.68rem] leading-5 text-slate-500">Each point is the share of that phase&apos;s checks the camera could measure clearly — not a technique score.</p>
-
-          <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-3" role="tablist" aria-label="Movement phases">
-            {profile.phases.map((phase, index) => {
-              const selected = phase.id === selectedSummary?.id;
-              return <button key={phase.id} type="button" role="tab" aria-selected={selected} onClick={() => setSelectedPhase(phase.id)} className={`min-h-16 rounded-2xl border p-3 text-left transition ${selected ? "border-ath-lime bg-ath-lime/15 ring-2 ring-ath-lime/30" : "border-slate-200 bg-white hover:bg-slate-50"}`}>
-                <div className="flex items-center justify-between gap-3"><span className={`text-xs font-semibold uppercase tracking-wide ${selected ? "text-ath-navy" : "text-slate-500"}`}>{index + 1} · {phase.label}</span><span className="text-[0.68rem] text-slate-500">{phase.availableMetricCount}/{phase.metricCount} · {typeof phase.score === "number" ? `${Math.round(phase.score)}/100` : "unscored"}</span></div>
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200"><div className={`h-full rounded-full ${selected ? "bg-ath-navy" : "bg-slate-400"}`} style={{ width: `${phase.metricCount ? phase.availableMetricCount / phase.metricCount * 100 : 0}%` }} /></div>
-              </button>;
-            })}
+          <div className="flex flex-wrap items-center gap-2">
+            <label htmlFor="stroke-phase-select" className="shrink-0 text-xs font-semibold uppercase tracking-wide text-slate-500">Phase</label>
+            <select
+              id="stroke-phase-select"
+              value={selectedSummary?.id ?? firstPhase}
+              onChange={(event) => setSelectedPhase(event.target.value)}
+              className="min-h-10 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none focus:border-ath-navy"
+              aria-label="Movement phase"
+            >
+              {profile.phases.map((phase, index) => (
+                <option key={phase.id} value={phase.id}>
+                  {index + 1}. {phase.label} — {phase.availableMetricCount}/{phase.metricCount} visible{typeof phase.score === "number" ? ` · ${Math.round(phase.score)}/100` : ""}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {selectedSummary ? <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-4 sm:p-6" role="tabpanel">
+          {selectedSummary ? <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50 p-4 sm:p-6" role="tabpanel">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div><p className="text-xs font-semibold uppercase tracking-[0.14em] text-ath-navy">Phase {profile.phases.findIndex((phase) => phase.id === selectedSummary.id) + 1}</p><h4 className="mt-1 text-2xl font-semibold text-slate-950">{selectedSummary.label}</h4></div>
               <div className="flex gap-2"><span className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">{selectedSummary.availableMetricCount} visible</span><span className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">{selectedSummary.metricCount - selectedSummary.availableMetricCount} unavailable</span></div>

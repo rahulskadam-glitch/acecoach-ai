@@ -1061,9 +1061,19 @@ export default function CoachVisionStudio({
           <h2 className="mt-4 text-2xl font-semibold tracking-[-0.025em] text-slate-950">Watch the change</h2>
           <p className="mt-1 text-sm leading-6 text-slate-600">Choose a stage. Watch slowly. Focus on one coaching cue.</p>
 
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4" role="tablist" aria-label="Video overlay lens">
-            {MODE_OPTIONS.map((option) => <button key={option.id} type="button" role="tab" aria-selected={mode === option.id} onClick={() => setMode(option.id)} className={`rounded-xl border px-3 py-3 text-left transition ${mode === option.id ? "border-ath-navy bg-ath-navy text-white shadow-sm" : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white"}`}><span className="block text-xs font-semibold">{option.label}</span><span className={`mt-1 hidden text-[0.63rem] leading-4 lg:block ${mode === option.id ? "text-ath-sky" : "text-slate-400"}`}>{option.description}</span></button>)}
+          <div className="mt-4 flex items-center gap-2">
+            <label htmlFor="video-overlay-select" className="shrink-0 text-xs font-semibold uppercase tracking-wide text-slate-500">Overlay</label>
+            <select
+              id="video-overlay-select"
+              value={mode}
+              onChange={(event) => setMode(event.target.value as OverlayMode)}
+              className="min-h-10 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none focus:border-ath-navy"
+              aria-label="Video overlay lens"
+            >
+              {MODE_OPTIONS.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
+            </select>
           </div>
+          <p className="mt-1.5 text-xs leading-5 text-slate-500">{MODE_OPTIONS.find((option) => option.id === mode)?.description}</p>
 
           <input type="range" min={start} max={end} step={presentationStep} value={Math.max(start, Math.min(end, time))} onChange={(event) => seek(Number(event.target.value))} className="mt-4 w-full accent-[#1b4332]" aria-label="Biomechanical video timeline" />
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -1073,10 +1083,6 @@ export default function CoachVisionStudio({
             <button type="button" onClick={() => seek(time + presentationStep)} className="rounded-full border border-slate-200 bg-white p-3 text-slate-600 hover:bg-slate-50" aria-label="Next frame"><ChevronRight className="h-4 w-4" /></button>
             {[0.1, 0.25, 0.5, 1].map((value) => <button key={value} type="button" data-testid={`playback-rate-${value}`} onClick={() => { setRate(value); if (videoRef.current) videoRef.current.playbackRate = value; }} className={`rounded-full border px-3 py-2 text-xs font-semibold ${rate === value ? "border-ath-lime bg-ath-lime/20 text-ath-navy" : "border-slate-200 text-slate-500"}`}>{value}×</button>)}
             <span className="ml-auto inline-flex items-center gap-1.5 text-xs text-slate-500">{mode === "clean" ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}Original video preserved</span>
-          </div>
-
-          <div data-testid="six-stage-video-map" className="mt-5 grid grid-cols-3 gap-2 sm:grid-cols-6" role="tablist" aria-label="Movement phase">
-            {MOTION_STAGES.map((item) => <button key={item.id} type="button" role="tab" aria-selected={stage === item.id} onClick={() => seek(anchors[item.id])} className={`rounded-xl border px-2 py-2.5 text-xs font-semibold ${stage === item.id ? "border-ath-lime bg-ath-lime/20 text-ath-navy" : "border-slate-200 bg-slate-50 text-slate-500 hover:bg-white hover:text-slate-800"}`}>{item.label}</button>)}
           </div>
 
           {mode === "ghost" ? (
@@ -1089,6 +1095,19 @@ export default function CoachVisionStudio({
               currentStage={stage}
             />
           ) : null}
+
+          <div className="mt-5 flex items-center gap-2">
+            <label htmlFor="kinetic-chain-phase-select" className="shrink-0 text-xs font-semibold uppercase tracking-wide text-slate-500">Phase</label>
+            <select
+              id="kinetic-chain-phase-select"
+              value={stage}
+              onChange={(event) => seek(anchors[event.target.value as MotionStage])}
+              className="min-h-10 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none focus:border-ath-navy"
+              aria-label="Movement phase"
+            >
+              {MOTION_STAGES.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
+            </select>
+          </div>
 
           <KineticSequenceWaveform
             currentStage={stage}
@@ -1103,15 +1122,19 @@ export default function CoachVisionStudio({
 
           <div className="mt-5 space-y-3">
             {phaseSummary?.benchmarkDescription ? <div className="rounded-2xl border border-ath-green/20 bg-ath-green/5 p-4"><div className="flex flex-wrap items-center justify-between gap-2"><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ath-green"><Target className="h-4 w-4" />What best-in-class looks like here</div>{phaseSummary.coachingCue ? <span className="rounded-full bg-ath-green/15 px-2.5 py-0.5 text-xs font-semibold text-ath-green">“{phaseSummary.coachingCue}”</span> : null}</div><p className="mt-2 text-sm leading-6 text-slate-700">{phaseSummary.benchmarkDescription}</p>{phaseSummary.checkpoints && phaseSummary.checkpoints.length > 0 ? <div className="mt-3 grid gap-1 border-t border-ath-green/20 pt-3"><p className="text-[0.65rem] font-semibold uppercase tracking-wide text-ath-green">Checkpoints</p><div className="grid gap-1">{phaseSummary.checkpoints.map((cp, idx) => <div key={idx} className="rounded-lg bg-white/70 px-2.5 py-1 text-xs text-slate-700"><span className="font-semibold text-slate-900">{cp.bodyPart}:</span> {cp.target}</div>)}</div></div> : null}{!primaryStageFinding && phaseSummary.commonMistakeTitles.length > 0 ? <p className="mt-3 text-xs leading-5 text-slate-600"><span className="font-semibold text-slate-700">Commonly goes wrong here:</span> {phaseSummary.commonMistakeTitles.join(", ")}.</p> : null}</div> : null}
-            <div className="rounded-2xl border border-ath-sky/25 bg-white p-4"><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ath-navy"><ScanLine className="h-4 w-4" />What I see</div><p className="mt-2 text-sm leading-6 text-slate-700">{plainLanguage(area?.observation ?? copy.observe)}</p></div>
-            <div className="rounded-2xl border border-ath-line bg-white p-4"><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ath-ink-soft"><Activity className="h-4 w-4" />Why the ball cares</div><p className="mt-2 text-sm leading-6 text-slate-700">{plainLanguage(area?.whyItMatters ?? copy.why)}</p></div>
+            <div className="rounded-2xl border border-ath-sky/25 bg-white p-4">
+              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ath-navy"><ScanLine className="h-4 w-4" />What I see</div>
+              <p className="mt-2 text-sm leading-6 text-slate-700">{plainLanguage(area?.observation ?? copy.observe)}</p>
+              <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-3 text-xs font-semibold uppercase tracking-wide text-ath-ink-soft"><Activity className="h-4 w-4" />Why the ball cares</div>
+              <p className="mt-2 text-sm leading-6 text-slate-700">{plainLanguage(area?.whyItMatters ?? copy.why)}</p>
+            </div>
             <div className="rounded-2xl bg-ath-navy p-4 text-white"><div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-ath-lime"><Sparkles className="h-4 w-4" />Feel this</div><p className="mt-2 text-lg font-semibold leading-7">“{plainLanguage(area?.cue ?? report.coachingPlaybook?.feelCue ?? report.priorities[0]?.cue ?? copy.feel)}”</p></div>
           </div>
 
           <details className="mt-6 rounded-2xl border border-slate-200 bg-white p-3">
             <summary className="flex cursor-pointer list-none items-center justify-between gap-3"><span className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-600">Measurements</span><span className="text-[0.68rem] text-slate-400">{visibleMetrics.slice(0, 3).length} checks · open</span></summary>
-            <div className="mt-3 space-y-2">
-              {visibleMetrics.slice(0, 3).length > 0 ? visibleMetrics.slice(0, 3).map((metric) => <div key={metric.id} className="flex items-start justify-between gap-4 rounded-xl border border-slate-200 bg-white p-3"><div><p className="text-xs font-semibold text-slate-800">{metric.label}</p><p className="mt-1 text-[0.66rem] leading-4 text-slate-500">{metric.playerMeaning}</p></div><span className="shrink-0 text-sm font-semibold text-slate-950">{metric.displayValue}</span></div>) : <p className="rounded-xl border border-slate-200 bg-white p-3 text-xs leading-5 text-slate-500">This phase was not clear enough for a dependable body measurement.</p>}
+            <div className="mt-3 divide-y divide-slate-100 border-t border-slate-100">
+              {visibleMetrics.slice(0, 3).length > 0 ? visibleMetrics.slice(0, 3).map((metric) => <div key={metric.id} className="flex items-start justify-between gap-4 py-2.5 first:pt-3"><div><p className="text-xs font-semibold text-slate-800">{metric.label}</p><p className="mt-1 text-[0.66rem] leading-4 text-slate-500">{metric.playerMeaning}</p></div><span className="shrink-0 text-sm font-semibold text-slate-950">{metric.displayValue}</span></div>) : <p className="py-3 text-xs leading-5 text-slate-500">This phase was not clear enough for a dependable body measurement.</p>}
             </div>
           </details>
 
