@@ -1,10 +1,9 @@
 "use client";
 
-import { ChevronDown, Scale, Sparkles } from "lucide-react";
+import { Scale, Sparkles } from "lucide-react";
 import { useMemo } from "react";
 import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 import type { MotionStage } from "../motion/motion-model";
-import StagePhaseScrubber from "./StagePhaseScrubber";
 
 type WeightStoryboardMoment = {
   id: string;
@@ -80,6 +79,23 @@ export default function WeightTransferStudio({
         </div>
       </div>
 
+      {/* Stage Navigation Dropdown */}
+      <label className="flex w-fit items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
+        <span className="text-[0.68rem] font-bold uppercase tracking-wider text-slate-400">Stage:</span>
+        <select
+          aria-label="Select shot stage"
+          value={currentStage}
+          onChange={(event) => onSeekToStage(event.target.value as MotionStage)}
+          className="bg-transparent text-xs font-bold text-white outline-none cursor-pointer"
+        >
+          {storyboard.map((moment) => (
+            <option key={moment.id} value={moment.stage} className="bg-slate-900 text-white">
+              {moment.title}
+            </option>
+          ))}
+        </select>
+      </label>
+
       {/* Main Visual Seesaw Stage Arena */}
       <div className="grid gap-6 lg:grid-cols-12">
         {/* Left 7 Cols: The Physical Tilting Seesaw */}
@@ -146,7 +162,7 @@ export default function WeightTransferStudio({
           <div className="rounded-2xl border border-white/10 bg-slate-900/80 p-5 backdrop-blur">
             <div className="flex items-center justify-between border-b border-white/10 pb-3">
               <span className="rounded-full bg-ath-green/20 px-3 py-1 text-xs font-extrabold uppercase text-ath-green">
-                Phase {activeMoment.stepNum} of 4
+                Phase {activeMoment.stepNum} of {storyboard.length}
               </span>
               <span className="text-xs text-slate-400 font-medium">Moment Details</span>
             </div>
@@ -182,48 +198,6 @@ export default function WeightTransferStudio({
           </div>
         </div>
       </div>
-
-      {/* 4-Card Storyboard, collapsed by default */}
-      <details className="group rounded-2xl border border-white/10 bg-white/5">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-300">See all 4 phases of your weight shift</span>
-          <ChevronDown className="h-4 w-4 text-slate-400 transition group-open:rotate-180" />
-        </summary>
-        <div className="grid gap-3 border-t border-white/10 p-4 sm:grid-cols-2 lg:grid-cols-4">
-          {storyboard.map((moment) => {
-            const isCurrent = moment.stage === currentStage;
-            return (
-              <button
-                key={moment.id}
-                type="button"
-                onClick={() => onSeekToStage(moment.stage)}
-                className={`group/card relative flex flex-col justify-between rounded-2xl p-4 text-left transition border ${
-                  isCurrent
-                    ? "border-ath-green bg-ath-green/20 shadow-lg shadow-ath-green/20 ring-2 ring-ath-green/40"
-                    : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[0.65rem] font-bold uppercase text-slate-400">Step {moment.stepNum}</span>
-                    <span className={`h-2 w-2 rounded-full ${moment.status === "priority" ? "bg-rose-400" : "bg-ath-green"}`} />
-                  </div>
-                  <h4 className="mt-1.5 text-sm font-bold text-white">{moment.title}</h4>
-                  <p className="mt-1 text-[0.68rem] text-slate-400 leading-snug">{moment.cue}</p>
-                </div>
-
-                <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2 text-[0.7rem]">
-                  <span className="text-ath-warn font-bold">{moment.rearFoot}% Rear</span>
-                  <span className="text-slate-500 font-bold">➔</span>
-                  <span className="text-ath-sky font-bold">{moment.frontFoot}% Front</span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </details>
-
-      <StagePhaseScrubber currentStage={currentStage} onSeekToStage={onSeekToStage} />
     </div>
   );
 }

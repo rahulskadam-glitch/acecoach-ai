@@ -184,6 +184,14 @@ class _InMemoryContextSafetyStore:
             return grant
 
     def moderation_precheck(self, source_video_hash: str) -> ModerationPrecheckResponse:
+        # NOT a real content-safety scanner. source_video_hash is a SHA-256 hex digest
+        # (see the ^[a-f0-9]{64}$ validation before this is called), so it can only ever
+        # contain the characters 0-9a-f — none of blocked_tokens below are valid hex, so
+        # this branch is structurally unreachable on any real upload. This function
+        # currently provides no protection against harmful content and must not be
+        # treated as trust-and-safety coverage. Real moderation (e.g. hash-matching
+        # against a known-bad-content database, or a real scanning provider) is not yet
+        # implemented — this is a placeholder for the response shape only.
         normalized = source_video_hash.strip().lower()
         blocked_tokens = ("csam", "ncii", "abuse", "explicit_minor")
         if any(token in normalized for token in blocked_tokens):
@@ -540,6 +548,14 @@ class _SupabaseContextSafetyStore:
         )
 
     def moderation_precheck(self, source_video_hash: str) -> ModerationPrecheckResponse:
+        # NOT a real content-safety scanner. source_video_hash is a SHA-256 hex digest
+        # (see the ^[a-f0-9]{64}$ validation before this is called), so it can only ever
+        # contain the characters 0-9a-f — none of blocked_tokens below are valid hex, so
+        # this branch is structurally unreachable on any real upload. This function
+        # currently provides no protection against harmful content and must not be
+        # treated as trust-and-safety coverage. Real moderation (e.g. hash-matching
+        # against a known-bad-content database, or a real scanning provider) is not yet
+        # implemented — this is a placeholder for the response shape only.
         normalized = source_video_hash.strip().lower()
         blocked_tokens = ("csam", "ncii", "abuse", "explicit_minor")
         if any(token in normalized for token in blocked_tokens):

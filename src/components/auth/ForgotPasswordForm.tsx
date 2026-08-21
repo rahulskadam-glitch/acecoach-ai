@@ -173,9 +173,6 @@ export default function ForgotPasswordForm() {
               We prepared a reset request for{" "}
               <span className="font-medium text-slate-900">{submittedEmail}</span>
             </p>
-            <p className="mt-3 text-xs text-slate-500">
-              In this local setup, the email delivery backend isn&apos;t configured, so no message will be sent until Supabase email delivery is enabled.
-            </p>
           </div>
 
           {/* Error */}

@@ -45,7 +45,13 @@ async function loadGroundedContext(sessionId: string, userId: string): Promise<G
   const sport = getSport(session.sport_id);
   const actionType = text(session.analysis_action_type ?? session.action_type, "forehand");
 
-  const rawScore = typeof raw.overall_score === "number" ? raw.overall_score : 84;
+  // A fabricated score here wouldn't just be a stale UI number — generateIntelligentCoachResponse
+  // states it as measured fact in chat ("Your Tennis Biomechanics Index is X out of 100"),
+  // so a missing real score must stop the conversation honestly rather than invent one.
+  if (typeof raw.overall_score !== "number") {
+    throw new Error("This report doesn't have a technique score yet, so coaching chat isn't available for it.");
+  }
+  const rawScore = raw.overall_score;
   const rawDrills = Array.isArray(raw.drills) ? (raw.drills as DrillDefinition[]) : [];
   const rawStrengths = Array.isArray(raw.strengths)
     ? raw.strengths.map((s) => typeof s === "string" ? s : (s as { title?: string; evidence?: string }).title || "Lower body kinetic coil")

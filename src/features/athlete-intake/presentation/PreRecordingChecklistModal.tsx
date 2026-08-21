@@ -70,6 +70,9 @@ export default function PreRecordingChecklistModal({
       highlight: "Court Lines",
     },
     {
+      // Deliberately instructed above the real gate: analysis_control_policy.json's
+      // minimum_repetitions_for_score is 3, not 4. Asking for 4 buys a buffer against
+      // one occluded/dropped repetition — this is not a mismatch to reconcile down to 3.
       title: "4 Clean Repetitions (10–25s)",
       detail: "Capture 4 consecutive natural strokes without dead time or ball retrieval.",
       icon: Video,

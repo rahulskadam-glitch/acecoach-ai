@@ -59,3 +59,6 @@ __pycache__/
 
 # Local secrets
 /secrets/
+
+# Local dev tooling binaries (e.g. cloudflared for tunneling) — not source, not portable
+/scripts/bin/

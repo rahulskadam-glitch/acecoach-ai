@@ -165,7 +165,7 @@ def _phase_for_frame(frame_index: int, windows: list[RepetitionWindow]) -> tuple
     return None, None
 
 
-def _capture_quality(frames: list[PoseFrame], policy: dict[str, Any], policy_id: str, policy_version: str) -> dict:
+def _capture_quality(frames: list[PoseFrame], fps: float, policy: dict[str, Any], policy_id: str, policy_version: str) -> dict:
     if not isinstance(policy, dict) or not policy:
         raise ValueError("A knowledge-controlled capture-quality policy is required.")
     if not frames:
@@ -232,6 +232,8 @@ def _capture_quality(frames: list[PoseFrame], policy: dict[str, Any], policy_id:
         limitations.append("The clip is overexposed; reduce backlighting or glare.")
     if blur < float(feedback["blur_low"]):
         limitations.append("Motion blur is high; use brighter light or a higher shutter speed/frame rate.")
+    if fps < float(feedback["fps_good_minimum"]):
+        limitations.append(f"The clip was recorded at {fps:.0f} fps; a higher frame rate captures fast racket motion more crisply.")
 
     return {
         "score": int(max(0, min(100, score))),
@@ -245,6 +247,7 @@ def _capture_quality(frames: list[PoseFrame], policy: dict[str, Any], policy_id:
             "medianContrast": round(contrast, 4),
             "medianBlurScore": round(blur, 2),
             "medianBodyHeightRatio": round(body_height, 4),
+            "sourceFps": round(fps, 2),
         },
         "policyId": policy_id,
         "policyVersion": policy_version,
@@ -577,6 +580,7 @@ def compute_frame_metrics(
 
     capture_quality = _capture_quality(
         frames,
+        fps,
         scoring_policy["capture_quality"],
         str(scoring_policy["policy_id"]),
         str(control_policy["version"]),

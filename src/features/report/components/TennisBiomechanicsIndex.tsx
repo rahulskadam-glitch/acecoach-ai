@@ -31,8 +31,10 @@ export default function TennisBiomechanicsIndex({
     return { label: "Developing Foundation", color: "text-ath-warn" };
   }, [overallScore]);
 
-  // Real per-area scores from the engine (not a fabricated multiplier of the overall score).
-  const coachingAreas = (report.coachingAreas ?? []).slice(0, 3);
+  // Real per-stage scores from the engine's biomechanical profile — the same six canonical
+  // stages used everywhere else in the report (ready/unit_turn/backswing/forward_swing_contact/
+  // follow_through/recovery), not the arbitrary top-3 coaching-area findings this used to show.
+  const stagePhases = report.frameSummary?.biomechanicalProfile?.phases ?? [];
 
   // Compute sophisticated, player-specific video biomechanics derived from 60fps keypoints
   const kinetics = useMemo(() => {
@@ -58,7 +60,12 @@ export default function TennisBiomechanicsIndex({
   const captureLabel = report.captureQuality.grade ?? `${report.captureQuality.score}/100`;
   const confidencePct = Math.round(Math.max(0, Math.min(1, report.confidence)) * 100);
 
-  const areaColors = ["text-ath-lime bg-ath-lime shadow-ath-lime/50", "text-ath-sky bg-ath-sky shadow-ath-sky/50", "text-ath-green bg-ath-green shadow-ath-green/50"];
+  function stageTone(score: number | null) {
+    if (score === null) return { text: "text-slate-500", bar: "bg-slate-600" };
+    if (score >= 78) return { text: "text-ath-lime", bar: "bg-ath-lime" };
+    if (score >= 50) return { text: "text-ath-sky", bar: "bg-ath-sky" };
+    return { text: "text-ath-warn", bar: "bg-ath-warn" };
+  }
 
   return (
     <div className="space-y-4">
@@ -111,21 +118,21 @@ export default function TennisBiomechanicsIndex({
             </div>
           </div>
 
-          {/* Real per-area scores from the engine, when available */}
-          {coachingAreas.length > 0 ? (
-            <div className="sm:col-span-7 space-y-2.5">
-              {coachingAreas.map((area, index) => {
-                const [textClass, dotClass, shadowClass] = areaColors[index].split(" ");
+          {/* Real per-stage scores from the engine, one for each of the six canonical stages */}
+          {stagePhases.length > 0 ? (
+            <div className="sm:col-span-7 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {stagePhases.map((phase, index) => {
+                const score = typeof phase.score === "number" ? Math.round(phase.score) : null;
+                const tone = stageTone(score);
                 return (
-                  <div key={area.id} className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/5 p-3.5 backdrop-blur-md">
-                    <div className="flex items-center gap-2.5">
-                      <span className={`h-3 w-3 rounded-full shadow-sm ${dotClass} ${shadowClass}`} />
-                      <div>
-                        <h4 className="text-xs font-bold text-white">{area.label}</h4>
-                        <p className="text-[0.65rem] text-slate-400">{area.status === "strength" ? "Strength" : area.status === "priority" ? "Priority" : "Developing"}</p>
-                      </div>
+                  <div key={phase.id} className="rounded-2xl border border-white/5 bg-white/5 p-3 backdrop-blur-md">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[0.58rem] font-bold uppercase tracking-wider text-slate-400">{index + 1}. {phase.label}</span>
                     </div>
-                    <span className={`font-mono text-base font-black ${textClass}`}>{Math.round(area.score)}%</span>
+                    <span className={`mt-1 block font-mono text-lg font-black ${tone.text}`}>{score !== null ? `${score}` : "—"}</span>
+                    <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-white/10">
+                      <div className={`h-full rounded-full ${tone.bar}`} style={{ width: score !== null ? `${score}%` : "0%" }} />
+                    </div>
                   </div>
                 );
               })}

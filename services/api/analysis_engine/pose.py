@@ -115,8 +115,14 @@ def _body_box(landmarks: dict[str, dict[str, float]]) -> tuple[dict[str, float] 
 def extract_pose_frames(metadata: VideoMetadata) -> list[PoseFrame]:
     capture = cv2.VideoCapture(str(metadata.path))
     orientation_auto = getattr(cv2, "CAP_PROP_ORIENTATION_AUTO", None)
-    if orientation_auto is not None:
-        capture.set(orientation_auto, 1)
+    # capture.set() returning True only means the backend accepted the request to
+    # auto-rotate decoded frames to match the file's rotation metadata — many
+    # OpenCV/FFmpeg builds don't support CAP_PROP_ORIENTATION_AUTO at all and
+    # silently ignore it, leaving frames un-rotated. The report layer needs this
+    # real outcome (not just "rotation metadata exists") to know whether pose
+    # landmarks are already in the video's displayed orientation or still need a
+    # manual rotation correction before they'll align with the athlete's body.
+    orientation_auto_applied = bool(orientation_auto is not None and capture.set(orientation_auto, 1))
     frames: list[PoseFrame] = []
     previous_timestamp: float | None = None
 
@@ -166,6 +172,7 @@ def extract_pose_frames(metadata: VideoMetadata) -> list[PoseFrame]:
                     timestamp_source=timestamp_source,
                     source_width=int(frame.shape[1]),
                     source_height=int(frame.shape[0]),
+                    orientation_auto_applied=orientation_auto_applied,
                 )
             )
             frame_index += 1

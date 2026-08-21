@@ -319,7 +319,7 @@ export default function PricingPlanExperience() {
                 title: "Pro Athlete Membership",
                 priceText: `${pricing.proMonthly.formatted}/month`,
                 periodText: "Billed Monthly · 1st Month Free",
-                badge: `Up to ${{PRO_VIDEO_LIMIT}} Audits/mo`,
+                badge: `Up to ${PRO_VIDEO_LIMIT} Audits/mo`,
               })
             }
             className="mt-8 flex min-h-13 w-full items-center justify-center rounded-2xl bg-ath-lime px-5 text-sm font-black text-ath-navy shadow-lg shadow-ath-lime/25 hover:brightness-95 active:scale-[0.99] transition"

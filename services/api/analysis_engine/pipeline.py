@@ -291,8 +291,13 @@ class AnalysisPipeline:
             pose_coverage = float(diagnostics.get("corePoseCoverage", 0.0))
             clipping_ratio = float(diagnostics.get("edgeClippingRatio", 1.0))
             body_height_ratio = float(diagnostics.get("medianBodyHeightRatio", 0.0))
+            source_fps = float(diagnostics.get("sourceFps", 0.0))
             repetition_count = len(biomechanics.repetitions)
             no_repetitions = repetition_count == 0
+            # The checklist asks for 4 repetitions but this only gates at 3 — a deliberate
+            # buffer above the real floor, not a mismatch to "fix" into agreement. 3 is what
+            # the reliability engineering actually requires for a trustworthy score; asking
+            # for 4 just protects that floor against one missed/occluded repetition.
             minimum_repetitions_for_score = int(reliability_policy["minimum_repetitions_for_score"])
             insufficient_repetitions = repetition_count < minimum_repetitions_for_score
             capture_blocked = (
@@ -300,6 +305,7 @@ class AnalysisPipeline:
                 or pose_coverage < float(reliability_policy["minimum_pose_coverage"])
                 or clipping_ratio > float(reliability_policy["maximum_edge_clipping_ratio"])
                 or body_height_ratio < float(reliability_policy["minimum_body_height_ratio"])
+                or source_fps < float(reliability_policy["minimum_fps"])
             )
             if capture_blocked:
                 overall = None
@@ -715,6 +721,24 @@ class AnalysisPipeline:
                     analysis_action, coach_summary, priorities, drills, payload.primary_goal,
                 )
                 visual_moments = []
+            else:
+                # ontology_reasoning is None here (movement not confirmed, or coaching_areas
+                # came back empty, while the reliability gate otherwise passed) — neither
+                # branch above ran to clear or knowledge-control-tag strengths/priorities/
+                # drills/visual_moments, so the generic, untagged build_coaching() output
+                # would otherwise reach compile_knowledge_control and fail closed with
+                # "A player-facing insight bypassed the ontology insight policy." coach_summary/
+                # performance_story/coaching_playbook/next_session/practice_plan don't need
+                # the same treatment — they get a universal tagging pass below regardless of
+                # ontology_reasoning (see the "for insight_payload in (coach_summary, ...)"
+                # loop), so this is the one gap in that safety net.
+                strengths = []
+                priorities = []
+                drills = []
+                visual_moments = []
+                coaching_playbook = build_coaching_playbook(
+                    analysis_action, coach_summary, priorities, drills, payload.primary_goal,
+                )
 
             coach_summary["contextStatement"] = analysis_context["statement"]
             coach_summary["coachVerdict"] = (
@@ -915,7 +939,12 @@ class AnalysisPipeline:
                     "encodedSize": {"width": metadata.width, "height": metadata.height},
                     "decodedDisplaySize": {"width": decoded_width, "height": decoded_height},
                     "rotationDegrees": metadata.rotation_degrees,
-                    "rotationAppliedByDecoder": metadata.rotation_degrees != 0,
+                    # Whether OpenCV's decoder actually rotated frames to match the file's
+                    # rotation metadata, not merely whether rotation metadata exists — many
+                    # OpenCV/FFmpeg builds silently ignore CAP_PROP_ORIENTATION_AUTO, which
+                    # previously caused the report overlay to skip a rotation correction it
+                    # still needed, misaligning the skeleton/power-chain against the video.
+                    "rotationAppliedByDecoder": pose_frames[0].orientation_auto_applied,
                     "mirrored": metadata.mirrored,
                     "cropNormalized": {"left": 0.0, "top": 0.0, "width": 1.0, "height": 1.0},
                     "poseInput": {

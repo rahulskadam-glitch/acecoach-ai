@@ -5,9 +5,8 @@ import { randomUUID } from "node:crypto";
 import { requireUser } from "@/lib/supabase/server";
 import { requiresGuardianConfirmation } from "@/lib/athlete/age-bands";
 
-const ANALYSIS_API_URL = process.env.ANALYSIS_API_URL ?? "https://tucson-nationally-assist-valuable.trycloudflare.com";
-const DEFAULT_ANALYSIS_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndramJ1aXR6cWtvYW53anlmenN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0NzY3ODEsImV4cCI6MjA5OTA1Mjc4MX0.jbXrtD-gIQg-IbF0E6G7AfT8B4JBOXk84UgW_Q9GXPY";
-const ANALYSIS_API_KEY = process.env.ANALYSIS_API_KEY || DEFAULT_ANALYSIS_KEY;
+const ANALYSIS_API_URL = process.env.ANALYSIS_API_URL;
+const ANALYSIS_API_KEY = process.env.ANALYSIS_API_KEY;
 
 type PrecheckStatus = "passed" | "failed_benign_mismatch" | "blocked_safety_review";
 
@@ -89,38 +88,34 @@ function normalizeDominantHand(value: string): "left" | "right" | "unknown" {
   return "unknown";
 }
 
+// Every failure here throws rather than silently returning `{}` — a swallowed failure
+// on this endpoint previously meant a caller like runSafetyPrecheck would treat "the
+// safety service is unreachable" as indistinguishable from "the check ran and passed."
 async function callContextSafetyApi<TResponse>(
   path: string,
   init: { method: "GET" | "POST" | "PATCH" | "DELETE"; body?: unknown },
 ): Promise<TResponse> {
-  if (!ANALYSIS_API_KEY || ANALYSIS_API_KEY.length < 32) {
-    console.warn("ANALYSIS_API_KEY is not configured or shorter than 32 characters, using fallback.");
-    return {} as TResponse;
+  if (!ANALYSIS_API_URL || !ANALYSIS_API_KEY || ANALYSIS_API_KEY.length < 32) {
+    throw new Error("Context safety service is not configured: ANALYSIS_API_URL and ANALYSIS_API_KEY are required.");
   }
 
-  let response: Response;
-  try {
-    response = await fetch(`${ANALYSIS_API_URL}${path}`, {
-      method: init.method,
-      headers: {
-        "Content-Type": "application/json",
-        "X-Analysis-API-Key": ANALYSIS_API_KEY,
-      },
-      body: init.body === undefined ? undefined : JSON.stringify(init.body),
-      cache: "no-store",
-      signal: AbortSignal.timeout(15_000),
-    });
-  } catch (cause) {
-    console.warn("Analysis context service unreachable, continuing with fallback:", cause);
-    return {} as TResponse;
-  }
+  const response = await fetch(`${ANALYSIS_API_URL}${path}`, {
+    method: init.method,
+    headers: {
+      "Content-Type": "application/json",
+      "X-Analysis-API-Key": ANALYSIS_API_KEY,
+    },
+    body: init.body === undefined ? undefined : JSON.stringify(init.body),
+    cache: "no-store",
+    signal: AbortSignal.timeout(15_000),
+  });
 
   const text = await response.text();
   const payload = text ? (JSON.parse(text) as unknown) : null;
 
   if (!response.ok) {
-    console.warn("Analysis context service returned non-OK status:", response.status, payload);
-    return (payload || {}) as TResponse;
+    const detail = payload && typeof payload === "object" && "detail" in payload ? String((payload as { detail?: unknown }).detail) : null;
+    throw new Error(detail ?? `Context safety service returned HTTP ${response.status}.`);
   }
 
   return payload as TResponse;
@@ -229,15 +224,26 @@ export async function runSafetyPrecheck(sourceVideoHash: string): Promise<{ stat
       throw new Error(result.message || "Upload could not be verified. Please re-upload this clip.");
     }
 
+    if (result.precheck_status !== "passed") {
+      throw new Error("Safety precheck did not return a recognized status.");
+    }
+
     return {
-      status: result.precheck_status || "passed",
+      status: "passed",
       message: result.message || "Precheck passed",
     };
   } catch (error) {
     if (error instanceof Error && (error.message.includes("blocked") || error.message.includes("could not be verified"))) {
       throw error;
     }
-    console.warn("Safety precheck service unavailable, defaulting to passed:", error);
-    return { status: "passed", message: "Precheck passed" };
+    // Fail closed in production: a safety gate that can't run is not the same as a safety
+    // gate that passed, and silently treating "unreachable" as "approved" defeats the
+    // point of the check. Development keeps the old permissive fallback so local work
+    // isn't blocked by not running the context-safety service locally.
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Safety precheck service unavailable, defaulting to passed in development only:", error);
+      return { status: "passed", message: "Precheck passed (development fallback)" };
+    }
+    throw error instanceof Error ? error : new Error("Safety precheck failed.");
   }
 }

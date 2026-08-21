@@ -31,6 +31,17 @@ export default function NativeAppBridge() {
 
       document.documentElement.dataset.nativeApp = Capacitor.getPlatform();
 
+      // The WKWebView's sessionStorage can survive a full app relaunch (unlike a browser
+      // tab), so a "don't show again" dismissal here would otherwise skip the pre-recording
+      // checklist forever instead of just for the rest of this app session. Clearing it on
+      // every genuine cold launch (this effect only re-runs when the JS context is recreated,
+      // not on background/foreground) restores the intended per-session scope.
+      try {
+        window.sessionStorage.removeItem("athlentra_skip_recording_checklist");
+      } catch {
+        // ignore
+      }
+
       async function handleUrl(rawUrl: string) {
         if (!rawUrl.startsWith("athlentratennis://") && !rawUrl.startsWith(window.location.origin)) return;
         const url = new URL(rawUrl);

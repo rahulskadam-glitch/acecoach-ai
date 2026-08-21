@@ -7,45 +7,17 @@ export function visualQaEnabled() {
   return process.env.NODE_ENV !== "production" && process.env.ACECOACH_VISUAL_QA === "true";
 }
 
-function createFallbackClient() {
-  const emptyQueryBuilder = {
-    select() {
-      return this;
-    },
-    eq() {
-      return this;
-    },
-    in() {
-      return this;
-    },
-    order() {
-      return this;
-    },
-    limit() {
-      return Promise.resolve({ data: [], error: null });
-    },
-    single() {
-      return Promise.resolve({ data: null, error: null });
-    },
-  };
-
-  return {
-    auth: {
-      getUser: async () => ({ data: { user: null }, error: null }),
-    },
-    from() {
-      return emptyQueryBuilder;
-    },
-  };
-}
-
 export async function createClient() {
   const cookieStore = await cookies();
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 
+  // A missing Supabase URL/key used to silently degrade into a fake client that
+  // answered every query with "zero rows, no error" — a real misconfiguration would
+  // have rendered as an ordinary-looking empty dashboard instead of a visible failure.
+  // Fail loudly instead, matching createAdminClient below for the same class of error.
   if (!supabaseUrl || !supabaseAnonKey) {
-    return createFallbackClient() as ReturnType<typeof createServerClient>;
+    throw new Error("Server rendering requires NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
   }
 
   return createServerClient(supabaseUrl, supabaseAnonKey, {
@@ -308,8 +280,8 @@ export async function getUserVideoLibrary(userId: string) {
         duration: video.duration ? Number(video.duration) : null,
         fileSizeBytes: video.file_size_bytes ? Number(video.file_size_bytes) : null,
         mimeType: video.mime_type ?? null,
-        createdAt: video.created_at,
-        videoStatus: video.status,
+        createdAt: video.created_at ?? "",
+        videoStatus: video.status ?? "uploaded",
         sessionId: session?.id ?? null,
         analysisStatus: session?.status ?? null,
         scoreStatus: session?.score_status ?? null,

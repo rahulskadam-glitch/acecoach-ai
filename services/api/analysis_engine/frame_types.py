@@ -26,3 +26,4 @@ class PoseFrame:
     timestamp_source: str = "nominal_frame_rate"
     source_width: int | None = None
     source_height: int | None = None
+    orientation_auto_applied: bool = False

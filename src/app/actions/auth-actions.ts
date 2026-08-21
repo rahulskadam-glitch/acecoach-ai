@@ -1,75 +1,7 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { isOwnedStoragePath } from "@/lib/storage/ownership";
 import { createAdminClient, createClient } from "@/lib/supabase/server";
-
-function getSafeNext(raw: string | null) {
-  if (!raw) return "/start";
-  if (!raw.startsWith("/") || raw.startsWith("//")) return "/start";
-  return raw;
-}
-
-export async function loginUser(formData: FormData) {
-  const supabase = await createClient();
-
-  const email = formData.get("email")?.toString() ?? "";
-  const password = formData.get("password")?.toString() ?? "";
-  const next = getSafeNext(formData.get("next")?.toString() ?? null);
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  redirect(next);
-}
-
-export async function registerUser(formData: FormData) {
-  const supabase = await createClient();
-
-  const email = formData.get("email")?.toString() ?? "";
-  const password = formData.get("password")?.toString() ?? "";
-  const fullName = (formData.get("name")?.toString() ?? "").trim().slice(0, 160);
-
-  if (!fullName || !email || password.length < 8 || password.length > 128) {
-    throw new Error("Enter a name, valid email, and a password between 8 and 128 characters.");
-  }
-
-  const [firstName, lastName] = fullName.trim().split(/\s+/).reduce<[string, string]>(
-    (parts, part) => {
-      if (!parts[0]) return [part, ""];
-      if (!parts[1]) return [parts[0], part];
-      return [parts[0], `${parts[1]} ${part}`];
-    },
-    ["", ""]
-  );
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        first_name: firstName || fullName,
-        last_name: lastName,
-      },
-    },
-  });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  if (!data.user) {
-    throw new Error("Supabase did not create a user.");
-  }
-
-  redirect("/signup/success");
-}
 
 export async function requestPasswordReset(formData: FormData) {
   const supabase = await createClient();
@@ -86,8 +18,8 @@ export async function requestPasswordReset(formData: FormData) {
 
   if (typeof auth.resetPasswordForEmail !== "function") {
     return {
-      ok: true,
-      message: "Password reset is not configured for this environment yet. In a live Supabase setup, a reset email would be delivered to this address.",
+      ok: false,
+      message: "Password reset is not available in this environment right now. Please try again later.",
     };
   }
 
@@ -175,7 +107,17 @@ export async function deleteCurrentAccount() {
   }
 
   const { error: deleteError } = await admin.auth.admin.deleteUser(user.id, false);
-  if (deleteError) return { ok: false, message: "The account could not be deleted. Please try again or contact support." };
+  if (deleteError) {
+    // Storage objects are already gone at this point — clean up their now-dangling
+    // `videos` rows too, so a kept-alive account isn't left pointing at deleted files.
+    // Best-effort: a failure here shouldn't hide the primary deletion failure below.
+    try {
+      await admin.from("videos").delete().eq("user_id", user.id);
+    } catch {
+      // ignore
+    }
+    return { ok: false, message: "The account could not be deleted. Please try again or contact support." };
+  }
 
   await supabase.auth.signOut().catch(() => null);
   return { ok: true, next: "/?message=account_deleted" };

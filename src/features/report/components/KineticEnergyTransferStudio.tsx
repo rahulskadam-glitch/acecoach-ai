@@ -10,7 +10,6 @@ import { MOTION_STAGES, type MotionStage } from "../motion/motion-model";
 import type { PlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
 import KineticPowerWaterfallChart from "./KineticPowerWaterfallChart";
 import KineticTimingLagLadder from "./KineticTimingLagLadder";
-import StagePhaseScrubber from "./StagePhaseScrubber";
 import SweetSpotStrikeClusterChart from "./SweetSpotStrikeClusterChart";
 
 import { computePlayerBiomechanicalProfile } from "../motion/player-kinetics-engine";
@@ -316,8 +315,6 @@ export default function KineticEnergyTransferStudio({
           </div>
         </div>
       ) : null}
-
-      <StagePhaseScrubber currentStage={currentStage} onSeekToStage={onSeekToStage} />
     </div>
   );
 }
