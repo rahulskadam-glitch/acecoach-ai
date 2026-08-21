@@ -2,7 +2,7 @@
   "version": "4.1.0",
   "purpose": "Ground AceCoach player-facing language in the teaching patterns of credentialed tennis coaches and high-quality instructional channels while preserving evidence traceability and avoiding transcript imitation.",
   "methodology": {
-    "review_scope": "Public YouTube lesson titles, descriptions, chapter structures, visible teaching progressions, and official coach/channel credentials reviewed on 2026-08-12.",
+    "review_scope": "Public YouTube lesson titles, descriptions, chapter structures, visible teaching progressions, and official coach/channel credentials reviewed on 2026-08-12 (initial 4-coach/20-video batch) and expanded on 2026-08-21 (16 additional coaches/channels, 102 additional videos, verified per-video against real search results before inclusion).",
     "copyright_rule": "Store only bibliographic metadata and abstracted teaching/language patterns. Do not store or reproduce transcripts, extended quotations, signature catchphrases, or distinctive passages.",
     "style_rule": "Synthesize common elite-coaching communication behaviors; never instruct the model to impersonate a named living coach.",
     "source_acceptance": [
@@ -64,6 +64,207 @@
         "Use visible progressions and drills that isolate one problem",
         "Connect grip, preparation, contact and finish to the intended ball",
         "Give concrete practice tasks instead of ending with diagnosis"
+      ]
+    },
+    "usta_coaching": {
+      "display_name": "USTA Coaching (Official U.S. Tennis Association)",
+      "authority_tier": "A",
+      "credential_basis": "Official national governing body for tennis in the United States. Videos feature USTA staff teaching professionals, including USTA National Campus Head Tennis Professional Ben Zaiser (PTR-certified) and USTA National Manager & Head Coach for Team USA Wheelchair Tennis Jason Harnett.",
+      "credential_url": "https://www.usta.com",
+      "abstracted_language_patterns": [
+        "Present technique as a small number of federation-standard checkpoints rather than a personal system",
+        "Keep language neutral and instructional, avoiding a single coach's personal brand or catchphrases",
+        "Pair each stroke with a short, repeatable fundamental cue suitable for physical-education and club settings",
+        "Include adaptive/wheelchair tennis content within the same technical framework",
+        "Favor short, discrete lesson segments over long-form masterclasses"
+      ]
+    },
+    "jeff_salzenstein": {
+      "display_name": "Jeff Salzenstein / Tennis Evolution",
+      "authority_tier": "A",
+      "credential_basis": "Former ATP Tour player, career-high singles ranking World No. 100 (2004); two-time All-American at Stanford; USPTA Level 1 certified teaching professional; USTA High Performance Coach; founder of Tennis Evolution.",
+      "credential_url": "https://jeffsalzenstein.com/about",
+      "abstracted_language_patterns": [
+        "Ground corrections in his own tour-level playing experience rather than abstract theory",
+        "Break a stroke into a short numbered sequence of steps the player can rehearse",
+        "Use body-to-racket kinetic-chain language to connect footwork, trunk rotation, and swing",
+        "Name and correct common myths (e.g. backswing length, grip choice) directly",
+        "Pair technique corrections with a specific situational context (approach, return, transition)"
+      ]
+    },
+    "ian_westermann": {
+      "display_name": "Ian Westermann / Essential Tennis",
+      "authority_tier": "B_PLUS",
+      "credential_basis": "Founder and head instructor of Essential Tennis, one of the longest-running dedicated tennis-instruction platforms online; former teaching professional at Congressional Country Club; published instructional author.",
+      "credential_url": "https://www.essentialtennis.com",
+      "abstracted_language_patterns": [
+        "Open with the single most common mistake before presenting the fix",
+        "Organize a full stroke lesson into fundamentals, then power, then consistency layers",
+        "Use direct contrast language: what most players do wrong versus the better option",
+        "Sequence footwork lessons into discrete numbered parts (timing, then pivot, then recovery)",
+        "Close lessons with a specific practice task rather than diagnosis alone"
+      ]
+    },
+    "tomaz_mencinger": {
+      "display_name": "Tomaz Mencinger / Feel Tennis",
+      "authority_tier": "B_PLUS",
+      "credential_basis": "ITF/PTR/USPTR-certified tennis professional based in Slovenia with decades of coaching experience, including work with nationally ranked juniors and at the Tennis Academy of Asia; founder of Feel Tennis and Tennis Mind Game.",
+      "credential_url": "https://www.feeltennis.net/about-me",
+      "abstracted_language_patterns": [
+        "Prioritize a felt sensation or image over exact mechanical positions",
+        "Reduce technique to two or three simple, repeatable cues rather than a full checklist",
+        "Explicitly frame stroke-based feel as an alternative to overly rigid technical instruction",
+        "Use short quick-tip formats alongside longer drill-based lessons",
+        "Address recreational-level players' movement and footwork limitations directly"
+      ]
+    },
+    "karue_sell": {
+      "display_name": "Karuê Sell",
+      "authority_tier": "A",
+      "credential_basis": "Active ATP-ranked professional player (career-high ATP singles ranking near No. 258); former World No. 33 junior; UCLA Division I standout; coaches while still competing on tour.",
+      "credential_url": "https://www.mytennishq.com/about",
+      "abstracted_language_patterns": [
+        "Demonstrate corrections on his own current tour-level strokes rather than only describing them",
+        "Show longitudinal before/after comparisons of his own technique to illustrate change over time",
+        "Credit specific mentors and elite-level input when explaining a technical overhaul",
+        "Connect footwork patterns directly to balance and power outcomes",
+        "Speak from an active-competitor perspective rather than a purely instructional one"
+      ]
+    },
+    "meike_babel": {
+      "display_name": "Meike Babel",
+      "authority_tier": "A",
+      "credential_basis": "Former WTA Tour professional, career-high World No. 27 singles / No. 45 doubles; competed in 19 Grand Slam main draws; represented Germany in the Billie Jean King Cup; Certified Mental Skills Coach.",
+      "credential_url": "https://www.meikebabel.com",
+      "abstracted_language_patterns": [
+        "Deliver technique tips in short, high-density social-video format",
+        "Ground advice explicitly in WTA tour-level playing experience",
+        "State one clear actionable cue per short-form video rather than a full breakdown",
+        "Pair technical cues with a confidence or mental-game framing",
+        "Use direct, conversational, athlete-to-athlete language"
+      ]
+    },
+    "will_hamilton": {
+      "display_name": "Will Hamilton / FuzzyYellowBalls",
+      "authority_tier": "B_PLUS",
+      "credential_basis": "Co-founder of FuzzyYellowBalls.com (2007), one of the earliest dedicated tennis-instruction platforms on YouTube, with long-running instructional collaborations with multiple Grand Slam champions.",
+      "credential_url": "https://www.fuzzyyellowballs.com/about",
+      "abstracted_language_patterns": [
+        "Frame lessons around a single high-level technique reference from a pro player",
+        "Use structured step-numbered lesson series for stroke fundamentals",
+        "Bring in elite guest instructors for topics outside his own direct playing background",
+        "Package tactical concepts into named systems (e.g. a 'playbook') rather than isolated tips",
+        "Keep footwork and volley lessons tightly linked to net-approach situations"
+      ]
+    },
+    "gigi_fernandez": {
+      "display_name": "Gigi Fernandez",
+      "authority_tier": "A",
+      "credential_basis": "17-time Grand Slam doubles champion; International Tennis Hall of Fame inductee; taught via guest-instructor collaborations on established instructional platforms.",
+      "credential_url": "https://www.tennisfame.com/hall-of-famers/inductees/gigi-fernandez",
+      "abstracted_language_patterns": [
+        "Share a single favorite hands-on cue rather than a full technical breakdown",
+        "Speak from doubles-specialist, net-play-heavy tour experience",
+        "Connect serve-and-volley technique directly to transition footwork and split-step timing",
+        "Keep instruction short and demonstration-led"
+      ]
+    },
+    "bryan_brothers": {
+      "display_name": "Bob & Mike Bryan",
+      "authority_tier": "A",
+      "credential_basis": "The winningest doubles team in tennis history, 16 Grand Slam doubles titles and Olympic gold; taught via guest-instructor collaborations on established instructional platforms.",
+      "credential_url": "https://www.atptour.com/en/players/bob-bryan/b116/overview",
+      "abstracted_language_patterns": [
+        "Demonstrate warmup and net-play routines at slow, reference-quality pace",
+        "Emphasize compact hands and doubles net positioning over full swing mechanics",
+        "Teach through paired/mirrored demonstration reflecting their doubles partnership"
+      ]
+    },
+    "mark_kovacs": {
+      "display_name": "Dr. Mark Kovacs / Kovacs Institute",
+      "authority_tier": "A",
+      "credential_basis": "PhD sports scientist, FACSM; former head of USTA Strength & Conditioning, Sports Science, and Coaching Education; former Director of the Gatorade Sports Science Institute; author of 50+ peer-reviewed publications on tennis performance.",
+      "credential_url": "https://www.kovacsinstitute.com",
+      "abstracted_language_patterns": [
+        "Present technique through a named, stage-based biomechanical model rather than a single cue",
+        "Ground every teaching point in cited sports-science research",
+        "Use conference-lecture and research-presentation formats alongside on-court demonstration",
+        "Explicitly separate what research supports from what is coaching convention",
+        "Apply the same stage-based framework consistently across serve and return content"
+      ]
+    },
+    "chris_lewit": {
+      "display_name": "Chris Lewit",
+      "authority_tier": "A",
+      "credential_basis": "Certified USTA High-Performance Coach; longtime PTR/RSPA member; played No. 1 singles at Cornell and competed on USTA/ITF pro circuits; author of two published tennis-technique books; pursuing a PhD in kinesiology/biomechanics.",
+      "credential_url": "https://chrislewit.com/about",
+      "abstracted_language_patterns": [
+        "Name and correct one specific common technical mistake per lesson (e.g. a single joint or position)",
+        "Explain the biomechanical reasoning behind a position, not just the position itself",
+        "Use extended live-lesson formats in addition to short technique-fix videos",
+        "Ground instruction in published, book-length technical frameworks",
+        "Treat footwork and stance as foundational prerequisites to stroke technique"
+      ]
+    },
+    "ryan_reidy": {
+      "display_name": "Ryan Reidy / 2 Minute Tennis",
+      "authority_tier": "B_PLUS",
+      "credential_basis": "USPTA Elite Professional with 24+ years of coaching experience; built an online instructional platform since 2014.",
+      "credential_url": "https://www.2minutetennis.net/about",
+      "abstracted_language_patterns": [
+        "Compress each lesson into a small, fixed number of simple tips (e.g. exactly three)",
+        "Use short-format, high-frequency video delivery rather than long masterclasses",
+        "Model footwork and volley technique directly against professional-level reference clips",
+        "Give a single unifying cue per stroke rather than a multi-part checklist",
+        "Link footwork lessons explicitly to specific tactical situations (serve-and-volley, recovery)"
+      ]
+    },
+    "steve_smith": {
+      "display_name": "Steve Smith / GreatBase Tennis",
+      "authority_tier": "A",
+      "credential_basis": "Approximately 50 years in tennis instruction; PTR and USPTA member and certifying tester for 25+ years; designed one of the first accredited teaching-professional degree programs; synthesized instructional principles from teaching masters including Vic Braden, Welby Van Horn, and Dennis Van der Meer.",
+      "credential_url": "https://www.greatbasetennis.com/about",
+      "abstracted_language_patterns": [
+        "Present technique as part of a named, sequential curriculum rather than a standalone tip",
+        "Ground instruction explicitly in established teaching-science principles",
+        "Start from ready position and racket fundamentals before advancing to stroke-specific content",
+        "Use consistent numbered curriculum modules across every stroke and skill"
+      ]
+    },
+    "jamie_murray": {
+      "display_name": "Jamie Murray",
+      "authority_tier": "A",
+      "credential_basis": "Former World No. 1 doubles player; 7 Grand Slam doubles titles including mixed doubles; professional doubles career since 2006; shares tour-level tactical content via his own channel.",
+      "credential_url": "https://www.atptour.com/en/players/jamie-murray/mc10/overview",
+      "abstracted_language_patterns": [
+        "Explain doubles court positioning and territory from direct world-No.-1-level experience",
+        "Frame net-play decisions (e.g. poaching) as tactical timing choices, not just technique",
+        "Use short, focused tactical-concept videos rather than full stroke breakdowns",
+        "Speak with tour-player authority and minimal hedging"
+      ]
+    },
+    "edgar_giffenig": {
+      "display_name": "Edgar Giffenig / Effective Tennis Instruction",
+      "authority_tier": "B_PLUS",
+      "credential_basis": "Former national coach in the United States, Germany, and Mexico with 40+ years of competitive coaching experience; author of published tennis-development books.",
+      "credential_url": "https://edgargiffenig.com/bio",
+      "abstracted_language_patterns": [
+        "Separate mental-game instruction into its own dedicated, practical lessons",
+        "Present tactical rally construction as a sequence of shot-selection decisions",
+        "Keep lessons concise and applied rather than theory-heavy",
+        "Draw on decades of national-team-level coaching experience across multiple countries"
+      ]
+    },
+    "peter_freeman": {
+      "display_name": "Peter Freeman / Crunch Time Coaching",
+      "authority_tier": "B_PLUS",
+      "credential_basis": "USPTA Elite Professional (highest USPTA tier); named USTA Georgia Pro of the Year; played No. 1 singles at American University; trained under Tony Palafox and Frank Brennan; produced instructional content with Rod Laver, Roy Emerson, Fred Stolle, and John Newcombe.",
+      "credential_url": "https://www.crunchtimecoaching.com",
+      "abstracted_language_patterns": [
+        "Teach volleys through a small fixed set of repeatable drills",
+        "Reference legendary-player lineage and mentorship to frame instructional authority",
+        "Present a compact fundamentals checklist before advanced variations",
+        "Invite guest instructors for specialty topics outside his own core focus"
       ]
     }
   },
@@ -391,6 +592,1494 @@
         "compactness",
         "bounce_timing",
         "simple_keys"
+      ]
+    },
+    {
+      "source_id": "LANG-USTA-FH-01",
+      "coach_id": "usta_coaching",
+      "title": "How to Perfect Your Forehand | USTA Coaching",
+      "youtube_url": "https://www.youtube.com/watch?v=WXSI9PZrmI0",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "unit_turn",
+        "non_dominant_hand_guide",
+        "fundamentals",
+        "federation_curriculum"
+      ]
+    },
+    {
+      "source_id": "LANG-USTA-2HBH-01",
+      "coach_id": "usta_coaching",
+      "title": "How to Master Your Backhand | USTA Coaching",
+      "youtube_url": "https://www.youtube.com/watch?v=uXLQhYrd6X0",
+      "stroke_families": [
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "five_step_progression",
+        "grip_setup",
+        "footwork",
+        "federation_curriculum"
+      ]
+    },
+    {
+      "source_id": "LANG-USTA-SL-01",
+      "coach_id": "usta_coaching",
+      "title": "How to Hit a Slice Backhand | USTA Coaching",
+      "youtube_url": "https://www.youtube.com/watch?v=wN_mIurkLEQ",
+      "stroke_families": [
+        "slice_backhand"
+      ],
+      "pattern_tags": [
+        "continental_grip",
+        "approach_shot_use",
+        "defensive_shot",
+        "federation_curriculum"
+      ]
+    },
+    {
+      "source_id": "LANG-USTA-2HBH-02",
+      "coach_id": "usta_coaching",
+      "title": "USTA PE Tennis Curriculum - Teaching Tennis Skills: Backhand",
+      "youtube_url": "https://www.youtube.com/watch?v=tt9DQSNMOl4",
+      "stroke_families": [
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "beginner_progression",
+        "physical_education_context",
+        "basic_mechanics"
+      ]
+    },
+    {
+      "source_id": "LANG-USTA-SRV-01",
+      "coach_id": "usta_coaching",
+      "title": "How to Improve Your Serve | USTA Coaching",
+      "youtube_url": "https://www.youtube.com/watch?v=gKAv2xiYecY",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "grip_fundamentals",
+        "toss_mechanics",
+        "follow_through"
+      ]
+    },
+    {
+      "source_id": "LANG-USTA-SRV-02",
+      "coach_id": "usta_coaching",
+      "title": "USTA Improve Your Game: Create a Consistent Service Toss",
+      "youtube_url": "https://www.youtube.com/watch?v=3BQUq-5YV4w",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "toss_consistency",
+        "repeatable_motion",
+        "governing_body_content"
+      ]
+    },
+    {
+      "source_id": "LANG-USTA-ROS-01",
+      "coach_id": "usta_coaching",
+      "title": "USTA Improve Your Game: Return of Serve",
+      "youtube_url": "https://www.youtube.com/watch?v=FqgU-xzE-44",
+      "stroke_families": [
+        "return_of_serve"
+      ],
+      "pattern_tags": [
+        "return_fundamentals",
+        "official_instruction",
+        "short_tip_format"
+      ]
+    },
+    {
+      "source_id": "LANG-USTA-ROS-02",
+      "coach_id": "usta_coaching",
+      "title": "Wheelchair Improve Your Game: Return of Serve",
+      "youtube_url": "https://www.youtube.com/watch?v=HD4Trt-bKKo",
+      "stroke_families": [
+        "return_of_serve"
+      ],
+      "pattern_tags": [
+        "adaptive_tennis",
+        "return_positioning",
+        "wheelchair_technique"
+      ]
+    },
+    {
+      "source_id": "LANG-USTA-VOL-01",
+      "coach_id": "usta_coaching",
+      "title": "USTA Improve Your Game: High Stretch Volley",
+      "youtube_url": "https://www.youtube.com/watch?v=5VyOufE5Bfo",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "stretch_volley_management",
+        "wide_ball_recovery",
+        "official_federation_content",
+        "reach_and_balance"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-FH-01",
+      "coach_id": "jeff_salzenstein",
+      "title": "TENNIS TIP: Use The Buggy Whip Forehand Off A Slice",
+      "youtube_url": "https://www.youtube.com/watch?v=2IcSIZN6Q9Y",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "buggy_whip",
+        "defensive_transition",
+        "advanced_variation"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-FH-02",
+      "coach_id": "jeff_salzenstein",
+      "title": "BUGGY WHIP SHOT | How To Hit The Buggy whip Shot",
+      "youtube_url": "https://www.youtube.com/watch?v=QmU5cOUtmIU",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "buggy_whip",
+        "non_linear_finish",
+        "modern_technique"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-2HBH-01",
+      "coach_id": "jeff_salzenstein",
+      "title": "TENNIS BACKHAND | How To Hit Two Handed Backhand In Tennis",
+      "youtube_url": "https://www.youtube.com/watch?v=59i3bt2OjJE",
+      "stroke_families": [
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "two_hand_fundamentals",
+        "rotation",
+        "contact_point"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-1HBH-01",
+      "coach_id": "jeff_salzenstein",
+      "title": "TENNIS BACKHAND | The One Handed Backhand Flair Finish",
+      "youtube_url": "https://www.youtube.com/watch?v=dGkG9s5CVyQ",
+      "stroke_families": [
+        "one_handed_backhand"
+      ],
+      "pattern_tags": [
+        "finish_position",
+        "myth_correction",
+        "flair_technique"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-1HBH-02",
+      "coach_id": "jeff_salzenstein",
+      "title": "ONE HANDED TENNIS BACKHAND | It's Okay To Have A Big Backswing On The One Handed Backhand",
+      "youtube_url": "https://www.youtube.com/watch?v=3g1FcAu60fc",
+      "stroke_families": [
+        "one_handed_backhand"
+      ],
+      "pattern_tags": [
+        "backswing_myth",
+        "preparation_length",
+        "myth_correction"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-1HBH-03",
+      "coach_id": "jeff_salzenstein",
+      "title": "ONE HAND BACKHAND TENNIS TIP | Use An Eastern Backhand Grip Like The Pros",
+      "youtube_url": "https://www.youtube.com/watch?v=JvlIX8rX9R0",
+      "stroke_families": [
+        "one_handed_backhand"
+      ],
+      "pattern_tags": [
+        "grip_selection",
+        "pro_comparison",
+        "eastern_grip"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-1HBH-04",
+      "coach_id": "jeff_salzenstein",
+      "title": "5 Steps To Hit A Perfect One Handed Backhand (Like The Pros!)",
+      "youtube_url": "https://www.youtube.com/watch?v=ICX4NocVexE",
+      "stroke_families": [
+        "one_handed_backhand"
+      ],
+      "pattern_tags": [
+        "step_by_step_progression",
+        "pro_model",
+        "fundamentals"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-1HBH-05",
+      "coach_id": "jeff_salzenstein",
+      "title": "Tennis Lesson - Hitting A One Handed Topspin Backhand",
+      "youtube_url": "https://www.youtube.com/watch?v=O-cL8sDltIc",
+      "stroke_families": [
+        "one_handed_backhand"
+      ],
+      "pattern_tags": [
+        "topspin_generation",
+        "lesson_format",
+        "contact_point"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-SRV-01",
+      "coach_id": "jeff_salzenstein",
+      "title": "The Body-Serve Connection with Jeff Salzenstein [Tennis Summit Preview #1]",
+      "youtube_url": "https://www.youtube.com/watch?v=cCmWv2Arjk4",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "body_serve_linkage",
+        "power_generation",
+        "upper_lower_body_connection"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-SRV-02",
+      "coach_id": "jeff_salzenstein",
+      "title": "Serve Technique Tip - Improve Your Stance",
+      "youtube_url": "https://www.youtube.com/watch?v=wC5EoqT-8yE",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "stance_setup",
+        "foot_positioning",
+        "pre_serve_routine"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-SRV-03",
+      "coach_id": "jeff_salzenstein",
+      "title": "TENNIS SERVE: POWERFUL & EASY Serve in 3-Steps",
+      "youtube_url": "https://www.youtube.com/watch?v=a9YjljS7C8I",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "simplified_progression",
+        "effortless_power",
+        "step_by_step_teaching"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-SRV-04",
+      "coach_id": "jeff_salzenstein",
+      "title": "Master the Serve Kinetic Chain ft. Jeff Salzenstein",
+      "youtube_url": "https://www.youtube.com/watch?v=UWHIM1g5oFw",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "kinetic_chain_sequencing",
+        "advanced_mechanics",
+        "power_serve"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-SRV-05",
+      "coach_id": "jeff_salzenstein",
+      "title": "On Court with USPTA: Developing the Serve with Jeff Salzenstein",
+      "youtube_url": "https://www.youtube.com/watch?v=2MoPTicP16Y",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "fundamentals_teaching",
+        "on_court_demonstration",
+        "certified_coach_content"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-SRV-06",
+      "coach_id": "jeff_salzenstein",
+      "title": "TENNIS SERVE | How To Hit A Kick Serve Easily",
+      "youtube_url": "https://www.youtube.com/watch?v=3voQ7ObVFCA",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "kick_serve_mechanics",
+        "spin_generation",
+        "toss_placement"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-ROS-01",
+      "coach_id": "jeff_salzenstein",
+      "title": "Return of Serve: EPIC SECRET to MASTER your Forehand Return",
+      "youtube_url": "https://www.youtube.com/watch?v=TsEqawVk6Ac",
+      "stroke_families": [
+        "return_of_serve"
+      ],
+      "pattern_tags": [
+        "forehand_return",
+        "return_positioning",
+        "reaction_timing"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-FH-03",
+      "coach_id": "jeff_salzenstein",
+      "title": "TENNIS FOREHAND: Create Crazy POWER in 5 Steps!",
+      "youtube_url": "https://www.youtube.com/watch?v=3E41bfj5pCA",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "power_generation",
+        "kinetic_chain",
+        "step_by_step_progression"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-FH-04",
+      "coach_id": "jeff_salzenstein",
+      "title": "Fix Your Forehand Spacing!",
+      "youtube_url": "https://www.youtube.com/watch?v=8VAT46jqJA0",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "contact_point_spacing",
+        "being_jammed",
+        "positioning_correction"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-NET-01",
+      "coach_id": "jeff_salzenstein",
+      "title": "Winning Tennis with Jeff Salzenstein: The Forehand Approach",
+      "youtube_url": "https://www.youtube.com/watch?v=NyVwb_q3yjI",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "approach_shot_footwork",
+        "transition_to_net",
+        "split_step_timing",
+        "setting_up_the_volley"
+      ]
+    },
+    {
+      "source_id": "LANG-JS-NET-02",
+      "coach_id": "jeff_salzenstein",
+      "title": "Winning Tennis With Jeff Salzenstein: The Transition Game",
+      "youtube_url": "https://www.youtube.com/watch?v=q0yqFbwZY0E",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "baseline_to_net_transition",
+        "court_positioning",
+        "approach_shot_selection",
+        "first_volley_setup"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-FH-01",
+      "coach_id": "ian_westermann",
+      "title": "ULTIMATE Forehand Tennis Lesson - Technique for MAXIMUM POWER and TOPSPIN",
+      "youtube_url": "https://www.youtube.com/watch?v=WWQHF31Vhro",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "racket_head_speed",
+        "topspin_generation",
+        "power_mechanics"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-FH-02",
+      "coach_id": "ian_westermann",
+      "title": "FOREHAND Tennis Lesson - Technique for CONSISTENCY + POWER",
+      "youtube_url": "https://www.youtube.com/watch?v=ow0lsR4r1o4",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "consistency_focus",
+        "swing_path",
+        "timing"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-FH-03",
+      "coach_id": "ian_westermann",
+      "title": "ULTIMATE Forehand Tennis Lesson - Technique Fundamentals - Backswing",
+      "youtube_url": "https://www.youtube.com/watch?v=aTsqjlyMs-Q",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "backswing_shape",
+        "preparation_timing",
+        "fundamentals"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-FH-04",
+      "coach_id": "ian_westermann",
+      "title": "5 Days To A Killer Tennis Forehand - Day 1: Swing Technique",
+      "youtube_url": "https://www.youtube.com/watch?v=gWTvbXyg2HM",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "multi_day_series",
+        "swing_technique",
+        "structured_progression"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-1HBH-01",
+      "coach_id": "ian_westermann",
+      "title": "ULTIMATE Backhand Tennis Lesson: Technique for Topspin + Control",
+      "youtube_url": "https://www.youtube.com/watch?v=esufEYZUI2Y",
+      "stroke_families": [
+        "one_handed_backhand"
+      ],
+      "pattern_tags": [
+        "topspin_control",
+        "one_hander_mechanics",
+        "follow_through"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-BH-01",
+      "coach_id": "ian_westermann",
+      "title": "Tennis Backhand: 1-Handed vs 2-Handed Backhand",
+      "youtube_url": "https://www.youtube.com/watch?v=4wCHrLsG-Jg",
+      "stroke_families": [
+        "one_handed_backhand",
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "style_comparison",
+        "decision_guidance",
+        "tradeoffs"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-OVH-01",
+      "coach_id": "ian_westermann",
+      "title": "OVERHEAD SMASH Tennis Lesson: Technique for POWER + CONTROL",
+      "youtube_url": "https://www.youtube.com/watch?v=3C8a_ZBVwok",
+      "stroke_families": [
+        "overhead"
+      ],
+      "pattern_tags": [
+        "power_and_control_balance",
+        "smash_technique",
+        "lesson_format"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-OVH-02",
+      "coach_id": "ian_westermann",
+      "title": "How to SMASH your Overhead!",
+      "youtube_url": "https://www.youtube.com/watch?v=O864qxrUnr4",
+      "stroke_families": [
+        "overhead"
+      ],
+      "pattern_tags": [
+        "overhead_confidence",
+        "common_mistakes",
+        "technique_fix"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-ROS-01",
+      "coach_id": "ian_westermann",
+      "title": "Return of Serve Footwork",
+      "youtube_url": "https://www.youtube.com/watch?v=1n39JyV1EB0",
+      "stroke_families": [
+        "return_of_serve"
+      ],
+      "pattern_tags": [
+        "split_step_footwork",
+        "return_preparation",
+        "movement_pattern"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-ROS-02",
+      "coach_id": "ian_westermann",
+      "title": "[Tennis Summit 2021] Return Strategies and Tactics with Ian Westermann",
+      "youtube_url": "https://www.youtube.com/watch?v=UwYncCLoyJ4",
+      "stroke_families": [
+        "return_of_serve"
+      ],
+      "pattern_tags": [
+        "return_tactics",
+        "court_positioning",
+        "strategic_return"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-FOOT-01",
+      "coach_id": "ian_westermann",
+      "title": "Tennis Footwork Split Step Lesson, 2 of 3: Timing",
+      "youtube_url": "https://www.youtube.com/watch?v=jtWMP75377k",
+      "stroke_families": [
+        "return_of_serve"
+      ],
+      "pattern_tags": [
+        "footwork",
+        "split_step_timing",
+        "reaction_readiness",
+        "sequential_lesson_series"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-FOOT-02",
+      "coach_id": "ian_westermann",
+      "title": "Tennis Footwork Split Step Lesson, 3 of 3: Pivot and Fake",
+      "youtube_url": "https://www.youtube.com/watch?v=UG5Z5fs4-Ms",
+      "stroke_families": [
+        "return_of_serve"
+      ],
+      "pattern_tags": [
+        "footwork",
+        "split_step_pivot",
+        "deception_footwork",
+        "recovery_footwork"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-2HBH-01",
+      "coach_id": "ian_westermann",
+      "title": "ULTIMATE Backhand Tennis Lesson: Technique for Consistency + Spin",
+      "youtube_url": "https://www.youtube.com/watch?v=hT68qDJA6l0",
+      "stroke_families": [
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "consistency_focus",
+        "topspin_technique",
+        "comprehensive_lesson"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-SRV-01",
+      "coach_id": "ian_westermann",
+      "title": "ULTIMATE Serve Tennis Lesson - Accuracy, Consistency and Power",
+      "youtube_url": "https://www.youtube.com/watch?v=XsdIWmie78Y",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "serve_accuracy",
+        "consistency_building",
+        "power_and_control_balance"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-BHV-01",
+      "coach_id": "ian_westermann",
+      "title": "How to Hit a Smooth Backhand Volley (technique lesson)",
+      "youtube_url": "https://www.youtube.com/watch?v=7PIZKKCSnaw",
+      "stroke_families": [
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "continental_grip",
+        "compact_backswing",
+        "one_vs_two_handed_choice",
+        "contact_point_discipline"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-VOL-01",
+      "coach_id": "ian_westermann",
+      "title": "STOP Punching Your Volleys!",
+      "youtube_url": "https://www.youtube.com/watch?v=r3jvtQZLebY",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "minimal_swing_path",
+        "blocking_not_swinging",
+        "racket_face_stability",
+        "punch_myth_correction"
+      ]
+    },
+    {
+      "source_id": "LANG-IW-VOL-02",
+      "coach_id": "ian_westermann",
+      "title": "How to Put Away Volleys - Tennis Lesson - Power & Offense",
+      "youtube_url": "https://www.youtube.com/watch?v=ooBKlNsrZF0",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "put_away_volley",
+        "offensive_positioning",
+        "weight_transfer",
+        "angle_creation"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-SL-01",
+      "coach_id": "tomaz_mencinger",
+      "title": "A More Biting Backhand Slice - Quick Tip",
+      "youtube_url": "https://www.youtube.com/watch?v=DPuSndj-l9I",
+      "stroke_families": [
+        "slice_backhand"
+      ],
+      "pattern_tags": [
+        "quick_tip_format",
+        "bite_and_spin",
+        "short_lesson"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-SL-02",
+      "coach_id": "tomaz_mencinger",
+      "title": "Top 3 Drills For A Better Backhand Slice",
+      "youtube_url": "https://www.youtube.com/watch?v=1WruwNr8CJo",
+      "stroke_families": [
+        "slice_backhand"
+      ],
+      "pattern_tags": [
+        "drill_based",
+        "feel_coaching",
+        "repetition_practice"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-SL-03",
+      "coach_id": "tomaz_mencinger",
+      "title": "Tennis Backhand- Slice Technique",
+      "youtube_url": "https://www.youtube.com/watch?v=eb2mpB8te7k",
+      "stroke_families": [
+        "slice_backhand"
+      ],
+      "pattern_tags": [
+        "fundamentals",
+        "technique_breakdown",
+        "continental_grip"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-1HBH-01",
+      "coach_id": "tomaz_mencinger",
+      "title": "Tennis One Handed Backhand | Topspin Technique Lesson",
+      "youtube_url": "https://www.youtube.com/watch?v=BlCVYDAPucs",
+      "stroke_families": [
+        "one_handed_backhand"
+      ],
+      "pattern_tags": [
+        "topspin_technique",
+        "feel_based_coaching",
+        "lesson_format"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-SRV-01",
+      "coach_id": "tomaz_mencinger",
+      "title": "The Most Fundamental Tennis Serve Drills",
+      "youtube_url": "https://www.youtube.com/watch?v=cKeSQHjm4gM",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "drill_progression",
+        "fundamentals",
+        "feel_based_learning"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-SRV-02",
+      "coach_id": "tomaz_mencinger",
+      "title": "Serve Success Secrets with Tomaz from Feel Tennis",
+      "youtube_url": "https://www.youtube.com/watch?v=3IIjI324x6o",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "mental_approach",
+        "simplification",
+        "serve_confidence"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-SRV-03",
+      "coach_id": "tomaz_mencinger",
+      "title": "Tennis Serve Lesson for Beginners: 5 Drills To Get Started",
+      "youtube_url": "https://www.youtube.com/watch?v=IS8Wl3xsaW8",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "beginner_progression",
+        "drill_sequence",
+        "motor_learning"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-SRV-04",
+      "coach_id": "tomaz_mencinger",
+      "title": "4 Keys To Correct Tennis Serve Contact Point",
+      "youtube_url": "https://www.youtube.com/watch?v=f8lVPewF-mc",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "contact_point",
+        "racket_path",
+        "consistency_cues"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-VOL-01",
+      "coach_id": "tomaz_mencinger",
+      "title": "How To Hit A Tennis Volley - Tip For More Feel",
+      "youtube_url": "https://www.youtube.com/watch?v=ixtikTVrpEY",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "feel_based_learning",
+        "anti_punch_philosophy",
+        "soft_hands",
+        "minimal_technique_cues"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-1HBH-02",
+      "coach_id": "tomaz_mencinger",
+      "title": "One-Handed Backhand Footwork: Smart Tennis Movement for Recreational Players",
+      "youtube_url": "https://www.youtube.com/watch?v=yZ7SwLFWwdw",
+      "stroke_families": [
+        "one_handed_backhand"
+      ],
+      "pattern_tags": [
+        "recreational_player_focus",
+        "footwork_for_backhand",
+        "movement_efficiency"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-MENTAL-01",
+      "coach_id": "tomaz_mencinger",
+      "title": "Tennis Strokes Based On Feel Instead Of Exact Technique",
+      "youtube_url": "https://www.youtube.com/watch?v=uxFviqqm5z0",
+      "stroke_families": [
+        "forehand",
+        "two_handed_backhand",
+        "one_handed_backhand"
+      ],
+      "pattern_tags": [
+        "feel_over_mechanics",
+        "teaching_philosophy",
+        "sensory_learning"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-FH-01",
+      "coach_id": "tomaz_mencinger",
+      "title": "Modern Tennis Forehand Technique In 8 Steps",
+      "youtube_url": "https://www.youtube.com/watch?v=9KRYA9ZlYmM",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "modern_technique_breakdown",
+        "step_by_step_progression",
+        "contemporary_style"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-VOL-02",
+      "coach_id": "tomaz_mencinger",
+      "title": "Advanced Tennis Volley Technique - The \"Flowing\" Volley",
+      "youtube_url": "https://www.youtube.com/watch?v=qRh_ArCv9OM",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "continuous_motion_volley",
+        "advanced_technique",
+        "racket_flow",
+        "rhythm_over_punch"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-VOL-03",
+      "coach_id": "tomaz_mencinger",
+      "title": "Tennis Volley Tip - How To Prepare In 2 Simple Steps",
+      "youtube_url": "https://www.youtube.com/watch?v=7zsWoOOWUbc",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "split_step_timing",
+        "unit_turn_prep",
+        "simplified_footwork",
+        "two_step_cue"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-VOL-04",
+      "coach_id": "tomaz_mencinger",
+      "title": "Tennis Volley Tips For Extra Power & Control - It's All About Body Mass",
+      "youtube_url": "https://www.youtube.com/watch?v=PWMhJmzd6Ao",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "body_mass_transfer",
+        "power_without_swing",
+        "weight_into_shot",
+        "control_through_stability"
+      ]
+    },
+    {
+      "source_id": "LANG-TM-VOL-05",
+      "coach_id": "tomaz_mencinger",
+      "title": "Mastering High Volleys: Expert Tips with Tomaz of Feel Tennis",
+      "youtube_url": "https://www.youtube.com/watch?v=0pc3MOxV8Ak",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "high_volley_technique",
+        "shoulder_turn",
+        "overhead_adjacent_volley"
+      ]
+    },
+    {
+      "source_id": "LANG-KS-FH-01",
+      "coach_id": "karue_sell",
+      "title": "Rally Control Training with ATP Player Karue Sell | Forehand",
+      "youtube_url": "https://www.youtube.com/watch?v=TPWKBu90nvw",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "rally_control",
+        "consistency_drill",
+        "atp_demonstration"
+      ]
+    },
+    {
+      "source_id": "LANG-KS-FH-02",
+      "coach_id": "karue_sell",
+      "title": "Watch 5 Years Of Forehand Changes - ATP Top 300 Player",
+      "youtube_url": "https://www.youtube.com/watch?v=m6mwDr6sppE",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "self_evolution",
+        "longitudinal_comparison",
+        "technique_change"
+      ]
+    },
+    {
+      "source_id": "LANG-KS-2HBH-01",
+      "coach_id": "karue_sell",
+      "title": "How Andre Agassi Transformed Karue's Backhand",
+      "youtube_url": "https://www.youtube.com/watch?v=_G5MYxGCpp8",
+      "stroke_families": [
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "pro_mentorship",
+        "backhand_overhaul",
+        "elite_input"
+      ]
+    },
+    {
+      "source_id": "LANG-KS-FOOT-01",
+      "coach_id": "karue_sell",
+      "title": "Forehand Footwork Patterns For Better Balance and More Power",
+      "youtube_url": "https://www.youtube.com/watch?v=e-KdPNRv9Ls",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "footwork_patterns",
+        "balance_development",
+        "power_transfer"
+      ]
+    },
+    {
+      "source_id": "LANG-KS-FOOT-02",
+      "coach_id": "karue_sell",
+      "title": "Pro Tennis Workout & Hitting Session | Footwork, Timing, and Serve Practice with Karue Sell",
+      "youtube_url": "https://www.youtube.com/watch?v=ST2lv2F1l7I",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "footwork",
+        "pro_practice_structure",
+        "timing_drills",
+        "current_pro_perspective"
+      ]
+    },
+    {
+      "source_id": "LANG-MB-FH-01",
+      "coach_id": "meike_babel",
+      "title": "Former WTA Pro's Forehand Tips",
+      "youtube_url": "https://www.youtube.com/watch?v=6gS3zfGPj70",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "tour_level_insight",
+        "fundamentals",
+        "self_demonstration"
+      ]
+    },
+    {
+      "source_id": "LANG-MB-SL-01",
+      "coach_id": "meike_babel",
+      "title": "#tennisbackhand slice key points",
+      "youtube_url": "https://www.youtube.com/watch?v=QVGc5yUcZL4",
+      "stroke_families": [
+        "slice_backhand"
+      ],
+      "pattern_tags": [
+        "short_form_tip",
+        "key_points_format",
+        "social_clip"
+      ]
+    },
+    {
+      "source_id": "LANG-MB-1HBH-01",
+      "coach_id": "meike_babel",
+      "title": "DO THIS for Your One Handed Backhand!",
+      "youtube_url": "https://www.youtube.com/watch?v=pWbO6Piz11g",
+      "stroke_families": [
+        "one_handed_backhand"
+      ],
+      "pattern_tags": [
+        "actionable_cue",
+        "short_form_tip",
+        "technique_fix"
+      ]
+    },
+    {
+      "source_id": "LANG-MB-2HBH-01",
+      "coach_id": "meike_babel",
+      "title": "#tennistips for your two-handed backhand",
+      "youtube_url": "https://www.youtube.com/watch?v=kr7yWORaYoQ",
+      "stroke_families": [
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "short_form_tip",
+        "social_clip",
+        "technique_cue"
+      ]
+    },
+    {
+      "source_id": "LANG-WH-FH-01",
+      "coach_id": "will_hamilton",
+      "title": "Roger Federer's Forehand Grip",
+      "youtube_url": "https://www.youtube.com/watch?v=aXcsblS3Jl4",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "grip_analysis",
+        "pro_model",
+        "eastern_grip"
+      ]
+    },
+    {
+      "source_id": "LANG-WH-FH-02",
+      "coach_id": "will_hamilton",
+      "title": "Tennis Lesson: Forehand Step 4 - Follow Through",
+      "youtube_url": "https://www.youtube.com/watch?v=IedzW2QNsM0",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "step_series",
+        "follow_through",
+        "structured_progression"
+      ]
+    },
+    {
+      "source_id": "LANG-WH-2HBH-01",
+      "coach_id": "will_hamilton",
+      "title": "Backhand Step 2 - Take Your Racket Back",
+      "youtube_url": "https://www.youtube.com/watch?v=2RyEgnxMvIk",
+      "stroke_families": [
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "step_series",
+        "preparation",
+        "takeback_mechanics"
+      ]
+    },
+    {
+      "source_id": "LANG-WH-VOL-01",
+      "coach_id": "will_hamilton",
+      "title": "Attack Your Volley With Your Feet (High Level Tennis Footwork)",
+      "youtube_url": "https://www.youtube.com/watch?v=FyuTePaCYX4",
+      "stroke_families": [
+        "forehand_volley"
+      ],
+      "pattern_tags": [
+        "aggressive_net_footwork",
+        "advanced_level_technique",
+        "movement_into_volley"
+      ]
+    },
+    {
+      "source_id": "LANG-WH-TAC-01",
+      "coach_id": "will_hamilton",
+      "title": "The Doubles Playbook | Fuzzy Yellow Balls",
+      "youtube_url": "https://www.youtube.com/watch?v=WbTiF3g32fU",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "doubles_strategy_system",
+        "playbook_framework",
+        "pro_collaboration_content"
+      ]
+    },
+    {
+      "source_id": "LANG-GF-VOL-01",
+      "coach_id": "gigi_fernandez",
+      "title": "My new favorite volley tip from Gigi Fernandez",
+      "youtube_url": "https://www.youtube.com/watch?v=xksOabnM_xU",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "hand_position_cue",
+        "favorite_tip_format",
+        "racket_head_control",
+        "net_reflexes"
+      ]
+    },
+    {
+      "source_id": "LANG-GF-VOL-02",
+      "coach_id": "gigi_fernandez",
+      "title": "How to serve and volley with Gigi Fernandez (17 Grand Slam doubles titles)",
+      "youtube_url": "https://www.youtube.com/watch?v=ggGczWSM17s",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "serve_and_volley_transition",
+        "split_step_timing",
+        "first_volley_depth",
+        "approach_footwork"
+      ]
+    },
+    {
+      "source_id": "LANG-BB-VOL-01",
+      "coach_id": "bryan_brothers",
+      "title": "Bryan Brothers Warmup Volleys Part 1",
+      "youtube_url": "https://www.youtube.com/watch?v=Z0ER3qLf91I",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "slow_motion_form_reference",
+        "warmup_routine",
+        "compact_hands",
+        "doubles_net_positioning"
+      ]
+    },
+    {
+      "source_id": "LANG-MK-SRV-01",
+      "coach_id": "mark_kovacs",
+      "title": "\"8 Stage Serve Model\" by Dr. Mark Kovacs",
+      "youtube_url": "https://www.youtube.com/watch?v=ubOpQXgVQYk",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "stage_based_model",
+        "biomechanics_framework",
+        "sports_science_approach"
+      ]
+    },
+    {
+      "source_id": "LANG-MK-SRV-02",
+      "coach_id": "mark_kovacs",
+      "title": "\"The Science of your Serve to Improve it\" - Dr. Mark Kovacs at Tennis Congress",
+      "youtube_url": "https://www.youtube.com/watch?v=krKYy4eqgdQ",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "research_based_coaching",
+        "serve_science",
+        "conference_lecture"
+      ]
+    },
+    {
+      "source_id": "LANG-MK-ROS-01",
+      "coach_id": "mark_kovacs",
+      "title": "Split Step Training & Demonstration By Dr. Kovacs in a Live Teaching Lesson With Real Players",
+      "youtube_url": "https://www.youtube.com/watch?v=kW5YFy6lI-0",
+      "stroke_families": [
+        "return_of_serve"
+      ],
+      "pattern_tags": [
+        "split_step_timing",
+        "live_lesson_demo",
+        "reaction_readiness"
+      ]
+    },
+    {
+      "source_id": "LANG-CL-SRV-01",
+      "coach_id": "chris_lewit",
+      "title": "Chris Explains The Technique And Biomechanics Of Kick Serve",
+      "youtube_url": "https://www.youtube.com/watch?v=6Ao8iPaNZKs",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "kick_serve_mechanics",
+        "spin_generation",
+        "biomechanics_explanation"
+      ]
+    },
+    {
+      "source_id": "LANG-CL-ROS-01",
+      "coach_id": "chris_lewit",
+      "title": "Stance Footwork for the Return with Chris Lewit",
+      "youtube_url": "https://www.youtube.com/watch?v=K5MF1NJEB9E",
+      "stroke_families": [
+        "return_of_serve"
+      ],
+      "pattern_tags": [
+        "return_stance",
+        "footwork_setup",
+        "split_step"
+      ]
+    },
+    {
+      "source_id": "LANG-CL-SRV-02",
+      "coach_id": "chris_lewit",
+      "title": "Trophy Position Explained: The Elbow Mistake That Kills Serve Power",
+      "youtube_url": "https://www.youtube.com/watch?v=jKNyiOyuQAY",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "trophy_position",
+        "elbow_alignment",
+        "common_power_leak"
+      ]
+    },
+    {
+      "source_id": "LANG-CL-SRV-03",
+      "coach_id": "chris_lewit",
+      "title": "Trophy Position: The Real Foundation of the Tennis Serve",
+      "youtube_url": "https://www.youtube.com/watch?v=R84Jm5E4hVM",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "trophy_position",
+        "foundational_teaching",
+        "serve_setup"
+      ]
+    },
+    {
+      "source_id": "LANG-CL-SRV-04",
+      "coach_id": "chris_lewit",
+      "title": "LIVE 80-Minute Tennis Lesson with Chris Lewit | Serve",
+      "youtube_url": "https://www.youtube.com/watch?v=nBLZAf2Gm4k",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "live_lesson_format",
+        "extended_instruction",
+        "serve_fundamentals"
+      ]
+    },
+    {
+      "source_id": "LANG-RR-FOOT-01",
+      "coach_id": "ryan_reidy",
+      "title": "Pro Tennis Footwork Explained (Why And How To Split Step)",
+      "youtube_url": "https://www.youtube.com/watch?v=JtuVmZtmd_E",
+      "stroke_families": [
+        "return_of_serve"
+      ],
+      "pattern_tags": [
+        "footwork",
+        "split_step_rationale",
+        "pro_footwork_modeling",
+        "timing_explanation"
+      ]
+    },
+    {
+      "source_id": "LANG-RR-FOOT-02",
+      "coach_id": "ryan_reidy",
+      "title": "How To Move After You Hit The Ball (Tennis Recovery Footwork Explained)",
+      "youtube_url": "https://www.youtube.com/watch?v=cBLjBqN9v2Y",
+      "stroke_families": [
+        "forehand",
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "footwork",
+        "recovery_footwork",
+        "post_shot_positioning",
+        "court_coverage"
+      ]
+    },
+    {
+      "source_id": "LANG-RR-FOOT-03",
+      "coach_id": "ryan_reidy",
+      "title": "Proper Footwork Needed To Serve & Volley (Pro Tennis Technique)",
+      "youtube_url": "https://www.youtube.com/watch?v=_Q2sz077mjk",
+      "stroke_families": [
+        "serve",
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "footwork",
+        "serve_and_volley_footwork",
+        "transitional_movement",
+        "net_approach_technique"
+      ]
+    },
+    {
+      "source_id": "LANG-RR-TAC-01",
+      "coach_id": "ryan_reidy",
+      "title": "How To Serve And Volley In Tennis (Advanced Footwork And Strategy)",
+      "youtube_url": "https://www.youtube.com/watch?v=_EGePHZ3OyQ",
+      "stroke_families": [
+        "serve",
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "serve_and_volley_strategy",
+        "advanced_tactics",
+        "attacking_game_style"
+      ]
+    },
+    {
+      "source_id": "LANG-RR-HV-01",
+      "coach_id": "ryan_reidy",
+      "title": "How To Hit Great Forehand & Backhand Half-Volleys (3 Simple Tennis Tips)",
+      "youtube_url": "https://www.youtube.com/watch?v=YvRr3J_EluY",
+      "stroke_families": [
+        "half_volley"
+      ],
+      "pattern_tags": [
+        "half_volley_fundamentals",
+        "short_backswing",
+        "low_center_of_gravity",
+        "three_tip_format"
+      ]
+    },
+    {
+      "source_id": "LANG-RR-VOL-01",
+      "coach_id": "ryan_reidy",
+      "title": "Hit Incredible Forehand And Backhand Volleys With These 5 Awesome Tips",
+      "youtube_url": "https://www.youtube.com/watch?v=rpacFeUeioc",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "five_tip_checklist",
+        "grip_setup",
+        "contact_point_discipline",
+        "footwork_into_volley"
+      ]
+    },
+    {
+      "source_id": "LANG-RR-VOL-02",
+      "coach_id": "ryan_reidy",
+      "title": "Volley Success - Ryan at 2MinuteTennis.net",
+      "youtube_url": "https://www.youtube.com/watch?v=1iKBG-J9gtI",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "hand_below_ball_cue",
+        "single_cue_teaching",
+        "beginner_friendly",
+        "racket_angle"
+      ]
+    },
+    {
+      "source_id": "LANG-SS-FOOT-01",
+      "coach_id": "steve_smith",
+      "title": "GreatBase Initiative 2.1 - Parts Of The Tennis Racket & The Ready Position",
+      "youtube_url": "https://www.youtube.com/watch?v=43VEEPMs_zU",
+      "stroke_families": [
+        "forehand",
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "footwork",
+        "ready_position_fundamentals",
+        "curriculum_based_teaching",
+        "beginner_foundation"
+      ]
+    },
+    {
+      "source_id": "LANG-SS-SRV-01",
+      "coach_id": "steve_smith",
+      "title": "GreatBase Initiative 2.10 - The Serve",
+      "youtube_url": "https://www.youtube.com/watch?v=bA1PR2PLon4",
+      "stroke_families": [
+        "serve"
+      ],
+      "pattern_tags": [
+        "systematic_progression",
+        "fundamentals_first",
+        "scientific_teaching_method"
+      ]
+    },
+    {
+      "source_id": "LANG-JM-TAC-01",
+      "coach_id": "jamie_murray",
+      "title": "Doubles Tactics | Tennis Coaching | Territory in Doubles | Jamie Murray",
+      "youtube_url": "https://www.youtube.com/watch?v=OVBPyCIoIDc",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "doubles_court_positioning",
+        "territorial_control",
+        "pro_player_insight"
+      ]
+    },
+    {
+      "source_id": "LANG-JM-TAC-02",
+      "coach_id": "jamie_murray",
+      "title": "Doubles Tactics | When Should You Poach? | Tennis Coaching | Jamie Murray",
+      "youtube_url": "https://www.youtube.com/watch?v=9PKbwkMgmvs",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "net_poaching_decisions",
+        "doubles_strategy",
+        "shot_selection_timing"
+      ]
+    },
+    {
+      "source_id": "LANG-EG-MENTAL-01",
+      "coach_id": "edgar_giffenig",
+      "title": "Tennis Instruction: Practical Mental Training",
+      "youtube_url": "https://www.youtube.com/watch?v=v8nKZ2gWgn8",
+      "stroke_families": [
+        "forehand",
+        "two_handed_backhand",
+        "serve"
+      ],
+      "pattern_tags": [
+        "practical_mental_training",
+        "concise_lesson_format",
+        "applied_psychology"
+      ]
+    },
+    {
+      "source_id": "LANG-EG-TAC-01",
+      "coach_id": "edgar_giffenig",
+      "title": "Tennis Instruction Singles Tactic Rally Ideas",
+      "youtube_url": "https://www.youtube.com/watch?v=ZzMmaJdbs6c",
+      "stroke_families": [
+        "forehand",
+        "two_handed_backhand"
+      ],
+      "pattern_tags": [
+        "singles_rally_construction",
+        "tactical_shot_selection",
+        "point_building"
+      ]
+    },
+    {
+      "source_id": "LANG-EG-FH-01",
+      "coach_id": "edgar_giffenig",
+      "title": "Tennis Instruction: Optimize your Technique",
+      "youtube_url": "https://www.youtube.com/watch?v=h8KmzxdNkfs",
+      "stroke_families": [
+        "forehand"
+      ],
+      "pattern_tags": [
+        "technique_optimization",
+        "concise_coaching_style",
+        "practical_drills"
+      ]
+    },
+    {
+      "source_id": "LANG-PF-VOL-01",
+      "coach_id": "peter_freeman",
+      "title": "Hit Perfect forehand and backhand volleys with these 3 drills",
+      "youtube_url": "https://www.youtube.com/watch?v=RIQn4h9U5Ng",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "drill_based_teaching",
+        "three_drill_format",
+        "repetition_training",
+        "hands_quickness"
+      ]
+    },
+    {
+      "source_id": "LANG-PF-VOL-02",
+      "coach_id": "peter_freeman",
+      "title": "How to Hit Picture Perfect Volleys with Peter Freeman [Tennis Summit 2022 Preview #2]",
+      "youtube_url": "https://www.youtube.com/watch?v=zLJi_noi0OI",
+      "stroke_families": [
+        "forehand_volley",
+        "backhand_volley"
+      ],
+      "pattern_tags": [
+        "summit_preview_clip",
+        "fundamentals_checklist",
+        "contact_point_discipline",
+        "ready_position"
       ]
     }
   ],
