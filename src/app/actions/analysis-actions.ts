@@ -9,11 +9,13 @@ import { createAdminClient, requireUser } from "@/lib/supabase/server";
 import { runSafetyPrecheck } from "@/app/actions/context-safety-actions";
 import type { AnalysisReport, EngineManifest } from "@/modules/analysis/types";
 import {
+  longitudinalContextSignature,
   reduceDevelopmentState,
   reduceSharedRootConstruct,
   resolveMeasuredDistribution,
   type ConstructDistribution,
   type CrossStrokeContract,
+  type CueHistoryEntry,
   type DevelopmentState,
   type LongitudinalRequirements,
 } from "@/modules/analysis/longitudinal";
@@ -244,7 +246,7 @@ function validateAnalysisApiResponse(value: unknown): asserts value is AnalysisA
       throw new Error(`Analysis service returned an invalid comparison contract field: ${key}.`);
     }
   }
-  for (const key of ["distributionSpreadDivisor", "minimumHistorySessions", "historyWindowSessions", "meaningfulShiftPoints"]) {
+  for (const key of ["distributionSpreadDivisor", "minimumHistorySessions", "historyWindowSessions", "meaningfulShiftPoints", "minimumStatusConfidence", "sustainedStableSessionsForSolved", "retentionWindowSessions"]) {
     if (typeof longitudinal[key] !== "number" || !Number.isFinite(longitudinal[key])) {
       throw new Error(`Analysis service returned an invalid longitudinal contract field: ${key}.`);
     }
@@ -523,23 +525,11 @@ function reportContextPersistence(
   });
 }
 
-function longitudinalContextSignature(
-  sportId: string,
-  actionType: string,
-  captureContext: ReturnType<typeof normalizeCaptureContext>,
-) {
-  return createHash("sha256").update(JSON.stringify({
-    sportId,
-    actionType,
-    cameraAngle: captureContext.cameraAngle,
-    shotSituation: captureContext.shotSituation,
-    shotIntent: captureContext.shotIntent,
-  })).digest("hex");
-}
-
 function finiteNumberOrNull(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
+
+type LongitudinalLinkage = { constructId: string; contextSignature: string; developmentStateId: string };
 
 async function persistLongitudinalDevelopment(
   supabase: SupabaseClient,
@@ -551,16 +541,16 @@ async function persistLongitudinalDevelopment(
     captureContext: ReturnType<typeof normalizeCaptureContext>;
     result: LongitudinalAnalysisResult;
   },
-) {
+): Promise<LongitudinalLinkage | null> {
   const control = input.result.knowledge_control;
   if (control.status !== "CONTROLLED" || control.domains.records.authorized !== true) {
     throw new Error("Knowledge control did not authorize longitudinal record creation.");
   }
-  if (!input.result.quality_gate.movementConfirmed || input.result.repetitions.length === 0) return;
+  if (!input.result.quality_gate.movementConfirmed || input.result.repetitions.length === 0) return null;
 
   const contextSignature = longitudinalContextSignature(input.sportId, input.actionType, input.captureContext);
   const reasoning = isRecord(input.result.ontology_reasoning) ? input.result.ontology_reasoning : null;
-  if (!reasoning) return;
+  if (!reasoning) return null;
   const knowledgeLayerStatus = isRecord(reasoning.knowledgeLayerStatus) ? reasoning.knowledgeLayerStatus : null;
   const personalBaseline = knowledgeLayerStatus && isRecord(knowledgeLayerStatus.personalBaseline)
     ? knowledgeLayerStatus.personalBaseline
@@ -581,6 +571,10 @@ async function persistLongitudinalDevelopment(
     || !Number.isFinite(longitudinalContract.historyWindowSessions)
     || longitudinalContract.historyWindowSessions < longitudinalContract.minimumHistorySessions
     || !Number.isFinite(longitudinalContract.meaningfulShiftPoints) || longitudinalContract.meaningfulShiftPoints <= 0
+    || !Number.isFinite(longitudinalContract.minimumStatusConfidence)
+    || longitudinalContract.minimumStatusConfidence < 0 || longitudinalContract.minimumStatusConfidence > 1
+    || !Number.isFinite(longitudinalContract.sustainedStableSessionsForSolved) || longitudinalContract.sustainedStableSessionsForSolved < 1
+    || !Number.isFinite(longitudinalContract.retentionWindowSessions) || longitudinalContract.retentionWindowSessions < 1
   ) {
     throw new Error("Knowledge control did not provide a valid longitudinal calculation contract.");
   }
@@ -592,6 +586,9 @@ async function persistLongitudinalDevelopment(
     minimumHistorySessions: longitudinalContract.minimumHistorySessions,
     historyWindowSessions: longitudinalContract.historyWindowSessions,
     meaningfulShiftPoints: longitudinalContract.meaningfulShiftPoints,
+    minimumStatusConfidence: longitudinalContract.minimumStatusConfidence,
+    sustainedStableSessionsForSolved: longitudinalContract.sustainedStableSessionsForSolved,
+    retentionWindowSessions: longitudinalContract.retentionWindowSessions,
   };
   const findings = reasoning && Array.isArray(reasoning.findings)
     ? reasoning.findings.filter(isRecord)
@@ -606,7 +603,7 @@ async function persistLongitudinalDevelopment(
 
   const { data: stateRow, error: stateError } = await supabase
     .from("player_development_state")
-    .select("primary_construct_id, active_cue, success_metric, status, knowledge_policy_version, knowledge_manifest_hash")
+    .select("id, primary_construct_id, active_cue, success_metric, status, confidence, evidence_summary, knowledge_policy_version, knowledge_manifest_hash")
     .eq("user_id", input.userId)
     .eq("sport_id", input.sportId)
     .eq("action_type", input.actionType)
@@ -621,8 +618,12 @@ async function persistLongitudinalDevelopment(
     activeCue: stateRow.active_cue,
     successMetric: stateRow.success_metric,
     status: stateRow.status,
+    confidence: stateRow.confidence,
+    evidenceSummary: stateRow.evidence_summary,
   } as DevelopmentState : null;
-  const constructId = existing && !["solved", "superseded"].includes(existing.status)
+  // "solved" keeps its construct locked through the retention window; "superseded" (retention
+  // held) and "retention_regressed" (retention failed) both release it for a fresh proposal.
+  const constructId = existing && !["superseded", "retention_regressed"].includes(existing.status)
     ? existing.primaryConstructId
     : proposedConstruct;
   const finding = findings.find((item) => item.chapterId === constructId) ?? null;
@@ -634,7 +635,7 @@ async function persistLongitudinalDevelopment(
     input.result.capture_quality.score,
     longitudinalContract.distributionSpreadDivisor,
   );
-  if (!measured) return;
+  if (!measured) return null;
   const medianScore = measured.medianScore;
   const evidenceRows = finding && Array.isArray(finding.evidence) ? finding.evidence.filter(isRecord) : [];
   const evidenceIds = evidenceRows
@@ -727,6 +728,17 @@ async function persistLongitudinalDevelopment(
     knowledgeManifestHash: row.knowledge_manifest_hash,
     recordedAt: row.recorded_at,
   }));
+  let cueHistory: CueHistoryEntry[] = [];
+  if (stateRow) {
+    const { data: cueHistoryRows, error: cueHistoryError } = await supabase
+      .from("cue_history")
+      .select("change_reason")
+      .eq("development_state_id", stateRow.id)
+      .order("created_at", { ascending: false })
+      .limit(longitudinalRequirements.sustainedStableSessionsForSolved);
+    if (cueHistoryError) throw new Error(cueHistoryError.message);
+    cueHistory = (cueHistoryRows ?? []).map((row) => ({ changeReason: row.change_reason }));
+  }
   const decision = reduceDevelopmentState(
     current,
     history,
@@ -734,8 +746,9 @@ async function persistLongitudinalDevelopment(
     input.result.priorities[0]?.cue ?? null,
     input.result.next_session.successCriteria[0] ?? null,
     longitudinalRequirements,
+    cueHistory,
   );
-  const { error: applyError } = await supabase.rpc("apply_player_development_observation_v650", {
+  const { data: developmentStateId, error: applyError } = await supabase.rpc("apply_player_development_observation_v680", {
     p_user_id: input.userId,
     p_session_id: input.sessionId,
     p_sport_id: input.sportId,
@@ -755,19 +768,16 @@ async function persistLongitudinalDevelopment(
     p_active_cue: decision.activeCue,
     p_success_metric: decision.successMetric,
     p_status: decision.status,
-    p_evidence_summary: {
-      archetype: decision.archetype,
-      baselineMedian: decision.baselineMedian,
-      shift: decision.shift,
-      comparisonSessionIds: decision.comparisonSessionIds,
-      reason: decision.reason,
-    },
+    p_belief_confidence: decision.confidence,
+    p_evidence_summary: decision.evidenceSummary,
     p_ontology_version: manifest.ontologyVersion ?? "unknown",
     p_cue_change_reason: decision.cueChangeReason,
     p_knowledge_policy_version: control.policyVersion,
     p_knowledge_manifest_hash: control.manifestHash,
   });
   if (applyError) throw new Error(applyError.message);
+  if (!developmentStateId) return null;
+  return { constructId, contextSignature, developmentStateId };
 }
 
 function numericMedian(values: number[]) {
@@ -953,7 +963,7 @@ async function processLongitudinalJob(
     captureContext: ReturnType<typeof normalizeCaptureContext>;
     result: LongitudinalAnalysisResult;
   },
-) {
+): Promise<LongitudinalLinkage | null> {
   const { data: job, error: jobError } = await supabase
     .from("analysis_postprocessing_jobs")
     .select("attempts")
@@ -969,7 +979,7 @@ async function processLongitudinalJob(
   if (processingError) throw new Error(processingError.message);
 
   try {
-    await persistLongitudinalDevelopment(supabase, input);
+    const linkage = await persistLongitudinalDevelopment(supabase, input);
     await persistSharedRootDevelopment(supabase, input);
     const { error } = await supabase
       .from("analysis_postprocessing_jobs")
@@ -977,6 +987,7 @@ async function processLongitudinalJob(
       .eq("session_id", input.sessionId)
       .eq("user_id", input.userId);
     if (error) throw new Error(error.message);
+    return linkage;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown longitudinal persistence failure";
     const nextAttemptAt = new Date(Date.now() + 5 * 60 * 1000).toISOString();
@@ -1183,8 +1194,9 @@ async function executeAnalysis({
     }, { onConflict: "session_id" });
     if (jobError) throw new Error(jobError.message);
 
+    let longitudinalLinkage: LongitudinalLinkage | null = null;
     try {
-      await processLongitudinalJob(supabase, {
+      longitudinalLinkage = await processLongitudinalJob(supabase, {
         userId: user.id,
         sessionId,
         sportId,
@@ -1202,7 +1214,7 @@ async function executeAnalysis({
           result.practice_plan.sessions.map((item) => [item.id, false]),
         );
         const reassessmentDue = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-        const { error: planError } = await supabase.rpc("upsert_active_practice_plan_v650", {
+        const { error: planError } = await supabase.rpc("upsert_active_practice_plan_v681", {
           p_user_id: user.id,
           p_session_id: sessionId,
           p_sport_id: sportId,
@@ -1215,6 +1227,9 @@ async function executeAnalysis({
           p_reassessment_due_at: reassessmentDue,
           p_knowledge_policy_version: result.knowledge_control.policyVersion,
           p_knowledge_manifest_hash: result.knowledge_control.manifestHash,
+          p_construct_id: longitudinalLinkage?.constructId ?? null,
+          p_context_signature: longitudinalLinkage?.contextSignature ?? null,
+          p_development_state_id: longitudinalLinkage?.developmentStateId ?? null,
         });
         if (planError) {
           console.warn("[analysis] practice plan upsert notice:", planError.message);

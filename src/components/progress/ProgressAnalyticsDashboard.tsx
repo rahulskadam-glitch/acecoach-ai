@@ -21,7 +21,7 @@ export type DevelopmentTrend = {
   sportId: string;
   movement: string;
   constructId: string;
-  status: "active" | "improving" | "plateaued" | "regressed" | "solved" | "superseded";
+  status: "emerging" | "active" | "improving" | "plateaued" | "regressed" | "retention_regressed" | "solved" | "uncertain" | "superseded";
   activeCue: string | null;
   reason: string | null;
   shift: number | null;
@@ -94,7 +94,7 @@ export default function ProgressAnalyticsDashboard({ points, developmentTrends =
       {activeTrend ? <section className="rounded-[1.75rem] border border-sky-500/20 bg-white p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div><p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">Current focus</p><h2 className="mt-2 text-2xl font-semibold capitalize text-slate-950">{activeTrend.constructId.replaceAll("_", " ")}</h2><p className="mt-2 max-w-3xl text-sm text-slate-600">{activeTrend.reason ?? "Building a comparable multi-session baseline."}</p></div>
-          <span className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${activeTrend.status === "improving" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200" : activeTrend.status === "regressed" ? "border-amber-500/30 bg-amber-500/10 text-amber-200" : "border-sky-500/30 bg-sky-500/10 text-sky-200"}`}>{activeTrend.status}</span>
+          <span className={`rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] ${["improving", "solved", "superseded"].includes(activeTrend.status) ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-200" : ["regressed", "retention_regressed"].includes(activeTrend.status) ? "border-amber-500/30 bg-amber-500/10 text-amber-200" : "border-sky-500/30 bg-sky-500/10 text-sky-200"}`}>{activeTrend.status.replaceAll("_", " ")}</span>
         </div>
         {activeTrend.activeCue ? <p className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-800"><span className="font-semibold text-slate-950">Keep this cue:</span> {activeTrend.activeCue}</p> : null}
         <div className="mt-6 h-[280px]">

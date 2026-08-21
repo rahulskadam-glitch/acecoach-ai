@@ -174,6 +174,9 @@ def compile_knowledge_control(
                 "minimumHistorySessions": policy["longitudinal"]["minimum_history_sessions"],
                 "historyWindowSessions": policy["longitudinal"]["history_window_sessions"],
                 "meaningfulShiftPoints": policy["longitudinal"]["meaningful_shift_points"],
+                "minimumStatusConfidence": policy["longitudinal"]["minimum_status_confidence"],
+                "sustainedStableSessionsForSolved": policy["longitudinal"]["sustained_stable_sessions_for_solved"],
+                "retentionWindowSessions": policy["longitudinal"]["retention_window_sessions"],
             },
         },
     }

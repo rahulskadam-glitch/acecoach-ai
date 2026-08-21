@@ -84,6 +84,7 @@ const mockContext: GroundedCoachContext = {
   },
   recordingPlan: "Record again in 2 days",
   limitations: ["60fps video view"],
+  activeFocus: null,
 };
 
 describe("coach-engine", () => {
@@ -130,5 +131,23 @@ describe("coach-engine", () => {
     const res = generateIntelligentCoachResponse("My elbow hurts and has sharp pain", mockContext);
     expect(res.message).toContain("pause your hitting session");
     expect(res.message).toContain("medical diagnosis");
+  });
+
+  it("answers a continuity question from the active development focus when present", () => {
+    const withFocus: GroundedCoachContext = {
+      ...mockContext,
+      activeFocus: { constructId: "racket_drop_lag", cue: "Drop the head before you whip.", status: "improving", confidence: 0.78 },
+    };
+    const res = generateIntelligentCoachResponse("What am I still working on from previous sessions?", withFocus);
+    expect(res.message).toContain("racket drop lag");
+    expect(res.message).toContain("Drop the head before you whip.");
+    expect(res.message.toLowerCase()).toContain("improving");
+    expect(res.references.some((r) => r.label === "Active Focus")).toBe(true);
+  });
+
+  it("falls back to the generic priority when there is no active focus yet", () => {
+    const res = generateIntelligentCoachResponse("What am I still working on from previous sessions?", mockContext);
+    expect(res.message).toContain("don't have enough comparable sessions");
+    expect(res.message.toLowerCase()).toContain(mockContext.mainPriority.toLowerCase());
   });
 });

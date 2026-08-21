@@ -40,4 +40,22 @@ export type PlayerReportProps = {
   athleteContext?: AthleteReferenceContext;
   videoUrl: string;
   validatedBallOutcomes?: ValidatedBallOutcome[];
+  activeFocus?: ActiveDevelopmentFocus | null;
+  cueTimeline?: CueTimelineEntry[];
+};
+
+export type ActiveDevelopmentFocus = {
+  constructId: string;
+  cue: string | null;
+  status: string;
+  confidence: number | null;
+  startedSessionId: string;
+  updatedAt: string;
+};
+
+export type CueTimelineEntry = {
+  previousCue: string | null;
+  nextCue: string | null;
+  changeReason: string;
+  createdAt: string;
 };

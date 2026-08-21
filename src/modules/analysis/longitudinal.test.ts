@@ -46,6 +46,8 @@ const existing: DevelopmentState = {
   activeCue: "Keep adjusting before the swing.",
   successMetric: "Seven of ten reps preserve space.",
   status: "active",
+  confidence: null,
+  evidenceSummary: null,
 };
 
 const baselineRequirements = {
@@ -60,6 +62,9 @@ const longitudinalRequirements = {
   minimumHistorySessions: 2,
   historyWindowSessions: 3,
   meaningfulShiftPoints: 4,
+  minimumStatusConfidence: 0.65,
+  sustainedStableSessionsForSolved: 3,
+  retentionWindowSessions: 2,
 };
 
 test("requires two earlier comparable sessions before a learning claim", () => {
@@ -117,6 +122,126 @@ test("plateau and regression use the non-causal trend archetype", () => {
   assert.equal(regression.status, "regressed");
   assert.equal(regression.archetype, "REGRESSION_OR_PLATEAU");
   assert.match(regression.reason, /no cause is inferred/i);
+});
+
+test("reports emerging status when there is no prior belief and not enough history yet", () => {
+  const decision = reduceDevelopmentState(
+    distribution("3", 74),
+    [distribution("2", 68)],
+    null,
+    "First proposed cue.",
+    "First metric.",
+    longitudinalRequirements,
+  );
+  assert.equal(decision.comparable, false);
+  assert.equal(decision.status, "emerging");
+  assert.equal(decision.cueChangeReason, "initialized");
+});
+
+test("reports uncertain status when comparable evidence clears the baseline gate but not the status confidence bar", () => {
+  const requirements = { ...longitudinalRequirements, minimumStatusConfidence: 0.75 };
+  const decision = reduceDevelopmentState(
+    distribution("4", 76, { confidence: 0.7 }),
+    [distribution("2", 68, { confidence: 0.7 }), distribution("3", 69, { confidence: 0.7 })],
+    existing,
+    null,
+    null,
+    requirements,
+  );
+  assert.equal(decision.comparable, true);
+  assert.equal(decision.status, "uncertain");
+  assert.equal(decision.archetype, null);
+});
+
+test("promotes to solved after sustained improvement with a stable cue history", () => {
+  const improvingExisting: DevelopmentState = { ...existing, status: "improving" };
+  const decision = reduceDevelopmentState(
+    distribution("6", 80),
+    [distribution("2", 68), distribution("3", 69)],
+    improvingExisting,
+    null,
+    null,
+    longitudinalRequirements,
+    [{ changeReason: "stable" }, { changeReason: "stable" }],
+  );
+  assert.equal(decision.status, "solved");
+  assert.equal(decision.cueChangeReason, "solved");
+  assert.equal(decision.evidenceSummary.retentionChecksRemaining, longitudinalRequirements.retentionWindowSessions);
+});
+
+test("does not promote to solved without enough stable cue history", () => {
+  const improvingExisting: DevelopmentState = { ...existing, status: "improving" };
+  const decision = reduceDevelopmentState(
+    distribution("6", 80),
+    [distribution("2", 68), distribution("3", 69)],
+    improvingExisting,
+    null,
+    null,
+    longitudinalRequirements,
+    [{ changeReason: "stable" }],
+  );
+  assert.equal(decision.status, "improving");
+  assert.notEqual(decision.status, "solved");
+});
+
+test("detects retention failure when a solved belief regresses", () => {
+  const solvedExisting: DevelopmentState = { ...existing, status: "solved", evidenceSummary: { retentionChecksRemaining: 2 } };
+  const decision = reduceDevelopmentState(
+    distribution("6", 60),
+    [distribution("2", 68), distribution("3", 70)],
+    solvedExisting,
+    null,
+    null,
+    longitudinalRequirements,
+  );
+  assert.equal(decision.status, "retention_regressed");
+  assert.equal(decision.archetype, "RETENTION_FAILURE");
+  assert.equal(decision.cueChangeReason, "disproven");
+  assert.equal(decision.isRetentionFailure, true);
+});
+
+test("supersedes a solved belief once the retention window completes clean", () => {
+  const solvedExisting: DevelopmentState = { ...existing, status: "solved", evidenceSummary: { retentionChecksRemaining: 1 } };
+  const decision = reduceDevelopmentState(
+    distribution("6", 78),
+    [distribution("2", 68), distribution("3", 69)],
+    solvedExisting,
+    null,
+    null,
+    longitudinalRequirements,
+  );
+  assert.equal(decision.status, "superseded");
+  assert.equal(decision.cueChangeReason, "superseded");
+});
+
+test("keeps a solved belief in its retention window when checks remain", () => {
+  const solvedExisting: DevelopmentState = { ...existing, status: "solved", evidenceSummary: { retentionChecksRemaining: 2 } };
+  const decision = reduceDevelopmentState(
+    distribution("6", 78),
+    [distribution("2", 68), distribution("3", 69)],
+    solvedExisting,
+    null,
+    null,
+    longitudinalRequirements,
+  );
+  assert.equal(decision.status, "solved");
+  assert.equal(decision.cueChangeReason, "stable");
+  assert.equal(decision.evidenceSummary.retentionChecksRemaining, 1);
+});
+
+test("releases a superseded belief so a new construct can be proposed", () => {
+  const supersededExisting: DevelopmentState = { ...existing, status: "superseded", primaryConstructId: "old_construct" };
+  const decision = reduceDevelopmentState(
+    distribution("3", 74, { constructId: "new_construct" }),
+    [distribution("2", 68, { constructId: "new_construct" })],
+    supersededExisting,
+    "Fresh cue.",
+    "Fresh metric.",
+    longitudinalRequirements,
+  );
+  assert.equal(decision.primaryConstructId, "new_construct");
+  assert.equal(decision.activeCue, "Fresh cue.");
+  assert.equal(decision.cueChangeReason, "initialized");
 });
 
 test("rejects history with incompatible runtime or capture quality", () => {

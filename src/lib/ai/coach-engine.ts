@@ -2,6 +2,13 @@ import type { BiomechanicalMetric, BiomechanicalPhaseSummary, DrillDefinition } 
 import type { CoachingReference } from "@/features/coaching-conversation";
 import type { PlayerBiomechanicalProfile } from "@/features/report/motion/player-kinetics-engine";
 
+export type GroundedCoachActiveFocus = {
+  constructId: string;
+  cue: string | null;
+  status: string;
+  confidence: number | null;
+};
+
 export type GroundedCoachContext = {
   sportName: string;
   movementName: string;
@@ -21,6 +28,7 @@ export type GroundedCoachContext = {
   kinetics?: PlayerBiomechanicalProfile;
   recordingPlan: string;
   limitations: string[];
+  activeFocus: GroundedCoachActiveFocus | null;
 };
 
 export type CoachQuestionCategory = "all" | "fix" | "charts" | "power" | "drills" | "safety" | "tactics";
@@ -43,6 +51,14 @@ export const COACH_QUESTIONS_TAXONOMY: CoachQuestionItem[] = [
     question: "What is my single highest-leverage fix, and why does it matter?",
     shortLabel: "What is my main fix?",
     icon: "🎯",
+  },
+  {
+    id: "q_still_working_on",
+    category: "fix",
+    categoryLabel: "🎯 My Fix & Feel",
+    question: "What am I still working on from previous sessions?",
+    shortLabel: "What am I still working on?",
+    icon: "🔁",
   },
   {
     id: "q_feel_cue",
@@ -341,6 +357,35 @@ export function generateIntelligentCoachResponse(
     };
   }
 
+  // 1.5. Continuity: what am I still working on from earlier sessions
+  if (/still working on|been working on|my (active )?focus|track(ing)? my progress|same (issue|cue|focus)|last time you (said|told)|what am i working on|previous (session|cue)/.test(lower)) {
+    const focus = context.activeFocus;
+    if (!focus) {
+      return {
+        message: `I don't have enough comparable sessions yet to track a returning focus for your ${movement.toLowerCase()} in this context — that starts once a few similar recordings are in. For now, your priority is to ${context.mainPriority.toLowerCase()}, with the cue: “${context.cue}”.`,
+        references: [{ type: "finding", label: "Current Priority", value: context.mainPriority }],
+      };
+    }
+    const statusLine: Record<string, string> = {
+      emerging: "I've just started tracking this — a couple more comparable sessions and I can tell you if it's improving.",
+      active: "You're actively working on this.",
+      improving: "The trend is genuinely improving across your recent comparable sessions.",
+      plateaued: "It's holding steady — not worse, not clearly better yet.",
+      regressed: "It's trended backward recently, so let's stay on it rather than switch focus.",
+      retention_regressed: "This one had looked solved, but it slipped back in your most recent comparable session — worth re-committing to the cue.",
+      solved: "This is looking solved — I'm watching a couple more sessions to confirm it holds before calling it done.",
+      uncertain: "The evidence is there but not clean enough yet to call a trend either way.",
+      superseded: "This one held through its full retention window — durably solved. Nice work.",
+    };
+    return {
+      message: `You're still tracking ${focus.constructId.replaceAll("_", " ")}${focus.cue ? `, with the cue: “${focus.cue}”` : ""}. ${statusLine[focus.status] ?? "I'm continuing to track this across sessions."}`,
+      references: [
+        { type: "finding", label: "Active Focus", value: focus.constructId.replaceAll("_", " ") },
+        ...(focus.cue ? [{ type: "finding" as const, label: "Cue", value: focus.cue }] : []),
+      ],
+    };
+  }
+
   // 2. Waterfall Chart Explanation
   if (/waterfall|power leak|leak|joule|lost energy|recoverable|cascade/.test(lower)) {
     return {
@@ -499,8 +544,11 @@ export function generateIntelligentCoachResponse(
 
   // 15. Primary Priority / Main Correction (Default Catch-All)
   if (/priority|main fix|main correction|summary|overview|what is wrong/.test(lower)) {
+    const continuity = context.activeFocus && !["solved", "superseded"].includes(context.activeFocus.status)
+      ? `This continues what we've been tracking across your recent sessions. `
+      : "";
     return {
-      message: `Your single highest-leverage focus is to ${context.mainPriority.toLowerCase()}. In your video, ${context.priorityFinding.toLowerCase()} By correcting this, ${context.whyItMatters.toLowerCase()} During practice and matches, repeat your core feel cue: “${context.cue}”.`,
+      message: `${continuity}Your single highest-leverage focus is to ${context.mainPriority.toLowerCase()}. In your video, ${context.priorityFinding.toLowerCase()} By correcting this, ${context.whyItMatters.toLowerCase()} During practice and matches, repeat your core feel cue: “${context.cue}”.`,
       references: [
         { type: "finding", label: "Primary Correction", value: context.mainPriority },
         { type: "finding", label: "Court Cue", value: context.cue },

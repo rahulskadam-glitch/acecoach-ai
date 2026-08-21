@@ -2,10 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 
-import { generateIntelligentCoachResponse, type GroundedCoachContext } from "@/lib/ai/coach-engine";
+import { generateIntelligentCoachResponse, type GroundedCoachActiveFocus, type GroundedCoachContext } from "@/lib/ai/coach-engine";
 import { createAdminClient, requireUser, visualQaEnabled } from "@/lib/supabase/server";
 import { getSport } from "@/lib/sports";
 import { computePlayerBiomechanicalProfile } from "@/features/report/motion/player-kinetics-engine";
+import { captureContextSignatureInputFromManifest, longitudinalContextSignature } from "@/modules/analysis/longitudinal";
 import type { AnalysisReport, DrillDefinition } from "@/modules/analysis/types";
 
 function cleanMessage(value: string) {
@@ -28,7 +29,7 @@ async function loadGroundedContext(sessionId: string, userId: string): Promise<G
   const admin = createAdminClient();
   const { data: session, error } = await admin
     .from("analysis_sessions")
-    .select("id, sport_id, action_type, analysis_action_type, status, analysis_reports(coach_summary, overall_score, priorities, strengths, drills, next_session, coaching_playbook, limitations, quality_gate, movement_classification, knowledge_control, biomechanical_profile, phases, frame_summary)")
+    .select("id, sport_id, action_type, analysis_action_type, status, analysis_reports(coach_summary, overall_score, priorities, strengths, drills, next_session, coaching_playbook, limitations, quality_gate, movement_classification, knowledge_control, biomechanical_profile, phases, frame_summary, engine_manifest)")
     .eq("id", sessionId)
     .eq("user_id", userId)
     .single();
@@ -63,6 +64,35 @@ async function loadGroundedContext(sessionId: string, userId: string): Promise<G
 
   const kinetics = computePlayerBiomechanicalProfile(raw as unknown as AnalysisReport, actionType);
 
+  let activeFocus: GroundedCoachActiveFocus | null = null;
+  if (control?.status === "CONTROLLED") {
+    const contextSignature = longitudinalContextSignature(
+      session.sport_id,
+      actionType,
+      captureContextSignatureInputFromManifest(raw.engine_manifest),
+    );
+    const { data: stateRow } = await admin
+      .from("player_development_state")
+      .select("primary_construct_id, active_cue, status, confidence, knowledge_policy_version, knowledge_manifest_hash")
+      .eq("user_id", userId)
+      .eq("sport_id", session.sport_id)
+      .eq("action_type", actionType)
+      .eq("context_signature", contextSignature)
+      .maybeSingle();
+    if (
+      stateRow
+      && stateRow.knowledge_policy_version === text(control?.policyVersion, "")
+      && stateRow.knowledge_manifest_hash === text(control?.manifestHash, "")
+    ) {
+      activeFocus = {
+        constructId: stateRow.primary_construct_id,
+        cue: stateRow.active_cue,
+        status: stateRow.status,
+        confidence: stateRow.confidence,
+      };
+    }
+  }
+
   return {
     admin,
     knowledgePolicyVersion: text(control?.policyVersion, "standard-v6"),
@@ -86,6 +116,7 @@ async function loadGroundedContext(sessionId: string, userId: string): Promise<G
     kinetics,
     recordingPlan: text(next.recordingPlan, "Record again from the same camera position after two focused practice sessions."),
     limitations: Array.isArray(raw.limitations) ? raw.limitations.filter((item): item is string => typeof item === "string").slice(0, 10) : ["Monocular 60fps video view"],
+    activeFocus,
   };
 }
 
@@ -130,6 +161,7 @@ export async function sendCoachingMessage(sessionId: string, rawMessage: string)
       metrics: [],
       recordingPlan: "Record another 60fps video after 2 focused practice sessions.",
       limitations: ["Monocular 60fps camera tracking"],
+      activeFocus: null,
     };
 
     const reply = generateIntelligentCoachResponse(message, mockContext);

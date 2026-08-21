@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 export type ConstructDistribution = {
   sessionId: string;
   constructId: string;
@@ -52,21 +54,30 @@ export type DevelopmentState = {
   primaryConstructId: string;
   activeCue: string | null;
   successMetric: string | null;
-  status: "active" | "improving" | "plateaued" | "regressed" | "solved" | "superseded";
+  status: "emerging" | "active" | "improving" | "plateaued" | "regressed" | "retention_regressed" | "solved" | "uncertain" | "superseded";
+  confidence: number | null;
+  evidenceSummary: Record<string, unknown> | null;
+};
+
+export type CueHistoryEntry = {
+  changeReason: "initialized" | "stable" | "solved" | "disproven" | "superseded" | "coach_override";
 };
 
 export type LongitudinalDecision = {
   comparable: boolean;
   status: DevelopmentState["status"];
-  archetype: "PROGRESS_SHIFT" | "REGRESSION_OR_PLATEAU" | null;
+  archetype: "PROGRESS_SHIFT" | "REGRESSION_OR_PLATEAU" | "RETENTION_FAILURE" | null;
   primaryConstructId: string;
   activeCue: string | null;
   successMetric: string | null;
-  cueChangeReason: "initialized" | "stable" | "superseded";
+  cueChangeReason: "initialized" | "stable" | "solved" | "disproven" | "superseded";
   baselineMedian: number | null;
   shift: number | null;
   comparisonSessionIds: string[];
   reason: string;
+  confidence: number | null;
+  isRetentionFailure: boolean;
+  evidenceSummary: Record<string, unknown>;
 };
 
 export type PersonalBaselineArea = {
@@ -108,6 +119,43 @@ export function resolveMeasuredDistribution(
   };
 }
 
+function narrowedOrDefault(value: unknown, allowed: readonly string[], fallback: string): string {
+  return typeof value === "string" && allowed.includes(value) ? value : fallback;
+}
+
+/** Recomputes the {cameraAngle, shotSituation, shotIntent} triple a stored engine_manifest
+ * used, so a read path (e.g. the report page) can derive the same longitudinalContextSignature
+ * the write path computed, without depending on the full capture-context normalizer. */
+export function captureContextSignatureInputFromManifest(engineManifest: unknown): {
+  cameraAngle: string;
+  shotSituation: string;
+  shotIntent: string;
+} {
+  const intake = engineManifest && typeof engineManifest === "object" && "intakeContext" in engineManifest
+    ? (engineManifest as { intakeContext?: unknown }).intakeContext
+    : null;
+  const record = intake && typeof intake === "object" ? intake as Record<string, unknown> : {};
+  return {
+    cameraAngle: narrowedOrDefault(record.cameraAngle, ["unknown", "side", "rear", "front", "diagonal"], "side"),
+    shotSituation: narrowedOrDefault(record.shotSituation, ["controlled_practice", "neutral_rally", "attacking", "defensive_on_run", "return_of_serve", "unknown"], "controlled_practice"),
+    shotIntent: narrowedOrDefault(record.shotIntent, ["consistency", "depth", "heavy_topspin", "flatter_drive", "angle", "approach", "defensive_height", "unknown"], "consistency"),
+  };
+}
+
+export function longitudinalContextSignature(
+  sportId: string,
+  actionType: string,
+  captureContext: { cameraAngle: string; shotSituation: string; shotIntent: string },
+) {
+  return createHash("sha256").update(JSON.stringify({
+    sportId,
+    actionType,
+    cameraAngle: captureContext.cameraAngle,
+    shotSituation: captureContext.shotSituation,
+    shotIntent: captureContext.shotIntent,
+  })).digest("hex");
+}
+
 function median(values: number[]) {
   const sorted = [...values].sort((a, b) => a - b);
   const middle = Math.floor(sorted.length / 2);
@@ -127,6 +175,9 @@ export type LongitudinalRequirements = PersonalBaselineRequirements & {
   minimumHistorySessions: number;
   historyWindowSessions: number;
   meaningfulShiftPoints: number;
+  minimumStatusConfidence: number;
+  sustainedStableSessionsForSolved: number;
+  retentionWindowSessions: number;
 };
 
 function isComparable(current: ConstructDistribution, previous: ConstructDistribution, requirements: PersonalBaselineRequirements) {
@@ -182,6 +233,12 @@ export function buildPersonalBaselineComparison(
   };
 }
 
+function recentCueHistoryAllStable(cueHistory: CueHistoryEntry[], count: number): boolean {
+  if (count <= 0) return true;
+  if (cueHistory.length < count) return false;
+  return cueHistory.slice(0, count).every((entry) => entry.changeReason === "stable");
+}
+
 export function reduceDevelopmentState(
   current: ConstructDistribution,
   history: ConstructDistribution[],
@@ -189,60 +246,148 @@ export function reduceDevelopmentState(
   proposedCue: string | null,
   proposedSuccessMetric: string | null,
   requirements: LongitudinalRequirements,
+  cueHistory: CueHistoryEntry[] = [],
 ): LongitudinalDecision {
   const comparableHistory = history
     .filter((item) => item.sessionId !== current.sessionId && isComparable(current, item, requirements))
     .sort((a, b) => Date.parse(b.recordedAt) - Date.parse(a.recordedAt))
     .slice(0, requirements.historyWindowSessions);
 
-  const stableExisting = existing && !["solved", "superseded"].includes(existing.status)
+  // "solved" keeps the cue locked through its retention window; "superseded" (retention
+  // held) and "retention_regressed" (retention failed) both release the belief so the next
+  // session can propose a fresh construct/cue instead of clinging to a disproven one.
+  const stableExisting = existing && !["superseded", "retention_regressed"].includes(existing.status)
     ? existing
     : null;
   const activeCue = stableExisting?.activeCue ?? proposedCue;
   const successMetric = stableExisting?.successMetric ?? proposedSuccessMetric;
   const primaryConstructId = stableExisting?.primaryConstructId ?? current.constructId;
-  const cueChangeReason = stableExisting ? "stable" : "initialized";
 
   if (comparableHistory.length < requirements.minimumHistorySessions) {
     return {
       comparable: false,
-      status: stableExisting?.status ?? "active",
+      status: stableExisting?.status ?? "emerging",
       archetype: null,
       primaryConstructId,
       activeCue,
       successMetric,
-      cueChangeReason,
+      cueChangeReason: stableExisting ? "stable" : "initialized",
       baselineMedian: null,
       shift: null,
       comparisonSessionIds: comparableHistory.map((item) => item.sessionId),
       reason: `Need at least ${requirements.minimumHistorySessions} earlier comparable sessions before making a learning claim.`,
+      confidence: stableExisting?.confidence ?? null,
+      isRetentionFailure: false,
+      evidenceSummary: {},
     };
   }
 
   const baselineMedian = median(comparableHistory.map((item) => item.medianScore));
   const shift = Number((current.medianScore - baselineMedian).toFixed(2));
-  const status: DevelopmentState["status"] = shift >= requirements.meaningfulShiftPoints
+  const trendStatus: "improving" | "regressed" | "plateaued" = shift >= requirements.meaningfulShiftPoints
     ? "improving"
     : shift <= -requirements.meaningfulShiftPoints
       ? "regressed"
       : "plateaued";
+  const confidence = Number(Math.min(current.confidence, ...comparableHistory.map((item) => item.confidence)).toFixed(2));
 
-  return {
-    comparable: true,
-    status,
-    archetype: status === "improving" ? "PROGRESS_SHIFT" : "REGRESSION_OR_PLATEAU",
+  const base = {
     primaryConstructId,
     activeCue,
     successMetric,
-    cueChangeReason,
     baselineMedian,
     shift,
     comparisonSessionIds: comparableHistory.map((item) => item.sessionId),
-    reason: status === "improving"
+    confidence,
+  };
+
+  // A belief already marked "solved" is in its retention window: every further comparable
+  // session either confirms the win held (counting down to "superseded") or catches a relapse
+  // ("retention_regressed") — it does not get re-evaluated as a fresh trend read.
+  if (stableExisting?.status === "solved") {
+    if (trendStatus === "regressed") {
+      return {
+        ...base,
+        comparable: true,
+        status: "retention_regressed",
+        archetype: "RETENTION_FAILURE",
+        cueChangeReason: "disproven",
+        isRetentionFailure: true,
+        reason: "This cue was marked solved, but the distribution regressed in the same context — the fix did not retain.",
+        evidenceSummary: { archetype: "RETENTION_FAILURE", baselineMedian, shift, comparisonSessionIds: base.comparisonSessionIds, confidence, reason: "retention_failed" },
+      };
+    }
+    const priorRemaining = typeof stableExisting.evidenceSummary?.retentionChecksRemaining === "number"
+      ? stableExisting.evidenceSummary.retentionChecksRemaining
+      : requirements.retentionWindowSessions;
+    const retentionChecksRemaining = priorRemaining - 1;
+    if (retentionChecksRemaining <= 0) {
+      return {
+        ...base,
+        comparable: true,
+        status: "superseded",
+        archetype: "PROGRESS_SHIFT",
+        cueChangeReason: "superseded",
+        isRetentionFailure: false,
+        reason: "The improvement held through the full retention window — this focus is durably solved.",
+        evidenceSummary: { archetype: "PROGRESS_SHIFT", baselineMedian, shift, comparisonSessionIds: base.comparisonSessionIds, confidence, reason: "retention_confirmed" },
+      };
+    }
+    return {
+      ...base,
+      comparable: true,
+      status: "solved",
+      archetype: "PROGRESS_SHIFT",
+      cueChangeReason: "stable",
+      isRetentionFailure: false,
+      reason: `Improvement is holding; ${retentionChecksRemaining} more comparable ${retentionChecksRemaining === 1 ? "session" : "sessions"} to confirm retention.`,
+      evidenceSummary: { archetype: "PROGRESS_SHIFT", baselineMedian, shift, comparisonSessionIds: base.comparisonSessionIds, confidence, retentionChecksRemaining, reason: "retention_monitoring" },
+    };
+  }
+
+  if (confidence < requirements.minimumStatusConfidence) {
+    return {
+      ...base,
+      comparable: true,
+      status: "uncertain",
+      archetype: null,
+      cueChangeReason: stableExisting ? "stable" : "initialized",
+      isRetentionFailure: false,
+      reason: "Comparable evidence exists but measurement confidence is too low to make a reliable trend claim.",
+      evidenceSummary: { archetype: null, baselineMedian, shift, comparisonSessionIds: base.comparisonSessionIds, confidence, reason: "low_confidence" },
+    };
+  }
+
+  if (
+    trendStatus === "improving"
+    && stableExisting?.status === "improving"
+    && recentCueHistoryAllStable(cueHistory, requirements.sustainedStableSessionsForSolved - 1)
+  ) {
+    return {
+      ...base,
+      comparable: true,
+      status: "solved",
+      archetype: "PROGRESS_SHIFT",
+      cueChangeReason: "solved",
+      isRetentionFailure: false,
+      reason: "Improvement has been sustained across enough comparable sessions with a stable cue — this focus is now solved, pending retention confirmation.",
+      evidenceSummary: { archetype: "PROGRESS_SHIFT", baselineMedian, shift, comparisonSessionIds: base.comparisonSessionIds, confidence, retentionChecksRemaining: requirements.retentionWindowSessions, reason: "solved_pending_retention" },
+    };
+  }
+
+  return {
+    ...base,
+    comparable: true,
+    status: trendStatus,
+    archetype: trendStatus === "improving" ? "PROGRESS_SHIFT" : "REGRESSION_OR_PLATEAU",
+    cueChangeReason: stableExisting ? "stable" : "initialized",
+    isRetentionFailure: false,
+    reason: trendStatus === "improving"
       ? "The recent construct distribution shifted beyond the meaningful-change threshold."
-      : status === "regressed"
+      : trendStatus === "regressed"
         ? "The recent construct distribution shifted backward; no cause is inferred from the trend alone."
         : "The distribution remains inside the meaningful-change band, so the current cue stays stable.",
+    evidenceSummary: { archetype: trendStatus === "improving" ? "PROGRESS_SHIFT" : "REGRESSION_OR_PLATEAU", baselineMedian, shift, comparisonSessionIds: base.comparisonSessionIds, confidence, reason: trendStatus },
   };
 }
 

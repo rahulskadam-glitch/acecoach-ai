@@ -21,6 +21,8 @@ import {
 } from "@/modules/analysis/progress";
 import {
   buildPersonalBaselineComparison,
+  captureContextSignatureInputFromManifest,
+  longitudinalContextSignature,
   type ConstructDistribution,
 } from "@/modules/analysis/longitudinal";
 import type { AnalysisReport as Report } from "@/modules/analysis/types";
@@ -361,12 +363,18 @@ export default async function ReportPage({ params }: PageProps) {
     ?? (rawReport.movement_classification as { analysisAction?: string } | undefined)?.analysisAction
     ?? (typeof session.action_type === "string" ? session.action_type : "forehand");
   const report = mapReport(rawReport, analysisAction);
+  const reportContextSignature = longitudinalContextSignature(
+    session.sport_id,
+    analysisAction,
+    captureContextSignatureInputFromManifest(rawReport.engine_manifest),
+  );
 
   const [
     { data: practiceRow },
     { data: previousSessions },
     { data: feedbackRow },
     { data: checkinRows },
+    { data: developmentStateRow },
     { data: profileRow },
     { data: sportProfileRow },
     { data: physicalProfileRow },
@@ -400,6 +408,14 @@ export default async function ReportPage({ params }: PageProps) {
       .select("id, plan_id, session_item_id, target_hits, attempts, effort, confidence_before, confidence_after, note, created_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }),
+    supabase
+      .from("player_development_state")
+      .select("id, primary_construct_id, active_cue, status, confidence, started_session_id, updated_at, knowledge_policy_version, knowledge_manifest_hash")
+      .eq("user_id", user.id)
+      .eq("sport_id", session.sport_id)
+      .eq("action_type", analysisAction)
+      .eq("context_signature", reportContextSignature)
+      .maybeSingle(),
     supabase
       .from("profiles")
       .select("age_band, playing_level, dominant_hand, gender")
@@ -435,6 +451,33 @@ export default async function ReportPage({ params }: PageProps) {
   ]);
 
   if (trackerOutcomeError) throw new Error(trackerOutcomeError.message);
+
+  const developmentStateMatchesKnowledge = Boolean(
+    developmentStateRow
+    && developmentStateRow.knowledge_policy_version === report.knowledgeControl?.policyVersion
+    && developmentStateRow.knowledge_manifest_hash === report.knowledgeControl?.manifestHash,
+  );
+  const activeFocus = developmentStateMatchesKnowledge && developmentStateRow ? {
+    constructId: developmentStateRow.primary_construct_id as string,
+    cue: developmentStateRow.active_cue as string | null,
+    status: developmentStateRow.status as string,
+    confidence: developmentStateRow.confidence as number | null,
+    startedSessionId: developmentStateRow.started_session_id as string,
+    updatedAt: developmentStateRow.updated_at as string,
+  } : null;
+  const cueTimeline = activeFocus && developmentStateRow ? (
+    await supabase
+      .from("cue_history")
+      .select("previous_cue, next_cue, change_reason, created_at")
+      .eq("development_state_id", developmentStateRow.id)
+      .order("created_at", { ascending: false })
+      .limit(10)
+  ).data?.map((row) => ({
+    previousCue: row.previous_cue as string | null,
+    nextCue: row.next_cue as string | null,
+    changeReason: row.change_reason as string,
+    createdAt: row.created_at as string,
+  })) ?? [] : [];
 
   const practicePlan: StoredPracticePlan | null = practiceRow
     ? {
@@ -649,6 +692,8 @@ export default async function ReportPage({ params }: PageProps) {
           }}
           videoUrl={finalVideoUrl}
           validatedBallOutcomes={validatedBallOutcomes}
+          activeFocus={activeFocus}
+          cueTimeline={cueTimeline}
         />
     </JourneyShell>
   );

@@ -36,6 +36,7 @@ import RotatorCuffDecelerationBarometer from "./RotatorCuffDecelerationBarometer
 import NetClearanceTrajectoryFunnel from "./NetClearanceTrajectoryFunnel";
 import WeightTransferStudio from "./WeightTransferStudio";
 import SessionTrend, { type SessionTrendPoint } from "./insights/SessionTrend";
+import DevelopmentFocusTimeline from "./DevelopmentFocusTimeline";
 import CoachAIDrawer from "./CoachAIDrawer";
 
 type ReportTab = "hub" | "overview" | "video" | "phases" | "energy" | "weight_transfer" | "telemetry" | "injury" | "tracking" | "practice" | "longitudinal";
@@ -52,6 +53,8 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
     athleteContext,
     videoUrl,
     validatedBallOutcomes,
+    activeFocus,
+    cueTimeline,
   } = props;
   const sport = getSport(sportId);
   const resolvedActionType = report.movementClassification?.analysisAction ?? actionType;
@@ -404,6 +407,7 @@ export default function V6PlayerReport(props: PlayerReportProps & { sessionId: s
       {/* Longitudinal Analysis: multi-session trend for this movement */}
       {activeTab === "longitudinal" && (
         <section className="space-y-4 animate-in fade-in duration-200">
+          <DevelopmentFocusTimeline activeFocus={activeFocus} cueTimeline={cueTimeline} />
           {trendPoints.length >= 2 ? (
             <SessionTrend points={trendPoints} currentSessionId={sessionId} />
           ) : (

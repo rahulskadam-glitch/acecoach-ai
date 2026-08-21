@@ -804,6 +804,9 @@ export type KnowledgeControlTrace = {
       minimumHistorySessions: number;
       historyWindowSessions: number;
       meaningfulShiftPoints: number;
+      minimumStatusConfidence: number;
+      sustainedStableSessionsForSolved: number;
+      retentionWindowSessions: number;
     };
   };
 };

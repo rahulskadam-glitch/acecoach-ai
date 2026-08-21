@@ -313,7 +313,10 @@
     "distribution_spread_divisor": 2,
     "minimum_history_sessions": 2,
     "history_window_sessions": 3,
-    "meaningful_shift_points": 4
+    "meaningful_shift_points": 4,
+    "minimum_status_confidence": 0.7,
+    "sustained_stable_sessions_for_solved": 3,
+    "retention_window_sessions": 2
   },
   "recommendations": {
     "policy_id": "AC-RECOMMEND-001",
