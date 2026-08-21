@@ -97,8 +97,8 @@ export default function BiomechanicalExplorer({ profile, sessionId, actionType }
             <p className="mt-3 max-w-2xl text-sm leading-7 text-white/80">See what each part of your body did, when it happened, and how movement passed from the ground through the hitting hand.</p>
           </div>
           <div className="grid w-full grid-cols-3 gap-2 text-center sm:w-auto">
-            <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur"><p className="text-2xl font-semibold">{profile.availableMetricCount}</p><p className="text-[0.68rem] uppercase tracking-wide text-ath-sky">of {profile.metricCount} visible</p></div>
             <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur"><p className="text-2xl font-semibold">6</p><p className="text-[0.68rem] uppercase tracking-wide text-ath-sky">swing phases</p></div>
+            <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur"><p className="text-2xl font-semibold">{profile.availableMetricCount}</p><p className="text-[0.68rem] uppercase tracking-wide text-ath-sky">of {profile.metricCount} visible</p></div>
             <div className="rounded-2xl bg-white/10 px-4 py-3 backdrop-blur"><p className="text-2xl font-semibold">{profile.connectedLinkCount}/{availableLinks || "—"}</p><p className="text-[0.68rem] uppercase tracking-wide text-ath-sky">links on time</p></div>
           </div>
         </div>
@@ -107,41 +107,6 @@ export default function BiomechanicalExplorer({ profile, sessionId, actionType }
 
       <div className="space-y-8 p-6 sm:p-9">
         <div>
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-ath-navy"><GitBranch className="h-4 w-4" />Body linkage</div>
-              <h3 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-slate-950">How movement travelled through your body</h3>
-            </div>
-            <p className="max-w-md text-xs leading-5 text-slate-500">Each link compares the timing of two movement peaks. It describes order—not force or power output.</p>
-          </div>
-
-          {chainNodes.length > 0 ? <div className="mt-5 flex gap-2 overflow-x-auto pb-2">
-            {chainNodes.map((node, index) => {
-              const incoming = index > 0 ? profile.linkages[index - 1] : null;
-              const style = incoming ? linkageStyle[incoming.status] : null;
-              return <div key={`${node.id}-${index}`} className="flex shrink-0 items-center gap-2">
-                {index > 0 ? <ArrowRight className={`h-5 w-5 ${incoming?.status === "connected" ? "text-ath-green" : incoming?.status === "unavailable" ? "text-slate-300" : "text-ath-warn"}`} /> : null}
-                <div className="min-w-28 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center">
-                  <span className={`mx-auto block h-2.5 w-2.5 rounded-full ${style?.dot ?? "bg-ath-navy"}`} />
-                  <p className="mt-2 text-sm font-semibold text-slate-950">{node.label}</p>
-                  <p className="mt-1 text-[0.68rem] text-slate-500">{typeof node.peakTimestampSeconds === "number" ? `${node.peakTimestampSeconds.toFixed(2)}s peak` : "peak unavailable"}</p>
-                </div>
-              </div>;
-            })}
-          </div> : null}
-
-          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-            {profile.linkages.map((link) => {
-              const style = linkageStyle[link.status];
-              return <article key={link.id} className={`rounded-2xl border p-4 ${style.panel}`}>
-                <div className="flex items-center justify-between gap-3"><p className="text-sm font-semibold">{link.source.label} → {link.target.label}</p><span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[0.68rem] font-semibold uppercase tracking-wide"><span className={`h-2 w-2 rounded-full ${style.dot}`} />{style.label}</span></div>
-                <p className="mt-2 text-xs leading-5 opacity-80">{link.explanation}</p>
-              </article>;
-            })}
-          </div>
-        </div>
-
-        <div className="border-t border-slate-200 pt-8">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-ath-navy"><Activity className="h-4 w-4" />All measurements</div>
@@ -213,6 +178,41 @@ export default function BiomechanicalExplorer({ profile, sessionId, actionType }
               })}
             </div>
           </div> : null}
+        </div>
+
+        <div className="border-t border-slate-200 pt-8">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-ath-navy"><GitBranch className="h-4 w-4" />Body linkage</div>
+              <h3 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-slate-950">How movement travelled through your body</h3>
+            </div>
+            <p className="max-w-md text-xs leading-5 text-slate-500">Each link compares the timing of two movement peaks. It describes order—not force or power output.</p>
+          </div>
+
+          {chainNodes.length > 0 ? <div className="mt-5 flex gap-2 overflow-x-auto pb-2">
+            {chainNodes.map((node, index) => {
+              const incoming = index > 0 ? profile.linkages[index - 1] : null;
+              const style = incoming ? linkageStyle[incoming.status] : null;
+              return <div key={`${node.id}-${index}`} className="flex shrink-0 items-center gap-2">
+                {index > 0 ? <ArrowRight className={`h-5 w-5 ${incoming?.status === "connected" ? "text-ath-green" : incoming?.status === "unavailable" ? "text-slate-300" : "text-ath-warn"}`} /> : null}
+                <div className="min-w-28 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-center">
+                  <span className={`mx-auto block h-2.5 w-2.5 rounded-full ${style?.dot ?? "bg-ath-navy"}`} />
+                  <p className="mt-2 text-sm font-semibold text-slate-950">{node.label}</p>
+                  <p className="mt-1 text-[0.68rem] text-slate-500">{typeof node.peakTimestampSeconds === "number" ? `${node.peakTimestampSeconds.toFixed(2)}s peak` : "peak unavailable"}</p>
+                </div>
+              </div>;
+            })}
+          </div> : null}
+
+          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {profile.linkages.map((link) => {
+              const style = linkageStyle[link.status];
+              return <article key={link.id} className={`rounded-2xl border p-4 ${style.panel}`}>
+                <div className="flex items-center justify-between gap-3"><p className="text-sm font-semibold">{link.source.label} → {link.target.label}</p><span className="inline-flex items-center gap-1.5 whitespace-nowrap text-[0.68rem] font-semibold uppercase tracking-wide"><span className={`h-2 w-2 rounded-full ${style.dot}`} />{style.label}</span></div>
+                <p className="mt-2 text-xs leading-5 opacity-80">{link.explanation}</p>
+              </article>;
+            })}
+          </div>
         </div>
       </div>
     </section>
